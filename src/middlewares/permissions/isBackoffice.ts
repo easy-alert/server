@@ -6,7 +6,7 @@ import { PermissionServices } from '../../api/permission/services/permissionServ
 
 const permissionServices = new PermissionServices();
 
-export const isUser = async (
+export const isBackoffice = async (
   req: Request,
   _res: Response,
   next: NextFunction,
@@ -15,7 +15,7 @@ export const isUser = async (
 
   await permissionServices.checkPermission({
     userPermissions: permissions,
-    permission: 'User',
+    permission: 'Backoffice',
   });
 
   next();

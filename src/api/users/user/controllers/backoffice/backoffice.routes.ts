@@ -2,20 +2,18 @@
 import { Router } from 'express';
 
 // VALIDATORS
-import { isAdmin } from '../../../../../middlewares/permissions/isAdmin';
+import { isBackoffice } from '../../../../../middlewares/permissions/isBackoffice';
 
 // FUNCTIONS
 import { createUser } from './createUser';
 import { listUsers } from './listUsers';
 import { editUser } from './editUser';
 import { changeIsBlocked } from './changeIsBlocked';
-import { changeIsDeleted } from './changeIsDeleted';
 
 // ROUTES
-export const backofficeRouter = Router();
+export const backofficeUserRouter = Router();
 
-backofficeRouter.post('/create', isAdmin, createUser);
-backofficeRouter.get('/list', isAdmin, listUsers);
-backofficeRouter.put('/edit', isAdmin, editUser);
-backofficeRouter.put('/change/isBlocked', isAdmin, changeIsBlocked);
-backofficeRouter.put('/change/isDeleted', isAdmin, changeIsDeleted);
+backofficeUserRouter.post('/create', isBackoffice, createUser);
+backofficeUserRouter.get('/list', isBackoffice, listUsers);
+backofficeUserRouter.put('/edit', isBackoffice, editUser);
+backofficeUserRouter.put('/change/isBlocked', isBackoffice, changeIsBlocked);

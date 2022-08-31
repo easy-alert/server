@@ -6,16 +6,17 @@ import { AuthServices } from '../services/authServices';
 import { HandlerToken } from '../../../utils/token/handlerToken';
 import { Validator } from '../../../utils/validator/validator';
 import { UserServices } from '../../users/user/services/userServices';
+
 import { PermissionServices } from '../../permission/services/permissionServices';
 
 const permissionServices = new PermissionServices();
 const authServices = new AuthServices();
-const userServices = new UserServices();
 const handlerToken = new HandlerToken();
+const userServices = new UserServices();
 
 const validator = new Validator();
 
-export const authAdmin = async (req: Request, res: Response) => {
+export const authBackoffice = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   validator.notNull([
@@ -29,7 +30,7 @@ export const authAdmin = async (req: Request, res: Response) => {
 
   await permissionServices.checkPermission({
     userPermissions: user.UserPermissions,
-    permission: 'Admin',
+    permission: 'Backoffice',
   });
 
   await userServices.updateLastAccess({ userId: user.id! });

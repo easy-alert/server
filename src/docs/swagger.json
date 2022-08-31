@@ -53,57 +53,32 @@
     }
   },
   "paths": {
-    "/auth/backoffice/login": {
-      "post": {
-        "tags": ["Backoffice | Auth"],
-        "summary": "Login do usuário no backoffice.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "default": "admin@gmail.com"
-                  },
-                  "password": {
-                    "type": "string",
-                    "default": 123123123
-                  }
-                }
-              }
-            }
+    "/permission/list": {
+      "get": {
+        "tags": ["Backoffice | Permissions"],
+        "summary": "Lista todas as permissões.",
+        "security": [
+          {
+            "bearerAuth": []
           }
-        },
+        ],
 
         "responses": {
           "200": {
-            "description": "Retorna as informações do usuário e um token válido.",
+            "description": "Retorna as permissões encontradas.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "user": {
-                      "properties": {
-                        "id": {
-                          "type": "string"
-                        },
-                        "name": {
-                          "type": "string"
-                        },
-                        "email": {
-                          "type": "string"
-                        },
-                        "image": {
-                          "type": "string"
-                        }
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
                       }
-                    },
-                    "token": {
-                      "type": "string"
                     }
                   }
                 }
@@ -117,10 +92,10 @@
       }
     },
 
-    "/auth/client/login": {
+    "/auth/backoffice/login": {
       "post": {
-        "tags": ["Client | Auth"],
-        "summary": "Login do usuário no Client.",
+        "tags": ["Backoffice | Auth"],
+        "summary": "Login do usuário no backoffice.",
         "requestBody": {
           "required": true,
           "content": {
@@ -205,9 +180,73 @@
                     "type": "string",
                     "default": "carlosdpasqualip@hotmail.com"
                   },
+                  "password": {
+                    "type": "string",
+                    "default": 123123123
+                  },
+                  "companyName": {
+                    "type": "string",
+                    "default": "Ada lovelace"
+                  },
+                  "CNPJ": {
+                    "type": "string",
+                    "default": "28060992000161"
+                  },
+                  "CPF": {
+                    "type": "string",
+                    "default": "12365172024"
+                  },
+                  "contactNumber": {
+                    "type": "string",
+                    "default": "48996345409"
+                  },
                   "image": {
                     "type": "string",
-                    "default": "link"
+                    "default": "larguei.s3.us-west-2.amazonaws.com/favicon%201-1661888030888.png"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/backoffice/users/edit": {
+      "put": {
+        "tags": ["Backoffice | Users"],
+        "summary": "Edita as informações do usuário",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string",
+                    "default": "Carlos Pasquali"
+                  },
+                  "email": {
+                    "type": "string",
+                    "default": "carlosdpasqualip@hotmail.com"
                   },
                   "password": {
                     "type": "string",
@@ -304,58 +343,6 @@
       }
     },
 
-    "/backoffice/users/edit": {
-      "put": {
-        "tags": ["Backoffice | Users"],
-        "summary": "Edita as informações do usuário",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "userId": {
-                    "type": "string"
-                  },
-                  "name": {
-                    "type": "string",
-                    "default": "Carlos Pasquali"
-                  },
-                  "email": {
-                    "type": "string",
-                    "default": "carlosdpasqualip@hotmail.com"
-                  },
-                  "image": {
-                    "type": "string",
-                    "default": "link"
-                  },
-                  "password": {
-                    "type": "string",
-                    "default": 123123123
-                  }
-                }
-              }
-            }
-          }
-        },
-
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/ServerMessage"
-          },
-          "400": {
-            "$ref": "#/components/responses/ServerMessage"
-          }
-        }
-      }
-    },
-
     "/backoffice/users/change/isBlocked": {
       "put": {
         "tags": ["Backoffice | Users"],
@@ -374,122 +361,6 @@
                 "properties": {
                   "userId": {
                     "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/ServerMessage"
-          },
-          "400": {
-            "$ref": "#/components/responses/ServerMessage"
-          }
-        }
-      }
-    },
-
-    "/backoffice/users/change/isDeleted": {
-      "put": {
-        "tags": ["Backoffice | Users"],
-        "summary": "Define o usuário como excluído, mas ainda mantem o mesmo na base de dados.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "userId": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/ServerMessage"
-          },
-          "400": {
-            "$ref": "#/components/responses/ServerMessage"
-          }
-        }
-      }
-    },
-
-    "/permission/list": {
-      "get": {
-        "tags": ["Backoffice | Permissions"],
-        "summary": "Lista todas as permissões.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-
-        "responses": {
-          "200": {
-            "description": "Retorna as permissões encontradas.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string"
-                      },
-                      "name": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/ServerMessage"
-          }
-        }
-      }
-    },
-
-    "/client/users/edit": {
-      "put": {
-        "tags": ["Client | Users"],
-        "summary": "Edita as informacões do usuário.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "default": "Carlos Pasquali"
-                  },
-                  "image": {
-                    "type": "string",
-                    "default": "link"
                   }
                 }
               }

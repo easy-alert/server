@@ -2,7 +2,6 @@ export interface IEditUser {
   userId: string;
   name: string;
   email?: string;
-  image: string;
 }
 
 export interface IEditUserPassword {

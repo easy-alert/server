@@ -5,12 +5,12 @@
 import { NextFunction, Request, Response } from 'express';
 
 // CLASS
-import { UserServices } from '../../services/userServices';
-import { Validator } from '../../../../../utils/validator/validator';
-import { ServerMessage } from '../../../../../utils/messages/serverMessage';
-import { PermissionServices } from '../../../../permission/services/permissionServices';
-import { UserPermissionServices } from '../../../userPermission/services/userPermissionServices';
-import { CompanyServices } from '../../../../companies/company/services/companyServices';
+import { UserServices } from '../../../users/user/services/userServices';
+import { Validator } from '../../../../utils/validator/validator';
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
+import { PermissionServices } from '../../../permission/services/permissionServices';
+import { UserPermissionServices } from '../../../users/userPermission/services/userPermissionServices';
+import { CompanyServices } from '../services/companyServices';
 
 const validator = new Validator();
 const userServices = new UserServices();
@@ -18,7 +18,7 @@ const permissionServices = new PermissionServices();
 const userPermissionServices = new UserPermissionServices();
 const companyServices = new CompanyServices();
 
-export async function createUser(
+export async function createCompanyAndOwner(
   req: Request,
   _res: Response,
   _next: NextFunction,

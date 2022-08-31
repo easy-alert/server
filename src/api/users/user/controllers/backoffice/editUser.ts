@@ -33,7 +33,6 @@ export async function editUser(req: Request, _res: Response) {
     userId,
     name,
     email,
-    image,
   });
 
   if (password) {

@@ -27,7 +27,6 @@ export async function changeIsBlocked(
 
   throw new ServerMessage({
     statusCode: 200,
-    // title: `Usuário`,
     message: `Status alterado com sucesso.`,
   });
 }
