@@ -2,17 +2,16 @@
 import { Request, Response } from 'express';
 
 // CLASS
-import { UserServices } from '../../services/userServices';
+import { CompanyServices } from '../services/companyServices';
 
-const userServices = new UserServices();
+const companyServices = new CompanyServices();
 
-export async function listUsers(req: Request, res: Response) {
+export async function listCompanies(req: Request, res: Response) {
   const { page, search } = req.query;
 
   const pagination = page ?? 1;
 
-  const Users = await userServices.list({
-    loggedUserId: req.userId,
+  const Users = await companyServices.list({
     page: Number(pagination),
     search: search as string,
   });

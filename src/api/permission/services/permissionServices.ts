@@ -1,5 +1,4 @@
 // PRISMA
-import { Prisma } from '@prisma/client';
 import { ServerMessage } from '../../../utils/messages/serverMessage';
 import { prisma } from '../../../utils/prismaClient';
 
@@ -8,19 +7,19 @@ import { ICheckPermission } from '../types';
 
 export class PermissionServices {
   async list() {
-    return (await prisma.permission.findMany({
+    return prisma.permission.findMany({
       select: {
         id: true,
         name: true,
       },
       orderBy: { name: 'asc' },
-    })) as Prisma.PermissionCreateInput[];
+    });
   }
 
   async findByName({ name }: { name: string }) {
-    return (await prisma.permission.findUnique({
+    return prisma.permission.findUnique({
       where: { name },
-    })) as Prisma.PermissionCreateInput;
+    });
   }
 
   async checkPermission({ userPermissions, permission }: ICheckPermission) {

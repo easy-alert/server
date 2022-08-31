@@ -12,7 +12,7 @@ async function main() {
   console.log('seed is running ...');
   const permissions: Prisma.PermissionCreateInput[] = [
     {
-      name: 'Admin',
+      name: 'Backoffice',
     },
     {
       name: 'User',
@@ -20,7 +20,6 @@ async function main() {
   ];
 
   for (const permission of permissions) {
-    // eslint-disable-next-line no-await-in-loop
     await prisma.permission.create({
       data: permission,
     });
@@ -32,38 +31,21 @@ async function main() {
     data: {
       name: 'Admin',
       email: 'admin@gmail.com',
-      image: `https://avatars.dicebear.com/api/initials/${'Admin'.replace(
-        /\s/g,
-        '%20',
-      )}.svg`,
       passwordHash: hashSync('123123123', 12),
     },
   });
 
-  // ajustar
   const permissionAdmin = await permissionServices.findByName({
-    name: 'Admin',
-  });
-
-  const permissionLab = await permissionServices.findByName({
-    name: 'User',
+    name: 'Backoffice',
   });
 
   await prisma.userPermissions.create({
     data: {
       userId: admin.id,
-      permissionId: permissionAdmin.id!,
+      permissionId: permissionAdmin!.id,
     },
   });
-  console.log('permission ', permissionAdmin.name, ' inserted in Admin');
-
-  await prisma.userPermissions.create({
-    data: {
-      userId: admin.id,
-      permissionId: permissionLab.id!,
-    },
-  });
-  console.log('permission ', permissionLab.name, ' inserted in Admin');
+  console.log('permission ', permissionAdmin!.name, ' inserted in Admin');
 }
 
 main()

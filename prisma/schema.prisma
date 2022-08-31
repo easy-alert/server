@@ -15,15 +15,15 @@ model User {
   id           String    @id @unique @default(uuid())
   name         String
   email        String    @unique
-  image        String
   isBlocked    Boolean   @default(false)
-  isDeleted    Boolean   @default(false)
   passwordHash String
   lastAccess   DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   UserPermissions UserPermissions[]
+  UserCompanies   UserCompanies[]
 
   @@map("users")
 }
@@ -41,6 +41,21 @@ model UserPermissions {
   @@map("userPermissions")
 }
 
+model UserCompanies {
+  id        String   @id @unique @default(uuid())
+  userId    String
+  companyId String
+  owner     Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  UserCompany Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("userCompanies")
+}
+
 model Permission {
   id        String   @id @unique @default(uuid())
   name      String   @unique
@@ -50,4 +65,23 @@ model Permission {
   Permissions UserPermissions[]
 
   @@map("permissions")
+}
+
+//COMPANY
+
+model Company {
+  id            String  @id @unique @default(uuid())
+  name          String
+  CNPJ          String? @unique
+  CPF           String? @unique
+  contactNumber String
+  image         String
+  isBlocked     Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  UserCompanies UserCompanies[]
+
+  @@map("companies")
 }

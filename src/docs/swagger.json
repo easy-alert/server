@@ -53,6 +53,45 @@
     }
   },
   "paths": {
+    "/permission/list": {
+      "get": {
+        "tags": ["Backoffice | Permissions"],
+        "summary": "Lista todas as permissões.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Retorna as permissões encontradas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
     "/auth/backoffice/login": {
       "post": {
         "tags": ["Backoffice | Auth"],
@@ -117,73 +156,9 @@
       }
     },
 
-    "/auth/client/login": {
+    "/backoffice/companies/create": {
       "post": {
-        "tags": ["Client | Auth"],
-        "summary": "Login do usuário no Client.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "default": "admin@gmail.com"
-                  },
-                  "password": {
-                    "type": "string",
-                    "default": 123123123
-                  }
-                }
-              }
-            }
-          }
-        },
-
-        "responses": {
-          "200": {
-            "description": "Retorna as informações do usuário e um token válido.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "user": {
-                      "properties": {
-                        "id": {
-                          "type": "string"
-                        },
-                        "name": {
-                          "type": "string"
-                        },
-                        "email": {
-                          "type": "string"
-                        },
-                        "image": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "token": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/ServerMessage"
-          }
-        }
-      }
-    },
-
-    "/backoffice/users/create": {
-      "post": {
-        "tags": ["Backoffice | Users"],
+        "tags": ["Backoffice | Companies"],
         "summary": "Cria um novo usuário.",
         "security": [
           {
@@ -205,13 +180,29 @@
                     "type": "string",
                     "default": "carlosdpasqualip@hotmail.com"
                   },
-                  "image": {
-                    "type": "string",
-                    "default": "link"
-                  },
                   "password": {
                     "type": "string",
                     "default": 123123123
+                  },
+                  "companyName": {
+                    "type": "string",
+                    "default": "Ada lovelace"
+                  },
+                  "CNPJ": {
+                    "type": "string",
+                    "default": "28060992000161"
+                  },
+                  "CPF": {
+                    "type": "string",
+                    "default": "12365172024"
+                  },
+                  "contactNumber": {
+                    "type": "string",
+                    "default": "48996345409"
+                  },
+                  "image": {
+                    "type": "string",
+                    "default": "larguei.s3.us-west-2.amazonaws.com/favicon%201-1661888030888.png"
                   }
                 }
               }
@@ -230,10 +221,153 @@
       }
     },
 
-    "/backoffice/users/list": {
-      "get": {
-        "tags": ["Backoffice | Users"],
-        "summary": "Lista todos os usuarios",
+    "/backoffice/companies/change/isBlocked": {
+      "put": {
+        "tags": ["Backoffice | Companies"],
+        "summary": "Altera o status da empresa (Bloqueado/Ativo).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "companyId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/backoffice/companies/delete": {
+      "delete": {
+        "tags": ["Backoffice | Companies"],
+        "summary": "Deleta a empresa e todas informações atreladas a ela.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "companyId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/backoffice/companies/edit": {
+      "put": {
+        "tags": ["Backoffice | Companies"],
+        "summary": "Edita as informações do usuário e empresa.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string",
+                    "default": "Carlos Pasquali"
+                  },
+                  "email": {
+                    "type": "string",
+                    "default": "carlosdpasqualip@hotmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "default": 123123123
+                  },
+                  "companyId": {
+                    "type": "string"
+                  },
+                  "image": {
+                    "type": "string",
+                    "default": "larguei.s3.us-west-2.amazonaws.com/favicon%201-1661888030888.png"
+                  },
+                  "companyName": {
+                    "type": "string",
+                    "default": "Ada lovelace"
+                  },
+                  "CNPJ": {
+                    "type": "string",
+                    "default": "28060992000161"
+                  },
+                  "CPF": {
+                    "type": "string",
+                    "default": "12365172024"
+                  },
+                  "contactNumber": {
+                    "type": "string",
+                    "default": "48996345409"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/backoffice/companies/list": {
+      "post": {
+        "tags": ["Backoffice | Companies"],
+        "summary": "Lista todas as empresas",
         "security": [
           {
             "bearerAuth": []
@@ -259,7 +393,7 @@
 
         "responses": {
           "200": {
-            "description": "Retorna os usuarios encontrados.",
+            "description": "Retorna as empresas encontradas.",
             "content": {
               "application/json": {
                 "schema": {
@@ -268,238 +402,56 @@
                     "type": "object",
                     "properties": {
                       "id": {
-                        "type": "string"
-                      },
-                      "name": {
-                        "type": "string"
-                      },
-                      "email": {
                         "type": "string"
                       },
                       "image": {
                         "type": "string"
                       },
-
+                      "name": {
+                        "type": "string"
+                      },
+                      "contactNumber": {
+                        "type": "string"
+                      },
+                      "CNPJ": {
+                        "type": "string"
+                      },
+                      "CPF": {
+                        "type": "string"
+                      },
                       "isBlocked": {
                         "type": "boolean"
                       },
-                      "updatedAt": {
-                        "type": "string",
-                        "format": "date-time"
-                      },
-                      "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
+                      "UserCompanies": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "User": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "type": "string"
+                                },
+                                "lastAccess": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
+                              }
+                            }
+                          }
+                        }
                       }
                     }
                   }
                 }
               }
             }
-          },
-          "400": {
-            "$ref": "#/components/responses/ServerMessage"
-          }
-        }
-      }
-    },
-
-    "/backoffice/users/edit": {
-      "put": {
-        "tags": ["Backoffice | Users"],
-        "summary": "Edita as informações do usuário",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "userId": {
-                    "type": "string"
-                  },
-                  "name": {
-                    "type": "string",
-                    "default": "Carlos Pasquali"
-                  },
-                  "email": {
-                    "type": "string",
-                    "default": "carlosdpasqualip@hotmail.com"
-                  },
-                  "image": {
-                    "type": "string",
-                    "default": "link"
-                  },
-                  "password": {
-                    "type": "string",
-                    "default": 123123123
-                  }
-                }
-              }
-            }
-          }
-        },
-
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/ServerMessage"
-          },
-          "400": {
-            "$ref": "#/components/responses/ServerMessage"
-          }
-        }
-      }
-    },
-
-    "/backoffice/users/change/isBlocked": {
-      "put": {
-        "tags": ["Backoffice | Users"],
-        "summary": "Altera o status do usuário (Bloqueado, Ativo).",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "userId": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/ServerMessage"
-          },
-          "400": {
-            "$ref": "#/components/responses/ServerMessage"
-          }
-        }
-      }
-    },
-
-    "/backoffice/users/change/isDeleted": {
-      "put": {
-        "tags": ["Backoffice | Users"],
-        "summary": "Define o usuário como excluído, mas ainda mantem o mesmo na base de dados.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "userId": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/ServerMessage"
-          },
-          "400": {
-            "$ref": "#/components/responses/ServerMessage"
-          }
-        }
-      }
-    },
-
-    "/permission/list": {
-      "get": {
-        "tags": ["Backoffice | Permissions"],
-        "summary": "Lista todas as permissões.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-
-        "responses": {
-          "200": {
-            "description": "Retorna as permissões encontradas.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string"
-                      },
-                      "name": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/ServerMessage"
-          }
-        }
-      }
-    },
-
-    "/client/users/edit": {
-      "put": {
-        "tags": ["Client | Users"],
-        "summary": "Edita as informacões do usuário.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "default": "Carlos Pasquali"
-                  },
-                  "image": {
-                    "type": "string",
-                    "default": "link"
-                  }
-                }
-              }
-            }
-          }
-        },
-
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/ServerMessage"
           },
           "400": {
             "$ref": "#/components/responses/ServerMessage"

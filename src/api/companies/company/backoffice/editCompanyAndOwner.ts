@@ -3,17 +3,31 @@
 
 // TYPES
 import { Request, Response } from 'express';
-import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
 
 // CLASS
-import { UserServices } from '../../services/userServices';
-import { Validator } from '../../../../../utils/validator/validator';
+import { UserServices } from '../../../users/user/services/userServices';
+import { Validator } from '../../../../utils/validator/validator';
+import { CompanyServices } from '../services/companyServices';
 
 const userServices = new UserServices();
 const validator = new Validator();
+const companyServices = new CompanyServices();
 
-export async function editUser(req: Request, _res: Response) {
-  const { userId, name, email, image, password } = req.body;
+export async function editCompanyAndOwner(req: Request, _res: Response) {
+  const {
+    userId,
+    name,
+    email,
+    password,
+
+    image,
+    companyId,
+    companyName,
+    contactNumber,
+    CPF,
+    CNPJ,
+  } = req.body;
 
   validator.notNull([
     { label: 'ID de usuário', variable: userId },
@@ -33,7 +47,15 @@ export async function editUser(req: Request, _res: Response) {
     userId,
     name,
     email,
+  });
+
+  await companyServices.edit({
+    CNPJ,
+    companyId,
+    contactNumber,
+    CPF,
     image,
+    name: companyName,
   });
 
   if (password) {
