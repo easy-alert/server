@@ -8,7 +8,7 @@ import { authMiddleware } from '../middlewares/auth';
 import { authRouter } from './auth/auth.routes';
 import { uploadRouter } from './upload/upload.routes';
 
-import { backofficeUserRouter } from './users/user/controllers/backoffice/backoffice.routes';
+import { backofficeCompanyRouter } from './companies/company/backoffice/backoffice.routes';
 
 // ROUTES
 export const routes: Router = Router();
@@ -17,4 +17,4 @@ routes.use('/auth', authRouter);
 routes.use('/upload', authMiddleware, uploadRouter);
 
 // BACKOFFICE
-routes.use('/backoffice/users', authMiddleware, backofficeUserRouter);
+routes.use('/backoffice/companies', authMiddleware, backofficeCompanyRouter);

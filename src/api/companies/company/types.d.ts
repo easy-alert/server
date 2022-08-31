@@ -1,7 +1,7 @@
 export interface ICreateCompany {
   name: string;
-  CNPJ: string;
-  CPF: string;
+  CNPJ: string | null;
+  CPF: string | null;
   contactNumber: string;
   image: string;
 }

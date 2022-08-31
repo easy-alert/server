@@ -37,27 +37,24 @@ export async function createCompanyAndOwner(
   validator.notNull([
     { label: 'nome de usuário', variable: name },
     { label: 'e-mail', variable: email },
-    { label: 'senha', variable: password },
     { label: 'nome da empresa', variable: companyName },
     { label: 'numero para contato', variable: contactNumber },
     { label: 'imagem', variable: image },
   ]);
+  let checkCPF = null;
+  let checkCNPJ = null;
 
   const checkUser = await userServices.findByEmail({ email });
-  const checkCNPJ = await companyServices.findByCNPJ({ CNPJ });
-  const checkCPF = await companyServices.findByCPF({ CPF });
-
   validator.cannotExists([{ label: 'e-mail', variable: checkUser }]);
-  validator.cannotExists([{ label: 'CNPJ', variable: checkCNPJ }]);
-  validator.cannotExists([{ label: 'CPF', variable: checkCPF }]);
 
-  const company = await companyServices.create({
-    CNPJ,
-    contactNumber,
-    CPF,
-    image,
-    name: companyName,
-  });
+  if (CNPJ) {
+    checkCNPJ = await companyServices.findByCNPJ({ CNPJ });
+    validator.cannotExists([{ label: 'CNPJ', variable: checkCNPJ }]);
+  }
+  if (CPF) {
+    checkCPF = await companyServices.findByCPF({ CPF });
+    validator.cannotExists([{ label: 'CPF', variable: checkCPF }]);
+  }
 
   const user = await userServices.create({
     name,
@@ -72,9 +69,18 @@ export async function createCompanyAndOwner(
     permissionId: permission!.id,
   });
 
+  const company = await companyServices.create({
+    CNPJ,
+    contactNumber,
+    CPF,
+    image,
+    name: companyName,
+  });
+
   await companyServices.createUserCompany({
     companyId: company.id,
     userId: user.id,
+    owner: true,
   });
 
   throw new ServerMessage({

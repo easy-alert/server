@@ -156,9 +156,9 @@
       }
     },
 
-    "/backoffice/users/create": {
+    "/backoffice/companies/create": {
       "post": {
-        "tags": ["Backoffice | Users"],
+        "tags": ["Backoffice | Companies"],
         "summary": "Cria um novo usuário.",
         "security": [
           {
@@ -221,10 +221,82 @@
       }
     },
 
-    "/backoffice/users/edit": {
+    "/backoffice/companies/change/isBlocked": {
       "put": {
-        "tags": ["Backoffice | Users"],
-        "summary": "Edita as informações do usuário",
+        "tags": ["Backoffice | Companies"],
+        "summary": "Altera o status da empresa (Bloqueado/Ativo).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "companyId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/backoffice/companies/delete": {
+      "delete": {
+        "tags": ["Backoffice | Companies"],
+        "summary": "Deleta a empresa e todas informações atreladas a ela.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "companyId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/backoffice/companies/edit": {
+      "put": {
+        "tags": ["Backoffice | Companies"],
+        "summary": "Edita as informações do usuário e empresa.",
         "security": [
           {
             "bearerAuth": []
@@ -251,6 +323,29 @@
                   "password": {
                     "type": "string",
                     "default": 123123123
+                  },
+                  "companyId": {
+                    "type": "string"
+                  },
+                  "image": {
+                    "type": "string",
+                    "default": "larguei.s3.us-west-2.amazonaws.com/favicon%201-1661888030888.png"
+                  },
+                  "companyName": {
+                    "type": "string",
+                    "default": "Ada lovelace"
+                  },
+                  "CNPJ": {
+                    "type": "string",
+                    "default": "28060992000161"
+                  },
+                  "CPF": {
+                    "type": "string",
+                    "default": "12365172024"
+                  },
+                  "contactNumber": {
+                    "type": "string",
+                    "default": "48996345409"
                   }
                 }
               }
@@ -269,10 +364,10 @@
       }
     },
 
-    "/backoffice/users/list": {
-      "get": {
-        "tags": ["Backoffice | Users"],
-        "summary": "Lista todos os usuarios",
+    "/backoffice/companies/list": {
+      "post": {
+        "tags": ["Backoffice | Companies"],
+        "summary": "Lista todas as empresas",
         "security": [
           {
             "bearerAuth": []
@@ -298,7 +393,7 @@
 
         "responses": {
           "200": {
-            "description": "Retorna os usuarios encontrados.",
+            "description": "Retorna as empresas encontradas.",
             "content": {
               "application/json": {
                 "schema": {
@@ -309,68 +404,54 @@
                       "id": {
                         "type": "string"
                       },
-                      "name": {
-                        "type": "string"
-                      },
-                      "email": {
-                        "type": "string"
-                      },
                       "image": {
                         "type": "string"
                       },
-
+                      "name": {
+                        "type": "string"
+                      },
+                      "contactNumber": {
+                        "type": "string"
+                      },
+                      "CNPJ": {
+                        "type": "string"
+                      },
+                      "CPF": {
+                        "type": "string"
+                      },
                       "isBlocked": {
                         "type": "boolean"
                       },
-                      "updatedAt": {
-                        "type": "string",
-                        "format": "date-time"
-                      },
-                      "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
+                      "UserCompanies": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "User": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "type": "string"
+                                },
+                                "lastAccess": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
+                              }
+                            }
+                          }
+                        }
                       }
                     }
                   }
                 }
               }
             }
-          },
-          "400": {
-            "$ref": "#/components/responses/ServerMessage"
-          }
-        }
-      }
-    },
-
-    "/backoffice/users/change/isBlocked": {
-      "put": {
-        "tags": ["Backoffice | Users"],
-        "summary": "Altera o status do usuário (Bloqueado, Ativo).",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "userId": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/ServerMessage"
           },
           "400": {
             "$ref": "#/components/responses/ServerMessage"

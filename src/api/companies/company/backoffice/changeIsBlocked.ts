@@ -5,24 +5,25 @@
 import { NextFunction, Request, Response } from 'express';
 
 // CLASS
-import { UserServices } from '../../services/userServices';
-import { Validator } from '../../../../../utils/validator/validator';
-import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+
+import { Validator } from '../../../../utils/validator/validator';
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
+import { CompanyServices } from '../services/companyServices';
 
 const validator = new Validator();
-const userServices = new UserServices();
+const companyServices = new CompanyServices();
 
 export async function changeIsBlocked(
   req: Request,
   _res: Response,
   _next: NextFunction,
 ) {
-  const { userId } = req.body;
+  const { companyId } = req.body;
 
-  validator.notNull([{ label: 'ID de usuário', variable: userId }]);
+  validator.notNull([{ label: 'ID da empresa', variable: companyId }]);
 
-  await userServices.changeIsBlocked({
-    userId,
+  await companyServices.changeIsBlocked({
+    companyId,
   });
 
   throw new ServerMessage({
