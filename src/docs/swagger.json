@@ -312,6 +312,7 @@
                   "userId": {
                     "type": "string"
                   },
+
                   "name": {
                     "type": "string",
                     "default": "Carlos Pasquali"
@@ -365,7 +366,7 @@
     },
 
     "/backoffice/companies/list": {
-      "post": {
+      "get": {
         "tags": ["Backoffice | Companies"],
         "summary": "Lista todas as empresas",
         "security": [

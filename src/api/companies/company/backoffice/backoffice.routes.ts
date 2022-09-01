@@ -15,7 +15,7 @@ import { editCompanyAndOwner } from './editCompanyAndOwner';
 export const backofficeCompanyRouter = Router();
 
 backofficeCompanyRouter.post('/create', isBackoffice, createCompanyAndOwner);
-backofficeCompanyRouter.post('/list', isBackoffice, listCompanies);
+backofficeCompanyRouter.get('/list', isBackoffice, listCompanies);
 backofficeCompanyRouter.put('/change/isBlocked', isBackoffice, changeIsBlocked);
 backofficeCompanyRouter.put('/edit', isBackoffice, editCompanyAndOwner);
 

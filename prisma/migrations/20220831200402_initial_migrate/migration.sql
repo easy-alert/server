@@ -28,6 +28,7 @@ CREATE TABLE "userCompanies" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "companyId" TEXT NOT NULL,
+    "owner" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -53,7 +54,6 @@ CREATE TABLE "companies" (
     "contactNumber" TEXT NOT NULL,
     "image" TEXT NOT NULL,
     "isBlocked" BOOLEAN NOT NULL DEFAULT false,
-    "ownerId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
