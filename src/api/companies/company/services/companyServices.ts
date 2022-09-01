@@ -115,6 +115,7 @@ export class CompanyServices {
         CNPJ: true,
         CPF: true,
         isBlocked: true,
+        createdAt: true,
         UserCompanies: {
           select: {
             User: {

@@ -11,10 +11,10 @@ export async function listCompanies(req: Request, res: Response) {
 
   const pagination = page ?? 1;
 
-  const Users = await companyServices.list({
+  const Companies = await companyServices.list({
     page: Number(pagination),
     search: search as string,
   });
 
-  return res.status(200).json(Users);
+  return res.status(200).json(Companies);
 }
