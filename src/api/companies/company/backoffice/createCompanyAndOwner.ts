@@ -47,6 +47,12 @@ export async function createCompanyAndOwner(
   const checkUser = await userServices.findByEmail({ email });
   validator.cannotExists([{ label: 'e-mail', variable: checkUser }]);
 
+  if (!CNPJ && !CPF) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: `Informe um CNPJ ou CPF.`,
+    });
+  }
   if (CNPJ) {
     checkCNPJ = await companyServices.findByCNPJ({ CNPJ });
     validator.cannotExists([{ label: 'CNPJ', variable: checkCNPJ }]);
@@ -71,8 +77,8 @@ export async function createCompanyAndOwner(
 
   const company = await companyServices.create({
     CNPJ,
-    contactNumber,
     CPF,
+    contactNumber,
     image,
     name: companyName,
   });
