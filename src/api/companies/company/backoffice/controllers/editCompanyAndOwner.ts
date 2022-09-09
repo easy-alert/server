@@ -3,12 +3,12 @@
 
 // TYPES
 import { Request, Response } from 'express';
-import { ServerMessage } from '../../../../utils/messages/serverMessage';
+import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
 // CLASS
-import { UserServices } from '../../../users/user/services/userServices';
-import { Validator } from '../../../../utils/validator/validator';
-import { CompanyServices } from '../services/companyServices';
+import { UserServices } from '../../../../users/user/services/userServices';
+import { Validator } from '../../../../../utils/validator/validator';
+import { CompanyServices } from '../../services/companyServices';
 
 const userServices = new UserServices();
 const validator = new Validator();

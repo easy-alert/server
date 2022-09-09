@@ -5,12 +5,12 @@
 import { NextFunction, Request, Response } from 'express';
 
 // CLASS
-import { UserServices } from '../../../users/user/services/userServices';
-import { Validator } from '../../../../utils/validator/validator';
-import { ServerMessage } from '../../../../utils/messages/serverMessage';
-import { PermissionServices } from '../../../permission/services/permissionServices';
-import { UserPermissionServices } from '../../../users/userPermission/services/userPermissionServices';
-import { CompanyServices } from '../services/companyServices';
+import { UserServices } from '../../../../users/user/services/userServices';
+import { Validator } from '../../../../../utils/validator/validator';
+import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+import { PermissionServices } from '../../../../permission/services/permissionServices';
+import { UserPermissionServices } from '../../../../users/userPermission/services/userPermissionServices';
+import { CompanyServices } from '../../services/companyServices';
 
 const validator = new Validator();
 const userServices = new UserServices();

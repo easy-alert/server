@@ -42,15 +42,15 @@ model UserPermissions {
 }
 
 model UserCompanies {
-  id        String   @id @unique @default(uuid())
+  id        String  @id @unique @default(uuid())
   userId    String
   companyId String
-  owner     Boolean  @default(false)
+  owner     Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  User        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   UserCompany Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@map("userCompanies")
@@ -84,4 +84,52 @@ model Company {
   UserCompanies UserCompanies[]
 
   @@map("companies")
+}
+
+//CATEGORIES / MAINTENANCES
+
+model Category {
+  id        String  @id @unique @default(uuid())
+  name      String
+  isDeleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Maintenances Maintenance[]
+
+  @@map("categories")
+}
+
+model Maintenance {
+  id         String @id @unique @default(uuid())
+  categoryId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Category     Category              @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  Maintenances MaintenancesHistory[]
+
+  @@map("maintenances")
+}
+
+model MaintenancesHistory {
+  id            String  @id @unique @default(uuid())
+  maintenanceId String
+  element       String
+  activity      String
+  frequency     Int
+  responsible   String
+  source        String
+  period        Int
+  delay         Int
+  observation   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Maintenance Maintenance? @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+
+  @@map("maintenancesHistory")
 }

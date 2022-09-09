@@ -5,11 +5,11 @@ import { Router } from 'express';
 import { isBackoffice } from '../../../../middlewares/permissions/isBackoffice';
 
 // FUNCTIONS
-import { listCompanies } from './listCompanies';
-import { createCompanyAndOwner } from './createCompanyAndOwner';
-import { changeIsBlocked } from './changeIsBlocked';
-import { deleteCompany } from './deleteComany';
-import { editCompanyAndOwner } from './editCompanyAndOwner';
+import { listCompanies } from './controllers/listCompanies';
+import { createCompanyAndOwner } from './controllers/createCompanyAndOwner';
+import { changeIsBlocked } from './controllers/changeIsBlocked';
+import { deleteCompany } from './controllers/deleteComany';
+import { editCompanyAndOwner } from './controllers/editCompanyAndOwner';
 
 // ROUTES
 export const backofficeCompanyRouter = Router();
