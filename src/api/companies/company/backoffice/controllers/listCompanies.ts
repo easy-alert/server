@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 
 // CLASS
-import { CompanyServices } from '../services/companyServices';
+import { CompanyServices } from '../../services/companyServices';
 
 const companyServices = new CompanyServices();
 

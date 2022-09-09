@@ -211,7 +211,7 @@
         },
 
         "responses": {
-          "200": {
+          "201": {
             "$ref": "#/components/responses/ServerMessage"
           },
           "400": {
@@ -453,6 +453,250 @@
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+    "/backoffice/categories/create": {
+      "post": {
+        "tags": ["Backoffice | Categories"],
+        "summary": "Cria uma nova categoria.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "default": "Sistema hidrossanitário"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+    "/backoffice/categories/edit": {
+      "put": {
+        "tags": ["Backoffice | Categories"],
+        "summary": "edita uma categoria.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "categoryId": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string",
+                    "default": "Sistema hidrossanitário Atualizado"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+    "/backoffice/categories/delete": {
+      "delete": {
+        "tags": ["Backoffice | Categories"],
+        "summary": "deleta uma categoria. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "categoryId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+    "/backoffice/maintenances/create": {
+      "post": {
+        "tags": ["Backoffice | Maintenances"],
+        "summary": "Cria uma manutenção em uma categoria.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "categoryId": {
+                    "type": "string"
+                  },
+                  "element": {
+                    "type": "string",
+                    "default": "Ar condicionado, Paredes"
+                  },
+                  "activity": {
+                    "type": "string",
+                    "default": "Pintar Paredes"
+                  },
+                  "frequency": {
+                    "type": "number",
+                    "default": 3
+                  },
+
+                  "responsible": {
+                    "type": "string",
+                    "default": "Construtora"
+                  },
+                  "source": {
+                    "type": "string",
+                    "default": "NBR 5674:2012;"
+                  },
+                  "period": {
+                    "type": "number",
+                    "default": 2
+                  },
+                  "delay": {
+                    "type": "number",
+                    "default": 3
+                  },
+                  "observation": {
+                    "type": "string",
+                    "default": "A obra deve ser concluída o mais rapido possível."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+    "/backoffice/maintenances/edit": {
+      "post": {
+        "tags": ["Backoffice | Maintenances"],
+        "summary": "Edita uma manutenção. (Cria um novo registro para não afetar registros anteriores).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "maintenanceId": {
+                    "type": "string"
+                  },
+                  "element": {
+                    "type": "string",
+                    "default": "Ar condicionado, Paredes"
+                  },
+                  "activity": {
+                    "type": "string",
+                    "default": "Pintar Paredes"
+                  },
+                  "frequency": {
+                    "type": "number",
+                    "default": 3
+                  },
+
+                  "responsible": {
+                    "type": "string",
+                    "default": "Construtora"
+                  },
+                  "source": {
+                    "type": "string",
+                    "default": "NBR 5674:2012;"
+                  },
+                  "period": {
+                    "type": "number",
+                    "default": 2
+                  },
+                  "delay": {
+                    "type": "number",
+                    "default": 3
+                  },
+                  "observation": {
+                    "type": "string",
+                    "default": "A obra deve ser concluída o mais rapido possível."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
           },
           "400": {
             "$ref": "#/components/responses/ServerMessage"

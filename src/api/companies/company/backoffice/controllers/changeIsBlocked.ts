@@ -6,9 +6,9 @@ import { NextFunction, Request, Response } from 'express';
 
 // CLASS
 
-import { Validator } from '../../../../utils/validator/validator';
-import { ServerMessage } from '../../../../utils/messages/serverMessage';
-import { CompanyServices } from '../services/companyServices';
+import { Validator } from '../../../../../utils/validator/validator';
+import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+import { CompanyServices } from '../../services/companyServices';
 
 const validator = new Validator();
 const companyServices = new CompanyServices();

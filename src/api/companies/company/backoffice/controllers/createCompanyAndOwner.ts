@@ -5,12 +5,12 @@
 import { NextFunction, Request, Response } from 'express';
 
 // CLASS
-import { UserServices } from '../../../users/user/services/userServices';
-import { Validator } from '../../../../utils/validator/validator';
-import { ServerMessage } from '../../../../utils/messages/serverMessage';
-import { PermissionServices } from '../../../permission/services/permissionServices';
-import { UserPermissionServices } from '../../../users/userPermission/services/userPermissionServices';
-import { CompanyServices } from '../services/companyServices';
+import { UserServices } from '../../../../users/user/services/userServices';
+import { Validator } from '../../../../../utils/validator/validator';
+import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+import { PermissionServices } from '../../../../permission/services/permissionServices';
+import { UserPermissionServices } from '../../../../users/userPermission/services/userPermissionServices';
+import { CompanyServices } from '../../services/companyServices';
 
 const validator = new Validator();
 const userServices = new UserServices();
@@ -47,6 +47,12 @@ export async function createCompanyAndOwner(
   const checkUser = await userServices.findByEmail({ email });
   validator.cannotExists([{ label: 'e-mail', variable: checkUser }]);
 
+  if (!CNPJ && !CPF) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: `Informe um CNPJ ou CPF.`,
+    });
+  }
   if (CNPJ) {
     checkCNPJ = await companyServices.findByCNPJ({ CNPJ });
     validator.cannotExists([{ label: 'CNPJ', variable: checkCNPJ }]);
@@ -71,8 +77,8 @@ export async function createCompanyAndOwner(
 
   const company = await companyServices.create({
     CNPJ,
-    contactNumber,
     CPF,
+    contactNumber,
     image,
     name: companyName,
   });
