@@ -496,6 +496,89 @@
         }
       }
     },
+    "/backoffice/categories/list": {
+      "get": {
+        "tags": ["Backoffice | Categories"],
+        "summary": "Lista todas as categorias",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Retorna as categorias encontradas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "Maintenances": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "MaintenancesHistory": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "activity": {
+                                  "type": "string"
+                                },
+                                "frequency": {
+                                  "type": "number"
+                                },
+                                "responsible": {
+                                  "type": "string"
+                                },
+                                "source": {
+                                  "type": "string"
+                                },
+                                "period": {
+                                  "type": "number"
+                                },
+                                "delay": {
+                                  "type": "number"
+                                },
+                                "observation": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
     "/backoffice/categories/edit": {
       "put": {
         "tags": ["Backoffice | Categories"],

@@ -21,4 +21,34 @@ export class CategoryServices {
       where: { id: categoryId },
     });
   }
+
+  async list({ search }: { search: string }) {
+    return prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+        Maintenances: {
+          select: {
+            id: true,
+            MaintenancesHistory: {
+              orderBy: {
+                createdAt: 'desc',
+              },
+              take: 1,
+            },
+          },
+        },
+      },
+      where: {
+        isDeleted: false,
+        name: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+  }
 }
