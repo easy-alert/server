@@ -6,10 +6,10 @@ import { NextFunction, Request, Response } from 'express';
 // CLASS
 
 import { CategoryServices } from '../../services/categoryServices';
-import { Validator } from '../../../../../utils/validator/validator';
-import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+// import { Validator } from '../../../../../utils/validator/validator';
+// import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
-const validator = new Validator();
+// const validator = new Validator();
 const categoryServices = new CategoryServices();
 
 export async function listCategory(
@@ -24,3 +24,4 @@ export async function listCategory(
 
   return res.status(200).json(categories);
 }
+
