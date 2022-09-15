@@ -460,6 +460,7 @@
         }
       }
     },
+
     "/backoffice/categories/create": {
       "post": {
         "tags": ["Backoffice | Categories"],
@@ -496,6 +497,7 @@
         }
       }
     },
+
     "/backoffice/categories/list": {
       "get": {
         "tags": ["Backoffice | Categories"],
@@ -535,7 +537,7 @@
                             "id": {
                               "type": "string"
                             },
-                            "MaintenancesHistory": {
+                            "MaintenanceHistory": {
                               "type": "object",
                               "properties": {
                                 "id": {
@@ -579,6 +581,7 @@
         }
       }
     },
+
     "/backoffice/categories/edit": {
       "put": {
         "tags": ["Backoffice | Categories"],
@@ -618,6 +621,7 @@
         }
       }
     },
+
     "/backoffice/categories/delete": {
       "delete": {
         "tags": ["Backoffice | Categories"],
@@ -653,6 +657,7 @@
         }
       }
     },
+
     "/backoffice/maintenances/create": {
       "post": {
         "tags": ["Backoffice | Maintenances"],
@@ -720,6 +725,7 @@
         }
       }
     },
+
     "/backoffice/maintenances/edit": {
       "post": {
         "tags": ["Backoffice | Maintenances"],
