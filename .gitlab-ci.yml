@@ -6,23 +6,18 @@ before_script:
   - gem install dpl
 
 stages:
-  - deploy
   - migrate
   - build
   - staging
   - production
 
-deploy:
-  stage: deploy
-  script:
-    - echo "Deploy started"
 
 migrate:
   stage: migrate
   script:
     - yarn add prisma --dev
     - yarn
-    - yarn prisma migrate dev
+    - yarn prisma migrate deploy
     - yarn prisma db seed
   only:
     - develop

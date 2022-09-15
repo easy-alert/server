@@ -21,7 +21,7 @@ export class MaintenanceServices {
     observation = null,
     period,
   }: ICreateMaintenanceHistory) {
-    return prisma.maintenancesHistory.create({
+    return prisma.maintenanceHistory.create({
       data: {
         maintenanceId,
         element,
