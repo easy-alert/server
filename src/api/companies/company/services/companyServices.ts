@@ -41,36 +41,6 @@ export class CompanyServices {
     });
   }
 
-  async edit({
-    name,
-    CNPJ,
-    CPF,
-    contactNumber,
-    image,
-    companyId,
-  }: IEditCompany) {
-    await prisma.company.update({
-      data: {
-        name,
-        CNPJ,
-        CPF,
-        contactNumber,
-        image,
-      },
-      where: { id: companyId },
-    });
-  }
-
-  async delete({ companyId }: { companyId: string }) {
-    const owner = await prisma.userCompanies.findFirst({
-      where: { companyId, owner: true },
-    });
-
-    await prisma.user.delete({ where: { id: owner?.userId } });
-
-    await prisma.company.delete({ where: { id: companyId } });
-  }
-
   async findByCNPJ({ CNPJ }: { CNPJ: string }) {
     return prisma.company.findUnique({
       where: { CNPJ },
@@ -89,10 +59,44 @@ export class CompanyServices {
     });
   }
 
+  async edit({
+    name,
+    CNPJ,
+    CPF,
+    contactNumber,
+    image,
+    companyId,
+  }: IEditCompany) {
+    const company = await this.findById({ companyId });
+    validator.needExists([{ label: 'ID da empresa', variable: company }]);
+
+    await prisma.company.update({
+      data: {
+        name,
+        CNPJ,
+        CPF,
+        contactNumber,
+        image,
+      },
+      where: { id: companyId },
+    });
+  }
+
+  async delete({ companyId }: { companyId: string }) {
+    const company = await this.findById({ companyId });
+    validator.needExists([{ label: 'ID da empresa', variable: company }]);
+
+    const owner = await prisma.userCompanies.findFirst({
+      where: { companyId, owner: true },
+    });
+    await prisma.user.delete({ where: { id: owner?.userId } });
+
+    await prisma.company.delete({ where: { id: companyId } });
+  }
+
   async changeIsBlocked({ companyId }: { companyId: string }) {
     const company = await this.findById({ companyId });
-
-    validator.notNull([{ label: 'empresa', variable: company }]);
+    validator.needExists([{ label: 'ID da empresa', variable: company }]);
 
     await prisma.company.update({
       data: {

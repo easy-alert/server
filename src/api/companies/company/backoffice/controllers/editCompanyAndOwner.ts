@@ -20,7 +20,6 @@ export async function editCompanyAndOwner(req: Request, _res: Response) {
     name,
     email,
     password,
-
     image,
     companyId,
     companyName,

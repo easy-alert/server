@@ -1,5 +1,8 @@
 import { prisma } from '../../../../utils/prismaClient';
+import { Validator } from '../../../../utils/validator/validator';
 import { ICreateMaintenanceHistory } from '../../types';
+
+const validator = new Validator();
 
 export class MaintenanceServices {
   async create({ categoryId }: { categoryId: string }) {
@@ -33,6 +36,25 @@ export class MaintenanceServices {
         source,
         observation,
       },
+    });
+  }
+
+  async findById({ maintenanceId }: { maintenanceId: string }) {
+    return prisma.maintenance.findUnique({
+      where: {
+        id: maintenanceId,
+      },
+    });
+  }
+
+  async delete({ maintenanceId }: { maintenanceId: string }) {
+    const maintenance = await this.findById({ maintenanceId });
+    validator.needExists([
+      { label: 'ID da manutenção', variable: maintenance },
+    ]);
+
+    await prisma.maintenance.delete({
+      where: { id: maintenanceId },
     });
   }
 }
