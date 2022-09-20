@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 
 // CLASS
 import { MaintenanceServices } from '../../services/maintenanceServices';
@@ -11,11 +11,7 @@ import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 const maintenanceServices = new MaintenanceServices();
 const validator = new Validator();
 
-export async function createMaintenanceHistory(
-  req: Request,
-  _res: Response,
-  _next: NextFunction,
-) {
+export async function createMaintenanceHistory(req: Request, _res: Response) {
   const {
     maintenanceId,
     element,
@@ -52,7 +48,7 @@ export async function createMaintenanceHistory(
   });
 
   throw new ServerMessage({
-    statusCode: 200,
+    statusCode: 201,
     message: 'Manutenção editada com sucesso.',
   });
 }
