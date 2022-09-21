@@ -21,10 +21,13 @@ export async function createMaintenance(
     element,
     activity,
     frequency,
+    frequencyTimeIntervalId,
     responsible,
     source,
     period,
+    periodTimeIntervalId,
     delay,
+    delayTimeIntervalId,
     observation,
   } = req.body;
 
@@ -32,24 +35,30 @@ export async function createMaintenance(
     { label: 'ID da categoria', variable: categoryId },
     { label: 'elemento', variable: element },
     { label: 'atividade', variable: activity },
-    { label: 'peridiocidade', variable: frequency },
+    { label: 'frequencia', variable: frequency },
+    { label: 'tempo de intervalo inválido', variable: frequencyTimeIntervalId },
     { label: 'responsável', variable: responsible },
     { label: 'fonte', variable: source },
     { label: 'período', variable: period },
+    { label: 'tempo de intervalo inválido', variable: periodTimeIntervalId },
     { label: 'delay', variable: delay },
+    { label: 'tempo de intervalo inválido', variable: delayTimeIntervalId },
   ]);
 
-  const maintenance = await maintenanceServices.create({ categoryId });
+  const maintenance = await maintenanceServices.create({ categoryId, element });
 
   await maintenanceServices.createMaintenanceHistory({
     maintenanceId: maintenance.id,
     element,
     activity,
     frequency,
+    frequencyTimeIntervalId,
     responsible,
     source,
     period,
+    periodTimeIntervalId,
     delay,
+    delayTimeIntervalId,
     observation,
   });
 

@@ -53,10 +53,10 @@
     }
   },
   "paths": {
-    "/permission/list": {
+    "/time/interval/list": {
       "get": {
-        "tags": ["Backoffice | Permissions"],
-        "summary": "Lista todas as permissões.",
+        "tags": ["Backoffice | Time Interval"],
+        "summary": "Lista todos os intervalos de tempo.",
         "security": [
           {
             "bearerAuth": []
@@ -537,6 +537,9 @@
                             "id": {
                               "type": "string"
                             },
+                            "element": {
+                              "type": "string"
+                            },
                             "MaintenanceHistory": {
                               "type": "object",
                               "properties": {
@@ -689,7 +692,9 @@
                     "type": "number",
                     "default": 3
                   },
-
+                  "frequencyTimeIntervalId": {
+                    "type": "string"
+                  },
                   "responsible": {
                     "type": "string",
                     "default": "Construtora"
@@ -702,9 +707,15 @@
                     "type": "number",
                     "default": 2
                   },
+                  "periodTimeIntervalId": {
+                    "type": "string"
+                  },
                   "delay": {
                     "type": "number",
                     "default": 3
+                  },
+                  "delayTimeIntervalId": {
+                    "type": "string"
                   },
                   "observation": {
                     "type": "string",
@@ -793,6 +804,7 @@
         }
       }
     },
+
     "/backoffice/maintenances/delete": {
       "delete": {
         "tags": ["Backoffice | Maintenances"],

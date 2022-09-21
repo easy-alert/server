@@ -17,10 +17,13 @@ export async function createMaintenanceHistory(req: Request, _res: Response) {
     element,
     activity,
     frequency,
+    frequencyTimeIntervalId,
     responsible,
     source,
     period,
+    periodTimeIntervalId,
     delay,
+    delayTimeIntervalId,
     observation,
   } = req.body;
 
@@ -29,10 +32,13 @@ export async function createMaintenanceHistory(req: Request, _res: Response) {
     { label: 'elemento', variable: element },
     { label: 'atividade', variable: activity },
     { label: 'peridiocidade', variable: frequency },
+    { label: 'tempo de intervalo inválido', variable: frequencyTimeIntervalId },
     { label: 'responsável', variable: responsible },
     { label: 'fonte', variable: source },
     { label: 'período', variable: period },
+    { label: 'tempo de intervalo inválido', variable: periodTimeIntervalId },
     { label: 'delay', variable: delay },
+    { label: 'tempo de intervalo inválido', variable: delayTimeIntervalId },
   ]);
 
   await maintenanceServices.createMaintenanceHistory({
@@ -40,12 +46,17 @@ export async function createMaintenanceHistory(req: Request, _res: Response) {
     element,
     activity,
     frequency,
+    frequencyTimeIntervalId,
     responsible,
     source,
     period,
+    periodTimeIntervalId,
     delay,
+    delayTimeIntervalId,
     observation,
   });
+
+  await maintenanceServices.editMaintenance({ maintenanceId, element });
 
   throw new ServerMessage({
     statusCode: 201,

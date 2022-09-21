@@ -7,9 +7,8 @@ import { PermissionServices } from '../src/api/permission/services/permissionSer
 
 const permissionServices = new PermissionServices();
 
-async function main() {
-  // seeds
-  console.log('seed is running ...');
+async function createPermissions() {
+  console.log('starting permissions creation ...');
   const permissions: Prisma.PermissionCreateInput[] = [
     {
       name: 'Backoffice',
@@ -25,7 +24,10 @@ async function main() {
     });
     console.log('permission ', permission.name, ' inserted');
   }
+}
 
+async function createAdmin() {
+  console.log('starting admin creation ...');
   // admin
   const admin = await prisma.user.create({
     data: {
@@ -35,6 +37,7 @@ async function main() {
     },
   });
 
+  console.log('starting admin permission creation ...');
   const permissionAdmin = await permissionServices.findByName({
     name: 'Backoffice',
   });
@@ -46,6 +49,42 @@ async function main() {
     },
   });
   console.log('permission ', permissionAdmin!.name, ' inserted in Admin');
+}
+
+async function createTimeIntervals() {
+  console.log('starting timeIntervals creation ...');
+  const timeIntervals: Prisma.TimeIntervalCreateInput[] = [
+    {
+      name: 'Day',
+      unitTime: 1,
+    },
+    {
+      name: 'Week',
+      unitTime: 7,
+    },
+    {
+      name: 'Month',
+      unitTime: 30,
+    },
+    {
+      name: 'Year',
+      unitTime: 365,
+    },
+  ];
+
+  for (const timeInterval of timeIntervals) {
+    await prisma.timeInterval.create({
+      data: timeInterval,
+    });
+    console.log('timeIntervals ', timeInterval.name, ' inserted');
+  }
+}
+
+async function main() {
+  console.log('seed is running ...');
+  await createPermissions();
+  await createAdmin();
+  await createTimeIntervals();
 }
 
 main()

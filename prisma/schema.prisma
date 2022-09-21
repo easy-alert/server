@@ -104,6 +104,7 @@ model Category {
 model Maintenance {
   id         String @id @unique @default(uuid())
   categoryId String
+  element    String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -115,21 +116,43 @@ model Maintenance {
 }
 
 model MaintenanceHistory {
-  id            String  @id @unique @default(uuid())
-  maintenanceId String
-  element       String
-  activity      String
-  frequency     Int
-  responsible   String
-  source        String
-  period        Int
-  delay         Int
-  observation   String?
+  id                      String  @id @unique @default(uuid())
+  maintenanceId           String
+  element                 String
+  activity                String
+  frequency               Int
+  frequencyTimeIntervalId String
+  responsible             String
+  source                  String
+  period                  Int
+  periodTimeIntervalId    String
+  delay                   Int
+  delayTimeIntervalId     String
+  observation             String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  FrequencyTimeInterval TimeInterval @relation(name: "MaintenanceHistoryFrequency", fields: [frequencyTimeIntervalId], references: [id])
+  PeriodTimeInterval    TimeInterval @relation(name: "MaintenanceHistoryPeriod", fields: [periodTimeIntervalId], references: [id])
+  DelayTimeInterval     TimeInterval @relation(name: "MaintenanceHistoryDelay", fields: [delayTimeIntervalId], references: [id])
+
   Maintenance Maintenance? @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
 
   @@map("maintenancesHistory")
+}
+
+model TimeInterval {
+  id       String @id @unique @default(uuid())
+  name     String @unique
+  unitTime Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  MaintenanceHistoryFrequency MaintenanceHistory[] @relation("MaintenanceHistoryFrequency")
+  MaintenanceHistoryPeriod    MaintenanceHistory[] @relation("MaintenanceHistoryPeriod")
+  MaintenanceHistoryDelay     MaintenanceHistory[] @relation("MaintenanceHistoryDelay")
+
+  @@map("timeIntervals")
 }

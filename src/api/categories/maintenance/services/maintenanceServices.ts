@@ -1,14 +1,24 @@
 import { prisma } from '../../../../utils/prismaClient';
+import {
+  ICreateMaintenance,
+  ICreateMaintenanceHistory,
+  IEditMaintenance,
+} from '../../types';
 import { Validator } from '../../../../utils/validator/validator';
-import { ICreateMaintenanceHistory } from '../../types';
+import { CategoryServices } from '../../category/services/categoryServices';
 
 const validator = new Validator();
+const categoryServices = new CategoryServices();
 
 export class MaintenanceServices {
-  async create({ categoryId }: { categoryId: string }) {
+  async create({ categoryId, element }: ICreateMaintenance) {
+    const category = await categoryServices.findById({ categoryId });
+    validator.needExists([{ label: 'ID da categoria', variable: category }]);
+
     return prisma.maintenance.create({
       data: {
         categoryId,
+        element,
       },
     });
   }
@@ -18,24 +28,42 @@ export class MaintenanceServices {
     element,
     activity,
     frequency,
+    frequencyTimeIntervalId,
     responsible,
     source,
-    delay,
-    observation = null,
     period,
+    periodTimeIntervalId,
+    delay,
+    delayTimeIntervalId,
+    observation = null,
   }: ICreateMaintenanceHistory) {
     return prisma.maintenanceHistory.create({
       data: {
         maintenanceId,
         element,
         activity,
-        delay,
         frequency,
+        frequencyTimeIntervalId,
         period,
+        periodTimeIntervalId,
+        delay,
+        delayTimeIntervalId,
         responsible,
         source,
         observation,
       },
+    });
+  }
+
+  async editMaintenance({ maintenanceId, element }: IEditMaintenance) {
+    const maintenance = await this.findById({ maintenanceId });
+    validator.needExists([
+      { label: 'ID da manutenção', variable: maintenance },
+    ]);
+
+    return prisma.maintenance.update({
+      data: { element },
+      where: { id: maintenanceId },
     });
   }
 

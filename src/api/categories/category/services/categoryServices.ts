@@ -47,12 +47,42 @@ export class CategoryServices {
         Maintenances: {
           select: {
             id: true,
+            element: true,
             MaintenancesHistory: {
+              select: {
+                id: true,
+                element: true,
+                activity: true,
+                frequency: true,
+                FrequencyTimeInterval: {
+                  select: {
+                    name: true,
+                  },
+                },
+                responsible: true,
+                source: true,
+                period: true,
+                PeriodTimeInterval: {
+                  select: {
+                    name: true,
+                  },
+                },
+                delay: true,
+                DelayTimeInterval: {
+                  select: {
+                    name: true,
+                  },
+                },
+                observation: true,
+              },
               orderBy: {
                 createdAt: 'desc',
               },
               take: 1,
             },
+          },
+          orderBy: {
+            element: 'asc',
           },
         },
       },
