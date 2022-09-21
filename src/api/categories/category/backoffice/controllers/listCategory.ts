@@ -24,4 +24,3 @@ export async function listCategory(
 
   return res.status(200).json(categories);
 }
-
