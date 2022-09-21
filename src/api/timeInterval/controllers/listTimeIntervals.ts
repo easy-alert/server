@@ -14,10 +14,10 @@ export const listTimeIntervals = async (_req: Request, res: Response) => {
       case 'Day':
         intervals[i].name = 'Dia';
         break;
-      case 'Month':
+      case 'Week':
         intervals[i].name = 'Semana';
         break;
-      case 'Week':
+      case 'Month':
         intervals[i].name = 'Mês';
         break;
       case 'Year':
