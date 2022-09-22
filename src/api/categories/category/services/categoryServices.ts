@@ -58,6 +58,7 @@ export class CategoryServices {
                   select: {
                     id: true,
                     name: true,
+                    unitTime: true,
                   },
                 },
                 responsible: true,
@@ -67,6 +68,7 @@ export class CategoryServices {
                   select: {
                     id: true,
                     name: true,
+                    unitTime: true,
                   },
                 },
                 delay: true,
@@ -74,6 +76,7 @@ export class CategoryServices {
                   select: {
                     id: true,
                     name: true,
+                    unitTime: true,
                   },
                 },
                 observation: true,
