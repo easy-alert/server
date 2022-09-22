@@ -13,7 +13,7 @@ const validator = new Validator();
 
 export async function createMaintenance(
   req: Request,
-  _res: Response,
+  res: Response,
   _next: NextFunction,
 ) {
   const {
@@ -47,23 +47,33 @@ export async function createMaintenance(
 
   const maintenance = await maintenanceServices.create({ categoryId, element });
 
-  await maintenanceServices.createMaintenanceHistory({
-    maintenanceId: maintenance.id,
-    element,
-    activity,
-    frequency,
-    frequencyTimeIntervalId,
-    responsible,
-    source,
-    period,
-    periodTimeIntervalId,
-    delay,
-    delayTimeIntervalId,
-    observation,
-  });
+  const MaintenanceHistory = await maintenanceServices.createMaintenanceHistory(
+    {
+      maintenanceId: maintenance.id,
+      element,
+      activity,
+      frequency,
+      frequencyTimeIntervalId,
+      responsible,
+      source,
+      period,
+      periodTimeIntervalId,
+      delay,
+      delayTimeIntervalId,
+      observation,
+    },
+  );
 
-  throw new ServerMessage({
-    statusCode: 201,
-    message: 'Manutenção cadastrada com sucesso.',
+  return res.status(200).json({
+    maintenance: {
+      id: maintenance.id,
+      element: maintenance.element,
+      MaintenanceHistory,
+    },
+
+    ServerMessage: {
+      statusCode: 201,
+      message: 'Manutenção cadastrada com sucesso.',
+    },
   });
 }
