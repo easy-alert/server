@@ -13,7 +13,7 @@ const categoryServices = new CategoryServices();
 export class MaintenanceServices {
   async create({ categoryId, element }: ICreateMaintenance) {
     const category = await categoryServices.findById({ categoryId });
-    validator.needExists([{ label: 'ID da categoria', variable: category }]);
+    validator.needExist([{ label: 'ID da categoria', variable: category }]);
 
     return prisma.maintenance.create({
       data: {
@@ -57,9 +57,7 @@ export class MaintenanceServices {
 
   async editMaintenance({ maintenanceId, element }: IEditMaintenance) {
     const maintenance = await this.findById({ maintenanceId });
-    validator.needExists([
-      { label: 'ID da manutenção', variable: maintenance },
-    ]);
+    validator.needExist([{ label: 'ID da manutenção', variable: maintenance }]);
 
     return prisma.maintenance.update({
       data: { element },
@@ -77,9 +75,7 @@ export class MaintenanceServices {
 
   async delete({ maintenanceId }: { maintenanceId: string }) {
     const maintenance = await this.findById({ maintenanceId });
-    validator.needExists([
-      { label: 'ID da manutenção', variable: maintenance },
-    ]);
+    validator.needExist([{ label: 'ID da manutenção', variable: maintenance }]);
 
     await prisma.maintenance.delete({
       where: { id: maintenanceId },

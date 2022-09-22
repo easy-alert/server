@@ -68,7 +68,7 @@ export class CompanyServices {
     companyId,
   }: IEditCompany) {
     const company = await this.findById({ companyId });
-    validator.needExists([{ label: 'ID da empresa', variable: company }]);
+    validator.needExist([{ label: 'ID da empresa', variable: company }]);
 
     await prisma.company.update({
       data: {
@@ -84,7 +84,7 @@ export class CompanyServices {
 
   async delete({ companyId }: { companyId: string }) {
     const company = await this.findById({ companyId });
-    validator.needExists([{ label: 'ID da empresa', variable: company }]);
+    validator.needExist([{ label: 'ID da empresa', variable: company }]);
 
     const owner = await prisma.userCompanies.findFirst({
       where: { companyId, owner: true },
@@ -96,7 +96,7 @@ export class CompanyServices {
 
   async changeIsBlocked({ companyId }: { companyId: string }) {
     const company = await this.findById({ companyId });
-    validator.needExists([{ label: 'ID da empresa', variable: company }]);
+    validator.needExist([{ label: 'ID da empresa', variable: company }]);
 
     await prisma.company.update({
       data: {

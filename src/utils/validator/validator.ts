@@ -27,7 +27,7 @@ export class Validator {
     }
   }
 
-  needExists(Vars: IValidator[]) {
+  needExist(Vars: IValidator[]) {
     for (const variable of Vars) {
       if (!variable.variable) {
         throw new ServerMessage({

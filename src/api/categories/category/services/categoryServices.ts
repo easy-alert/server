@@ -22,7 +22,7 @@ export class CategoryServices {
 
   async edit({ name, categoryId }: { name: string; categoryId: string }) {
     const category = await this.findById({ categoryId });
-    validator.needExists([{ label: 'ID da categoria', variable: category }]);
+    validator.needExist([{ label: 'ID da categoria', variable: category }]);
 
     return prisma.category.update({
       data: { name },
@@ -32,7 +32,7 @@ export class CategoryServices {
 
   async delete({ categoryId }: { categoryId: string }) {
     const category = await this.findById({ categoryId });
-    validator.needExists([{ label: 'ID da categoria', variable: category }]);
+    validator.needExist([{ label: 'ID da categoria', variable: category }]);
 
     await prisma.category.delete({
       where: { id: categoryId },
@@ -56,6 +56,7 @@ export class CategoryServices {
                 frequency: true,
                 FrequencyTimeInterval: {
                   select: {
+                    id: true,
                     name: true,
                   },
                 },
@@ -64,12 +65,14 @@ export class CategoryServices {
                 period: true,
                 PeriodTimeInterval: {
                   select: {
+                    id: true,
                     name: true,
                   },
                 },
                 delay: true,
                 DelayTimeInterval: {
                   select: {
+                    id: true,
                     name: true,
                   },
                 },
