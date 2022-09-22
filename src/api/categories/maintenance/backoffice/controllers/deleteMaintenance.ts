@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 
 // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
@@ -11,11 +11,7 @@ import { MaintenanceServices } from '../../services/maintenanceServices';
 const validator = new Validator();
 const maintenanceServices = new MaintenanceServices();
 
-export async function deleteMaintenance(
-  req: Request,
-  _res: Response,
-  _next: NextFunction,
-) {
+export async function deleteMaintenance(req: Request, _res: Response) {
   const { maintenanceId } = req.body;
 
   validator.notNull([{ label: 'ID da categoria', variable: maintenanceId }]);

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 
 // CLASS
 import { MaintenanceServices } from '../../services/maintenanceServices';
@@ -11,11 +11,7 @@ import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 const maintenanceServices = new MaintenanceServices();
 const validator = new Validator();
 
-export async function createMaintenance(
-  req: Request,
-  res: Response,
-  _next: NextFunction,
-) {
+export async function createMaintenance(req: Request, res: Response) {
   const {
     categoryId,
     element,
@@ -68,7 +64,7 @@ export async function createMaintenance(
     maintenance: {
       id: maintenance.id,
       element: maintenance.element,
-      MaintenanceHistory,
+      MaintenanceHistory: [MaintenanceHistory],
     },
 
     ServerMessage: {
