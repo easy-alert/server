@@ -530,6 +530,9 @@
                       "id": {
                         "type": "string"
                       },
+                      "name": {
+                        "type": "string"
+                      },
                       "Maintenances": {
                         "type": "array",
                         "items": {
@@ -552,6 +555,20 @@
                                 "frequency": {
                                   "type": "number"
                                 },
+                                "FrequencyTimeInterval": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
+                                    "singularLabel": {
+                                      "type": "string"
+                                    },
+                                    "pluralLabel": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
                                 "responsible": {
                                   "type": "string"
                                 },
@@ -561,8 +578,36 @@
                                 "period": {
                                   "type": "number"
                                 },
+                                "PeriodTimeInterval": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
+                                    "singularLabel": {
+                                      "type": "string"
+                                    },
+                                    "pluralLabel": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
                                 "delay": {
                                   "type": "number"
+                                },
+                                "DelayTimeInterval": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
+                                    "singularLabel": {
+                                      "type": "string"
+                                    },
+                                    "pluralLabel": {
+                                      "type": "string"
+                                    }
+                                  }
                                 },
                                 "observation": {
                                   "type": "string"

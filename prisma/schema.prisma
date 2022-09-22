@@ -143,9 +143,11 @@ model MaintenanceHistory {
 }
 
 model TimeInterval {
-  id       String @id @unique @default(uuid())
-  name     String @unique
-  unitTime Int
+  id            String @id @unique @default(uuid())
+  name          String @unique
+  singularLabel String @unique
+  pluralLabel   String @unique
+  unitTime      Int
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

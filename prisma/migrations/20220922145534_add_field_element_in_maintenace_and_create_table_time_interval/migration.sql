@@ -19,6 +19,8 @@ ADD COLUMN     "periodTimeIntervalId" TEXT NOT NULL;
 CREATE TABLE "timeIntervals" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "singularLabel" TEXT NOT NULL,
+    "pluralLabel" TEXT NOT NULL,
     "unitTime" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -31,6 +33,12 @@ CREATE UNIQUE INDEX "timeIntervals_id_key" ON "timeIntervals"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "timeIntervals_name_key" ON "timeIntervals"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "timeIntervals_singularLabel_key" ON "timeIntervals"("singularLabel");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "timeIntervals_pluralLabel_key" ON "timeIntervals"("pluralLabel");
 
 -- AddForeignKey
 ALTER TABLE "maintenancesHistory" ADD CONSTRAINT "maintenancesHistory_frequencyTimeIntervalId_fkey" FOREIGN KEY ("frequencyTimeIntervalId") REFERENCES "timeIntervals"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

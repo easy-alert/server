@@ -57,18 +57,26 @@ async function createTimeIntervals() {
     {
       name: 'Day',
       unitTime: 1,
+      singularLabel: 'dia',
+      pluralLabel: 'dias',
     },
     {
       name: 'Week',
       unitTime: 7,
+      singularLabel: 'semana',
+      pluralLabel: 'semanas',
     },
     {
       name: 'Month',
       unitTime: 30,
+      singularLabel: 'mês',
+      pluralLabel: 'meses',
     },
     {
       name: 'Year',
       unitTime: 365,
+      singularLabel: 'ano',
+      pluralLabel: 'anos',
     },
   ];
 

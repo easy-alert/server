@@ -5,13 +5,20 @@ export class TimeIntervalServices {
   async list() {
     return prisma.timeInterval.findMany({
       orderBy: {
-        name: 'asc',
+        unitTime: 'asc',
       },
     });
   }
 
   async findByName({ name }: { name: string }) {
     return prisma.timeInterval.findUnique({
+      select: {
+        id: true,
+        name: true,
+        pluralLabel: true,
+        singularLabel: true,
+        unitTime: true,
+      },
       where: { name },
     });
   }
