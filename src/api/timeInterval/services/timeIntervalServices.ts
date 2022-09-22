@@ -22,4 +22,18 @@ export class TimeIntervalServices {
       where: { name },
     });
   }
+
+  async findById({ timeIntervalId }: { timeIntervalId: string }) {
+    return prisma.timeInterval.findUnique({
+      select: {
+        id: true,
+        name: true,
+        singularLabel: true,
+        pluralLabel: true,
+      },
+      where: {
+        id: timeIntervalId,
+      },
+    });
+  }
 }

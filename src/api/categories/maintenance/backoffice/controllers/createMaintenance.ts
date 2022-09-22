@@ -5,10 +5,11 @@ import { Request, Response } from 'express';
 
 // CLASS
 import { MaintenanceServices } from '../../services/maintenanceServices';
+import { TimeIntervalServices } from '../../../../timeInterval/services/timeIntervalServices';
 import { Validator } from '../../../../../utils/validator/validator';
-import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
 const maintenanceServices = new MaintenanceServices();
+const timeIntervalServices = new TimeIntervalServices();
 const validator = new Validator();
 
 export async function createMaintenance(req: Request, res: Response) {
@@ -41,11 +42,14 @@ export async function createMaintenance(req: Request, res: Response) {
     { label: 'tempo de intervalo inválido', variable: delayTimeIntervalId },
   ]);
 
-  const maintenance = await maintenanceServices.create({ categoryId, element });
+  const newMaintenance = await maintenanceServices.create({
+    categoryId,
+    element,
+  });
 
-  const MaintenanceHistory = await maintenanceServices.createMaintenanceHistory(
+  const maintenanceHistory = await maintenanceServices.createMaintenanceHistory(
     {
-      maintenanceId: maintenance.id,
+      maintenanceId: newMaintenance.id,
       element,
       activity,
       frequency,
@@ -60,13 +64,34 @@ export async function createMaintenance(req: Request, res: Response) {
     },
   );
 
-  return res.status(200).json({
-    maintenance: {
-      id: maintenance.id,
-      element: maintenance.element,
-      MaintenanceHistory: [MaintenanceHistory],
-    },
+  const maintenance = {
+    id: newMaintenance.id,
+    element: newMaintenance.element,
+    MaintenancesHistory: [
+      {
+        id: maintenanceHistory.id,
+        activity: maintenanceHistory.activity,
+        frequency: maintenanceHistory.frequency,
+        FrequencyTimeInterval: await timeIntervalServices.findById({
+          timeIntervalId: frequencyTimeIntervalId,
+        }),
+        responsible: maintenanceHistory.responsible,
+        source: maintenanceHistory.source,
+        period: maintenanceHistory.period,
+        PeriodTimeInterval: await timeIntervalServices.findById({
+          timeIntervalId: periodTimeIntervalId,
+        }),
+        delay: maintenanceHistory.delay,
+        DelayTimeInterval: await timeIntervalServices.findById({
+          timeIntervalId: delayTimeIntervalId,
+        }),
+        observation: maintenanceHistory.observation,
+      },
+    ],
+  };
 
+  return res.status(200).json({
+    maintenance,
     ServerMessage: {
       statusCode: 201,
       message: 'Manutenção cadastrada com sucesso.',
