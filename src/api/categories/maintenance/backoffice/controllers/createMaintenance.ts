@@ -63,13 +63,13 @@ export async function createMaintenance(req: Request, res: Response) {
       observation,
     },
   );
-
   const maintenance = {
     id: newMaintenance.id,
     element: newMaintenance.element,
     MaintenancesHistory: [
       {
         id: maintenanceHistory.id,
+        element: maintenanceHistory.element,
         activity: maintenanceHistory.activity,
         frequency: maintenanceHistory.frequency,
         FrequencyTimeInterval: await timeIntervalServices.findById({

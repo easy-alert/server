@@ -549,6 +549,9 @@
                                 "id": {
                                   "type": "string"
                                 },
+                                "element": {
+                                  "type": "string"
+                                },
                                 "activity": {
                                   "type": "string"
                                 },
