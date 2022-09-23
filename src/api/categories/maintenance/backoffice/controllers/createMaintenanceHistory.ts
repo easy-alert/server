@@ -5,9 +5,12 @@ import { Request, Response } from 'express';
 
 // CLASS
 import { MaintenanceServices } from '../../services/maintenanceServices';
+
 import { Validator } from '../../../../../utils/validator/validator';
+import { TimeIntervalServices } from '../../../../timeInterval/services/timeIntervalServices';
 
 const maintenanceServices = new MaintenanceServices();
+const timeIntervalServices = new TimeIntervalServices();
 const validator = new Validator();
 
 export async function createMaintenanceHistory(req: Request, res: Response) {
@@ -40,7 +43,7 @@ export async function createMaintenanceHistory(req: Request, res: Response) {
     { label: 'tempo de intervalo inválido', variable: delayTimeIntervalId },
   ]);
 
-  const MaintenanceHistory = await maintenanceServices.createMaintenanceHistory(
+  const maintenanceHistory = await maintenanceServices.createMaintenanceHistory(
     {
       maintenanceId,
       element,
@@ -59,8 +62,35 @@ export async function createMaintenanceHistory(req: Request, res: Response) {
 
   await maintenanceServices.editMaintenance({ maintenanceId, element });
 
+  const maintenance = {
+    id: maintenanceId,
+    element,
+    MaintenancesHistory: [
+      {
+        id: maintenanceHistory.id,
+        element: maintenanceHistory.element,
+        activity: maintenanceHistory.activity,
+        frequency: maintenanceHistory.frequency,
+        FrequencyTimeInterval: await timeIntervalServices.findById({
+          timeIntervalId: frequencyTimeIntervalId,
+        }),
+        responsible: maintenanceHistory.responsible,
+        source: maintenanceHistory.source,
+        period: maintenanceHistory.period,
+        PeriodTimeInterval: await timeIntervalServices.findById({
+          timeIntervalId: periodTimeIntervalId,
+        }),
+        delay: maintenanceHistory.delay,
+        DelayTimeInterval: await timeIntervalServices.findById({
+          timeIntervalId: delayTimeIntervalId,
+        }),
+        observation: maintenanceHistory.observation,
+      },
+    ],
+  };
+
   return res.status(200).json({
-    MaintenanceHistory,
+    maintenance,
 
     ServerMessage: {
       statusCode: 201,
