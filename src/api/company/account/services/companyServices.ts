@@ -1,0 +1,33 @@
+import { prisma } from '../../../../utils/prismaClient';
+import { SharedCompanyServices } from '../../../shared/companies/company/services/sharedCompanyServices';
+
+import { IEditCompany } from './types';
+
+const sharedCompanyServices = new SharedCompanyServices();
+
+export class CompanyServices {
+  // #region edit
+  async edit({
+    name,
+    CNPJ,
+    CPF,
+    contactNumber,
+    image,
+    companyId,
+  }: IEditCompany) {
+    await sharedCompanyServices.findById({ companyId });
+
+    await prisma.company.update({
+      data: {
+        name,
+        CNPJ,
+        CPF,
+        contactNumber,
+        image,
+      },
+      where: { id: companyId },
+    });
+  }
+
+  // #endregion
+}

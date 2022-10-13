@@ -1,0 +1,184 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Easy Alert - Company",
+    "description": "Api do modulo de empresas.",
+    "version": "1.0.0",
+    "contact": {
+      "email": "produto@adalovelace.com.br",
+      "name": "Ada Lovelace"
+    }
+  },
+  "servers": [
+    {
+      "description": "Local Development",
+      "url": "http://localhost:8080/api"
+    },
+    {
+      "description": "//CHANGE HERE",
+      "url": "//CHANGE HERE"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "ServerMessage": {
+        "description": "Mensagem de erro padrão do backend.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ServerMessage": {
+                  "properties": {
+                    "statusCode": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/company/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login do usuário no backoffice.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "default": "admin@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "default": 123123123
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "description": "Retorna as informações do usuário e um token válido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "image": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+    "/company/account/edit": {
+      "put": {
+        "tags": ["Account"],
+        "summary": "Edita as informações do usuário e empresa.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "default": "Carlos Pasquali"
+                  },
+                  "email": {
+                    "type": "string",
+                    "default": "carlosdpasqualip@hotmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "default": 123123123
+                  },
+                  "image": {
+                    "type": "string",
+                    "default": "larguei.s3.us-west-2.amazonaws.com/favicon%201-1661888030888.png"
+                  },
+                  "companyName": {
+                    "type": "string",
+                    "default": "Ada lovelace"
+                  },
+                  "CNPJ": {
+                    "type": "string",
+                    "default": "28060992000161"
+                  },
+                  "CPF": {
+                    "type": "string",
+                    "default": "12365172024"
+                  },
+                  "contactNumber": {
+                    "type": "string",
+                    "default": "48996345409"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    }
+  }
+}
