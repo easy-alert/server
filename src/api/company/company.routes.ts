@@ -24,3 +24,4 @@ companyRouter.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
 
 companyRouter.use('/auth', authRouter);
 companyRouter.use('/account', authMiddleware, isCompany, accountRouter);
+companyRouter.use('/companies', authMiddleware, isCompany, companyRouter);

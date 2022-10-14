@@ -55,7 +55,7 @@
   "paths": {
     "/backoffice/auth/login": {
       "post": {
-        "tags": ["Backoffice | Auth"],
+        "tags": ["Auth"],
         "summary": "Login do usuário no backoffice.",
         "requestBody": {
           "required": true,
@@ -119,7 +119,7 @@
 
     "/backoffice/companies/create": {
       "post": {
-        "tags": ["Backoffice | Companies"],
+        "tags": ["Companies"],
         "summary": "Cria um novo usuário.",
         "security": [
           {
@@ -184,7 +184,7 @@
 
     "/backoffice/companies/change/isBlocked": {
       "put": {
-        "tags": ["Backoffice | Companies"],
+        "tags": ["Companies"],
         "summary": "Altera o status da empresa (Bloqueado/Ativo).",
         "security": [
           {
@@ -220,7 +220,7 @@
 
     "/backoffice/companies/delete": {
       "delete": {
-        "tags": ["Backoffice | Companies"],
+        "tags": ["Companies"],
         "summary": "Deleta a empresa e todas informações atreladas a ela.",
         "security": [
           {
@@ -256,7 +256,7 @@
 
     "/backoffice/companies/edit": {
       "put": {
-        "tags": ["Backoffice | Companies"],
+        "tags": ["Companies"],
         "summary": "Edita as informações do usuário e empresa.",
         "security": [
           {
@@ -328,7 +328,7 @@
 
     "/backoffice/companies/list": {
       "get": {
-        "tags": ["Backoffice | Companies"],
+        "tags": ["Companies"],
         "summary": "Lista todas as empresas",
         "security": [
           {
@@ -424,7 +424,7 @@
 
     "/backoffice/categories/create": {
       "post": {
-        "tags": ["Backoffice | Categories"],
+        "tags": ["Categories"],
         "summary": "Cria uma nova categoria.",
         "security": [
           {
@@ -465,7 +465,7 @@
 
     "/backoffice/categories/list": {
       "get": {
-        "tags": ["Backoffice | Categories"],
+        "tags": ["Categories"],
         "summary": "Lista todas as categorias",
         "security": [
           {
@@ -495,7 +495,7 @@
                       "id": {
                         "type": "string"
                       },
-                      "Maintenances": {
+                      "Maintenance": {
                         "type": "array",
                         "items": {
                           "properties": {
@@ -549,7 +549,7 @@
 
     "/backoffice/categories/edit": {
       "put": {
-        "tags": ["Backoffice | Categories"],
+        "tags": ["Categories"],
         "summary": "edita uma categoria.",
         "security": [
           {
@@ -589,7 +589,7 @@
 
     "/backoffice/categories/delete": {
       "delete": {
-        "tags": ["Backoffice | Categories"],
+        "tags": ["Categories"],
         "summary": "deleta uma categoria. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
         "security": [
           {
@@ -623,9 +623,9 @@
       }
     },
 
-    "/backoffice/maintenances/create": {
+    "/backoffice/Maintenance/create": {
       "post": {
-        "tags": ["Backoffice | Maintenances"],
+        "tags": ["Maintenance"],
         "summary": "Cria uma manutenção em uma categoria.",
         "security": [
           {
@@ -703,9 +703,9 @@
       }
     },
 
-    "/backoffice/maintenances/edit": {
+    "/backoffice/Maintenance/edit": {
       "put": {
-        "tags": ["Backoffice | Maintenances"],
+        "tags": ["Maintenance"],
         "summary": "Edita uma manutenção. (Cria um novo registro para não afetar registros anteriores).",
         "security": [
           {

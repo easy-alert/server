@@ -1,5 +1,5 @@
 interface IMaintenance {
-  categoryId: string;
+  ownerCompanyId: string;
   element: string;
   activity: string;
   frequency: number;
@@ -18,5 +18,5 @@ export interface IEditMaintenance extends IMaintenance {
 }
 
 export interface ICreateMaintenance extends IMaintenance {
-  ownerCompanyId: string;
+  categoryId: string;
 }

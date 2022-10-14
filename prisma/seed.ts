@@ -12,6 +12,8 @@ async function main() {
 
   await seedServices.createAdminBackoffice();
 
+  await seedServices.createAdminCompany();
+
   await seedServices.createTimeIntervals();
 }
 

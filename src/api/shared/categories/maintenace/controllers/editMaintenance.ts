@@ -9,9 +9,8 @@ const validator = new Validator();
 
 export async function editMaintenance(req: Request, res: Response) {
   const {
-    categoryId,
     maintenanceId,
-
+    ownerCompanyId,
     element,
     activity,
     frequency,
@@ -49,8 +48,8 @@ export async function editMaintenance(req: Request, res: Response) {
   ]);
 
   await maintenanceServices.edit({
-    categoryId,
     maintenanceId,
+    ownerCompanyId,
     element,
     activity,
     frequency,
