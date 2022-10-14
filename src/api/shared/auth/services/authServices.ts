@@ -42,7 +42,7 @@ export class AuthServices {
         passwordHash: true,
         updatedAt: true,
         isBlocked: true,
-        UserCompanies: {
+        Companies: {
           select: {
             Company: {
               select: {
@@ -58,7 +58,7 @@ export class AuthServices {
           },
         },
 
-        UserPermissions: {
+        Permissions: {
           select: { Permission: { select: { name: true } } },
         },
       },
@@ -84,7 +84,7 @@ export class AuthServices {
         passwordHash: true,
         updatedAt: true,
         isBlocked: true,
-        UserCompanies: {
+        Companies: {
           select: {
             Company: {
               select: {
@@ -100,7 +100,7 @@ export class AuthServices {
           },
         },
 
-        UserPermissions: {
+        Permissions: {
           select: { Permission: { select: { name: true } } },
         },
       },

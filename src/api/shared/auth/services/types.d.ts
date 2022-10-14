@@ -22,8 +22,8 @@ export interface IUser {
   passwordHash: string;
   updatedAt: Date;
   isBlocked: boolean;
-  UserCompanies: ICompany[];
-  UserPermissions: [{ Permission: { name: string } }];
+  Companies: ICompany[];
+  Permissions: [{ Permission: { name: string } }];
 }
 
 // #endregion

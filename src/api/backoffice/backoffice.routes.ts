@@ -12,7 +12,7 @@ import { uploadRouter } from '../shared/upload/upload.routes';
 import { authRouter } from './auth/auth.routes';
 import { categoryRouter } from './categories/category/category.routes';
 import { maintenanceRouter } from './categories/maintenance/maintenance.routes';
-import { companyRouter } from './accounts/company/company.routes';
+import { companyRouter } from './users/accounts/company.routes';
 
 // ROUTES
 export const backofficeRouter: Router = Router();

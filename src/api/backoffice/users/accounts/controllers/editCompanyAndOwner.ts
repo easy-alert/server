@@ -2,12 +2,12 @@
 import { Request, Response } from 'express';
 
 // FUNCTIONS
-import { sharedEditCompanyAndOwner } from '../../../shared/users/accounts/controllers/editCompanyAndOwner';
+import { sharedEditCompanyAndOwner } from '../../../../shared/users/accounts/controllers/editCompanyAndOwner';
 
 export async function editCompanyAndOwner(req: Request, res: Response) {
   await sharedEditCompanyAndOwner({
-    userId: req.userId,
-    companyId: req.Company.id,
+    userId: req.body.userId,
+    companyId: req.body.companyId,
     body: req.body,
   });
 

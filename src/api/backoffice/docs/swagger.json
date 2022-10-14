@@ -441,6 +441,10 @@
                   "name": {
                     "type": "string",
                     "default": "Sistema hidrossanitário"
+                  },
+                  "ownerCompanyId": {
+                    "type": "string",
+                    "default": null
                   }
                 }
               }
@@ -638,6 +642,10 @@
                   "categoryId": {
                     "type": "string"
                   },
+                  "ownerCompanyId": {
+                    "type": "string",
+                    "default": null
+                  },
                   "element": {
                     "type": "string",
                     "default": "Ar condicionado, Paredes"
@@ -650,7 +658,9 @@
                     "type": "number",
                     "default": 3
                   },
-
+                  "frequencyTimeIntervalId": {
+                    "type": "string"
+                  },
                   "responsible": {
                     "type": "string",
                     "default": "Construtora"
@@ -663,9 +673,15 @@
                     "type": "number",
                     "default": 2
                   },
+                  "periodTimeIntervalId": {
+                    "type": "string"
+                  },
                   "delay": {
                     "type": "number",
                     "default": 3
+                  },
+                  "delayTimeIntervalId": {
+                    "type": "string"
                   },
                   "observation": {
                     "type": "string",
@@ -688,7 +704,7 @@
     },
 
     "/backoffice/maintenances/edit": {
-      "post": {
+      "put": {
         "tags": ["Backoffice | Maintenances"],
         "summary": "Edita uma manutenção. (Cria um novo registro para não afetar registros anteriores).",
         "security": [
@@ -714,11 +730,9 @@
                     "type": "string",
                     "default": "Pintar Paredes"
                   },
-                  "frequency": {
-                    "type": "number",
-                    "default": 3
+                  "frequencyTimeIntervalId": {
+                    "type": "string"
                   },
-
                   "responsible": {
                     "type": "string",
                     "default": "Construtora"
@@ -731,9 +745,15 @@
                     "type": "number",
                     "default": 2
                   },
+                  "periodTimeIntervalId": {
+                    "type": "string"
+                  },
                   "delay": {
                     "type": "number",
                     "default": 3
+                  },
+                  "delayTimeIntervalId": {
+                    "type": "string"
                   },
                   "observation": {
                     "type": "string",

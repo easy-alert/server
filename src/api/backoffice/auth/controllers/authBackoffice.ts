@@ -5,7 +5,7 @@ import { Response, Request } from 'express';
 import { AuthServices } from '../../../shared/auth/services/authServices';
 import { HandlerToken } from '../../../../utils/token/handlerToken';
 import { Validator } from '../../../../utils/validator/validator';
-import { UserServices } from '../../../shared/user/services/userServices';
+import { UserServices } from '../../../shared/users/user/services/userServices';
 
 import { PermissionServices } from '../../../shared/permission/services/permissionServices';
 
@@ -29,7 +29,7 @@ export const authBackoffice = async (req: Request, res: Response) => {
   await authServices.canLogin({ user, password });
 
   await permissionServices.checkPermission({
-    UserPermissions: user.UserPermissions,
+    UserPermissions: user.Permissions,
     permission: 'Backoffice',
   });
 
@@ -38,7 +38,7 @@ export const authBackoffice = async (req: Request, res: Response) => {
   const token = handlerToken.generateToken({
     tokenData: {
       userId: user.id!,
-      Permissions: user.UserPermissions,
+      Permissions: user.Permissions,
     },
   });
 
@@ -50,7 +50,7 @@ export const authBackoffice = async (req: Request, res: Response) => {
       email: user.email,
       lastAcess: user.lastAccess,
       createdAt: user.createdAt,
-      Permissions: user.UserPermissions,
+      Permissions: user.Permissions,
     },
     token,
   });

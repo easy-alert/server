@@ -2,10 +2,10 @@
 import { Router } from 'express';
 
 // FUNCTIONS
-import { createMaintenance } from './controllers/createMaintenance';
-import { createMaintenanceHistory } from './controllers/createMaintenanceHistory';
+import { createMaintenance } from '../../../shared/categories/maintenace/controllers/createMaintenance';
+import { editMaintenance } from '../../../shared/categories/maintenace/controllers/editMaintenance';
 
 export const maintenanceRouter = Router();
 
 maintenanceRouter.post('/create', createMaintenance);
-maintenanceRouter.post('/edit', createMaintenanceHistory);
+maintenanceRouter.put('/edit', editMaintenance);

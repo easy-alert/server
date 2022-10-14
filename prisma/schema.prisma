@@ -22,8 +22,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  UserPermissions UserPermissions[]
-  UserCompanies   UserCompanies[]
+  Permissions UserPermissions[]
+  Companies   UserCompanies[]
 
   @@map("users")
 }
@@ -50,8 +50,8 @@ model UserCompanies {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  User        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  UserCompany Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  User    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@map("userCompanies")
 }

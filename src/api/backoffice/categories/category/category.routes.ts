@@ -2,9 +2,9 @@
 import { Router } from 'express';
 
 // FUNCTIONS
-import { createCategory } from './controllers/createCategory';
+import { createCategory } from '../../../shared/categories/category/controllers/createCategory';
 import { deleteCategory } from './controllers/deleteCategory';
-import { editCategory } from './controllers/editCategory';
+import { editCategory } from '../../../shared/categories/category/controllers/editCategory';
 import { listCategory } from './controllers/listCategory';
 
 export const categoryRouter = Router();

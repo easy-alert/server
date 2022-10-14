@@ -17,8 +17,8 @@ export const authValidateToken = async (req: Request, res: Response) => {
       email: user.email,
       lastAcess: user.lastAccess,
       createdAt: user.createdAt,
-      Permissions: user.UserPermissions,
+      Permissions: user.Permissions,
     },
-    Company: user.UserCompanies[0].Company,
+    Company: user.Companies[0].Company,
   });
 };
