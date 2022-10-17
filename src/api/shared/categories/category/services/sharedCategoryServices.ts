@@ -17,14 +17,7 @@ export class SharedCategoryServices {
     });
   }
 
-  async edit({
-    name,
-    categoryId,
-  }: {
-    name: string;
-    categoryId: string;
-    ownerCompanyId: string;
-  }) {
+  async edit({ name, categoryId }: { name: string; categoryId: string }) {
     await this.findById({ categoryId });
 
     return prisma.category.update({
@@ -42,7 +35,7 @@ export class SharedCategoryServices {
       },
     });
 
-    validator.needExist([{ label: 'categoria', variable: category }]);
+    validator.needExist([{ label: 'ID da categoria', variable: category }]);
 
     return category;
   }

@@ -26,6 +26,7 @@ export class CategoryServices {
           contains: search,
           mode: 'insensitive',
         },
+        ownerCompanyId: null,
       },
       orderBy: {
         name: 'asc',

@@ -3,15 +3,24 @@ import { Request, Response } from 'express';
 // CLASS
 
 import { CategoryServices } from '../services/categoryServices';
-import { Validator } from '../../../../../utils/validator/validator';
+import { SharedCategoryServices } from '../../../../shared/categories/category/services/sharedCategoryServices';
+import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
-const validator = new Validator();
+const sharedCategoryServices = new SharedCategoryServices();
+
 const categoryServices = new CategoryServices();
 
 export async function deleteCategory(req: Request, res: Response) {
   const { categoryId } = req.body;
 
-  validator.notNull([{ label: 'ID da categoria', variable: categoryId }]);
+  const category = await sharedCategoryServices.findById({ categoryId });
+
+  if (category?.ownerCompanyId !== null) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: `Você não possui permissão para executar esta ação, pois essa categoria pertence a uma empresa.`,
+    });
+  }
 
   await categoryServices.delete({ categoryId });
 

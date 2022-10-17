@@ -17,6 +17,7 @@ import { companyRouter } from './users/accounts/company.routes';
 // ROUTES
 export const backofficeRouter: Router = Router();
 
+backofficeRouter.use('/upload', authMiddleware, isBackoffice, uploadRouter);
 backofficeRouter.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
   const html = swaggerUi.generateHTML(swaggerFile);
   res.send(html);
@@ -37,5 +38,3 @@ backofficeRouter.use(
   maintenanceRouter,
 );
 backofficeRouter.use('/companies', authMiddleware, isBackoffice, companyRouter);
-
-backofficeRouter.use('/upload', authMiddleware, isBackoffice, uploadRouter);

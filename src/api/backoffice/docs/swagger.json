@@ -66,7 +66,7 @@
                 "properties": {
                   "email": {
                     "type": "string",
-                    "default": "admin@gmail.com"
+                    "default": "backoffice@gmail.com"
                   },
                   "password": {
                     "type": "string",
@@ -702,7 +702,7 @@
     "/backoffice/Maintenance/edit": {
       "put": {
         "tags": ["Maintenance"],
-        "summary": "Edita uma manutenção. (Cria um novo registro para não afetar registros anteriores).",
+        "summary": "Edita uma manutenção.",
         "security": [
           {
             "bearerAuth": []
