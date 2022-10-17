@@ -10,3 +10,6 @@ export const categoryRouter = Router();
 
 categoryRouter.post('/create', createCategory);
 // categoryRouter.put('/edit', editCategory);
+
+// categoryRouter.delete('/delete', deleteCategory);
+// categoryRouter.get('/list', listCategory);
