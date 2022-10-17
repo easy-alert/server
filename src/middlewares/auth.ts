@@ -26,10 +26,11 @@ export const authMiddleware = (
     const secret: any = process.env.JWT_SECRET;
 
     const decoded = verify(token, secret);
-    const { userId, Permissions } = decoded as Itoken;
+    const { userId, Permissions, Company } = decoded as Itoken;
 
     req.userId = userId;
     req.Permissions = Permissions;
+    req.Company = Company;
 
     next();
   } catch (error) {

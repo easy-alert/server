@@ -1,10 +1,9 @@
 // LIBS
 import express from 'express';
 import helmet from 'helmet';
-import swaggerUi from 'swagger-ui-express';
+
 import 'express-async-errors';
 import cors from 'cors';
-import swaggerFile from './docs/swagger.json';
 
 // ROUTES
 import { routes } from './api/index';
@@ -21,7 +20,6 @@ export class App {
     this.middleware();
     this.router();
     this.secure();
-    this.docs();
     this.appError();
   }
 
@@ -36,10 +34,6 @@ export class App {
 
   secure() {
     this.server.use(helmet());
-  }
-
-  docs() {
-    this.server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
   }
 
   appError() {

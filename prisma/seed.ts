@@ -1,51 +1,20 @@
 /* eslint-disable no-console */
-import { Prisma } from '@prisma/client';
-import { hashSync } from 'bcrypt';
+
 import { prisma } from '../src/utils/prismaClient';
+import { SeedServices } from './seedServices';
 
-import { PermissionServices } from '../src/api/permission/services/permissionServices';
-
-const permissionServices = new PermissionServices();
+const seedServices = new SeedServices();
 
 async function main() {
-  // seeds
   console.log('seed is running ...');
-  const permissions: Prisma.PermissionCreateInput[] = [
-    {
-      name: 'Backoffice',
-    },
-    {
-      name: 'User',
-    },
-  ];
 
-  for (const permission of permissions) {
-    await prisma.permission.create({
-      data: permission,
-    });
-    console.log('permission ', permission.name, ' inserted');
-  }
+  await seedServices.createPermissions();
 
-  // admin
-  const admin = await prisma.user.create({
-    data: {
-      name: 'Admin',
-      email: 'admin@gmail.com',
-      passwordHash: hashSync('123123123', 12),
-    },
-  });
+  await seedServices.createAdminBackoffice();
 
-  const permissionAdmin = await permissionServices.findByName({
-    name: 'Backoffice',
-  });
+  await seedServices.createAdminCompany();
 
-  await prisma.userPermissions.create({
-    data: {
-      userId: admin.id,
-      permissionId: permissionAdmin!.id,
-    },
-  });
-  console.log('permission ', permissionAdmin!.name, ' inserted in Admin');
+  await seedServices.createTimeIntervals();
 }
 
 main()

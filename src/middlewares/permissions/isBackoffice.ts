@@ -2,7 +2,7 @@
 import { Response, Request, NextFunction } from 'express';
 
 // CLASS
-import { PermissionServices } from '../../api/permission/services/permissionServices';
+import { PermissionServices } from '../../api/shared/permission/services/permissionServices';
 
 const permissionServices = new PermissionServices();
 
@@ -14,7 +14,7 @@ export const isBackoffice = async (
   const permissions = req.Permissions;
 
   await permissionServices.checkPermission({
-    userPermissions: permissions,
+    UserPermissions: permissions,
     permission: 'Backoffice',
   });
 

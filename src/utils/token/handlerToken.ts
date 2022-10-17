@@ -3,7 +3,7 @@ import { sign } from 'jsonwebtoken';
 import 'dotenv/config';
 
 // TYPES
-import { Itoken } from './@types';
+import { Itoken } from './types';
 
 export class HandlerToken {
   generateToken({ tokenData }: { tokenData: Itoken }) {
