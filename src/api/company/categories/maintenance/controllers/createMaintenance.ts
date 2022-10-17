@@ -1,16 +1,18 @@
 import { Request, Response } from 'express';
 
 // CLASS
-import { SharedMaintenanceServices } from '../services/sharedMaintenanceServices';
 import { Validator } from '../../../../../utils/validator/validator';
+import { SharedMaintenanceServices } from '../../../../shared/categories/maintenace/services/sharedMaintenanceServices';
+import { TimeIntervalServices } from '../../../../shared/timeInterval/services/timeIntervalServices';
 
-const maintenanceServices = new SharedMaintenanceServices();
+const sharedMaintenanceServices = new SharedMaintenanceServices();
+
 const validator = new Validator();
+const timeInterval = new TimeIntervalServices();
 
-export async function editMaintenance(req: Request, res: Response) {
+export async function createMaintenance(req: Request, res: Response) {
   const {
-    maintenanceId,
-    ownerCompanyId,
+    categoryId,
     element,
     activity,
     frequency,
@@ -25,7 +27,7 @@ export async function editMaintenance(req: Request, res: Response) {
   } = req.body;
 
   validator.notNull([
-    { label: 'ID da manutenção', variable: maintenanceId },
+    { label: 'ID da categoria', variable: categoryId },
     { label: 'elemento', variable: element },
     { label: 'atividade', variable: activity },
     { label: 'peridiocidade', variable: frequency },
@@ -47,9 +49,13 @@ export async function editMaintenance(req: Request, res: Response) {
     },
   ]);
 
-  await maintenanceServices.edit({
-    maintenanceId,
-    ownerCompanyId,
+  await timeInterval.findById({ timeIntervalId: frequencyTimeIntervalId });
+  await timeInterval.findById({ timeIntervalId: periodTimeIntervalId });
+  await timeInterval.findById({ timeIntervalId: delayTimeIntervalId });
+
+  const maintenace = await sharedMaintenanceServices.create({
+    categoryId,
+    ownerCompanyId: req.Company.id,
     element,
     activity,
     frequency,
@@ -64,6 +70,7 @@ export async function editMaintenance(req: Request, res: Response) {
   });
 
   return res.status(200).json({
+    maintenace,
     ServerMessage: {
       statusCode: 201,
       message: 'Manutenção cadastrada com sucesso.',

@@ -1,6 +1,11 @@
 // PRISMA
 import { prisma } from '../../../../utils/prismaClient';
 
+// CLASS
+import { Validator } from '../../../../utils/validator/validator';
+
+const validator = new Validator();
+
 export class TimeIntervalServices {
   async list() {
     return prisma.timeInterval.findMany({
@@ -24,7 +29,7 @@ export class TimeIntervalServices {
   }
 
   async findById({ timeIntervalId }: { timeIntervalId: string }) {
-    return prisma.timeInterval.findUnique({
+    const timeInterval = await prisma.timeInterval.findUnique({
       select: {
         id: true,
         name: true,
@@ -35,5 +40,11 @@ export class TimeIntervalServices {
         id: timeIntervalId,
       },
     });
+
+    validator.notNull([
+      { label: 'ID do tempo de intervalo', variable: timeInterval },
+    ]);
+
+    return timeInterval;
   }
 }

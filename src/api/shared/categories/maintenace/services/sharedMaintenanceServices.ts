@@ -5,7 +5,7 @@ import { Validator } from '../../../../../utils/validator/validator';
 
 const validator = new Validator();
 
-export class MaintenanceServices {
+export class SharedMaintenanceServices {
   async create({
     categoryId,
     ownerCompanyId,

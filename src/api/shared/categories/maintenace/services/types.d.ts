@@ -1,5 +1,5 @@
 interface IMaintenance {
-  ownerCompanyId: string;
+  ownerCompanyId?: string;
   element: string;
   activity: string;
   frequency: number;
