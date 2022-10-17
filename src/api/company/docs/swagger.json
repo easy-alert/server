@@ -1,0 +1,534 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Easy Alert - Company",
+    "description": "Api do modulo de empresas.",
+    "version": "1.0.0",
+    "contact": {
+      "email": "produto@adalovelace.com.br",
+      "name": "Ada Lovelace"
+    }
+  },
+  "servers": [
+    {
+      "description": "Local Development",
+      "url": "http://localhost:8080/api"
+    },
+    {
+      "description": "//CHANGE HERE",
+      "url": "//CHANGE HERE"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "ServerMessage": {
+        "description": "Mensagem de erro padrão do backend.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ServerMessage": {
+                  "properties": {
+                    "statusCode": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/company/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login do usuário no backoffice.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "default": "company@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "default": 123123123
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "description": "Retorna as informações do usuário e um token válido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "image": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/company/account/edit": {
+      "put": {
+        "tags": ["Account"],
+        "summary": "Edita as informações do usuário e empresa.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "default": "Carlos Pasquali"
+                  },
+                  "email": {
+                    "type": "string",
+                    "default": "carlosdpasqualip@hotmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "default": 123123123
+                  },
+                  "image": {
+                    "type": "string",
+                    "default": "larguei.s3.us-west-2.amazonaws.com/favicon%201-1661888030888.png"
+                  },
+                  "companyName": {
+                    "type": "string",
+                    "default": "Ada lovelace"
+                  },
+                  "CNPJ": {
+                    "type": "string",
+                    "default": "28060992000161"
+                  },
+                  "CPF": {
+                    "type": "string",
+                    "default": "12365172024"
+                  },
+                  "contactNumber": {
+                    "type": "string",
+                    "default": "48996345409"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/company/categories/create": {
+      "post": {
+        "tags": ["Categories"],
+        "summary": "Cria uma nova categoria.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "default": "Sistema hidrossanitário"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/company/categories/list": {
+      "get": {
+        "tags": ["Categories"],
+        "summary": "Lista todas as categorias",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Retorna as categorias encontradas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "Maintenance": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "MaintenanceHistory": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "activity": {
+                                  "type": "string"
+                                },
+                                "frequency": {
+                                  "type": "number"
+                                },
+                                "responsible": {
+                                  "type": "string"
+                                },
+                                "source": {
+                                  "type": "string"
+                                },
+                                "period": {
+                                  "type": "number"
+                                },
+                                "delay": {
+                                  "type": "number"
+                                },
+                                "observation": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/company/categories/edit": {
+      "put": {
+        "tags": ["Categories"],
+        "summary": "edita uma categoria.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "categoryId": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string",
+                    "default": "Sistema hidrossanitário Atualizado"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/company/categories/delete": {
+      "delete": {
+        "tags": ["Categories"],
+        "summary": "deleta uma categoria. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "categoryId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/company/Maintenance/create": {
+      "post": {
+        "tags": ["Maintenance"],
+        "summary": "Cria uma manutenção em uma categoria.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "categoryId": {
+                    "type": "string"
+                  },
+                  "ownerCompanyId": {
+                    "type": "string",
+                    "default": null
+                  },
+                  "element": {
+                    "type": "string",
+                    "default": "Ar condicionado, Paredes"
+                  },
+                  "activity": {
+                    "type": "string",
+                    "default": "Pintar Paredes"
+                  },
+                  "frequency": {
+                    "type": "number",
+                    "default": 3
+                  },
+                  "frequencyTimeIntervalId": {
+                    "type": "string"
+                  },
+                  "responsible": {
+                    "type": "string",
+                    "default": "Construtora"
+                  },
+                  "source": {
+                    "type": "string",
+                    "default": "NBR 5674:2012;"
+                  },
+                  "period": {
+                    "type": "number",
+                    "default": 2
+                  },
+                  "periodTimeIntervalId": {
+                    "type": "string"
+                  },
+                  "delay": {
+                    "type": "number",
+                    "default": 3
+                  },
+                  "delayTimeIntervalId": {
+                    "type": "string"
+                  },
+                  "observation": {
+                    "type": "string",
+                    "default": "A obra deve ser concluída o mais rapido possível."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/company/Maintenance/edit": {
+      "put": {
+        "tags": ["Maintenance"],
+        "summary": "Edita uma manutenção. (Cria um novo registro para não afetar registros anteriores).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "maintenanceId": {
+                    "type": "string"
+                  },
+                  "element": {
+                    "type": "string",
+                    "default": "Ar condicionado, Paredes"
+                  },
+                  "activity": {
+                    "type": "string",
+                    "default": "Pintar Paredes"
+                  },
+                  "frequencyTimeIntervalId": {
+                    "type": "string"
+                  },
+                  "responsible": {
+                    "type": "string",
+                    "default": "Construtora"
+                  },
+                  "source": {
+                    "type": "string",
+                    "default": "NBR 5674:2012;"
+                  },
+                  "period": {
+                    "type": "number",
+                    "default": 2
+                  },
+                  "periodTimeIntervalId": {
+                    "type": "string"
+                  },
+                  "delay": {
+                    "type": "number",
+                    "default": 3
+                  },
+                  "delayTimeIntervalId": {
+                    "type": "string"
+                  },
+                  "observation": {
+                    "type": "string",
+                    "default": "A obra deve ser concluída o mais rapido possível."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    }
+  }
+}
