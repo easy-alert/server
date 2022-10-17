@@ -18,14 +18,13 @@ import { listTimeIntervals } from '../shared/timeInterval/controllers/listTimeIn
 // ROUTES
 export const companyRouter: Router = Router();
 
+companyRouter.use('/auth', authRouter);
+companyRouter.get('/timeinterval/list', listTimeIntervals);
 companyRouter.use('/upload', authMiddleware, isCompany, uploadRouter);
 companyRouter.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
   const html = swaggerUi.generateHTML(swaggerFile);
   res.send(html);
 });
 
-companyRouter.use('/auth', authRouter);
 companyRouter.use('/account', authMiddleware, isCompany, accountRouter);
-companyRouter.use('/companies', authMiddleware, isCompany, companyRouter);
 companyRouter.use('/categories', authMiddleware, isCompany, categoryRouter);
-companyRouter.get('/timeinterval/list', listTimeIntervals);
