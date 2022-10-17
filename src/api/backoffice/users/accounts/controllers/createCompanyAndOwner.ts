@@ -39,8 +39,6 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     { label: 'numero para contato', variable: contactNumber },
     { label: 'imagem', variable: image },
   ]);
-  let checkCPF = null;
-  let checkCNPJ = null;
 
   const checkUser = await userServices.findByEmail({ email });
   validator.cannotExists([{ label: 'e-mail', variable: checkUser }]);
@@ -52,11 +50,11 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     });
   }
   if (CNPJ) {
-    checkCNPJ = await sharedCompanyServices.findByCNPJ({ CNPJ });
+    const checkCNPJ = await sharedCompanyServices.findByCNPJ({ CNPJ });
     validator.cannotExists([{ label: 'CNPJ', variable: checkCNPJ }]);
   }
   if (CPF) {
-    checkCPF = await sharedCompanyServices.findByCPF({ CPF });
+    const checkCPF = await sharedCompanyServices.findByCPF({ CPF });
     validator.cannotExists([{ label: 'CPF', variable: checkCPF }]);
   }
 
@@ -87,7 +85,10 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     owner: true,
   });
 
-  return res
-    .status(200)
-    .json({ statusCode: 200, message: 'Usuário cadastrado com sucesso.' });
+  return res.status(200).json({
+    ServerMessage: {
+      statusCode: 200,
+      message: 'Usuário cadastrado com sucesso.',
+    },
+  });
 }

@@ -12,7 +12,9 @@ export async function editCompanyAndOwner(req: Request, res: Response) {
   });
 
   return res.status(200).json({
-    statusCode: 200,
-    message: `Informações atualizadas com sucesso.`,
+    ServerMessage: {
+      statusCode: 200,
+      message: `Informações atualizadas com sucesso.`,
+    },
   });
 }

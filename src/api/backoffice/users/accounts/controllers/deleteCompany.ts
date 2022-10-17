@@ -19,7 +19,9 @@ export async function deleteCompany(req: Request, res: Response) {
   });
 
   return res.status(200).json({
-    statusCode: 200,
-    message: `Empresa excluída com sucesso.`,
+    ServerMessage: {
+      statusCode: 200,
+      message: `Empresa excluída com sucesso.`,
+    },
   });
 }

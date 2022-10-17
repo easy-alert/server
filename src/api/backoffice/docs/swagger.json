@@ -619,7 +619,7 @@
       }
     },
 
-    "/backoffice/Maintenance/create": {
+    "/backoffice/maintenances/create": {
       "post": {
         "tags": ["Maintenance"],
         "summary": "Cria uma manutenção em uma categoria.",
@@ -699,7 +699,7 @@
       }
     },
 
-    "/backoffice/Maintenance/edit": {
+    "/backoffice/maintenances/edit": {
       "put": {
         "tags": ["Maintenance"],
         "summary": "Edita uma manutenção.",

@@ -25,7 +25,9 @@ export async function deleteCategory(req: Request, res: Response) {
   await categoryServices.delete({ categoryId });
 
   return res.status(200).json({
-    statusCode: 201,
-    message: 'Categoria excluída com sucesso.',
+    ServerMessage: {
+      statusCode: 201,
+      message: 'Categoria excluída com sucesso.',
+    },
   });
 }

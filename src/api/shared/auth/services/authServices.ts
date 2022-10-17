@@ -66,9 +66,12 @@ export class AuthServices {
       where: { email: email.toLowerCase() },
     })) as IUser;
 
-    validator.notNull([
-      { label: 'E-mail ou senha incorretos.', variable: User },
-    ]);
+    if (!User) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'E-mail ou senha incorretos.',
+      });
+    }
 
     return User;
   }

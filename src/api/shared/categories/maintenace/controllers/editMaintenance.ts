@@ -64,7 +64,9 @@ export async function editMaintenance(req: Request, res: Response) {
   });
 
   return res.status(200).json({
-    statusCode: 201,
-    message: 'Manutenção cadastrada com sucesso.',
+    ServerMessage: {
+      statusCode: 201,
+      message: 'Manutenção cadastrada com sucesso.',
+    },
   });
 }

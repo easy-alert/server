@@ -28,7 +28,10 @@ export async function editCategory(req: Request, res: Response) {
 
   await sharedCategoryServices.edit({ name, categoryId });
 
-  return res
-    .status(200)
-    .json({ statusCode: 200, message: 'Categoria editada com sucesso.' });
+  return res.status(200).json({
+    ServerMessage: {
+      statusCode: 200,
+      message: 'Categoria editada com sucesso.',
+    },
+  });
 }

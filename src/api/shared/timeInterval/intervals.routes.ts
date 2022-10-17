@@ -2,7 +2,7 @@
 import { Router } from 'express';
 
 // FUNCTIONS
-import { listTimeIntervals } from './listTimeIntervals';
+import { listTimeIntervals } from './controllers/listTimeIntervals';
 
 // ROUTES
 export const TimeIntervalRouter = Router();
