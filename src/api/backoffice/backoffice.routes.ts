@@ -40,4 +40,4 @@ backofficeRouter.use(
 );
 backofficeRouter.use('/companies', authMiddleware, isBackoffice, companyRouter);
 
-companyRouter.get('/timeinterval/list', listTimeIntervals);
+backofficeRouter.get('/timeinterval/list', listTimeIntervals);
