@@ -18,7 +18,7 @@ export async function createCategory(req: Request, res: Response) {
 
   const category = await sharedCategoryServices.create({
     name,
-    ownerCompanyId: req.userId,
+    ownerCompanyId: req.Company.id,
   });
 
   return res.status(200).json({

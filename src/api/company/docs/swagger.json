@@ -116,6 +116,7 @@
         }
       }
     },
+
     "/company/account/edit": {
       "put": {
         "tags": ["Account"],
@@ -200,6 +201,166 @@
                   "name": {
                     "type": "string",
                     "default": "Sistema hidrossanitário"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/company/categories/list": {
+      "get": {
+        "tags": ["Categories"],
+        "summary": "Lista todas as categorias",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Retorna as categorias encontradas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "Maintenance": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "MaintenanceHistory": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "activity": {
+                                  "type": "string"
+                                },
+                                "frequency": {
+                                  "type": "number"
+                                },
+                                "responsible": {
+                                  "type": "string"
+                                },
+                                "source": {
+                                  "type": "string"
+                                },
+                                "period": {
+                                  "type": "number"
+                                },
+                                "delay": {
+                                  "type": "number"
+                                },
+                                "observation": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/company/categories/edit": {
+      "put": {
+        "tags": ["Categories"],
+        "summary": "edita uma categoria.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "categoryId": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string",
+                    "default": "Sistema hidrossanitário Atualizado"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/company/categories/delete": {
+      "delete": {
+        "tags": ["Categories"],
+        "summary": "deleta uma categoria. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "categoryId": {
+                    "type": "string"
                   }
                 }
               }

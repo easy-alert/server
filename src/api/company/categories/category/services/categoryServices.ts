@@ -14,7 +14,13 @@ export class CategoryServices {
     });
   } // criar logica de nao excluir caso alguem use
 
-  async list({ search }: { search: string }) {
+  async list({
+    search,
+    ownerCompanyId,
+  }: {
+    search: string;
+    ownerCompanyId: string;
+  }) {
     return prisma.category.findMany({
       select: {
         id: true,
@@ -26,6 +32,7 @@ export class CategoryServices {
           contains: search,
           mode: 'insensitive',
         },
+        ownerCompanyId,
       },
       orderBy: {
         name: 'asc',
