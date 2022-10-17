@@ -485,6 +485,10 @@
                     "type": "string",
                     "default": "Pintar Paredes"
                   },
+                  "frequency": {
+                    "type": "number",
+                    "default": 2
+                  },
                   "frequencyTimeIntervalId": {
                     "type": "string"
                   },

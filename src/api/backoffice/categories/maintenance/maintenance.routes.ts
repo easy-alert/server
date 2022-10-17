@@ -2,8 +2,8 @@
 import { Router } from 'express';
 
 // FUNCTIONS
-import { editMaintenance } from '../../../shared/categories/maintenace/controllers/editMaintenance';
 import { createMaintenance } from './controllers/createMaintenance';
+import { editMaintenance } from './controllers/editMaintenance';
 
 export const maintenanceRouter = Router();
 

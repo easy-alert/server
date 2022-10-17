@@ -1,16 +1,18 @@
 import { Request, Response } from 'express';
+import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
 // CLASS
-import { SharedMaintenanceServices } from '../services/sharedMaintenanceServices';
 import { Validator } from '../../../../../utils/validator/validator';
+import { SharedMaintenanceServices } from '../../../../shared/categories/maintenace/services/sharedMaintenanceServices';
+import { TimeIntervalServices } from '../../../../shared/timeInterval/services/timeIntervalServices';
 
-const maintenanceServices = new SharedMaintenanceServices();
+const sharedMaintenanceServices = new SharedMaintenanceServices();
 const validator = new Validator();
+const timeIntervalServices = new TimeIntervalServices();
 
 export async function editMaintenance(req: Request, res: Response) {
   const {
     maintenanceId,
-    ownerCompanyId,
     element,
     activity,
     frequency,
@@ -47,9 +49,24 @@ export async function editMaintenance(req: Request, res: Response) {
     },
   ]);
 
-  await maintenanceServices.edit({
+  const maintenace = await sharedMaintenanceServices.findById({
     maintenanceId,
-    ownerCompanyId,
+  });
+
+  if (maintenace?.ownerCompanyId !== null) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: `Você não possui permissão para executar esta ação, pois essa manutenção pertence a outra empresa.`,
+    });
+  }
+  await timeIntervalServices.findById({
+    timeIntervalId: frequencyTimeIntervalId,
+  });
+  await timeIntervalServices.findById({ timeIntervalId: periodTimeIntervalId });
+  await timeIntervalServices.findById({ timeIntervalId: delayTimeIntervalId });
+
+  await sharedMaintenanceServices.edit({
+    maintenanceId,
     element,
     activity,
     frequency,
@@ -66,7 +83,7 @@ export async function editMaintenance(req: Request, res: Response) {
   return res.status(200).json({
     ServerMessage: {
       statusCode: 201,
-      message: 'Manutenção cadastrada com sucesso.',
+      message: 'Manutenção atualizada com sucesso.',
     },
   });
 }

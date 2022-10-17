@@ -8,7 +8,7 @@ import { TimeIntervalServices } from '../../../../shared/timeInterval/services/t
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 
 const validator = new Validator();
-const timeInterval = new TimeIntervalServices();
+const timeIntervalServices = new TimeIntervalServices();
 
 export async function createMaintenance(req: Request, res: Response) {
   const {
@@ -49,11 +49,13 @@ export async function createMaintenance(req: Request, res: Response) {
     },
   ]);
 
-  await timeInterval.findById({ timeIntervalId: frequencyTimeIntervalId });
-  await timeInterval.findById({ timeIntervalId: periodTimeIntervalId });
-  await timeInterval.findById({ timeIntervalId: delayTimeIntervalId });
+  await timeIntervalServices.findById({
+    timeIntervalId: frequencyTimeIntervalId,
+  });
+  await timeIntervalServices.findById({ timeIntervalId: periodTimeIntervalId });
+  await timeIntervalServices.findById({ timeIntervalId: delayTimeIntervalId });
 
-  const maintenace = await sharedMaintenanceServices.create({
+  const maintenance = await sharedMaintenanceServices.create({
     categoryId,
     ownerCompanyId: req.Company.id,
     element,
@@ -70,7 +72,7 @@ export async function createMaintenance(req: Request, res: Response) {
   });
 
   return res.status(200).json({
-    maintenace,
+    maintenance,
     ServerMessage: {
       statusCode: 201,
       message: 'Manutenção cadastrada com sucesso.',

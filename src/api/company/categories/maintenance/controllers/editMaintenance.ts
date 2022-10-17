@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
 // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
@@ -7,11 +8,11 @@ import { TimeIntervalServices } from '../../../../shared/timeInterval/services/t
 
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 const validator = new Validator();
-const timeInterval = new TimeIntervalServices();
+const timeIntervalServices = new TimeIntervalServices();
 
-export async function createMaintenance(req: Request, res: Response) {
+export async function editMaintenance(req: Request, res: Response) {
   const {
-    categoryId,
+    maintenanceId,
     element,
     activity,
     frequency,
@@ -26,7 +27,7 @@ export async function createMaintenance(req: Request, res: Response) {
   } = req.body;
 
   validator.notNull([
-    { label: 'ID da categoria', variable: categoryId },
+    { label: 'ID da manutenção', variable: maintenanceId },
     { label: 'elemento', variable: element },
     { label: 'atividade', variable: activity },
     { label: 'frequência', variable: frequency },
@@ -48,12 +49,25 @@ export async function createMaintenance(req: Request, res: Response) {
     },
   ]);
 
-  await timeInterval.findById({ timeIntervalId: frequencyTimeIntervalId });
-  await timeInterval.findById({ timeIntervalId: periodTimeIntervalId });
-  await timeInterval.findById({ timeIntervalId: delayTimeIntervalId });
+  const maintenace = await sharedMaintenanceServices.findById({
+    maintenanceId,
+  });
 
-  const maintenance = await sharedMaintenanceServices.create({
-    categoryId,
+  if (maintenace?.ownerCompanyId !== req.Company.id) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: `Você não possui permissão para executar esta ação, pois essa manutenção pertence a outra empresa.`,
+    });
+  }
+  await timeIntervalServices.findById({
+    timeIntervalId: frequencyTimeIntervalId,
+  });
+  await timeIntervalServices.findById({ timeIntervalId: periodTimeIntervalId });
+  await timeIntervalServices.findById({ timeIntervalId: delayTimeIntervalId });
+
+  await sharedMaintenanceServices.edit({
+    maintenanceId,
+    ownerCompanyId: req.Company.id,
     element,
     activity,
     frequency,
@@ -68,10 +82,9 @@ export async function createMaintenance(req: Request, res: Response) {
   });
 
   return res.status(200).json({
-    maintenance,
     ServerMessage: {
       statusCode: 201,
-      message: 'Manutenção cadastrada com sucesso.',
+      message: 'Manutenção atualizada com sucesso.',
     },
   });
 }

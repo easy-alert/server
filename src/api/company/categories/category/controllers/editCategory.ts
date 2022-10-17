@@ -31,7 +31,7 @@ export async function editCategory(req: Request, res: Response) {
   return res.status(200).json({
     ServerMessage: {
       statusCode: 200,
-      message: 'Categoria editada com sucesso.',
+      message: 'Categoria atualizada com sucesso.',
     },
   });
 }
