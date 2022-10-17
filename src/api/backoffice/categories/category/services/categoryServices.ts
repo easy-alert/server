@@ -19,7 +19,45 @@ export class CategoryServices {
       select: {
         id: true,
         name: true,
-        Maintenances: true,
+        Maintenances: {
+          select: {
+            id: true,
+            element: true,
+            activity: true,
+            frequency: true,
+            delay: true,
+            period: true,
+            responsible: true,
+            source: true,
+            observation: true,
+            ownerCompanyId: true,
+
+            FrequencyTimeInterval: {
+              select: {
+                id: true,
+                name: true,
+                pluralLabel: true,
+                singularLabel: true,
+              },
+            },
+            DelayTimeInterval: {
+              select: {
+                id: true,
+                name: true,
+                pluralLabel: true,
+                singularLabel: true,
+              },
+            },
+            PeriodTimeInterval: {
+              select: {
+                id: true,
+                name: true,
+                pluralLabel: true,
+                singularLabel: true,
+              },
+            },
+          },
+        },
       },
       where: {
         name: {

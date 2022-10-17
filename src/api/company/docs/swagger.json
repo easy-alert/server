@@ -379,7 +379,7 @@
       }
     },
 
-    "/company/Maintenance/create": {
+    "/company/maintenances/create": {
       "post": {
         "tags": ["Maintenance"],
         "summary": "Cria uma manutenção em uma categoria.",
@@ -399,8 +399,7 @@
                     "type": "string"
                   },
                   "ownerCompanyId": {
-                    "type": "string",
-                    "default": null
+                    "type": "string"
                   },
                   "element": {
                     "type": "string",
@@ -459,7 +458,7 @@
       }
     },
 
-    "/company/Maintenance/edit": {
+    "/company/maintenances/edit": {
       "put": {
         "tags": ["Maintenance"],
         "summary": "Edita uma manutenção. (Cria um novo registro para não afetar registros anteriores).",
