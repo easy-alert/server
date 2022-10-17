@@ -441,10 +441,6 @@
                   "name": {
                     "type": "string",
                     "default": "Sistema hidrossanitário"
-                  },
-                  "ownerCompanyId": {
-                    "type": "string",
-                    "default": null
                   }
                 }
               }

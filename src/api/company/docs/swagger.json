@@ -180,6 +180,44 @@
         }
       }
     },
+
+    "/company/categories/create": {
+      "post": {
+        "tags": ["Categories"],
+        "summary": "Cria uma nova categoria.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "default": "Sistema hidrossanitário"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
     "/company/Maintenance/create": {
       "post": {
         "tags": ["Maintenance"],

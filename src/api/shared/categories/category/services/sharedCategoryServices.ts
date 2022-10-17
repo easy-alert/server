@@ -17,18 +17,29 @@ export class SharedCategoryServices {
     });
   }
 
-  async edit({ name, categoryId }: { name: string; categoryId: string }) {
+  async edit({
+    name,
+    categoryId,
+  }: {
+    name: string;
+    categoryId: string;
+    ownerCompanyId: string;
+  }) {
     await this.findById({ categoryId });
 
     return prisma.category.update({
       data: { name },
-      where: { id: categoryId },
+      where: {
+        id: categoryId,
+      },
     });
   }
 
   async findById({ categoryId }: { categoryId: string }) {
     const category = await prisma.category.findUnique({
-      where: { id: categoryId },
+      where: {
+        id: categoryId,
+      },
     });
 
     validator.needExist([{ label: 'categoria', variable: category }]);

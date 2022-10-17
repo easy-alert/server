@@ -1,4 +1,4 @@
 export interface ICreateCategory {
   name: string;
-  ownerCompanyId: string;
+  ownerCompanyId: string | null;
 }

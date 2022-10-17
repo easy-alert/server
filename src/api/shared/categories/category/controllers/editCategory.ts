@@ -1,6 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { Request, Response } from 'express';
 
 // CLASS
@@ -9,7 +6,7 @@ import { Validator } from '../../../../../utils/validator/validator';
 import { SharedCategoryServices } from '../services/sharedCategoryServices';
 
 const validator = new Validator();
-const categoryServices = new SharedCategoryServices();
+const sharedCategoryServices = new SharedCategoryServices();
 
 export async function editCategory(req: Request, res: Response) {
   const { categoryId, name } = req.body;
@@ -19,7 +16,7 @@ export async function editCategory(req: Request, res: Response) {
     { label: 'nome da categoria', variable: name },
   ]);
 
-  await categoryServices.edit({ name, categoryId });
+  await sharedCategoryServices.edit({ name, categoryId });
 
   return res
     .status(200)

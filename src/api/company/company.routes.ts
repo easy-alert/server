@@ -12,6 +12,7 @@ import { uploadRouter } from '../shared/upload/upload.routes';
 import { authRouter } from './auth/auth.routes';
 import { isCompany } from '../../middlewares/permissions/isCompany';
 import { accountRouter } from './account/account.routes';
+import { categoryRouter } from './categories/category/category.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -25,3 +26,4 @@ companyRouter.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
 companyRouter.use('/auth', authRouter);
 companyRouter.use('/account', authMiddleware, isCompany, accountRouter);
 companyRouter.use('/companies', authMiddleware, isCompany, companyRouter);
+companyRouter.use('/categories', authMiddleware, isCompany, categoryRouter);
