@@ -638,10 +638,6 @@
                   "categoryId": {
                     "type": "string"
                   },
-                  "ownerCompanyId": {
-                    "type": "string",
-                    "default": null
-                  },
                   "element": {
                     "type": "string",
                     "default": "Ar condicionado, Paredes"
@@ -726,6 +722,11 @@
                     "type": "string",
                     "default": "Pintar Paredes"
                   },
+
+                  "frequency": {
+                    "type": "number",
+                    "default": 2
+                  },
                   "frequencyTimeIntervalId": {
                     "type": "string"
                   },
@@ -762,6 +763,42 @@
         },
         "responses": {
           "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/backoffice/maintenances/delete": {
+      "delete": {
+        "tags": ["Maintenance"],
+        "summary": "deleta uma manutenção. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "maintenanceId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
             "$ref": "#/components/responses/ServerMessage"
           },
           "400": {
