@@ -24,7 +24,9 @@ export class CategoryServices {
     return prisma.category.findMany({
       select: {
         id: true,
+        ownerCompanyId: true,
         name: true,
+
         Maintenances: {
           select: {
             id: true,

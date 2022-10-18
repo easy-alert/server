@@ -53,13 +53,12 @@ export async function editMaintenance(req: Request, res: Response) {
     maintenanceId,
   });
 
-  if (maintenace?.ownerCompanyId !== null) {
+  if (maintenace?.ownerCompanyId !== req.Company.id) {
     throw new ServerMessage({
       statusCode: 400,
       message: `Você não possui permissão para executar esta ação, pois essa manutenção pertence a outra empresa.`,
     });
   }
-
   const frequencyData = await timeIntervalServices.findById({
     timeIntervalId: frequencyTimeIntervalId,
   });
@@ -72,7 +71,7 @@ export async function editMaintenance(req: Request, res: Response) {
 
   const maintenance = await sharedMaintenanceServices.edit({
     maintenanceId,
-    ownerCompanyId: null,
+    ownerCompanyId: req.Company.id,
     element,
     activity,
     frequency,

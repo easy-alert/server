@@ -1,18 +1,17 @@
-import { Request, Response } from 'express';
-import { ServerMessage } from '../../../../../utils/messages/serverMessage';
-
 // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
-import { SharedMaintenanceServices } from '../../../../shared/categories/maintenace/services/sharedMaintenanceServices';
-import { TimeIntervalServices } from '../../../../shared/timeInterval/services/timeIntervalServices';
+import { SharedMaintenanceServices } from '../services/sharedMaintenanceServices';
+import { TimeIntervalServices } from '../../../timeInterval/services/timeIntervalServices';
+import { ICreateMaintenceBody } from './types';
 
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 const validator = new Validator();
 const timeIntervalServices = new TimeIntervalServices();
 
-export async function editMaintenance(req: Request, res: Response) {
-  const {
-    maintenanceId,
+export async function sharedCreateMaintenance({
+  ownerCompanyId,
+  body: {
+    categoryId,
     element,
     activity,
     frequency,
@@ -24,10 +23,11 @@ export async function editMaintenance(req: Request, res: Response) {
     delay,
     delayTimeIntervalId,
     observation,
-  } = req.body;
-
+  },
+}: ICreateMaintenceBody) {
+  // #region validation
   validator.notNull([
-    { label: 'ID da manutenção', variable: maintenanceId },
+    { label: 'ID da categoria', variable: categoryId },
     { label: 'elemento', variable: element },
     { label: 'atividade', variable: activity },
     { label: 'frequência', variable: frequency },
@@ -39,7 +39,7 @@ export async function editMaintenance(req: Request, res: Response) {
     { label: 'fonte', variable: source },
     { label: 'período', variable: period },
     {
-      label: 'ID do tempo de intervalo da período',
+      label: 'ID do tempo de intervalo do período',
       variable: periodTimeIntervalId,
     },
     { label: 'delay', variable: delay },
@@ -48,17 +48,6 @@ export async function editMaintenance(req: Request, res: Response) {
       variable: delayTimeIntervalId,
     },
   ]);
-
-  const maintenace = await sharedMaintenanceServices.findById({
-    maintenanceId,
-  });
-
-  if (maintenace?.ownerCompanyId !== null) {
-    throw new ServerMessage({
-      statusCode: 400,
-      message: `Você não possui permissão para executar esta ação, pois essa manutenção pertence a outra empresa.`,
-    });
-  }
 
   const frequencyData = await timeIntervalServices.findById({
     timeIntervalId: frequencyTimeIntervalId,
@@ -70,9 +59,11 @@ export async function editMaintenance(req: Request, res: Response) {
     timeIntervalId: delayTimeIntervalId,
   });
 
-  const maintenance = await sharedMaintenanceServices.edit({
-    maintenanceId,
-    ownerCompanyId: null,
+  // #endregion
+
+  const maintenance = await sharedMaintenanceServices.create({
+    categoryId,
+    ownerCompanyId,
     element,
     activity,
     frequency,
@@ -86,16 +77,10 @@ export async function editMaintenance(req: Request, res: Response) {
     observation,
   });
 
-  return res.status(200).json({
-    maintenance: {
-      ...maintenance,
-      FrequencyTimeInterval: frequencyData,
-      PeriodTimeInterval: periodData,
-      DelayTimeInterval: delayData,
-    },
-    ServerMessage: {
-      statusCode: 201,
-      message: 'Manutenção atualizada com sucesso.',
-    },
-  });
+  return {
+    ...maintenance,
+    FrequencyTimeInterval: frequencyData,
+    PeriodTimeInterval: periodData,
+    DelayTimeInterval: delayData,
+  };
 }
