@@ -346,7 +346,7 @@
     "/company/categories/delete": {
       "delete": {
         "tags": ["Categories"],
-        "summary": "Excluí uma categoria. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
+        "summary": "Exclui uma categoria. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
         "security": [
           {
             "bearerAuth": []
@@ -534,7 +534,7 @@
     "/company/maintenances/delete": {
       "delete": {
         "tags": ["Maintenance"],
-        "summary": "Excluí uma manutenção. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
+        "summary": "Exclui uma manutenção. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
         "security": [
           {
             "bearerAuth": []
