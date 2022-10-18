@@ -7,7 +7,7 @@ import { TimeIntervalServices } from '../../../../shared/timeInterval/services/t
 
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 const validator = new Validator();
-const timeInterval = new TimeIntervalServices();
+const timeIntervalServices = new TimeIntervalServices();
 
 export async function createMaintenance(req: Request, res: Response) {
   const {
@@ -25,6 +25,7 @@ export async function createMaintenance(req: Request, res: Response) {
     observation,
   } = req.body;
 
+  // #region validation
   validator.notNull([
     { label: 'ID da categoria', variable: categoryId },
     { label: 'elemento', variable: element },
@@ -38,7 +39,7 @@ export async function createMaintenance(req: Request, res: Response) {
     { label: 'fonte', variable: source },
     { label: 'período', variable: period },
     {
-      label: 'ID do tempo de intervalo da frequência',
+      label: 'ID do tempo de intervalo do período',
       variable: periodTimeIntervalId,
     },
     { label: 'delay', variable: delay },
@@ -48,9 +49,17 @@ export async function createMaintenance(req: Request, res: Response) {
     },
   ]);
 
-  await timeInterval.findById({ timeIntervalId: frequencyTimeIntervalId });
-  await timeInterval.findById({ timeIntervalId: periodTimeIntervalId });
-  await timeInterval.findById({ timeIntervalId: delayTimeIntervalId });
+  const frequencyData = await timeIntervalServices.findById({
+    timeIntervalId: frequencyTimeIntervalId,
+  });
+  const periodData = await timeIntervalServices.findById({
+    timeIntervalId: periodTimeIntervalId,
+  });
+  const delayData = await timeIntervalServices.findById({
+    timeIntervalId: delayTimeIntervalId,
+  });
+
+  // #endregion
 
   const maintenance = await sharedMaintenanceServices.create({
     categoryId,
@@ -68,7 +77,12 @@ export async function createMaintenance(req: Request, res: Response) {
   });
 
   return res.status(200).json({
-    maintenance,
+    maintenance: {
+      ...maintenance,
+      FrequencyTimeInterval: frequencyData,
+      PeriodTimeInterval: periodData,
+      DelayTimeInterval: delayData,
+    },
     ServerMessage: {
       statusCode: 201,
       message: 'Manutenção cadastrada com sucesso.',

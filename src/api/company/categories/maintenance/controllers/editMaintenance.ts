@@ -39,7 +39,7 @@ export async function editMaintenance(req: Request, res: Response) {
     { label: 'fonte', variable: source },
     { label: 'período', variable: period },
     {
-      label: 'ID do tempo de intervalo da frequência',
+      label: 'ID do tempo de intervalo da período',
       variable: periodTimeIntervalId,
     },
     { label: 'delay', variable: delay },

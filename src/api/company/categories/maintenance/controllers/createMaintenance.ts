@@ -39,7 +39,7 @@ export async function createMaintenance(req: Request, res: Response) {
     { label: 'fonte', variable: source },
     { label: 'período', variable: period },
     {
-      label: 'ID do tempo de intervalo da frequência',
+      label: 'ID do tempo de intervalo do período',
       variable: periodTimeIntervalId,
     },
     { label: 'delay', variable: delay },
@@ -48,12 +48,15 @@ export async function createMaintenance(req: Request, res: Response) {
       variable: delayTimeIntervalId,
     },
   ]);
-
-  await timeIntervalServices.findById({
+  const frequencyData = await timeIntervalServices.findById({
     timeIntervalId: frequencyTimeIntervalId,
   });
-  await timeIntervalServices.findById({ timeIntervalId: periodTimeIntervalId });
-  await timeIntervalServices.findById({ timeIntervalId: delayTimeIntervalId });
+  const periodData = await timeIntervalServices.findById({
+    timeIntervalId: periodTimeIntervalId,
+  });
+  const delayData = await timeIntervalServices.findById({
+    timeIntervalId: delayTimeIntervalId,
+  });
 
   const maintenance = await sharedMaintenanceServices.create({
     categoryId,
@@ -72,7 +75,12 @@ export async function createMaintenance(req: Request, res: Response) {
   });
 
   return res.status(200).json({
-    maintenance,
+    maintenance: {
+      ...maintenance,
+      FrequencyTimeInterval: frequencyData,
+      PeriodTimeInterval: periodData,
+      DelayTimeInterval: delayData,
+    },
     ServerMessage: {
       statusCode: 201,
       message: 'Manutenção cadastrada com sucesso.',
