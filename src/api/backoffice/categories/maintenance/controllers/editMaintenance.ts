@@ -65,7 +65,7 @@ export async function editMaintenance(req: Request, res: Response) {
   await timeIntervalServices.findById({ timeIntervalId: periodTimeIntervalId });
   await timeIntervalServices.findById({ timeIntervalId: delayTimeIntervalId });
 
-  await sharedMaintenanceServices.edit({
+  const maintenance = await sharedMaintenanceServices.edit({
     maintenanceId,
     element,
     activity,
@@ -81,6 +81,7 @@ export async function editMaintenance(req: Request, res: Response) {
   });
 
   return res.status(200).json({
+    maintenance,
     ServerMessage: {
       statusCode: 201,
       message: 'Manutenção atualizada com sucesso.',
