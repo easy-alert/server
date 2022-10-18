@@ -2,7 +2,7 @@
 import { Validator } from '../../../../../utils/validator/validator';
 import { SharedMaintenanceServices } from '../services/sharedMaintenanceServices';
 import { TimeIntervalServices } from '../../../timeInterval/services/timeIntervalServices';
-import { ICreateMaintenceBody } from './types';
+import { ICreateMaintenanceBody } from './types';
 
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 const validator = new Validator();
@@ -24,7 +24,10 @@ export async function sharedCreateMaintenance({
     delayTimeIntervalId,
     observation,
   },
-}: ICreateMaintenceBody) {
+}: {
+  ownerCompanyId: string | null;
+  body: ICreateMaintenanceBody;
+}) {
   // #region validation
   validator.notNull([
     { label: 'ID da categoria', variable: categoryId },

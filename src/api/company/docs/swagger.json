@@ -398,9 +398,7 @@
                   "categoryId": {
                     "type": "string"
                   },
-                  "ownerCompanyId": {
-                    "type": "string"
-                  },
+
                   "element": {
                     "type": "string",
                     "default": "Ar condicionado, Paredes"

@@ -638,10 +638,6 @@
                   "categoryId": {
                     "type": "string"
                   },
-                  "ownerCompanyId": {
-                    "type": "string",
-                    "default": null
-                  },
                   "element": {
                     "type": "string",
                     "default": "Ar condicionado, Paredes"
@@ -725,6 +721,11 @@
                   "activity": {
                     "type": "string",
                     "default": "Pintar Paredes"
+                  },
+
+                  "frequency": {
+                    "type": "number",
+                    "default": 2
                   },
                   "frequencyTimeIntervalId": {
                     "type": "string"

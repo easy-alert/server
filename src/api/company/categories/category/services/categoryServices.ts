@@ -21,7 +21,7 @@ export class CategoryServices {
     search: string;
     ownerCompanyId: string;
   }) {
-    return prisma.category.findMany({
+    const defaultCategories = await prisma.category.findMany({
       select: {
         id: true,
         ownerCompanyId: true,
@@ -65,21 +65,82 @@ export class CategoryServices {
               },
             },
           },
-          where: {
-            ownerCompanyId,
-          },
         },
       },
       where: {
-        name: {
-          contains: search,
-          mode: 'insensitive',
+        AND: {
+          name: {
+            contains: search,
+            mode: 'insensitive',
+          },
+          ownerCompanyId: null,
         },
-        ownerCompanyId,
       },
       orderBy: {
         name: 'asc',
       },
     });
+
+    const companyCategories = await prisma.category.findMany({
+      select: {
+        id: true,
+        ownerCompanyId: true,
+        name: true,
+
+        Maintenances: {
+          select: {
+            id: true,
+            element: true,
+            activity: true,
+            frequency: true,
+            delay: true,
+            period: true,
+            responsible: true,
+            source: true,
+            observation: true,
+            ownerCompanyId: true,
+
+            FrequencyTimeInterval: {
+              select: {
+                id: true,
+                name: true,
+                pluralLabel: true,
+                singularLabel: true,
+              },
+            },
+            DelayTimeInterval: {
+              select: {
+                id: true,
+                name: true,
+                pluralLabel: true,
+                singularLabel: true,
+              },
+            },
+            PeriodTimeInterval: {
+              select: {
+                id: true,
+                name: true,
+                pluralLabel: true,
+                singularLabel: true,
+              },
+            },
+          },
+        },
+      },
+      where: {
+        AND: {
+          name: {
+            contains: search,
+            mode: 'insensitive',
+          },
+          ownerCompanyId,
+        },
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+
+    return [...defaultCategories, ...companyCategories];
   }
 }

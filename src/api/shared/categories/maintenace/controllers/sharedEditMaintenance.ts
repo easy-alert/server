@@ -1,17 +1,18 @@
-import { Request, Response } from 'express';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
 // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
-import { SharedMaintenanceServices } from '../../../../shared/categories/maintenace/services/sharedMaintenanceServices';
-import { TimeIntervalServices } from '../../../../shared/timeInterval/services/timeIntervalServices';
+import { SharedMaintenanceServices } from '../services/sharedMaintenanceServices';
+import { TimeIntervalServices } from '../../../timeInterval/services/timeIntervalServices';
+import { IEditMaintenance } from '../services/types';
 
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 const validator = new Validator();
 const timeIntervalServices = new TimeIntervalServices();
 
-export async function editMaintenance(req: Request, res: Response) {
-  const {
+export async function sharedEditMaintenance({
+  ownerCompanyId,
+  body: {
     maintenanceId,
     element,
     activity,
@@ -24,8 +25,11 @@ export async function editMaintenance(req: Request, res: Response) {
     delay,
     delayTimeIntervalId,
     observation,
-  } = req.body;
-
+  },
+}: {
+  ownerCompanyId: string | null;
+  body: IEditMaintenance;
+}) {
   validator.notNull([
     { label: 'ID da manutenção', variable: maintenanceId },
     { label: 'elemento', variable: element },
@@ -53,7 +57,7 @@ export async function editMaintenance(req: Request, res: Response) {
     maintenanceId,
   });
 
-  if (maintenace?.ownerCompanyId !== req.Company.id) {
+  if (maintenace?.ownerCompanyId !== ownerCompanyId) {
     throw new ServerMessage({
       statusCode: 400,
       message: `Você não possui permissão para executar esta ação, pois essa manutenção pertence a outra empresa.`,
@@ -71,7 +75,7 @@ export async function editMaintenance(req: Request, res: Response) {
 
   const maintenance = await sharedMaintenanceServices.edit({
     maintenanceId,
-    ownerCompanyId: req.Company.id,
+    ownerCompanyId,
     element,
     activity,
     frequency,
@@ -85,16 +89,10 @@ export async function editMaintenance(req: Request, res: Response) {
     observation,
   });
 
-  return res.status(200).json({
-    maintenance: {
-      ...maintenance,
-      FrequencyTimeInterval: frequencyData,
-      PeriodTimeInterval: periodData,
-      DelayTimeInterval: delayData,
-    },
-    ServerMessage: {
-      statusCode: 201,
-      message: 'Manutenção atualizada com sucesso.',
-    },
-  });
+  return {
+    ...maintenance,
+    FrequencyTimeInterval: frequencyData,
+    PeriodTimeInterval: periodData,
+    DelayTimeInterval: delayData,
+  };
 }
