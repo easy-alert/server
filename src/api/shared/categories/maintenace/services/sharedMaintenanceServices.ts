@@ -6,10 +6,6 @@ import { Validator } from '../../../../../utils/validator/validator';
 const validator = new Validator();
 
 export class SharedMaintenanceServices {
-  // # region validation
-
-  // #endregion
-
   async create({
     categoryId,
     ownerCompanyId,
@@ -85,8 +81,16 @@ export class SharedMaintenanceServices {
       where: { id: maintenanceId },
     });
 
-    validator.needExist([{ label: 'manutenção', variable: maintenance }]);
+    validator.needExist([{ label: 'ID da manutenção', variable: maintenance }]);
 
     return maintenance;
   }
+
+  async delete({ maintenanceId }: { maintenanceId: string }) {
+    await this.findById({ maintenanceId });
+
+    await prisma.maintenance.delete({
+      where: { id: maintenanceId },
+    });
+  } // criar logica de nao excluir caso alguem use
 }

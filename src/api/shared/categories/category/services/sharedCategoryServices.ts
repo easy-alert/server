@@ -39,4 +39,12 @@ export class SharedCategoryServices {
 
     return category;
   }
+
+  async delete({ categoryId }: { categoryId: string }) {
+    await this.findById({ categoryId });
+
+    await prisma.category.delete({
+      where: { id: categoryId },
+    });
+  } // criar logica de nao excluir caso alguem use
 }

@@ -10,7 +10,7 @@ export async function editMaintenance(req: Request, res: Response) {
   return res.status(200).json({
     maintenance,
     ServerMessage: {
-      statusCode: 201,
+      statusCode: 200,
       message: 'Manutenção atualizada com sucesso.',
     },
   });
