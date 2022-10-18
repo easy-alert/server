@@ -57,6 +57,9 @@ export class CategoryServices {
               },
             },
           },
+          where: {
+            ownerCompanyId: null,
+          },
         },
       },
       where: {
