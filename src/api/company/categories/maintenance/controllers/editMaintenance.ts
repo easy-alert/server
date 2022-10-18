@@ -59,13 +59,17 @@ export async function editMaintenance(req: Request, res: Response) {
       message: `Você não possui permissão para executar esta ação, pois essa manutenção pertence a outra empresa.`,
     });
   }
-  await timeIntervalServices.findById({
+  const frequencyData = await timeIntervalServices.findById({
     timeIntervalId: frequencyTimeIntervalId,
   });
-  await timeIntervalServices.findById({ timeIntervalId: periodTimeIntervalId });
-  await timeIntervalServices.findById({ timeIntervalId: delayTimeIntervalId });
+  const periodData = await timeIntervalServices.findById({
+    timeIntervalId: periodTimeIntervalId,
+  });
+  const delayData = await timeIntervalServices.findById({
+    timeIntervalId: delayTimeIntervalId,
+  });
 
-  await sharedMaintenanceServices.edit({
+  const maintenance = await sharedMaintenanceServices.edit({
     maintenanceId,
     ownerCompanyId: req.Company.id,
     element,
@@ -82,6 +86,12 @@ export async function editMaintenance(req: Request, res: Response) {
   });
 
   return res.status(200).json({
+    maintenance: {
+      ...maintenance,
+      FrequencyTimeInterval: frequencyData,
+      PeriodTimeInterval: periodData,
+      DelayTimeInterval: delayData,
+    },
     ServerMessage: {
       statusCode: 201,
       message: 'Manutenção atualizada com sucesso.',
