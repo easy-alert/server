@@ -222,7 +222,7 @@
     "/company/categories/list": {
       "get": {
         "tags": ["Categories"],
-        "summary": "Lista todas as categorias",
+        "summary": "Lista todas as categorias.",
         "security": [
           {
             "bearerAuth": []
@@ -306,7 +306,7 @@
     "/company/categories/edit": {
       "put": {
         "tags": ["Categories"],
-        "summary": "edita uma categoria.",
+        "summary": "Edita uma categoria.",
         "security": [
           {
             "bearerAuth": []
@@ -346,7 +346,7 @@
     "/company/categories/delete": {
       "delete": {
         "tags": ["Categories"],
-        "summary": "deleta uma categoria. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
+        "summary": "Excluí uma categoria. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
         "security": [
           {
             "bearerAuth": []
@@ -534,7 +534,7 @@
     "/company/maintenances/delete": {
       "delete": {
         "tags": ["Maintenance"],
-        "summary": "deleta uma manutenção. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
+        "summary": "Excluí uma manutenção. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
         "security": [
           {
             "bearerAuth": []

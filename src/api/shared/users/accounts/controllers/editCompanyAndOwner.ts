@@ -33,14 +33,6 @@ export async function sharedEditCompanyAndOwner({
       message: `Informe um CNPJ ou CPF.`,
     });
   }
-  if (CNPJ) {
-    const checkCNPJ = await sharedCompanyServices.findByCNPJ({ CNPJ });
-    validator.cannotExists([{ label: 'CNPJ', variable: checkCNPJ }]);
-  }
-  if (CPF) {
-    const checkCPF = await sharedCompanyServices.findByCPF({ CPF });
-    validator.cannotExists([{ label: 'CPF', variable: checkCPF }]);
-  }
 
   await userServices.findByEmailForEdit({
     email,

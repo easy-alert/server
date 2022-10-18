@@ -257,7 +257,7 @@
     "/backoffice/companies/edit": {
       "put": {
         "tags": ["Companies"],
-        "summary": "Edita as informações do usuário e empresa.",
+        "summary": "Edita as informações da empresa e do usuário.",
         "security": [
           {
             "bearerAuth": []
@@ -329,7 +329,7 @@
     "/backoffice/companies/list": {
       "get": {
         "tags": ["Companies"],
-        "summary": "Lista todas as empresas",
+        "summary": "Lista todas as empresas.",
         "security": [
           {
             "bearerAuth": []
@@ -462,7 +462,7 @@
     "/backoffice/categories/list": {
       "get": {
         "tags": ["Categories"],
-        "summary": "Lista todas as categorias",
+        "summary": "Lista todas as categorias.",
         "security": [
           {
             "bearerAuth": []
@@ -546,7 +546,7 @@
     "/backoffice/categories/edit": {
       "put": {
         "tags": ["Categories"],
-        "summary": "edita uma categoria.",
+        "summary": "Edita uma categoria.",
         "security": [
           {
             "bearerAuth": []
@@ -586,7 +586,7 @@
     "/backoffice/categories/delete": {
       "delete": {
         "tags": ["Categories"],
-        "summary": "deleta uma categoria. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
+        "summary": "Excluí uma categoria. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
         "security": [
           {
             "bearerAuth": []
@@ -775,7 +775,7 @@
     "/backoffice/maintenances/delete": {
       "delete": {
         "tags": ["Maintenance"],
-        "summary": "deleta uma manutenção. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
+        "summary": "Excluí uma manutenção. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
         "security": [
           {
             "bearerAuth": []
