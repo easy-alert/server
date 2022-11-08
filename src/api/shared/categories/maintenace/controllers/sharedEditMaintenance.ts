@@ -30,26 +30,36 @@ export async function sharedEditMaintenance({
   ownerCompanyId: string | null;
   body: IEditMaintenance;
 }) {
-  validator.notNull([
-    { label: 'ID da manutenção', variable: maintenanceId },
-    { label: 'elemento', variable: element },
-    { label: 'atividade', variable: activity },
-    { label: 'frequência', variable: frequency },
+  validator.check([
+    { label: 'ID da manutenção', variable: maintenanceId, type: 'string' },
+    { label: 'Elemento', variable: element, type: 'string' },
+    { label: 'Atividade', variable: activity, type: 'string' },
+    { label: 'Periodicidade', variable: frequency, type: 'number' },
     {
       label: 'ID do tempo de intervalo da frequência',
       variable: frequencyTimeIntervalId,
+      type: 'string',
     },
-    { label: 'responsável', variable: responsible },
-    { label: 'fonte', variable: source },
-    { label: 'período', variable: period },
+    { label: 'Responsável', variable: responsible, type: 'string' },
+
+    { label: 'Fonte', variable: source, type: 'string' },
+    { label: 'Tempo para resposta', variable: period, type: 'number' },
     {
       label: 'ID do tempo de intervalo da período',
       variable: periodTimeIntervalId,
+      type: 'string',
     },
-    { label: 'delay', variable: delay },
+    { label: 'Delay', variable: delay, type: 'number' },
     {
       label: 'ID do tempo de intervalo do delay',
       variable: delayTimeIntervalId,
+      type: 'string',
+    },
+    {
+      label: 'Observação',
+      variable: observation,
+      type: 'string',
+      isOptional: true,
     },
   ]);
 
