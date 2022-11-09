@@ -187,8 +187,28 @@ model Building {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  BuildingType BuildingType @relation(fields: [buildingTypeId], references: [id], onDelete: Cascade)
-  Company      Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  BuildingType              BuildingType                        @relation(fields: [buildingTypeId], references: [id], onDelete: Cascade)
+  Company                   Company                             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  NotificationConfiguration BuildingNotificationConfiguration[]
 
   @@map("buildings")
+}
+
+model BuildingNotificationConfiguration {
+  id         String @id @unique @default(uuid())
+  buildingId String
+
+  name                     String
+  email                    String
+  emailIsConfirmed         Boolean @default(false)
+  role                     String
+  contactNumber            String
+  contactNumberIsConfirmed Boolean @default(false)
+  isMain                   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Building  Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+
+  @@map("buildingsNotificationsConfigurations")
 }
