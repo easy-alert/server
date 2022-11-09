@@ -52,7 +52,7 @@ export class Validator {
 
   needExist(Vars: IValidator[]) {
     for (const variable of Vars) {
-      if (!variable.variable) {
+      if (variable.variable === null || variable.variable === undefined) {
         throw new ServerMessage({
           statusCode: 404,
           message: `A informação: ${variable.label} não existe na base de dados.`,

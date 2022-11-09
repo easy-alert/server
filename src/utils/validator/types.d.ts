@@ -6,6 +6,6 @@ export interface IValidator {
 export interface IValidatorCheck {
   variable: any;
   label: string;
-  type: 'string' | 'number' | 'boolean';
+  type: 'string' | 'number' | 'boolean' | 'object';
   isOptional?: boolean;
 }

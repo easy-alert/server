@@ -15,6 +15,8 @@ async function main() {
   await seedServices.createAdminCompany();
 
   await seedServices.createTimeIntervals();
+
+  await seedServices.createBuildingsTypes();
 }
 
 main()

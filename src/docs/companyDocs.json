@@ -12,7 +12,7 @@
   "servers": [
     {
       "description": "Local Development",
-      "url": "http://localhost:8080/api"
+      "url": "http://localhost:8080/api/company/"
     },
     {
       "description": "//CHANGE HERE",
@@ -53,7 +53,7 @@
     }
   },
   "paths": {
-    "/company/auth/login": {
+    "/auth/login": {
       "post": {
         "tags": ["Auth"],
         "summary": "Login do usuário no backoffice.",
@@ -117,7 +117,7 @@
       }
     },
 
-    "/company/account/edit": {
+    "/account/edit": {
       "put": {
         "tags": ["Account"],
         "summary": "Edita as informações do usuário e empresa.",
@@ -182,7 +182,7 @@
       }
     },
 
-    "/company/categories/create": {
+    "/categories/create": {
       "post": {
         "tags": ["Categories"],
         "summary": "Cria uma nova categoria.",
@@ -219,7 +219,7 @@
       }
     },
 
-    "/company/categories/list": {
+    "/categories/list": {
       "get": {
         "tags": ["Categories"],
         "summary": "Lista todas as categorias.",
@@ -303,7 +303,7 @@
       }
     },
 
-    "/company/categories/edit": {
+    "/categories/edit": {
       "put": {
         "tags": ["Categories"],
         "summary": "Edita uma categoria.",
@@ -343,7 +343,7 @@
       }
     },
 
-    "/company/categories/delete": {
+    "/categories/delete": {
       "delete": {
         "tags": ["Categories"],
         "summary": "Exclui uma categoria. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
@@ -379,7 +379,7 @@
       }
     },
 
-    "/company/maintenances/create": {
+    "/maintenances/create": {
       "post": {
         "tags": ["Maintenance"],
         "summary": "Cria uma manutenção em uma categoria.",
@@ -456,7 +456,7 @@
       }
     },
 
-    "/company/maintenances/edit": {
+    "/maintenances/edit": {
       "put": {
         "tags": ["Maintenance"],
         "summary": "Edita uma manutenção. (Cria um novo registro para não afetar registros anteriores).",
@@ -531,7 +531,8 @@
         }
       }
     },
-    "/company/maintenances/delete": {
+
+    "/maintenances/delete": {
       "delete": {
         "tags": ["Maintenance"],
         "summary": "Exclui uma manutenção. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
@@ -558,6 +559,52 @@
 
         "responses": {
           "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/create": {
+      "post": {
+        "tags": ["Building"],
+        "summary": "Cria uma edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingTypeId": { "type": "string" },
+                  "name": { "type": "string" },
+                  "cep": { "type": "string" },
+                  "city": { "type": "string" },
+                  "state": { "type": "string" },
+                  "neighborhood": { "type": "string" },
+                  "streetName": { "type": "string" },
+                  "area": { "type": "string" },
+                  "deliveryDate": { "type": "string", "format": "date-time" },
+                  "warrantyExpiration": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "keepNotificationAfterWarrantyEnds": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
             "$ref": "#/components/responses/ServerMessage"
           },
           "400": {
