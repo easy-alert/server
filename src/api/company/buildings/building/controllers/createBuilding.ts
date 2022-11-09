@@ -13,100 +13,91 @@ const buildingTypeServices = new BuildingTypeServices();
 // #endregion
 
 export async function createBuilding(req: Request, res: Response) {
-  const {
-    buildingTypeId,
-    name,
-    cep,
-    city,
-    state,
-    neighborhood,
-    streetName,
-    area,
-    deliveryDate,
-    warrantyExpiration,
-    keepNotificationAfterWarrantyEnds,
-  } = req.body;
+  const data = {
+    ...req.body,
+    companyId: req.Company.id,
+  };
 
   // #region VALIDATIONS
   validator.check([
     {
       label: 'ID do tipo da edificação',
       type: 'string',
-      variable: buildingTypeId,
+      variable: data.buildingTypeId,
     },
     {
       label: 'nome',
       type: 'string',
-      variable: name,
+      variable: data.name,
     },
     {
       label: 'CEP',
       type: 'string',
-      variable: cep,
+      variable: data.cep,
       isOptional: true,
     },
     {
       label: 'Cidade',
       type: 'string',
-      variable: city,
+      variable: data.city,
       isOptional: true,
     },
     {
       label: 'Estado',
       type: 'string',
-      variable: state,
+      variable: data.state,
       isOptional: true,
     },
     {
       label: 'Bairro',
       type: 'string',
-      variable: neighborhood,
+      variable: data.neighborhood,
       isOptional: true,
     },
     {
       label: 'Nome da rua',
       type: 'string',
-      variable: streetName,
+      variable: data.streetName,
       isOptional: true,
     },
     {
       label: 'Nome da rua',
       type: 'string',
-      variable: streetName,
+      variable: data.streetName,
       isOptional: true,
     },
     {
       label: 'Área',
       type: 'string',
-      variable: area,
+      variable: data.area,
       isOptional: true,
     },
     {
       label: 'Data de entrega',
       type: 'string',
-      variable: deliveryDate,
+      variable: data.deliveryDate,
     },
     {
       label: 'Término da garantia',
       type: 'string',
-      variable: warrantyExpiration,
+      variable: data.warrantyExpiration,
     },
     {
       label: 'Notificar após termino da garantia',
       type: 'boolean',
-      variable: keepNotificationAfterWarrantyEnds,
+      variable: data.keepNotificationAfterWarrantyEnds,
     },
   ]);
 
-  await buildingTypeServices.findById({ buildingTypeId });
+  await buildingTypeServices.findById({ buildingTypeId: data.buildingTypeId });
 
   // #endregion
 
-  await buildingServices.create({ data: req.body });
+  await buildingServices.create({ data });
 
   return res.status(200).json({
     ServerMessage: {
-      statusCode: 200,
+      statusCode: 201,
       message: `Edificação cadastrada com sucesso.`,
     },
   });

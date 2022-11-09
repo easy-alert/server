@@ -1,6 +1,7 @@
 // LIBS
 import { Router } from 'express';
 import { createBuilding } from './controllers/createBuilding';
+import { listBuilding } from './controllers/listBuilding';
 
 // FUNCTIONS
 
@@ -8,3 +9,4 @@ import { createBuilding } from './controllers/createBuilding';
 export const buildingRouter = Router();
 
 buildingRouter.post('/create', createBuilding);
+buildingRouter.get('/list', listBuilding);

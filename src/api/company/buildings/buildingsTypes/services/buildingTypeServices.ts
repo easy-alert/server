@@ -20,7 +20,9 @@ export class BuildingTypeServices {
       },
     });
 
-    validator.needExist([{ label: 'Edificação', variable: buildingType }]);
+    validator.needExist([
+      { label: 'Tipo da edificação', variable: buildingType },
+    ]);
 
     return buildingType;
   }

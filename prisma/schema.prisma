@@ -85,7 +85,7 @@ model Company {
 
   Categories   Category[]
   Maintenances Maintenance[]
-  Buildings    BuildingCompanies[]
+  Buildings    Building[]
 
   @@map("companies")
 }
@@ -171,6 +171,7 @@ model BuildingType {
 model Building {
   id             String @id @unique @default(uuid())
   buildingTypeId String
+  companyId      String
 
   name                              String
   cep                               String?
@@ -186,22 +187,8 @@ model Building {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  BuildingType      BuildingType        @relation(fields: [buildingTypeId], references: [id], onDelete: Cascade)
-  BuildingCompanies BuildingCompanies[]
+  BuildingType BuildingType @relation(fields: [buildingTypeId], references: [id], onDelete: Cascade)
+  Company      Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@map("buildings")
-}
-
-model BuildingCompanies {
-  id         String @id @unique @default(uuid())
-  companyId  String
-  buildingId String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  Building Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
-  Company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-
-  @@map("buildingsCompanies")
 }
