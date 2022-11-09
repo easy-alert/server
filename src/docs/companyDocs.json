@@ -696,6 +696,94 @@
           }
         }
       }
+    },
+
+    "/buildings/edit": {
+      "put": {
+        "tags": ["Building"],
+        "summary": "Edita uma edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingId": { "type": "string" },
+                  "data": {
+                    "properties": {
+                      "buildingTypeId": { "type": "string" },
+                      "name": { "type": "string" },
+                      "cep": { "type": "string" },
+                      "city": { "type": "string" },
+                      "state": { "type": "string" },
+                      "neighborhood": { "type": "string" },
+                      "streetName": { "type": "string" },
+                      "area": { "type": "string" },
+                      "deliveryDate": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "warrantyExpiration": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "keepNotificationAfterWarrantyEnds": { "type": "boolean" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/delete": {
+      "delete": {
+        "tags": ["Building"],
+        "summary": "Exclui uma manutenção.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingId": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
     }
   }
 }

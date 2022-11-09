@@ -2,20 +2,49 @@
 import { prisma } from '../../../../../utils/prismaClient';
 
 // TYPES
-import { ICreateBulding, IListBuildings } from './types';
+import { ICreateBuilding, IEditBuilding, IListBuildings } from './types';
 
 // // CLASS
-// import { Validator } from '../../../../../utils/validator/validator';
+import { Validator } from '../../../../../utils/validator/validator';
 
-// const validator = new Validator();
+const validator = new Validator();
 
 // #endregion
 
 export class BuildingServices {
-  async create({ data }: ICreateBulding) {
+  async create({ data }: ICreateBuilding) {
     await prisma.building.create({
       data,
     });
+  }
+
+  async edit({ buildingId, data }: IEditBuilding) {
+    await prisma.building.update({
+      data,
+      where: {
+        id: buildingId,
+      },
+    });
+  }
+
+  async delete({ buildingId }: { buildingId: string }) {
+    await prisma.building.delete({
+      where: {
+        id: buildingId,
+      },
+    });
+  }
+
+  async findById({ buildingTypeId }: { buildingTypeId: string }) {
+    const building = await prisma.building.findUnique({
+      where: {
+        id: buildingTypeId,
+      },
+    });
+
+    validator.needExist([{ label: 'Edificação', variable: building }]);
+
+    return building;
   }
 
   async list({ take = 20, page, search = '', companyId }: IListBuildings) {
