@@ -22,7 +22,7 @@ export async function deleteBuilding(req: Request, res: Response) {
     },
   ]);
 
-  await buildingServices.findById({ buildingTypeId: buildingId });
+  await buildingServices.findById({ buildingId });
 
   // #endregion
 

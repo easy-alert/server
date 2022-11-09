@@ -35,10 +35,10 @@ export class BuildingServices {
     });
   }
 
-  async findById({ buildingTypeId }: { buildingTypeId: string }) {
+  async findById({ buildingId }: { buildingId: string }) {
     const building = await prisma.building.findUnique({
       where: {
-        id: buildingTypeId,
+        id: buildingId,
       },
     });
 
@@ -53,20 +53,8 @@ export class BuildingServices {
         select: {
           id: true,
           name: true,
-          state: true,
           neighborhood: true,
-          streetName: true,
-          area: true,
-          cep: true,
           city: true,
-          deliveryDate: true,
-          warrantyExpiration: true,
-          keepNotificationAfterWarrantyEnds: true,
-          BuildingType: {
-            select: {
-              name: true,
-            },
-          },
         },
         where: {
           name: {
@@ -95,5 +83,31 @@ export class BuildingServices {
     ]);
 
     return { Buildings, buildingsCount };
+  }
+
+  async listDetails({ buildingId }: { buildingId: string }) {
+    return prisma.building.findUnique({
+      select: {
+        id: true,
+        name: true,
+        cep: true,
+        city: true,
+        state: true,
+        neighborhood: true,
+        streetName: true,
+        area: true,
+        deliveryDate: true,
+        warrantyExpiration: true,
+        keepNotificationAfterWarrantyEnds: true,
+        BuildingType: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      where: {
+        id: buildingId,
+      },
+    });
   }
 }
