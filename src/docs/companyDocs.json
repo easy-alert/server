@@ -617,7 +617,7 @@
     "/buildings/list/details/{buildingId}": {
       "get": {
         "tags": ["Building"],
-        "summary": "Lista todas as edificações.",
+        "summary": "Busca os detalhes da edificação.",
         "security": [
           {
             "bearerAuth": []
@@ -638,7 +638,7 @@
 
         "responses": {
           "200": {
-            "description": "Retorna as edificações encontradas.",
+            "description": "Retorna os detalhes da edificação.",
             "content": {
               "application/json": {
                 "schema": {
@@ -662,7 +662,31 @@
                         "type": "string",
                         "format": "date-time"
                       },
-                      "keepNotificationAfterWarrantyEnds": { "type": "boolean" }
+                      "keepNotificationAfterWarrantyEnds": {
+                        "type": "boolean"
+                      },
+                      "BuidingType": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "name": { "type": "string" }
+                        }
+                      },
+                      "NotificationConfiguration": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "id": { "type": "string" },
+                            "name": { "type": "string" },
+                            "email": { "type": "string" },
+                            "emailIsConfirmed": { "type": "boolean" },
+                            "contactNumber": { "type": "string" },
+                            "contactNumberIsConfirmed": { "type": "boolean" },
+                            "role": { "type": "string" },
+                            "isMain": { "type": "boolean" }
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -982,7 +1006,7 @@
     "/buildings/notifications/send/phoneconfirmation": {
       "post": {
         "tags": ["Building Notification Send"],
-        "summary": "Envia.",
+        "summary": "Envia uma notificação para confirmar o número de contato.",
         "security": [
           {
             "bearerAuth": []

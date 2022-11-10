@@ -19,6 +19,18 @@ export class BuildingNotificationConfigurationServices {
     });
   }
 
+  async delete({
+    buildingNotificationConfigurationId,
+  }: {
+    buildingNotificationConfigurationId: string;
+  }) {
+    await prisma.buildingNotificationConfiguration.delete({
+      where: {
+        id: buildingNotificationConfigurationId,
+      },
+    });
+  }
+
   // #region FINDS
 
   async findById({
@@ -179,18 +191,6 @@ export class BuildingNotificationConfigurationServices {
 
   // #endregion
 
-  async delete({
-    buildingNotificationConfigurationId,
-  }: {
-    buildingNotificationConfigurationId: string;
-  }) {
-    await prisma.buildingNotificationConfiguration.delete({
-      where: {
-        id: buildingNotificationConfigurationId,
-      },
-    });
-  }
-
   // #region SEND NOTIFICATIONS
 
   async sendWhatsappConfirmationForReceiveNotifications({
@@ -214,5 +214,5 @@ export class BuildingNotificationConfigurationServices {
       ],
     });
   }
+  // #endregion
 }
-// #endregion

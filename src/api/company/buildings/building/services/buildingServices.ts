@@ -105,6 +105,18 @@ export class BuildingServices {
             name: true,
           },
         },
+        NotificationConfiguration: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            emailIsConfirmed: true,
+            contactNumber: true,
+            contactNumberIsConfirmed: true,
+            role: true,
+            isMain: true,
+          },
+        },
       },
       where: {
         id: buildingId,

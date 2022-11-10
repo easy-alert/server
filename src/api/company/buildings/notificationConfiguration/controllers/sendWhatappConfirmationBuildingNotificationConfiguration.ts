@@ -1,12 +1,15 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+import { HandlerToken } from '../../../../../utils/token/handlerToken';
 
 // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
 import { BuildingNotificationConfigurationServices } from '../services/buildingNotificationConfigurationServices';
 
 const validator = new Validator();
+const handlerToken = new HandlerToken();
+
 const buildingNotificationConfigurationServices =
   new BuildingNotificationConfigurationServices();
 
@@ -18,6 +21,7 @@ export async function sendWhatappConfirmationBuildingNotificationConfiguration(
 ) {
   const { buildingNotificationConfigurationId } = req.body;
 
+  // #region VALIDATIONS
   validator.check([
     {
       label: 'ID da configuração da edificação ',
@@ -39,6 +43,17 @@ export async function sendWhatappConfirmationBuildingNotificationConfiguration(
         'O usuário não esta configurado como principal para receber notificações.',
     });
   }
+  // #endregion
+
+  // #region TOKEN
+  const token = handlerToken.generateToken({
+    tokenData: {
+      id: BuildingNotificationConfigurationServices,
+    },
+  });
+
+  await handlerToken.saveTokenInDatabase({ token });
+  // #endregion
 
   // const notificationStatus =
   //   await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(

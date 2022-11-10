@@ -70,7 +70,7 @@ export async function createBuildingNotificationConfiguration(
 
     validator.cannotExists([
       {
-        label: 'Usuário principal para receber notificação',
+        label: 'Usuário principal',
         variable: userMainForNotification,
       },
     ]);
