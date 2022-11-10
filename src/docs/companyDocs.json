@@ -833,7 +833,7 @@
     "/buildings/delete": {
       "delete": {
         "tags": ["Building"],
-        "summary": "Exclui uma manutenção.",
+        "summary": "Exclui uma edificação.",
         "security": [
           {
             "bearerAuth": []
@@ -864,7 +864,7 @@
       }
     },
 
-    "/buildings/notification/create": {
+    "/buildings/notifications/create": {
       "post": {
         "tags": ["Building Notification"],
         "summary": "Cria um novo usuário para receber notificações sobre a edificação.",
@@ -893,6 +893,83 @@
         },
         "responses": {
           "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/notifications/edit": {
+      "put": {
+        "tags": ["Building Notification"],
+        "summary": "Edita o usuário que recebe notificações sobre a edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingNotificationConfigurationId": { "type": "string" },
+                  "buildingId": { "type": "string" },
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "name": { "type": "string" },
+                      "email": { "type": "string" },
+                      "role": { "type": "string" },
+                      "contactNumber": { "type": "string" },
+                      "isMain": { "type": "boolean" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+    "/buildings/notifications/delete": {
+      "delete": {
+        "tags": ["Building Notification"],
+        "summary": "Exclui uma configuração de notificação da edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingNotificationConfigurationId": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
             "$ref": "#/components/responses/ServerMessage"
           },
           "400": {

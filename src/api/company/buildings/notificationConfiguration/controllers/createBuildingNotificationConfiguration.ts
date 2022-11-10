@@ -42,12 +42,12 @@ export async function createBuildingNotificationConfiguration(
     {
       label: 'Número de telefone',
       type: 'string',
-      variable: data.role,
+      variable: data.contactNumber,
     },
     {
       label: 'Número de telefone Principal',
-      type: 'string',
-      variable: data.role,
+      type: 'boolean',
+      variable: data.isMain,
       isOptional: true,
     },
   ]);
@@ -61,6 +61,20 @@ export async function createBuildingNotificationConfiguration(
     contactNumber: data.contactNumber,
     buildingId: data.buildingId,
   });
+
+  if (data.isMain) {
+    const userMainForNotification =
+      await buildingNotificationConfigurationServices.findNotificationConfigurationMainForCreate(
+        { buildingId: data.buildingId },
+      );
+
+    validator.cannotExists([
+      {
+        label: 'Usuário principal para receber notificação',
+        variable: userMainForNotification,
+      },
+    ]);
+  }
 
   // #endregion
 

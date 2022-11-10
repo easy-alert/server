@@ -151,12 +151,14 @@ export class SeedServices {
   }
 
   async createBuildingsTypes() {
+    console.log('\n\nstarting Building Types creation ...');
+
     const buildingsTypes = [
-      { name: 'casa' },
-      { name: 'prédio' },
-      { name: 'condomínio horizontal' },
-      { name: 'reformas' },
       { name: 'ampliações' },
+      { name: 'casa' },
+      { name: 'condomínio horizontal' },
+      { name: 'prédio' },
+      { name: 'reformas' },
       { name: 'outro' },
     ];
 

@@ -13,7 +13,11 @@ import {
   listBuildingDetails,
 } from './building/controllers';
 
-import { createBuildingNotificationConfiguration } from './notificationConfiguration/controllers';
+import {
+  createBuildingNotificationConfiguration,
+  deleteBuildingNotificationConfiguration,
+  editBuildingNotificationConfiguration,
+} from './notificationConfiguration/controllers';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -30,6 +34,15 @@ buildingRouter.get('/types/list', listBuildingTypes);
 
 // NOTIFICATIONS
 buildingRouter.post(
-  '/notification/create',
+  '/notifications/create',
   createBuildingNotificationConfiguration,
+);
+
+buildingRouter.put(
+  '/notifications/edit',
+  editBuildingNotificationConfiguration,
+);
+buildingRouter.delete(
+  '/notifications/delete',
+  deleteBuildingNotificationConfiguration,
 );

@@ -102,7 +102,7 @@ export async function editBuilding(req: Request, res: Response) {
   return res.status(200).json({
     ServerMessage: {
       statusCode: 201,
-      message: `Edificação editado com sucesso.`,
+      message: `Edificação editada com sucesso.`,
     },
   });
 }

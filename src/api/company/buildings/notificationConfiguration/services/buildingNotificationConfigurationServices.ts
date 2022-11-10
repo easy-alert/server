@@ -18,6 +18,30 @@ export class BuildingNotificationConfigurationServices {
     });
   }
 
+  // #region FINDS
+
+  async findById({
+    buildingNotificationConfigurationId,
+  }: {
+    buildingNotificationConfigurationId: string;
+  }) {
+    const buildingConfigurationNotification =
+      await prisma.buildingNotificationConfiguration.findUnique({
+        where: {
+          id: buildingNotificationConfigurationId,
+        },
+      });
+
+    validator.needExist([
+      {
+        label: 'Configuração de notificação',
+        variable: buildingConfigurationNotification,
+      },
+    ]);
+
+    return buildingConfigurationNotification;
+  }
+
   async findByEmail({
     email,
     buildingId,
@@ -64,96 +88,105 @@ export class BuildingNotificationConfigurationServices {
     ]);
   }
 
-  // async edit({ buildingId, data }: IEditBuilding) {
-  //   await prisma.building.update({
-  //     data,
-  //     where: {
-  //       id: buildingId,
-  //     },
-  //   });
-  // }
+  async findByEmailForEdit({
+    email,
+    buildingId,
+    buildingNotificationConfigurationId,
+  }: {
+    email: string;
+    buildingId: string;
+    buildingNotificationConfigurationId: string;
+  }) {
+    const notification =
+      await prisma.buildingNotificationConfiguration.findFirst({
+        where: {
+          email,
+          buildingId,
+          NOT: {
+            id: buildingNotificationConfigurationId,
+          },
+        },
+      });
 
-  // async delete({ buildingId }: { buildingId: string }) {
-  //   await prisma.building.delete({
-  //     where: {
-  //       id: buildingId,
-  //     },
-  //   });
-  // }
+    validator.cannotExists([
+      {
+        label: 'E-mail para notificão',
+        variable: notification,
+      },
+    ]);
+  }
 
-  // async findById({ buildingId }: { buildingId: string }) {
-  //   const building = await prisma.building.findUnique({
-  //     where: {
-  //       id: buildingId,
-  //     },
-  //   });
+  async findByContactNumberForEdit({
+    contactNumber,
+    buildingId,
+    buildingNotificationConfigurationId,
+  }: {
+    contactNumber: string;
+    buildingId: string;
+    buildingNotificationConfigurationId: string;
+  }) {
+    const notification =
+      await prisma.buildingNotificationConfiguration.findFirst({
+        where: {
+          contactNumber,
+          buildingId,
+          NOT: {
+            id: buildingNotificationConfigurationId,
+          },
+        },
+      });
 
-  //   validator.needExist([{ label: 'Edificação', variable: building }]);
+    validator.cannotExists([
+      {
+        label: 'Telefone para notificão',
+        variable: notification,
+      },
+    ]);
+  }
 
-  //   return building;
-  // }
+  async findNotificationConfigurationMainForCreate({
+    buildingId,
+  }: {
+    buildingId: string;
+  }) {
+    return prisma.buildingNotificationConfiguration.findFirst({
+      where: {
+        buildingId,
+        isMain: true,
+      },
+    });
+  }
 
-  // async list({ take = 20, page, search = '', companyId }: IListBuildings) {
-  //   const [Buildings, buildingsCount] = await prisma.$transaction([
-  //     prisma.building.findMany({
-  //       select: {
-  //         id: true,
-  //         name: true,
-  //         neighborhood: true,
-  //         city: true,
-  //       },
-  //       where: {
-  //         name: {
-  //           contains: search,
-  //           mode: 'insensitive',
-  //         },
-  //         companyId,
-  //       },
-  //       orderBy: {
-  //         name: 'asc',
-  //       },
+  async findNotificationConfigurationMainForEdit({
+    buildingNotificationConfigurationId,
+    buildingId,
+  }: {
+    buildingNotificationConfigurationId: string;
+    buildingId: string;
+  }) {
+    return prisma.buildingNotificationConfiguration.findFirst({
+      where: {
+        buildingId,
+        isMain: true,
 
-  //       take,
-  //       skip: (page - 1) * take,
-  //     }),
+        NOT: {
+          id: buildingNotificationConfigurationId,
+        },
+      },
+    });
+  }
 
-  //     prisma.building.count({
-  //       where: {
-  //         name: {
-  //           contains: search,
-  //           mode: 'insensitive',
-  //         },
-  //         companyId,
-  //       },
-  //     }),
-  //   ]);
+  // #endregion
 
-  //   return { Buildings, buildingsCount };
-  // }
-
-  // async listDetails({ buildingId }: { buildingId: string }) {
-  //   return prisma.building.findUnique({
-  //     select: {
-  //       id: true,
-  //       name: true,
-  //       cep: true,
-  //       city: true,
-  //       state: true,
-  //       neighborhood: true,
-  //       streetName: true,
-  //       area: true,
-  //       deliveryDate: true,
-  //       warrantyExpiration: true,
-  //       keepNotificationAfterWarrantyEnds: true,
-  //       BuildingType: {
-  //         select: {
-  //           name: true,
-  //         },
-  //       },
-  //     },
-  //     where: {
-  //       id: buildingId,
-  //     },
-  //   });
-  // }
+  async delete({
+    buildingNotificationConfigurationId,
+  }: {
+    buildingNotificationConfigurationId: string;
+  }) {
+    await prisma.buildingNotificationConfiguration.delete({
+      where: {
+        id: buildingNotificationConfigurationId,
+      },
+    });
+  }
 }

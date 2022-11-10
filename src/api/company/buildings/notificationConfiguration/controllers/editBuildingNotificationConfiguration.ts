@@ -15,14 +15,19 @@ export async function editBuildingNotificationConfiguration(
   req: Request,
   res: Response,
 ) {
-  const data = req.body;
+  const { buildingNotificationConfigurationId, buildingId, data } = req.body;
 
   // #region VALIDATIONS
   validator.check([
     {
+      label: 'ID da configuração de notificação',
+      type: 'string',
+      variable: buildingNotificationConfigurationId,
+    },
+    {
       label: 'ID da edificação',
       type: 'string',
-      variable: data.buildingId,
+      variable: buildingId,
     },
     {
       label: 'Nome',
@@ -42,34 +47,49 @@ export async function editBuildingNotificationConfiguration(
     {
       label: 'Número de telefone',
       type: 'string',
-      variable: data.role,
+      variable: data.contactNumber,
     },
     {
       label: 'Número de telefone Principal',
-      type: 'string',
-      variable: data.role,
+      type: 'boolean',
+      variable: data.isMain,
       isOptional: true,
     },
   ]);
 
-  await buildingNotificationConfigurationServices.findByEmail({
+  await buildingNotificationConfigurationServices.findByEmailForEdit({
     email: data.email,
     buildingId: data.buildingId,
+    buildingNotificationConfigurationId,
   });
 
-  await buildingNotificationConfigurationServices.findByContactNumber({
+  await buildingNotificationConfigurationServices.findByContactNumberForEdit({
     contactNumber: data.contactNumber,
     buildingId: data.buildingId,
+    buildingNotificationConfigurationId,
   });
 
+  if (data.isMain) {
+    const userMainForNotification =
+      await buildingNotificationConfigurationServices.findNotificationConfigurationMainForEdit(
+        { buildingId, buildingNotificationConfigurationId },
+      );
+
+    validator.cannotExists([
+      {
+        label: 'Usuário principal para receber notificação',
+        variable: userMainForNotification,
+      },
+    ]);
+  }
   // #endregion
 
-  await buildingNotificationConfigurationServices.create({ data });
+  // await buildingNotificationConfigurationServices.create({ data });
 
   return res.status(200).json({
     ServerMessage: {
-      statusCode: 201,
-      message: `Usuário para notificação cadastrado com sucesso.`,
+      statusCode: 200,
+      message: `Usuário para notificação editado com sucesso.`,
     },
   });
 }
