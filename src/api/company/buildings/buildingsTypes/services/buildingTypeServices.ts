@@ -7,6 +7,10 @@ const validator = new Validator();
 export class BuildingTypeServices {
   async list() {
     return prisma.buildingType.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
       orderBy: {
         name: 'asc',
       },

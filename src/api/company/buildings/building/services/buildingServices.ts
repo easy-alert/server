@@ -101,6 +101,7 @@ export class BuildingServices {
         keepNotificationAfterWarrantyEnds: true,
         BuildingType: {
           select: {
+            id: true,
             name: true,
           },
         },
