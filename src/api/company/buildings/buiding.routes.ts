@@ -17,6 +17,7 @@ import {
   createBuildingNotificationConfiguration,
   deleteBuildingNotificationConfiguration,
   editBuildingNotificationConfiguration,
+  sendWhatappConfirmationBuildingNotificationConfiguration,
 } from './notificationConfiguration/controllers';
 
 // ROUTES
@@ -33,6 +34,11 @@ buildingRouter.delete('/delete', deleteBuilding);
 buildingRouter.get('/types/list', listBuildingTypes);
 
 // NOTIFICATIONS
+buildingRouter.post(
+  '/notifications/send/phoneconfirmation',
+  sendWhatappConfirmationBuildingNotificationConfiguration,
+);
+
 buildingRouter.post(
   '/notifications/create',
   createBuildingNotificationConfiguration,

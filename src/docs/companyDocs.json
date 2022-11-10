@@ -977,6 +977,39 @@
           }
         }
       }
+    },
+
+    "/buildings/notifications/send/phoneconfirmation": {
+      "post": {
+        "tags": ["Building Notification Send"],
+        "summary": "Envia.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingNotificationConfigurationId": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
     }
   }
 }

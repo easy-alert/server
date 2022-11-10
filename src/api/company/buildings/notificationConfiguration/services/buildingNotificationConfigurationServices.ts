@@ -6,6 +6,7 @@ import { ICreateBuildingNotificationConfiguration } from './types';
 
 // // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
+import { ApiZenvia } from '../../../../../utils/customsApis/apiZenvia';
 
 const validator = new Validator();
 
@@ -189,4 +190,29 @@ export class BuildingNotificationConfigurationServices {
       },
     });
   }
+
+  // #region SEND NOTIFICATIONS
+
+  async sendWhatsappConfirmationForReceiveNotifications({
+    receiverPhoneNumber,
+    link,
+  }: {
+    receiverPhoneNumber: string;
+    link: string;
+  }) {
+    return ApiZenvia.post('/v2/channels/whatsapp/messages', {
+      from: process.env.SENDER_PHONE_NUMBER,
+      to: receiverPhoneNumber,
+      contents: [
+        {
+          type: 'template',
+          templateId: process.env.CONTENT_TEMPLATE_ID,
+          fields: {
+            link,
+          },
+        },
+      ],
+    });
+  }
 }
+// #endregion
