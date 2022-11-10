@@ -202,7 +202,7 @@ model Building {
 
   BuildingType              BuildingType                        @relation(fields: [buildingTypeId], references: [id], onDelete: Cascade)
   Company                   Company                             @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  NotificationConfiguration BuildingNotificationConfiguration[]
+  NotificationConfiguration BuildingNotificationConfiguration[] //arrumar plural
 
   @@map("buildings")
 }

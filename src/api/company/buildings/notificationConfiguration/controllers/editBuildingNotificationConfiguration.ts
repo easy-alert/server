@@ -25,11 +25,6 @@ export async function editBuildingNotificationConfiguration(
       variable: buildingNotificationConfigurationId,
     },
     {
-      label: 'ID da edificação',
-      type: 'string',
-      variable: buildingId,
-    },
-    {
       label: 'Nome',
       type: 'string',
       variable: data.name,
@@ -84,7 +79,10 @@ export async function editBuildingNotificationConfiguration(
   }
   // #endregion
 
-  // await buildingNotificationConfigurationServices.create({ data });
+  await buildingNotificationConfigurationServices.edit({
+    buildingNotificationConfigurationId,
+    data,
+  });
 
   return res.status(200).json({
     ServerMessage: {

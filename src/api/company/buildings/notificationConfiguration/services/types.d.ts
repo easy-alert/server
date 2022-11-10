@@ -8,3 +8,14 @@ export interface ICreateBuildingNotificationConfiguration {
     isMain: boolean;
   };
 }
+
+export interface IEditBuildingNotificationConfiguration {
+  buildingNotificationConfigurationId: string;
+  data: {
+    name: string;
+    email: string;
+    role: string;
+    contactNumber: string;
+    isMain: boolean;
+  };
+}

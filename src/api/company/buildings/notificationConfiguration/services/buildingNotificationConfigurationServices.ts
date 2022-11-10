@@ -2,7 +2,10 @@
 import { prisma } from '../../../../../utils/prismaClient';
 
 // TYPES
-import { ICreateBuildingNotificationConfiguration } from './types';
+import {
+  ICreateBuildingNotificationConfiguration,
+  IEditBuildingNotificationConfiguration,
+} from './types';
 
 // // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
@@ -28,6 +31,16 @@ export class BuildingNotificationConfigurationServices {
       where: {
         id: buildingNotificationConfigurationId,
       },
+    });
+  }
+
+  async edit({
+    buildingNotificationConfigurationId,
+    data,
+  }: IEditBuildingNotificationConfiguration) {
+    await prisma.buildingNotificationConfiguration.update({
+      data,
+      where: { id: buildingNotificationConfigurationId },
     });
   }
 
@@ -72,7 +85,7 @@ export class BuildingNotificationConfigurationServices {
 
     validator.cannotExists([
       {
-        label: 'E-mail para notificão',
+        label: 'E-mail para notificação',
         variable: notification,
       },
     ]);
@@ -95,7 +108,7 @@ export class BuildingNotificationConfigurationServices {
 
     validator.cannotExists([
       {
-        label: 'Telefone para notificão',
+        label: 'Telefone para notificação',
         variable: notification,
       },
     ]);
@@ -123,7 +136,7 @@ export class BuildingNotificationConfigurationServices {
 
     validator.cannotExists([
       {
-        label: 'E-mail para notificão',
+        label: 'E-mail para notificação',
         variable: notification,
       },
     ]);
@@ -151,7 +164,7 @@ export class BuildingNotificationConfigurationServices {
 
     validator.cannotExists([
       {
-        label: 'Telefone para notificão',
+        label: 'Telefone para notificação',
         variable: notification,
       },
     ]);

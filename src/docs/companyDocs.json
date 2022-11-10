@@ -56,7 +56,7 @@
     "/auth/login": {
       "post": {
         "tags": ["Auth"],
-        "summary": "Login do usuário no backoffice.",
+        "summary": "Login do usuário na empresa.",
         "requestBody": {
           "required": true,
           "content": {
@@ -1003,7 +1003,7 @@
       }
     },
 
-    "/buildings/notifications/send/phoneconfirmation": {
+    "/buildings/notifications/phone/sendconfirm": {
       "post": {
         "tags": ["Building Notification Send"],
         "summary": "Envia uma notificação para confirmar o número de contato.",
@@ -1019,7 +1019,8 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "buildingNotificationConfigurationId": { "type": "string" }
+                  "buildingNotificationConfigurationId": { "type": "string" },
+                  "link": { "type": "string", "default": "www.easyalert.com" }
                 }
               }
             }

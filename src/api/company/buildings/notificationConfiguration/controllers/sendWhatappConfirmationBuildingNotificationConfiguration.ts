@@ -19,7 +19,7 @@ export async function sendWhatappConfirmationBuildingNotificationConfiguration(
   req: Request,
   res: Response,
 ) {
-  const { buildingNotificationConfigurationId } = req.body;
+  const { buildingNotificationConfigurationId, link } = req.body;
 
   // #region VALIDATIONS
   validator.check([
@@ -28,15 +28,19 @@ export async function sendWhatappConfirmationBuildingNotificationConfiguration(
       type: 'string',
       variable: buildingNotificationConfigurationId,
     },
+    {
+      label: 'Link ',
+      type: 'string',
+      variable: link,
+    },
   ]);
 
-  const notification = await buildingNotificationConfigurationServices.findById(
-    {
+  const notificationData =
+    await buildingNotificationConfigurationServices.findById({
       buildingNotificationConfigurationId,
-    },
-  );
+    });
 
-  if (!notification?.isMain) {
+  if (!notificationData?.isMain) {
     throw new ServerMessage({
       statusCode: 400,
       message:
@@ -49,22 +53,30 @@ export async function sendWhatappConfirmationBuildingNotificationConfiguration(
   const token = handlerToken.generateToken({
     tokenData: {
       id: BuildingNotificationConfigurationServices,
+      type: 'whatsapp',
     },
   });
 
   await handlerToken.saveTokenInDatabase({ token });
   // #endregion
 
+  // #region Send Message
+
   // const notificationStatus =
   //   await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
-  //     { receiverPhoneNumber: '5548996223154', link: 'LINK.COM' },
+  //     {
+  //       receiverPhoneNumber: notificationData.contactNumber,
+  //       link: `${link}/${token}`,
+  //     },
   //   );
+  // console.log(notificationStatus);
+
+  // #endregion
 
   return res.status(200).json({
-    notification,
     ServerMessage: {
-      statusCode: 201,
-      message: `Usuário para notificação cadastrado com sucesso.`,
+      statusCode: 200,
+      message: `Notificação para confirmar telefone enviada com sucesso.`,
     },
   });
 }

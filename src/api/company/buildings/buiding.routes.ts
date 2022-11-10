@@ -35,7 +35,7 @@ buildingRouter.get('/types/list', listBuildingTypes);
 
 // NOTIFICATIONS
 buildingRouter.post(
-  '/notifications/send/phoneconfirmation',
+  '/notifications/phone/sendconfirm',
   sendWhatappConfirmationBuildingNotificationConfiguration,
 );
 

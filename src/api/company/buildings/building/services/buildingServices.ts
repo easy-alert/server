@@ -116,6 +116,8 @@ export class BuildingServices {
             role: true,
             isMain: true,
           },
+
+          orderBy: [{ isMain: 'desc' }, { name: 'asc' }],
         },
       },
       where: {
