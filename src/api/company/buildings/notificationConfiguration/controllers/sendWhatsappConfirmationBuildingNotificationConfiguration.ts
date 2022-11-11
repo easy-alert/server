@@ -83,7 +83,9 @@ export async function sendWhatsappConfirmationBuildingNotificationConfiguration(
   //     },
   //   );
 
-  await buildingNotificationConfigurationServices.editLastNotificationDate();
+  await buildingNotificationConfigurationServices.editLastNotificationDate({
+    buildingNotificationConfigurationId,
+  });
 
   // #endregion
 
