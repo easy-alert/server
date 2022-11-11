@@ -55,14 +55,14 @@ export async function sendWhatsappConfirmationBuildingNotificationConfiguration(
   if (dateDiference <= 5) {
     throw new ServerMessage({
       statusCode: 400,
-      message: 'Aguarde ao menos 5 minutos para reenviar uma notificação de confirmação.',
+      message: 'Aguarde ao menos 5 minutos para reenviar a confirmação.',
     });
   }
   // #endregion
 
   // #endregion
 
-  // #region TOKEN
+  // #region SEND MESSAGE
   const token = tokenServices.generate({
     tokenData: {
       id: buildingNotificationConfigurationId,
@@ -71,20 +71,11 @@ export async function sendWhatsappConfirmationBuildingNotificationConfiguration(
   });
 
   await tokenServices.saveInDatabase({ token });
-  // #endregion
 
-  // #region SEND MESSAGE
-
-  // const notificationStatus =
-  //   await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
-  //     {
-  //       receiverPhoneNumber: notificationData.contactNumber,
-  //       link: `${link}?token=${token}`,
-  //     },
-  //   );
-
-  await buildingNotificationConfigurationServices.editLastNotificationDate({
+  await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications({
     buildingNotificationConfigurationId,
+    receiverPhoneNumber: notificationData.contactNumber,
+    link: `${link}?token=${token}`,
   });
 
   // #endregion
@@ -92,7 +83,7 @@ export async function sendWhatsappConfirmationBuildingNotificationConfiguration(
   return res.status(200).json({
     ServerMessage: {
       statusCode: 200,
-      message: `Notificação para confirmar telefone enviada com sucesso.`,
+      message: `Confirmação de WhatsApp enviada com sucesso.`,
     },
   });
 }

@@ -5,19 +5,21 @@ import { prisma } from '../../../../../utils/prismaClient';
 import {
   ICreateBuildingNotificationConfiguration,
   IEditBuildingNotificationConfiguration,
+  ISendWhatsappConfirmationForReceiveNotifications,
 } from './types';
 
 // // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
-import { ApiZenvia } from '../../../../../utils/customsApis/apiZenvia';
+import { ZenviaServices } from '../../../../../utils/customsApis/Zenvia/services/zenviaServices';
 
 const validator = new Validator();
+const zenviaServices = new ZenviaServices();
 
 // #endregion
 
 export class BuildingNotificationConfigurationServices {
   async create({ data }: ICreateBuildingNotificationConfiguration) {
-    await prisma.buildingNotificationConfiguration.create({
+    return prisma.buildingNotificationConfiguration.create({
       data,
     });
   }
@@ -38,7 +40,7 @@ export class BuildingNotificationConfigurationServices {
     buildingNotificationConfigurationId,
     data,
   }: IEditBuildingNotificationConfiguration) {
-    await prisma.buildingNotificationConfiguration.update({
+    return prisma.buildingNotificationConfiguration.update({
       data,
       where: { id: buildingNotificationConfigurationId },
     });
@@ -213,26 +215,18 @@ export class BuildingNotificationConfigurationServices {
   async sendWhatsappConfirmationForReceiveNotifications({
     receiverPhoneNumber,
     link,
-  }: {
-    receiverPhoneNumber: string;
-    link: string;
-  }) {
-    return ApiZenvia.post('/v2/channels/whatsapp/messages', {
-      from: process.env.SENDER_PHONE_NUMBER,
-      to: receiverPhoneNumber,
-      contents: [
-        {
-          type: 'template',
-          templateId: process.env.CONTENT_TEMPLATE_ID,
-          fields: {
-            link,
-          },
-        },
-      ],
+    buildingNotificationConfigurationId,
+  }: ISendWhatsappConfirmationForReceiveNotifications) {
+    await zenviaServices.postWhatsappConfirmation({
+      receiverPhoneNumber,
+      link,
+    });
+
+    await this.editLastNotificationDate({
+      buildingNotificationConfigurationId,
     });
   }
 
-  // CONFIRMS
   async confirmContactNumber({
     buildingNotificationConfigurationId,
   }: {

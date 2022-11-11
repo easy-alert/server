@@ -904,12 +904,19 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "buildingId": { "type": "string" },
-                  "name": { "type": "string" },
-                  "email": { "type": "string" },
-                  "role": { "type": "string" },
-                  "contactNumber": { "type": "string" },
-                  "isMain": { "type": "boolean" }
+                  "link": { "type": "string" },
+
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "buildingId": { "type": "string" },
+                      "name": { "type": "string" },
+                      "email": { "type": "string" },
+                      "role": { "type": "string" },
+                      "contactNumber": { "type": "string" },
+                      "isMain": { "type": "boolean" }
+                    }
+                  }
                 }
               }
             }
@@ -944,6 +951,7 @@
                 "properties": {
                   "buildingNotificationConfigurationId": { "type": "string" },
                   "buildingId": { "type": "string" },
+                  "link": { "type": "string" },
                   "data": {
                     "type": "object",
                     "properties": {
@@ -969,6 +977,7 @@
         }
       }
     },
+
     "/buildings/notifications/delete": {
       "delete": {
         "tags": ["Building Notification"],

@@ -19,3 +19,9 @@ export interface IEditBuildingNotificationConfiguration {
     isMain: boolean;
   };
 }
+
+export interface ISendWhatsappConfirmationForReceiveNotifications {
+  receiverPhoneNumber: string;
+  link: string;
+  buildingNotificationConfigurationId: string;
+}

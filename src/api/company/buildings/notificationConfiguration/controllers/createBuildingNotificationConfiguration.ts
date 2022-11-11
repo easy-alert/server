@@ -1,5 +1,6 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
+import { TokenServices } from '../../../../../utils/token/tokenServices';
 
 // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
@@ -7,11 +8,19 @@ import { BuildingNotificationConfigurationServices } from '../services/buildingN
 
 const validator = new Validator();
 const buildingNotificationConfigurationServices = new BuildingNotificationConfigurationServices();
+const tokenServices = new TokenServices();
 
 // #endregion
 
 export async function createBuildingNotificationConfiguration(req: Request, res: Response) {
-  const data = req.body;
+  const { link } = req.body;
+
+  let { data } = req.body;
+
+  data = {
+    ...data,
+    email: data.email.toLowerCase(),
+  };
 
   // #region VALIDATIONS
   validator.check([
@@ -74,8 +83,31 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
 
   // #endregion
 
-  await buildingNotificationConfigurationServices.create({ data });
+  const buildingNotificationConfigurationData =
+    await buildingNotificationConfigurationServices.create({ data });
 
+  // #region SEND MESSAGE
+
+  if (buildingNotificationConfigurationData.isMain) {
+    const token = tokenServices.generate({
+      tokenData: {
+        id: buildingNotificationConfigurationData.id,
+        confirmType: 'whatsapp',
+      },
+    });
+
+    await tokenServices.saveInDatabase({ token });
+
+    await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
+      {
+        buildingNotificationConfigurationId: buildingNotificationConfigurationData.id,
+        receiverPhoneNumber: buildingNotificationConfigurationData.contactNumber,
+        link: `${link}?token=${token}`,
+      },
+    );
+
+    // #endregion
+  }
   return res.status(200).json({
     ServerMessage: {
       statusCode: 201,
