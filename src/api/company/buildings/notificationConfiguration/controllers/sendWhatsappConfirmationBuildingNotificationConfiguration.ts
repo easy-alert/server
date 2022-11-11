@@ -1,21 +1,20 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
-import { HandlerToken } from '../../../../../utils/token/handlerToken';
+import { TokenServices } from '../../../../../utils/token/tokenServices';
 
 // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
 import { BuildingNotificationConfigurationServices } from '../services/buildingNotificationConfigurationServices';
 
 const validator = new Validator();
-const handlerToken = new HandlerToken();
+const tokenServices = new TokenServices();
 
-const buildingNotificationConfigurationServices =
-  new BuildingNotificationConfigurationServices();
+const buildingNotificationConfigurationServices = new BuildingNotificationConfigurationServices();
 
 // #endregion
 
-export async function sendWhatappConfirmationBuildingNotificationConfiguration(
+export async function sendWhatsappConfirmationBuildingNotificationConfiguration(
   req: Request,
   res: Response,
 ) {
@@ -35,32 +34,46 @@ export async function sendWhatappConfirmationBuildingNotificationConfiguration(
     },
   ]);
 
-  const notificationData =
-    await buildingNotificationConfigurationServices.findById({
-      buildingNotificationConfigurationId,
-    });
+  const notificationData = await buildingNotificationConfigurationServices.findById({
+    buildingNotificationConfigurationId,
+  });
 
   if (!notificationData?.isMain) {
     throw new ServerMessage({
       statusCode: 400,
-      message:
-        'O usuário não esta configurado como principal para receber notificações.',
+      message: 'O usuário não esta configurado como principal para receber notificações.',
+    });
+  }
+
+  // #region AWAIT 5 MINUTES FOR SEND OTHER NOTIFICATION
+
+  const actualHoursInMs = new Date().getTime();
+  const notificationHoursInMs = new Date(notificationData.lastNotificationDate).getTime();
+
+  const dateDiference = (actualHoursInMs - notificationHoursInMs) / 60000;
+
+  if (dateDiference <= 5) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: 'Aguarde ao menos 5 minutos para reenviar uma notificação de confirmação.',
     });
   }
   // #endregion
 
+  // #endregion
+
   // #region TOKEN
-  const token = handlerToken.generateToken({
+  const token = tokenServices.generate({
     tokenData: {
-      id: BuildingNotificationConfigurationServices,
-      type: 'whatsapp',
+      id: buildingNotificationConfigurationId,
+      confirmType: 'whatsapp',
     },
   });
 
-  await handlerToken.saveTokenInDatabase({ token });
+  await tokenServices.saveInDatabase({ token });
   // #endregion
 
-  // #region Send Message
+  // #region SEND MESSAGE
 
   // const notificationStatus =
   //   await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(

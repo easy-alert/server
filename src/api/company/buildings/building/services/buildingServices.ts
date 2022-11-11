@@ -105,7 +105,7 @@ export class BuildingServices {
             name: true,
           },
         },
-        NotificationConfiguration: {
+        NotificationsConfigurations: {
           select: {
             id: true,
             name: true,

@@ -1003,7 +1003,7 @@
       }
     },
 
-    "/buildings/notifications/phone/sendconfirm": {
+    "/buildings/notifications/sendconfirm/phone": {
       "post": {
         "tags": ["Building Notification Send"],
         "summary": "Envia uma notificação para confirmar o número de contato.",
@@ -1021,6 +1021,39 @@
                 "properties": {
                   "buildingNotificationConfigurationId": { "type": "string" },
                   "link": { "type": "string", "default": "www.easyalert.com" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/notifications/contactconfirm": {
+      "post": {
+        "tags": ["Building Notification Send"],
+        "summary": "confirmar qualquer coisa (ARRUMAR)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": { "type": "string" }
                 }
               }
             }

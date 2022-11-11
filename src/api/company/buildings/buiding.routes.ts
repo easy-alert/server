@@ -14,10 +14,11 @@ import {
 } from './building/controllers';
 
 import {
+  contactConfirmBuildingNotificationConfiguration,
   createBuildingNotificationConfiguration,
   deleteBuildingNotificationConfiguration,
   editBuildingNotificationConfiguration,
-  sendWhatappConfirmationBuildingNotificationConfiguration,
+  sendWhatsappConfirmationBuildingNotificationConfiguration,
 } from './notificationConfiguration/controllers';
 
 // ROUTES
@@ -35,20 +36,16 @@ buildingRouter.get('/types/list', listBuildingTypes);
 
 // NOTIFICATIONS
 buildingRouter.post(
-  '/notifications/phone/sendconfirm',
-  sendWhatappConfirmationBuildingNotificationConfiguration,
+  '/notifications/sendconfirm/phone',
+  sendWhatsappConfirmationBuildingNotificationConfiguration,
 );
 
 buildingRouter.post(
-  '/notifications/create',
-  createBuildingNotificationConfiguration,
+  '/notifications/contactconfirm',
+  contactConfirmBuildingNotificationConfiguration,
 );
 
-buildingRouter.put(
-  '/notifications/edit',
-  editBuildingNotificationConfiguration,
-);
-buildingRouter.delete(
-  '/notifications/delete',
-  deleteBuildingNotificationConfiguration,
-);
+buildingRouter.post('/notifications/create', createBuildingNotificationConfiguration);
+
+buildingRouter.put('/notifications/edit', editBuildingNotificationConfiguration);
+buildingRouter.delete('/notifications/delete', deleteBuildingNotificationConfiguration);

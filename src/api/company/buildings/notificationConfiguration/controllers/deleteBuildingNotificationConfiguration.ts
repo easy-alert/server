@@ -6,15 +6,11 @@ import { Validator } from '../../../../../utils/validator/validator';
 import { BuildingNotificationConfigurationServices } from '../services/buildingNotificationConfigurationServices';
 
 const validator = new Validator();
-const buildingNotificationConfigurationServices =
-  new BuildingNotificationConfigurationServices();
+const buildingNotificationConfigurationServices = new BuildingNotificationConfigurationServices();
 
 // #endregion
 
-export async function deleteBuildingNotificationConfiguration(
-  req: Request,
-  res: Response,
-) {
+export async function deleteBuildingNotificationConfiguration(req: Request, res: Response) {
   const { buildingNotificationConfigurationId } = req.body;
 
   // #region VALIDATIONS
@@ -39,7 +35,7 @@ export async function deleteBuildingNotificationConfiguration(
   return res.status(200).json({
     ServerMessage: {
       statusCode: 200,
-      message: `Configuração de notificação da edificação excluída com sucesso.`,
+      message: `Configuração de notificação excluída com sucesso.`,
     },
   });
 }

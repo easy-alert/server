@@ -1,3 +1,6 @@
+-- AlterTable
+ALTER TABLE "buildingsNotificationsConfigurations" ADD COLUMN     "lastNotificationDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
 -- CreateTable
 CREATE TABLE "validationsTokens" (
     "id" TEXT NOT NULL,
@@ -11,3 +14,6 @@ CREATE TABLE "validationsTokens" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "validationsTokens_id_key" ON "validationsTokens"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "validationsTokens_token_key" ON "validationsTokens"("token");

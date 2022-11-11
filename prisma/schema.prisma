@@ -14,7 +14,7 @@ datasource db {
 
 model ValidationToken {
   id      String  @id @unique @default(uuid())
-  token   String
+  token   String  @unique
   hasUsed Boolean @default(false)
 
   createdAt DateTime @default(now())
@@ -200,9 +200,9 @@ model Building {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  BuildingType              BuildingType                        @relation(fields: [buildingTypeId], references: [id], onDelete: Cascade)
-  Company                   Company                             @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  NotificationConfiguration BuildingNotificationConfiguration[] //arrumar plural
+  BuildingType                BuildingType                        @relation(fields: [buildingTypeId], references: [id], onDelete: Cascade)
+  Company                     Company                             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  NotificationsConfigurations BuildingNotificationConfiguration[]
 
   @@map("buildings")
 }
@@ -213,11 +213,12 @@ model BuildingNotificationConfiguration {
 
   name                     String
   email                    String
-  emailIsConfirmed         Boolean @default(false)
+  emailIsConfirmed         Boolean  @default(false)
   role                     String
   contactNumber            String
-  contactNumberIsConfirmed Boolean @default(false)
-  isMain                   Boolean @default(false)
+  contactNumberIsConfirmed Boolean  @default(false)
+  isMain                   Boolean  @default(false)
+  lastNotificationDate     DateTime @default(now())
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

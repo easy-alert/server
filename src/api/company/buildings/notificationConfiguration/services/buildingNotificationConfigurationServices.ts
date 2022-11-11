@@ -68,20 +68,13 @@ export class BuildingNotificationConfigurationServices {
     return buildingConfigurationNotification;
   }
 
-  async findByEmail({
-    email,
-    buildingId,
-  }: {
-    email: string;
-    buildingId: string;
-  }) {
-    const notification =
-      await prisma.buildingNotificationConfiguration.findFirst({
-        where: {
-          email,
-          buildingId,
-        },
-      });
+  async findByEmail({ email, buildingId }: { email: string; buildingId: string }) {
+    const notification = await prisma.buildingNotificationConfiguration.findFirst({
+      where: {
+        email,
+        buildingId,
+      },
+    });
 
     validator.cannotExists([
       {
@@ -98,13 +91,12 @@ export class BuildingNotificationConfigurationServices {
     contactNumber: string;
     buildingId: string;
   }) {
-    const notification =
-      await prisma.buildingNotificationConfiguration.findFirst({
-        where: {
-          contactNumber,
-          buildingId,
-        },
-      });
+    const notification = await prisma.buildingNotificationConfiguration.findFirst({
+      where: {
+        contactNumber,
+        buildingId,
+      },
+    });
 
     validator.cannotExists([
       {
@@ -123,16 +115,15 @@ export class BuildingNotificationConfigurationServices {
     buildingId: string;
     buildingNotificationConfigurationId: string;
   }) {
-    const notification =
-      await prisma.buildingNotificationConfiguration.findFirst({
-        where: {
-          email,
-          buildingId,
-          NOT: {
-            id: buildingNotificationConfigurationId,
-          },
+    const notification = await prisma.buildingNotificationConfiguration.findFirst({
+      where: {
+        email,
+        buildingId,
+        NOT: {
+          id: buildingNotificationConfigurationId,
         },
-      });
+      },
+    });
 
     validator.cannotExists([
       {
@@ -151,16 +142,15 @@ export class BuildingNotificationConfigurationServices {
     buildingId: string;
     buildingNotificationConfigurationId: string;
   }) {
-    const notification =
-      await prisma.buildingNotificationConfiguration.findFirst({
-        where: {
-          contactNumber,
-          buildingId,
-          NOT: {
-            id: buildingNotificationConfigurationId,
-          },
+    const notification = await prisma.buildingNotificationConfiguration.findFirst({
+      where: {
+        contactNumber,
+        buildingId,
+        NOT: {
+          id: buildingNotificationConfigurationId,
         },
-      });
+      },
+    });
 
     validator.cannotExists([
       {
@@ -170,11 +160,7 @@ export class BuildingNotificationConfigurationServices {
     ]);
   }
 
-  async findNotificationConfigurationMainForCreate({
-    buildingId,
-  }: {
-    buildingId: string;
-  }) {
+  async findNotificationConfigurationMainForCreate({ buildingId }: { buildingId: string }) {
     return prisma.buildingNotificationConfiguration.findFirst({
       where: {
         buildingId,
@@ -204,7 +190,9 @@ export class BuildingNotificationConfigurationServices {
 
   // #endregion
 
-  // #region SEND NOTIFICATIONS
+  // #region NOTIFICATIONS
+
+  // SENDS
 
   async sendWhatsappConfirmationForReceiveNotifications({
     receiverPhoneNumber,
@@ -227,5 +215,23 @@ export class BuildingNotificationConfigurationServices {
       ],
     });
   }
+
+  // CONFIRMS
+  async confirmContactNumber({
+    buildingNotificationConfigurationId,
+  }: {
+    buildingNotificationConfigurationId: string;
+  }) {
+    await prisma.buildingNotificationConfiguration.update({
+      data: {
+        contactNumberIsConfirmed: true,
+      },
+
+      where: {
+        id: buildingNotificationConfigurationId,
+      },
+    });
+  }
+
   // #endregion
 }
