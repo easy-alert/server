@@ -7,6 +7,10 @@ const validator = new Validator();
 export class BuildingTypeServices {
   async list() {
     return prisma.buildingType.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
       orderBy: {
         name: 'asc',
       },
@@ -20,9 +24,7 @@ export class BuildingTypeServices {
       },
     });
 
-    validator.needExist([
-      { label: 'Tipo da edificação', variable: buildingType },
-    ]);
+    validator.needExist([{ label: 'Tipo da edificação', variable: buildingType }]);
 
     return buildingType;
   }

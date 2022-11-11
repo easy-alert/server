@@ -26,18 +26,8 @@ backofficeRouter.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
 
 backofficeRouter.use('/auth', authRouter);
 
-backofficeRouter.use(
-  '/categories',
-  authMiddleware,
-  isBackoffice,
-  categoryRouter,
-);
-backofficeRouter.use(
-  '/maintenances',
-  authMiddleware,
-  isBackoffice,
-  maintenanceRouter,
-);
+backofficeRouter.use('/categories', authMiddleware, isBackoffice, categoryRouter);
+backofficeRouter.use('/maintenances', authMiddleware, isBackoffice, maintenanceRouter);
 backofficeRouter.use('/companies', authMiddleware, isBackoffice, companyRouter);
 
 backofficeRouter.get('/timeinterval/list', listTimeIntervals);

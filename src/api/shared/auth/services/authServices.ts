@@ -25,8 +25,7 @@ export class AuthServices {
     if (user.isBlocked) {
       throw new ServerMessage({
         statusCode: 400,
-        message:
-          'Sua conta está bloqueada, entre em contato com a administração.',
+        message: 'Sua conta está bloqueada, entre em contato com a administração.',
       });
     }
   }

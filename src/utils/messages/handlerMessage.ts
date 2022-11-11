@@ -29,20 +29,13 @@ export const handlerMessage = async (
   ) {
     axios.post('https://ada-logs.herokuapp.com/api/logs/create', {
       projectName: 'Easy Alert',
-      environment: process.env.DATABASE_URL?.includes('sandbox')
-        ? 'Sandbox'
-        : 'Production',
+      environment: process.env.DATABASE_URL?.includes('sandbox') ? 'Sandbox' : 'Production',
       side: 'Server',
       errorStack: err.stack,
     });
   }
   // eslint-disable-next-line no-console
-  console.log(
-    '\n\n\n ❌ Error ❌ \n\n\n',
-    'Error Message: ',
-    err.stack,
-    '\n\n\n',
-  );
+  console.log('\n\n\n ❌ Error ❌ \n\n\n', 'Error Message: ', err.stack, '\n\n\n');
 
   return res.status(500).json({
     ServerMessage: {

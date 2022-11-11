@@ -7,14 +7,7 @@ const sharedCompanyServices = new SharedCompanyServices();
 
 export class CompanyServices {
   // #region edit
-  async edit({
-    name,
-    CNPJ,
-    CPF,
-    contactNumber,
-    image,
-    companyId,
-  }: IEditCompany) {
+  async edit({ name, CNPJ, CPF, contactNumber, image, companyId }: IEditCompany) {
     await sharedCompanyServices.findById({ companyId });
 
     await prisma.company.update({

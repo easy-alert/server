@@ -56,7 +56,7 @@
     "/auth/login": {
       "post": {
         "tags": ["Auth"],
-        "summary": "Login do usuário no backoffice.",
+        "summary": "Login do usuário na empresa.",
         "requestBody": {
           "required": true,
           "content": {
@@ -617,7 +617,7 @@
     "/buildings/list/details/{buildingId}": {
       "get": {
         "tags": ["Building"],
-        "summary": "Lista todas as edificações.",
+        "summary": "Busca os detalhes da edificação.",
         "security": [
           {
             "bearerAuth": []
@@ -638,7 +638,7 @@
 
         "responses": {
           "200": {
-            "description": "Retorna as edificações encontradas.",
+            "description": "Retorna os detalhes da edificação.",
             "content": {
               "application/json": {
                 "schema": {
@@ -662,7 +662,31 @@
                         "type": "string",
                         "format": "date-time"
                       },
-                      "keepNotificationAfterWarrantyEnds": { "type": "boolean" }
+                      "keepNotificationAfterWarrantyEnds": {
+                        "type": "boolean"
+                      },
+                      "BuidingType": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "name": { "type": "string" }
+                        }
+                      },
+                      "NotificationConfiguration": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "id": { "type": "string" },
+                            "name": { "type": "string" },
+                            "email": { "type": "string" },
+                            "emailIsConfirmed": { "type": "boolean" },
+                            "contactNumber": { "type": "string" },
+                            "contactNumberIsConfirmed": { "type": "boolean" },
+                            "role": { "type": "string" },
+                            "isMain": { "type": "boolean" }
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -833,7 +857,7 @@
     "/buildings/delete": {
       "delete": {
         "tags": ["Building"],
-        "summary": "Exclui uma manutenção.",
+        "summary": "Exclui uma edificação.",
         "security": [
           {
             "bearerAuth": []
@@ -855,6 +879,197 @@
 
         "responses": {
           "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/notifications/create": {
+      "post": {
+        "tags": ["Building Notification"],
+        "summary": "Cria um novo usuário para receber notificações sobre a edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "link": { "type": "string" },
+
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "buildingId": { "type": "string" },
+                      "name": { "type": "string" },
+                      "email": { "type": "string" },
+                      "role": { "type": "string" },
+                      "contactNumber": { "type": "string" },
+                      "isMain": { "type": "boolean" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/notifications/edit": {
+      "put": {
+        "tags": ["Building Notification"],
+        "summary": "Edita o usuário que recebe notificações sobre a edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingNotificationConfigurationId": { "type": "string" },
+                  "buildingId": { "type": "string" },
+                  "link": { "type": "string" },
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "name": { "type": "string" },
+                      "email": { "type": "string" },
+                      "role": { "type": "string" },
+                      "contactNumber": { "type": "string" },
+                      "isMain": { "type": "boolean" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/notifications/delete": {
+      "delete": {
+        "tags": ["Building Notification"],
+        "summary": "Exclui uma configuração de notificação da edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingNotificationConfigurationId": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/notifications/sendconfirm/phone": {
+      "post": {
+        "tags": ["Building Notification Send"],
+        "summary": "Envia uma notificação para confirmar o número de contato.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingNotificationConfigurationId": { "type": "string" },
+                  "link": { "type": "string", "default": "www.easyalert.com" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/notifications/contactconfirm": {
+      "post": {
+        "tags": ["Building Notification Send"],
+        "summary": "confirmar qualquer coisa (ARRUMAR)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
             "$ref": "#/components/responses/ServerMessage"
           },
           "400": {

@@ -101,8 +101,23 @@ export class BuildingServices {
         keepNotificationAfterWarrantyEnds: true,
         BuildingType: {
           select: {
+            id: true,
             name: true,
           },
+        },
+        NotificationsConfigurations: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            emailIsConfirmed: true,
+            contactNumber: true,
+            contactNumberIsConfirmed: true,
+            role: true,
+            isMain: true,
+          },
+
+          orderBy: [{ isMain: 'desc' }, { name: 'asc' }],
         },
       },
       where: {

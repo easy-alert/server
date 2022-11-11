@@ -9,10 +9,7 @@ import { ServerMessage } from '../messages/serverMessage';
 export class Validator {
   check(Vars: IValidatorCheck[]) {
     for (let i = 0; i < Vars.length; i++) {
-      if (
-        !Vars[i].isOptional &&
-        (Vars[i].variable === null || Vars[i].variable === undefined)
-      ) {
+      if (!Vars[i].isOptional && (Vars[i].variable === null || Vars[i].variable === undefined)) {
         throw new ServerMessage({
           statusCode: 400,
           message: `Verifique a informação: ${Vars[i].label} e tente novamente.`,

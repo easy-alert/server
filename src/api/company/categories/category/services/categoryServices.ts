@@ -14,13 +14,7 @@ export class CategoryServices {
     });
   } // criar logica de nao excluir caso alguem use
 
-  async list({
-    search,
-    ownerCompanyId,
-  }: {
-    search: string;
-    ownerCompanyId: string;
-  }) {
+  async list({ search, ownerCompanyId }: { search: string; ownerCompanyId: string }) {
     const defaultCategories = await prisma.category.findMany({
       select: {
         id: true,

@@ -11,13 +11,7 @@ const sharedCompanyServices = new SharedCompanyServices();
 export class CompanyServices {
   // #region create
 
-  async create({
-    name,
-    CNPJ = null,
-    CPF = null,
-    contactNumber,
-    image,
-  }: ICreateCompany) {
+  async create({ name, CNPJ = null, CPF = null, contactNumber, image }: ICreateCompany) {
     return prisma.company.create({
       data: {
         name,

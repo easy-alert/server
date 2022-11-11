@@ -7,11 +7,7 @@ import { ServerMessage } from '../utils/messages/serverMessage';
 import { Itoken } from './types';
 // TYPES
 
-export const authMiddleware = (
-  req: Request,
-  _res: Response,
-  next: NextFunction,
-) => {
+export const authMiddleware = (req: Request, _res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
 
   if (!authorization) {
