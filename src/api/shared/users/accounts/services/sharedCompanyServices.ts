@@ -6,14 +6,7 @@ const validator = new Validator();
 
 export class SharedCompanyServices {
   // #region edit
-  async edit({
-    name,
-    CNPJ,
-    CPF,
-    contactNumber,
-    image,
-    companyId,
-  }: IEditCompany) {
+  async edit({ name, CNPJ, CPF, contactNumber, image, companyId }: IEditCompany) {
     await this.findById({ companyId });
 
     await prisma.company.update({

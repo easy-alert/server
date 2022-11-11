@@ -6,15 +6,11 @@ import { Validator } from '../../../../../utils/validator/validator';
 import { BuildingNotificationConfigurationServices } from '../services/buildingNotificationConfigurationServices';
 
 const validator = new Validator();
-const buildingNotificationConfigurationServices =
-  new BuildingNotificationConfigurationServices();
+const buildingNotificationConfigurationServices = new BuildingNotificationConfigurationServices();
 
 // #endregion
 
-export async function editBuildingNotificationConfiguration(
-  req: Request,
-  res: Response,
-) {
+export async function editBuildingNotificationConfiguration(req: Request, res: Response) {
   const { buildingNotificationConfigurationId, buildingId, data } = req.body;
 
   // #region VALIDATIONS
@@ -66,9 +62,10 @@ export async function editBuildingNotificationConfiguration(
 
   if (data.isMain) {
     const userMainForNotification =
-      await buildingNotificationConfigurationServices.findNotificationConfigurationMainForEdit(
-        { buildingId, buildingNotificationConfigurationId },
-      );
+      await buildingNotificationConfigurationServices.findNotificationConfigurationMainForEdit({
+        buildingId,
+        buildingNotificationConfigurationId,
+      });
 
     validator.cannotExists([
       {

@@ -87,13 +87,7 @@ export class UserServices {
     return user;
   }
 
-  async findByEmailForEdit({
-    email,
-    userId,
-  }: {
-    email: string;
-    userId: string;
-  }) {
+  async findByEmailForEdit({ email, userId }: { email: string; userId: string }) {
     const user = await prisma.user.findFirst({
       select: {
         id: true,

@@ -21,16 +21,7 @@ const companyServices = new CompanyServices();
 const sharedCompanyServices = new SharedCompanyServices();
 
 export async function createCompanyAndOwner(req: Request, res: Response) {
-  const {
-    name,
-    email,
-    password,
-    companyName,
-    CNPJ,
-    CPF,
-    contactNumber,
-    image,
-  } = req.body;
+  const { name, email, password, companyName, CNPJ, CPF, contactNumber, image } = req.body;
 
   validator.notNull([
     { label: 'nome de usuário', variable: name },

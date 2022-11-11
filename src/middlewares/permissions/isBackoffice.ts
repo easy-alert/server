@@ -6,11 +6,7 @@ import { PermissionServices } from '../../api/shared/permission/services/permiss
 
 const permissionServices = new PermissionServices();
 
-export const isBackoffice = async (
-  req: Request,
-  _res: Response,
-  next: NextFunction,
-) => {
+export const isBackoffice = async (req: Request, _res: Response, next: NextFunction) => {
   const permissions = req.Permissions;
 
   await permissionServices.checkPermission({

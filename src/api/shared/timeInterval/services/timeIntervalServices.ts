@@ -41,9 +41,7 @@ export class TimeIntervalServices {
       },
     });
 
-    validator.notNull([
-      { label: 'ID do tempo de intervalo', variable: timeInterval },
-    ]);
+    validator.notNull([{ label: 'ID do tempo de intervalo', variable: timeInterval }]);
 
     return timeInterval;
   }
