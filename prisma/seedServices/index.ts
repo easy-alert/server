@@ -149,4 +149,19 @@ export class SeedServices {
       console.log('timeIntervals ', timeInterval.name, ' inserted.');
     }
   }
+
+  async createBuildingsTypes() {
+    const buildingsTypes = [
+      { name: 'casa' },
+      { name: 'prédio' },
+      { name: 'condomínio horizontal' },
+      { name: 'reformas' },
+      { name: 'ampliações' },
+      { name: 'outro' },
+    ];
+
+    await prisma.buildingType.createMany({
+      data: buildingsTypes,
+    });
+  }
 }

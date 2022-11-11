@@ -1,7 +1,7 @@
 // LIBS
 import { Router } from 'express';
 import swaggerUi from 'swagger-ui-express';
-import swaggerFile from './docs/swagger.json';
+import swaggerFile from '../../docs/backofficeDocs.json';
 
 // MIDDLEWARES
 import { authMiddleware } from '../../middlewares/auth';

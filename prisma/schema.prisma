@@ -85,6 +85,7 @@ model Company {
 
   Categories   Category[]
   Maintenances Maintenance[]
+  Buildings    Building[]
 
   @@map("companies")
 }
@@ -151,4 +152,43 @@ model TimeInterval {
   MaintenanceDelay     Maintenance[] @relation("MaintenanceDelay")
 
   @@map("timeIntervals")
+}
+
+//BUILDINGS
+
+model BuildingType {
+  id   String @id @unique @default(uuid())
+  name String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Buildings Building[]
+
+  @@map("buildingsTypes")
+}
+
+model Building {
+  id             String @id @unique @default(uuid())
+  buildingTypeId String
+  companyId      String
+
+  name                              String
+  cep                               String?
+  city                              String?
+  state                             String?
+  neighborhood                      String?
+  streetName                        String?
+  area                              String?
+  deliveryDate                      DateTime
+  warrantyExpiration                DateTime
+  keepNotificationAfterWarrantyEnds Boolean
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  BuildingType BuildingType @relation(fields: [buildingTypeId], references: [id], onDelete: Cascade)
+  Company      Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("buildings")
 }
