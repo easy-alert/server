@@ -44,6 +44,22 @@ export class BuildingNotificationConfigurationServices {
     });
   }
 
+  async editLastNotificationDate({
+    buildingNotificationConfigurationId,
+  }: {
+    buildingNotificationConfigurationId: string;
+  }) {
+    await prisma.buildingNotificationConfiguration.update({
+      data: {
+        lastNotificationDate: new Date(),
+      },
+
+      where: {
+        id: buildingNotificationConfigurationId,
+      },
+    });
+  }
+
   // #region FINDS
 
   async findById({

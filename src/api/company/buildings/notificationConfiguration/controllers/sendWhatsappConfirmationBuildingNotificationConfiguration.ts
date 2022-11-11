@@ -79,10 +79,11 @@ export async function sendWhatsappConfirmationBuildingNotificationConfiguration(
   //   await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
   //     {
   //       receiverPhoneNumber: notificationData.contactNumber,
-  //       link: `${link}/${token}`,
+  //       link: `${link}?token=${token}`,
   //     },
   //   );
-  // console.log(notificationStatus);
+
+  await buildingNotificationConfigurationServices.editLastNotificationDate();
 
   // #endregion
 
