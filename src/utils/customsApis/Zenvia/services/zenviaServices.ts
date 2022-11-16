@@ -7,7 +7,7 @@ export class ZenviaServices {
     try {
       ApiZenvia.post('/v2/channels/whatsapp/messages', {
         from: '554891538634',
-        to: receiverPhoneNumber,
+        to: `55${receiverPhoneNumber}`,
         contents: [
           {
             type: 'template',
