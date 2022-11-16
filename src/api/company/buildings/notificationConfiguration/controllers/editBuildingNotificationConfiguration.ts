@@ -17,6 +17,7 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
   const { buildingNotificationConfigurationId, buildingId, link } = req.body;
 
   let { data } = req.body;
+
   data = {
     ...data,
     email: data.email.toLowerCase(),

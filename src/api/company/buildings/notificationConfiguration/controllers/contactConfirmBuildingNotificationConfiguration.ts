@@ -3,11 +3,11 @@ import { Request, Response } from 'express';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 // import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 import { TokenServices } from '../../../../../utils/token/tokenServices';
+import { ITokenWhatsAppConfirmation } from '../../../../../utils/token/types';
 
 // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
 import { BuildingNotificationConfigurationServices } from '../services/buildingNotificationConfigurationServices';
-import { ITokenConfirm } from './types';
 
 const validator = new Validator();
 const tokenServices = new TokenServices();
@@ -32,7 +32,7 @@ export async function contactConfirmBuildingNotificationConfiguration(req: Reque
 
   const { id: buildingNotificationConfigurationId, confirmType } = tokenServices.decode({
     token,
-  }) as ITokenConfirm;
+  }) as ITokenWhatsAppConfirmation;
 
   await buildingNotificationConfigurationServices.findById({
     buildingNotificationConfigurationId,

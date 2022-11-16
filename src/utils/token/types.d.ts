@@ -17,3 +17,10 @@ export interface Itoken {
     image: string;
   };
 }
+
+export interface ITokenWhatsAppConfirmation {
+  id: string;
+  confirmType: 'whatsapp';
+  iat: number;
+  exp: number;
+}

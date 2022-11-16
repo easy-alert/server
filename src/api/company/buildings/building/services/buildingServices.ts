@@ -86,7 +86,7 @@ export class BuildingServices {
   }
 
   async listDetails({ buildingId }: { buildingId: string }) {
-    return prisma.building.findUnique({
+    const Building = await prisma.building.findUnique({
       select: {
         id: true,
         name: true,
@@ -124,5 +124,9 @@ export class BuildingServices {
         id: buildingId,
       },
     });
+
+    validator.needExist([{ label: 'Edificação', variable: Building }]);
+
+    return Building;
   }
 }

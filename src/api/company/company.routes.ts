@@ -18,6 +18,7 @@ import { maintenanceRouter } from './categories/maintenance/maintenance.routes';
 
 import { contactConfirmBuildingNotificationConfiguration } from './buildings/notificationConfiguration/controllers';
 import { buildingRouter } from './buildings/buiding.routes';
+import { listBuildingDetailsForConfirm } from './buildings/building/controllers/listBuildingDetailsForConfirm';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -31,6 +32,8 @@ companyRouter.post(
   '/buildings/notifications/contactconfirm',
   contactConfirmBuildingNotificationConfiguration,
 );
+
+companyRouter.post('/buildings/list/detailsforconfirm', listBuildingDetailsForConfirm);
 
 companyRouter.use('/auth', authRouter);
 companyRouter.get('/timeinterval/list', listTimeIntervals);
