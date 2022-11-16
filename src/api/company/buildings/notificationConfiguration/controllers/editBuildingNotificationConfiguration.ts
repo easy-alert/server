@@ -77,7 +77,7 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
   if (data.contactNumber !== buildingNotificationConfigurationData?.contactNumber) {
     data = {
       ...data,
-      contactNumberConfirmed: false,
+      contactNumberIsConfirmed: false,
     };
   }
 
