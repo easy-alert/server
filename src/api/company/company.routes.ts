@@ -15,9 +15,9 @@ import { accountRouter } from './account/account.routes';
 import { categoryRouter } from './categories/category/category.routes';
 import { listTimeIntervals } from '../shared/timeInterval/controllers/listTimeIntervals';
 import { maintenanceRouter } from './categories/maintenance/maintenance.routes';
-import { buildingRouter } from './buildings/buiding.routes';
 
 import { contactConfirmBuildingNotificationConfiguration } from './buildings/notificationConfiguration/controllers';
+import { buildingRouter } from './buildings/buiding.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -27,7 +27,7 @@ companyRouter.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
   res.send(html);
 });
 
-buildingRouter.post(
+companyRouter.post(
   '/buildings/notifications/contactconfirm',
   contactConfirmBuildingNotificationConfiguration,
 );

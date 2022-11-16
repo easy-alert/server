@@ -1050,11 +1050,6 @@
       "post": {
         "tags": ["Building Notification Send"],
         "summary": "confirmar qualquer coisa (ARRUMAR)",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1069,7 +1064,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "$ref": "#/components/responses/ServerMessage"
           },
           "400": {
