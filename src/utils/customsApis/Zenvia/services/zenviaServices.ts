@@ -6,12 +6,12 @@ export class ZenviaServices {
   async postWhatsappConfirmation({ receiverPhoneNumber, link }: IPostWhatsappConfirmation) {
     try {
       ApiZenvia.post('/v2/channels/whatsapp/messages', {
-        from: process.env.SENDER_PHONE_NUMBER,
+        from: '554891538634',
         to: receiverPhoneNumber,
         contents: [
           {
             type: 'template',
-            templateId: process.env.CONTENT_TEMPLATE_ID,
+            templateId: 'b05902db-7f03-43c3-a64c-cfbeaba0b3f7',
             fields: {
               link,
             },
@@ -21,7 +21,8 @@ export class ZenviaServices {
     } catch (error) {
       throw new ServerMessage({
         statusCode: 400,
-        message: 'Erro na API Zenvia',
+        message:
+          'Oops! Encontramos um problema ao enviar a confirmação de WhatsApp usando a API Zenvia.',
       });
     }
   }
