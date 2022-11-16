@@ -133,8 +133,6 @@ export class BuildingNotificationConfigurationServices {
     buildingId: string;
     buildingNotificationConfigurationId: string;
   }) {
-    console.log(email, buildingId, buildingNotificationConfigurationId);
-
     const notification = await prisma.buildingNotificationConfiguration.findFirst({
       where: {
         email,
