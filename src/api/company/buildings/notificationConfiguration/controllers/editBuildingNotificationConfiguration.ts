@@ -74,6 +74,13 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
     buildingNotificationConfigurationId,
   });
 
+  if (data.contactNumber !== buildingNotificationConfigurationData?.contactNumber) {
+    data = {
+      ...data,
+      contactNumberConfirmed: false,
+    };
+  }
+
   if (data.isMain) {
     const userMainForNotification =
       await buildingNotificationConfigurationServices.findNotificationConfigurationMainForEdit({
@@ -117,7 +124,10 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
 
   // #region SEND MESSAGE
 
-  if (buildingNotificationConfigurationEditedData.isMain) {
+  if (
+    buildingNotificationConfigurationEditedData.isMain &&
+    !buildingNotificationConfigurationEditedData.contactNumberIsConfirmed
+  ) {
     if (
       buildingNotificationConfigurationEditedData.contactNumber !==
         buildingNotificationConfigurationData?.contactNumber ||
