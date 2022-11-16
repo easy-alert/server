@@ -31,6 +31,11 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
       variable: buildingNotificationConfigurationId,
     },
     {
+      label: 'ID da Edificação',
+      type: 'string',
+      variable: buildingId,
+    },
+    {
       label: 'Nome',
       type: 'string',
       variable: data.name,
@@ -65,13 +70,13 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
 
   await buildingNotificationConfigurationServices.findByEmailForEdit({
     email: data.email,
-    buildingId: data.buildingId,
+    buildingId,
     buildingNotificationConfigurationId,
   });
 
   await buildingNotificationConfigurationServices.findByContactNumberForEdit({
     contactNumber: data.contactNumber,
-    buildingId: data.buildingId,
+    buildingId,
     buildingNotificationConfigurationId,
   });
 
