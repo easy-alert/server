@@ -14,7 +14,6 @@ import {
 } from './building/controllers';
 
 import {
-  contactConfirmBuildingNotificationConfiguration,
   createBuildingNotificationConfiguration,
   deleteBuildingNotificationConfiguration,
   editBuildingNotificationConfiguration,
@@ -38,11 +37,6 @@ buildingRouter.get('/types/list', listBuildingTypes);
 buildingRouter.post(
   '/notifications/sendconfirm/phone',
   sendWhatsappConfirmationBuildingNotificationConfiguration,
-);
-
-buildingRouter.post(
-  '/notifications/contactconfirm',
-  contactConfirmBuildingNotificationConfiguration,
 );
 
 buildingRouter.post('/notifications/create', createBuildingNotificationConfiguration);

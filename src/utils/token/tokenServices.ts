@@ -43,7 +43,7 @@ export class TokenServices {
       },
     });
 
-    if (!tokenData || tokenData.hasUsed) {
+    if (tokenData === null || tokenData === undefined) {
       throw new ServerMessage({
         statusCode: 400,
         message: 'Token de ativação inválido ou já utilizado.',

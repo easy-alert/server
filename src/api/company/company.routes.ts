@@ -17,6 +17,8 @@ import { listTimeIntervals } from '../shared/timeInterval/controllers/listTimeIn
 import { maintenanceRouter } from './categories/maintenance/maintenance.routes';
 import { buildingRouter } from './buildings/buiding.routes';
 
+import { contactConfirmBuildingNotificationConfiguration } from './buildings/notificationConfiguration/controllers';
+
 // ROUTES
 export const companyRouter: Router = Router();
 
@@ -24,6 +26,12 @@ companyRouter.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
   const html = swaggerUi.generateHTML(swaggerFile);
   res.send(html);
 });
+
+buildingRouter.post(
+  '/buildings/notifications/contactconfirm',
+  contactConfirmBuildingNotificationConfiguration,
+);
+
 companyRouter.use('/auth', authRouter);
 companyRouter.get('/timeinterval/list', listTimeIntervals);
 companyRouter.use('/upload', authMiddleware, isCompany, uploadRouter);
