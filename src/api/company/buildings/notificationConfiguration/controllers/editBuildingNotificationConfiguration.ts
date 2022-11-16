@@ -117,29 +117,32 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
 
   // #region SEND MESSAGE
 
-  if (
-    buildingNotificationConfigurationEditedData.isMain &&
-    buildingNotificationConfigurationEditedData.contactNumber !==
-      buildingNotificationConfigurationData?.contactNumber
-  ) {
-    const token = tokenServices.generate({
-      tokenData: {
-        id: buildingNotificationConfigurationId,
-        confirmType: 'whatsapp',
-      },
-    });
+  if (buildingNotificationConfigurationEditedData.isMain) {
+    if (
+      buildingNotificationConfigurationEditedData.contactNumber !==
+        buildingNotificationConfigurationData?.contactNumber ||
+      (!buildingNotificationConfigurationData?.isMain &&
+        buildingNotificationConfigurationEditedData.isMain)
+    ) {
+      const token = tokenServices.generate({
+        tokenData: {
+          id: buildingNotificationConfigurationId,
+          confirmType: 'whatsapp',
+        },
+      });
 
-    await tokenServices.saveInDatabase({ token });
+      await tokenServices.saveInDatabase({ token });
 
-    await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
-      {
-        buildingNotificationConfigurationId,
-        receiverPhoneNumber: buildingNotificationConfigurationEditedData.contactNumber,
-        link: `${link}?token=${token}`,
-      },
-    );
-    // #endregion
+      await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
+        {
+          buildingNotificationConfigurationId,
+          receiverPhoneNumber: buildingNotificationConfigurationEditedData.contactNumber,
+          link: `${link}?token=${token}`,
+        },
+      );
+    }
   }
+  // #endregion
 
   return res.status(200).json({
     ServerMessage: {
