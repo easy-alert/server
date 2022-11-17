@@ -18,11 +18,6 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
 
   let { data } = req.body;
 
-  data = {
-    ...data,
-    email: data.email.toLowerCase(),
-  };
-
   // #region VALIDATIONS
   validator.check([
     {
@@ -71,6 +66,11 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
     });
 
   if (data.email) {
+    data = {
+      ...data,
+      email: data.email.toLowerCase(),
+    };
+
     await buildingNotificationConfigurationServices.findByEmailForEdit({
       email: data.email,
       buildingId,

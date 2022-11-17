@@ -1,6 +1,8 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
 import { Validator } from '../../../../../../utils/validator/validator';
+import { SharedCategoryServices } from '../../../../../shared/categories/category/services/sharedCategoryServices';
+import { SharedMaintenanceServices } from '../../../../../shared/categories/maintenace/services/sharedMaintenanceServices';
 import { BuildingCategoryServices } from '../services/buildingCategoryServices';
 import { ICreateBuildingCategory } from '../services/types';
 
@@ -8,7 +10,8 @@ import { ICreateBuildingCategory } from '../services/types';
 
 const validator = new Validator();
 const buildingCategoryServices = new BuildingCategoryServices();
-
+const sharedCategoryServices = new SharedCategoryServices();
+const sharedMaintenanceServices = new SharedMaintenanceServices();
 // #endregion
 
 export async function createBuildingCategories(req: Request, res: Response) {
@@ -26,7 +29,27 @@ export async function createBuildingCategories(req: Request, res: Response) {
   ]);
 
   for (let i = 0; i < bodyData.length; i++) {
-    console.log(bodyData[i]);
+    validator.check([
+      {
+        label: 'ID da categoria',
+        type: 'string',
+        variable: bodyData[i].categoryId,
+      },
+    ]);
+
+    await sharedCategoryServices.findById({ categoryId: bodyData[i].categoryId });
+
+    for (let j = 0; j < bodyData[i].Maintenances.length; j++) {
+      validator.check([
+        {
+          label: 'ID da manutenção',
+          type: 'string',
+          variable: bodyData[i].Maintenances[j].id,
+        },
+      ]);
+
+      await sharedMaintenanceServices.findById({ maintenanceId: bodyData[i].Maintenances[j].id });
+    }
   }
 
   // #endregion
@@ -56,7 +79,7 @@ export async function createBuildingCategories(req: Request, res: Response) {
   return res.status(200).json({
     ServerMessage: {
       statusCode: 201,
-      message: `Edificação cadastrada com sucesso.`,
+      message: `Manutenções cadastradas com sucesso.`,
     },
   });
 }
