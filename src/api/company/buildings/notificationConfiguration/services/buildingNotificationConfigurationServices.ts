@@ -1,5 +1,5 @@
 // #region IMPORTS
-import { prisma } from '../../../../../utils/prismaClient';
+import { prisma } from '../../../../../../prisma';
 
 // TYPES
 import {

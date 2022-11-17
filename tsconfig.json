@@ -22,5 +22,5 @@
     "strictNullChecks": true,
     "importsNotUsedAsValues": "remove"
   },
-  "include": ["src", "prisma/prismaClient.ts"]
+  "include": ["src", "prisma/index.ts"]
 }

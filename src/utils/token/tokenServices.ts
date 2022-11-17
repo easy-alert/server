@@ -3,7 +3,7 @@ import { sign, verify } from 'jsonwebtoken';
 import 'dotenv/config';
 
 // TYPES
-import { prisma } from '../prismaClient';
+import { prisma } from '../../../prisma';
 
 // CLASS
 import { ServerMessage } from '../messages/serverMessage';

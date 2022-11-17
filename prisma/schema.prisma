@@ -113,8 +113,9 @@ model Category {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  OwnerCompany Company?      @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
+  OwnerCompany Company?           @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
   Maintenances Maintenance[]
+  Buildings    BuildingCategory[]
 
   @@map("categories")
 }
@@ -140,8 +141,9 @@ model Maintenance {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Category     Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  OwnerCompany Company? @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
+  Category              Category              @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  OwnerCompany          Company?              @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
+  BuildingsMaintenances BuildingMaintenance[]
 
   FrequencyTimeInterval TimeInterval @relation(name: "MaintenanceFrequency", fields: [frequencyTimeIntervalId], references: [id])
   PeriodTimeInterval    TimeInterval @relation(name: "MaintenancePeriod", fields: [periodTimeIntervalId], references: [id])
@@ -203,6 +205,7 @@ model Building {
   BuildingType                BuildingType                        @relation(fields: [buildingTypeId], references: [id], onDelete: Cascade)
   Company                     Company                             @relation(fields: [companyId], references: [id], onDelete: Cascade)
   NotificationsConfigurations BuildingNotificationConfiguration[]
+  Categories                  BuildingCategory[]
 
   @@map("buildings")
 }
@@ -212,10 +215,10 @@ model BuildingNotificationConfiguration {
   buildingId String
 
   name                     String
-  email                    String
+  email                    String?
   emailIsConfirmed         Boolean  @default(false)
   role                     String
-  contactNumber            String
+  contactNumber            String?
   contactNumberIsConfirmed Boolean  @default(false)
   isMain                   Boolean  @default(false)
   lastNotificationDate     DateTime @default(now())
@@ -225,4 +228,33 @@ model BuildingNotificationConfiguration {
   Building  Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
 
   @@map("buildingsNotificationsConfigurations")
+}
+
+model BuildingCategory {
+  id         String @id @unique @default(uuid())
+  buildingId String
+  categoryId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Building     Building              @relation(fields: [buildingId], references: [id])
+  Category     Category              @relation(fields: [categoryId], references: [id])
+  Maintenances BuildingMaintenance[]
+
+  @@map("buildingsCategories")
+}
+
+model BuildingMaintenance {
+  id                 String @id @unique @default(uuid())
+  buildingCategoryId String
+  maintenanceId      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  BuildingCategory BuildingCategory @relation(fields: [buildingCategoryId], references: [id], onDelete: Cascade)
+  Maintenance      Maintenance      @relation(fields: [maintenanceId], references: [id])
+
+  @@map("buildingsMaintenances")
 }

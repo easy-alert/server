@@ -1,4 +1,4 @@
-import { prisma } from '../../../../utils/prismaClient';
+import { prisma } from '../../../../../prisma';
 import { SharedCompanyServices } from '../../../shared/users/accounts/services/sharedCompanyServices';
 
 import { IEditCompany } from './types';

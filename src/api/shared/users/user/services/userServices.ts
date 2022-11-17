@@ -1,7 +1,7 @@
 // PRISMA
 import { Prisma } from '@prisma/client';
 import { hashSync } from 'bcrypt';
-import { prisma } from '../../../../../utils/prismaClient';
+import { prisma } from '../../../../../../prisma';
 import { Validator } from '../../../../../utils/validator/validator';
 
 // TYPES

@@ -938,6 +938,51 @@
       }
     },
 
+    "/buildings/categories/create": {
+      "post": {
+        "tags": ["Building Categories "],
+        "summary": "Cria categorias  e manutenções em uma edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingId": {
+                    "type": "string"
+                  },
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
     "/buildings/notifications/create": {
       "post": {
         "tags": ["Building Notification"],

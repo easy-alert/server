@@ -44,6 +44,7 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
       label: 'E-mail',
       type: 'string',
       variable: data.email,
+      isOptional: true,
     },
     {
       label: 'Função',
@@ -54,6 +55,7 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
       label: 'Número de telefone',
       type: 'string',
       variable: data.contactNumber,
+      isOptional: true,
     },
     {
       label: 'Número de telefone Principal',
@@ -68,56 +70,68 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
       buildingNotificationConfigurationId,
     });
 
-  await buildingNotificationConfigurationServices.findByEmailForEdit({
-    email: data.email,
-    buildingId,
-    buildingNotificationConfigurationId,
-  });
-
-  await buildingNotificationConfigurationServices.findByContactNumberForEdit({
-    contactNumber: data.contactNumber,
-    buildingId,
-    buildingNotificationConfigurationId,
-  });
-
-  if (data.contactNumber !== buildingNotificationConfigurationData?.contactNumber) {
-    data = {
-      ...data,
-      contactNumberIsConfirmed: false,
-    };
+  if (data.email) {
+    await buildingNotificationConfigurationServices.findByEmailForEdit({
+      email: data.email,
+      buildingId,
+      buildingNotificationConfigurationId,
+    });
   }
 
-  if (data.isMain) {
-    const userMainForNotification =
-      await buildingNotificationConfigurationServices.findNotificationConfigurationMainForEdit({
-        buildingId,
-        buildingNotificationConfigurationId,
-      });
+  if (data.contactNumber) {
+    await buildingNotificationConfigurationServices.findByContactNumberForEdit({
+      contactNumber: data.contactNumber,
+      buildingId,
+      buildingNotificationConfigurationId,
+    });
 
-    validator.cannotExists([
-      {
-        label: 'Usuário principal para receber notificação',
-        variable: userMainForNotification,
-      },
-    ]);
-
-    // #region AWAIT 5 MINUTES FOR SEND OTHER NOTIFICATION
-    if (buildingNotificationConfigurationData?.contactNumber !== data.contactNumber) {
-      const actualHoursInMs = new Date().getTime();
-      const notificationHoursInMs = new Date(
-        buildingNotificationConfigurationData!.lastNotificationDate,
-      ).getTime();
-
-      const dateDiference = (actualHoursInMs - notificationHoursInMs) / 60000;
-
-      if (dateDiference <= 5) {
-        throw new ServerMessage({
-          statusCode: 400,
-          message: 'Aguarde ao menos 5 minutos para reenviar a confirmação.',
-        });
-      }
+    if (data.contactNumber !== buildingNotificationConfigurationData?.contactNumber) {
+      data = {
+        ...data,
+        contactNumberIsConfirmed: false,
+      };
     }
-    // #endregion
+  }
+  if (data.isMain) {
+    if (data.contactNumber) {
+      const userMainForNotification =
+        await buildingNotificationConfigurationServices.findNotificationConfigurationMainForEdit({
+          buildingId,
+          buildingNotificationConfigurationId,
+        });
+
+      validator.cannotExists([
+        {
+          label: 'Usuário principal para receber notificação',
+          variable: userMainForNotification,
+        },
+      ]);
+
+      // #region AWAIT 5 MINUTES FOR SEND OTHER NOTIFICATION
+      if (buildingNotificationConfigurationData?.contactNumber !== data.contactNumber) {
+        const actualHoursInMs = new Date().getTime();
+        const notificationHoursInMs = new Date(
+          buildingNotificationConfigurationData!.lastNotificationDate,
+        ).getTime();
+
+        const dateDiference = (actualHoursInMs - notificationHoursInMs) / 60000;
+
+        if (dateDiference <= 5) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: 'Aguarde ao menos 5 minutos para reenviar a confirmação.',
+          });
+        }
+      }
+      // #endregion
+    }
+  }
+
+  if (data.email !== null && data.contactNumber !== null) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: 'E-mail ou WhatsApp obrigatório.',
+    });
   }
 
   // #endregion
@@ -131,6 +145,7 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
   // #region SEND MESSAGE
 
   if (
+    buildingNotificationConfigurationEditedData.contactNumber &&
     buildingNotificationConfigurationEditedData.isMain &&
     !buildingNotificationConfigurationEditedData.contactNumberIsConfirmed
   ) {

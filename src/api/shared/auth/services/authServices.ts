@@ -2,7 +2,7 @@
 import { compare } from 'bcrypt';
 
 // PRISMA
-import { prisma } from '../../../../utils/prismaClient';
+import { prisma } from '../../../../../prisma';
 import { IUser } from './types';
 
 // CLASS

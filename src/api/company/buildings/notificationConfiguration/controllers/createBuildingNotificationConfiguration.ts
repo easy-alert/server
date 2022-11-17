@@ -1,5 +1,6 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
+import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 import { TokenServices } from '../../../../../utils/token/tokenServices';
 
 // CLASS
@@ -17,11 +18,6 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
 
   let { data } = req.body;
 
-  data = {
-    ...data,
-    email: data.email.toLowerCase(),
-  };
-
   // #region VALIDATIONS
   validator.check([
     {
@@ -38,6 +34,7 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
       label: 'E-mail',
       type: 'string',
       variable: data.email,
+      isOptional: true,
     },
     {
       label: 'Função',
@@ -48,6 +45,7 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
       label: 'Número de telefone',
       type: 'string',
       variable: data.contactNumber,
+      isOptional: true,
     },
     {
       label: 'Número de telefone Principal',
@@ -57,17 +55,24 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
     },
   ]);
 
-  await buildingNotificationConfigurationServices.findByEmail({
-    email: data.email,
-    buildingId: data.buildingId,
-  });
+  if (data.email) {
+    await buildingNotificationConfigurationServices.findByEmail({
+      email: data.email,
+      buildingId: data.buildingId,
+    });
 
-  await buildingNotificationConfigurationServices.findByContactNumber({
-    contactNumber: data.contactNumber,
-    buildingId: data.buildingId,
-  });
+    data = {
+      ...data,
+      email: data.email.toLowerCase(),
+    };
+  }
 
-  if (data.isMain) {
+  if (data.isMain && data.contactNumber) {
+    await buildingNotificationConfigurationServices.findByContactNumber({
+      contactNumber: data.contactNumber,
+      buildingId: data.buildingId,
+    });
+
     const userMainForNotification =
       await buildingNotificationConfigurationServices.findNotificationConfigurationMainForCreate({
         buildingId: data.buildingId,
@@ -81,6 +86,13 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
     ]);
   }
 
+  if (data.email !== null && data.contactNumber !== null) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: 'E-mail ou WhatsApp obrigatório.',
+    });
+  }
+
   // #endregion
 
   const buildingNotificationConfigurationData =
@@ -88,7 +100,10 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
 
   // #region SEND MESSAGE
 
-  if (buildingNotificationConfigurationData.isMain) {
+  if (
+    buildingNotificationConfigurationData.isMain &&
+    buildingNotificationConfigurationData.contactNumber
+  ) {
     const token = tokenServices.generate({
       tokenData: {
         id: buildingNotificationConfigurationData.id,

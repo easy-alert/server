@@ -20,6 +20,8 @@ import {
   sendWhatsappConfirmationBuildingNotificationConfiguration,
 } from './notificationConfiguration/controllers';
 
+import { createBuildingCategories } from './buildingCategories/category/controllers';
+
 // ROUTES
 export const buildingRouter = Router();
 
@@ -43,3 +45,6 @@ buildingRouter.post('/notifications/create', createBuildingNotificationConfigura
 
 buildingRouter.put('/notifications/edit', editBuildingNotificationConfiguration);
 buildingRouter.delete('/notifications/delete', deleteBuildingNotificationConfiguration);
+
+// BUILDING CATEGORIES
+buildingRouter.post('/categories/create', createBuildingCategories);
