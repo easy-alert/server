@@ -961,8 +961,18 @@
                     "type": "array",
                     "items": {
                       "properties": {
-                        "id": {
+                        "categoryId": {
                           "type": "string"
+                        },
+                        "Maintenances": {
+                          "type": "array",
+                          "items": {
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              }
+                            }
+                          }
                         }
                       }
                     }
