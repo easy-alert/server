@@ -5,6 +5,7 @@ import { CategoryServices } from '../../../categories/category/services/category
 
 // CLASS
 import { BuildingServices } from '../../building/services/buildingServices';
+import { IListBuildingCategoriesAndMaintenances } from './types';
 
 const buildingServices = new BuildingServices();
 const validator = new Validator();
@@ -23,13 +24,15 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
       variable: buildingId,
     },
   ]);
-  await buildingServices.findById({ buildingId });
+  await buildingServices.findById({
+    buildingId,
+  });
   // #endregion
 
-  const CategoriesData = await categoryServices.list({
+  const CategoriesData = (await categoryServices.list({
     ownerCompanyId: req.Company.id,
     search: '',
-  });
+  })) as IListBuildingCategoriesAndMaintenances[];
 
   const BuildingCategories = await buildingServices.listMaintenances({
     buildingId,
