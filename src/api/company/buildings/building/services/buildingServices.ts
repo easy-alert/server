@@ -130,7 +130,7 @@ export class BuildingServices {
     return Building;
   }
 
-  async listMaintenances({ search = '', buildingId }: IListMaintenances) {
+  async listMaintenances({ buildingId }: IListMaintenances) {
     return prisma.buildingCategory.findMany({
       include: {
         Category: {
@@ -182,19 +182,9 @@ export class BuildingServices {
           },
         },
       },
-      orderBy: {
-        Category: {
-          name: 'asc',
-        },
-      },
+
       where: {
         buildingId,
-        Category: {
-          name: {
-            contains: search,
-            mode: 'insensitive',
-          },
-        },
       },
     });
   }

@@ -55,4 +55,4 @@ buildingRouter.delete('/notifications/delete', deleteBuildingNotificationConfigu
 // BUILDING MAINTENANCES
 // buildingRouter.post('/maintenances/create', createBuildingCategoriesAndMaintenaces);
 buildingRouter.put('/maintenances/edit', editBuildingCategoriesAndMaintenaces);
-buildingRouter.get('/maintenances/list', listBuildingCategoriesAndMaintenances);
+buildingRouter.post('/maintenances/list', listBuildingCategoriesAndMaintenances);

@@ -1041,7 +1041,7 @@
     },
 
     "/buildings/maintenances/list": {
-      "get": {
+      "post": {
         "tags": ["Building Maintenances"],
         "summary": "Lista todas as edificações.",
         "security": [
@@ -1049,15 +1049,19 @@
             "bearerAuth": []
           }
         ],
-        "parameters": [
-          {
-            "name": "search",
-            "in": "query",
-            "schema": {
-              "type": "string"
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingId": { "type": "string" }
+                }
+              }
             }
           }
-        ],
+        },
 
         "responses": {
           "200": {

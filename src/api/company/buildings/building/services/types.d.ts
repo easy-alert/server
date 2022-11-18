@@ -40,6 +40,5 @@ export interface IListBuildings {
 }
 
 export interface IListMaintenances {
-  search: string;
   buildingId: string;
 }
