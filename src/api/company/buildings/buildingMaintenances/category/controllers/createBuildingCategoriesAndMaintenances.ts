@@ -14,7 +14,7 @@ const sharedCategoryServices = new SharedCategoryServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 // #endregion
 
-export async function createBuildingCategories(req: Request, res: Response) {
+export async function createBuildingCategoriesAndMaintenaces(req: Request, res: Response) {
   const { buildingId } = req.body;
   const bodyData = req.body.data;
 
@@ -73,7 +73,7 @@ export async function createBuildingCategories(req: Request, res: Response) {
       },
     };
 
-    await buildingCategoryServices.createCategoryAndMaintenances(data);
+    await buildingCategoryServices.createCategoriesAndMaintenances(data);
   }
 
   return res.status(200).json({
