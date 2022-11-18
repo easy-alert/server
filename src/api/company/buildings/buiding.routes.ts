@@ -22,10 +22,10 @@ import {
 } from './notificationConfiguration/controllers';
 
 import {
-  // createBuildingCategoriesAndMaintenaces,
   editBuildingCategoriesAndMaintenaces,
   listBuildingCategoriesAndMaintenances,
 } from './buildingMaintenances/controllers';
+import { listBuildingForSelect } from './building/controllers/listBuildingsForSelect';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -34,6 +34,8 @@ export const buildingRouter = Router();
 buildingRouter.post('/create', createBuilding);
 buildingRouter.put('/edit', editBuilding);
 buildingRouter.get('/list', listBuilding);
+buildingRouter.get('/listforselect', listBuildingForSelect);
+
 buildingRouter.get('/list/details/:buildingId', listBuildingDetails);
 buildingRouter.delete('/delete', deleteBuilding);
 buildingRouter.get('/list/details/:buildingId/maintenances', listBuildingDetailsMaintenances);
@@ -53,6 +55,5 @@ buildingRouter.put('/notifications/edit', editBuildingNotificationConfiguration)
 buildingRouter.delete('/notifications/delete', deleteBuildingNotificationConfiguration);
 
 // BUILDING MAINTENANCES
-// buildingRouter.post('/maintenances/create', createBuildingCategoriesAndMaintenaces);
 buildingRouter.put('/maintenances/edit', editBuildingCategoriesAndMaintenaces);
 buildingRouter.post('/maintenances/list', listBuildingCategoriesAndMaintenances);

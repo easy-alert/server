@@ -188,4 +188,16 @@ export class BuildingServices {
       },
     });
   }
+
+  async listForSelect({ companyId }: { companyId: string }) {
+    return prisma.building.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+      where: {
+        companyId,
+      },
+    });
+  }
 }

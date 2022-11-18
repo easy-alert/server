@@ -11,7 +11,6 @@ const validator = new Validator();
 
 export async function listBuildingDetailsMaintenances(req: Request, res: Response) {
   const { buildingId } = req.params;
-  const { search } = req.params;
 
   // #region VALIDATION
 
@@ -29,7 +28,6 @@ export async function listBuildingDetailsMaintenances(req: Request, res: Respons
 
   const BuldingMaintenaces = await buildingServices.listMaintenances({
     buildingId,
-    search: search as string,
   });
 
   return res.status(200).json(BuldingMaintenaces);
