@@ -3,13 +3,13 @@ import { Request, Response } from 'express';
 import { Validator } from '../../../../../../utils/validator/validator';
 import { SharedCategoryServices } from '../../../../../shared/categories/category/services/sharedCategoryServices';
 import { SharedMaintenanceServices } from '../../../../../shared/categories/maintenace/services/sharedMaintenanceServices';
-import { BuildingCategoryServices } from '../services/buildingCategoryServices';
+import { BuildingCategoryAndMaintenanceServices } from '../services/buildingCategoryAndMaintenaceServices';
 import { ICreateBuildingCategory } from '../services/types';
 
 // CLASS
 
 const validator = new Validator();
-const buildingCategoryServices = new BuildingCategoryServices();
+const buildingCategoryAndMaintenancesServices = new BuildingCategoryAndMaintenanceServices();
 const sharedCategoryServices = new SharedCategoryServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 // #endregion
@@ -73,7 +73,7 @@ export async function createBuildingCategoriesAndMaintenaces(req: Request, res: 
       },
     };
 
-    await buildingCategoryServices.createCategoriesAndMaintenances(data);
+    await buildingCategoryAndMaintenancesServices.createCategoriesAndMaintenances(data);
   }
 
   return res.status(200).json({

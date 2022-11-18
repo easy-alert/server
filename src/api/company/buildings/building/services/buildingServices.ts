@@ -181,24 +181,21 @@ export class BuildingServices {
               },
             },
           },
-          orderBy: {
-            Maintenance: {
-              element: 'asc',
-            },
-          },
-
-          where: {
-            Maintenance: {
-              element: {
-                contains: search,
-                mode: 'insensitive',
-              },
-            },
-          },
+        },
+      },
+      orderBy: {
+        Category: {
+          name: 'asc',
         },
       },
 
       where: {
+        Category: {
+          name: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
         buildingId,
       },
     });

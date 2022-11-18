@@ -3,15 +3,18 @@ import { Request, Response } from 'express';
 import { Validator } from '../../../../../../utils/validator/validator';
 import { SharedCategoryServices } from '../../../../../shared/categories/category/services/sharedCategoryServices';
 import { SharedMaintenanceServices } from '../../../../../shared/categories/maintenace/services/sharedMaintenanceServices';
-import { BuildingCategoryServices } from '../services/buildingCategoryServices';
+import { BuildingServices } from '../../../building/services/buildingServices';
+import { BuildingCategoryAndMaintenanceServices } from '../services/buildingCategoryAndMaintenaceServices';
 import { ICreateBuildingCategory } from '../services/types';
 
 // CLASS
 
 const validator = new Validator();
-const buildingCategoryServices = new BuildingCategoryServices();
+const buildingCategoryAndMaintenanceServices = new BuildingCategoryAndMaintenanceServices();
 const sharedCategoryServices = new SharedCategoryServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
+const buildingServices = new BuildingServices();
+
 // #endregion
 
 export async function editBuildingCategoriesAndMaintenaces(req: Request, res: Response) {
@@ -27,6 +30,8 @@ export async function editBuildingCategoriesAndMaintenaces(req: Request, res: Re
       variable: buildingId,
     },
   ]);
+
+  await buildingServices.findById({ buildingId });
 
   for (let i = 0; i < bodyData.length; i++) {
     validator.check([
@@ -54,6 +59,18 @@ export async function editBuildingCategoriesAndMaintenaces(req: Request, res: Re
 
   // #endregion
 
+  // #region DELETING OLD DATA
+  const existsMaintenances = await buildingCategoryAndMaintenanceServices.findByBuldingId({
+    buildingId,
+  });
+
+  if (existsMaintenances !== null) {
+    await buildingCategoryAndMaintenanceServices.delteCategoriesAndMaintenances({ buildingId });
+  }
+
+  // #endregion
+
+  // #region CREATING NEW DATA
   let data: ICreateBuildingCategory;
 
   for (let i = 0; i < bodyData.length; i++) {
@@ -73,13 +90,13 @@ export async function editBuildingCategoriesAndMaintenaces(req: Request, res: Re
       },
     };
 
-    await buildingCategoryServices.createCategoriesAndMaintenances(data);
+    await buildingCategoryAndMaintenanceServices.createCategoriesAndMaintenances(data);
   }
 
   return res.status(200).json({
     ServerMessage: {
-      statusCode: 201,
-      message: `Manutenções cadastradas com sucesso.`,
+      statusCode: 200,
+      message: `Manutenções editadas com sucesso.`,
     },
   });
 }
