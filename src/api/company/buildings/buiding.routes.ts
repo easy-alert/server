@@ -11,6 +11,7 @@ import {
   editBuilding,
   listBuilding,
   listBuildingDetails,
+  listBuildingDetailsMaintenances,
 } from './building/controllers';
 
 import {
@@ -31,6 +32,7 @@ buildingRouter.put('/edit', editBuilding);
 buildingRouter.get('/list', listBuilding);
 buildingRouter.get('/list/details/:buildingId', listBuildingDetails);
 buildingRouter.delete('/delete', deleteBuilding);
+buildingRouter.get('/list/details/:buildingId/maintenances', listBuildingDetailsMaintenances);
 
 // BUILDING TYPES
 buildingRouter.get('/types/list', listBuildingTypes);

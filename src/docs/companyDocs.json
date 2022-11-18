@@ -700,6 +700,108 @@
       }
     },
 
+    "/buildings/list/details/{buildingId}/maintenances": {
+      "get": {
+        "tags": ["Building"],
+        "summary": "Busca as manutenções da edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "buildingId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID da edificação"
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Retorna as manutenções da edificação.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "Category": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "name": { "type": "string" }
+                        }
+                      },
+                      "Maintenance": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "id": { "type": "string" },
+
+                            "element": { "type": "string" },
+                            "activity": { "type": "string" },
+                            "frequency": { "type": "number" },
+                            "delay": { "type": "number" },
+                            "period": { "type": "number" },
+                            "responsible": { "type": "string" },
+                            "source": { "type": "string" },
+                            "observation": { "type": "string" },
+                            "FrequencyTimeInterval": {
+                              "type": "object",
+                              "properties": {
+                                "id": { "type": "string" },
+                                "name": { "type": "string" },
+                                "pluralLabel": { "type": "string" },
+                                "singularLabel": { "type": "string" }
+                              }
+                            },
+                            "DelayTimeInterval": {
+                              "type": "object",
+                              "properties": {
+                                "id": { "type": "string" },
+                                "name": { "type": "string" },
+                                "pluralLabel": { "type": "string" },
+                                "singularLabel": { "type": "string" }
+                              }
+                            },
+                            "PeriodTimeInterval": {
+                              "type": "object",
+                              "properties": {
+                                "id": { "type": "string" },
+                                "name": { "type": "string" },
+                                "pluralLabel": { "type": "string" },
+                                "singularLabel": { "type": "string" }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
     "/buildings/list/detailsforconfirm": {
       "post": {
         "tags": ["Building"],

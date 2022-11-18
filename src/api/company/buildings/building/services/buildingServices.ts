@@ -2,7 +2,7 @@
 import { prisma } from '../../../../../../prisma';
 
 // TYPES
-import { ICreateBuilding, IEditBuilding, IListBuildings } from './types';
+import { ICreateBuilding, IEditBuilding, IListBuildings, IListMaintenances } from './types';
 
 // // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
@@ -128,5 +128,79 @@ export class BuildingServices {
     validator.needExist([{ label: 'Edificação', variable: Building }]);
 
     return Building;
+  }
+
+  async listMaintenances({ search = '', buildingId }: IListMaintenances) {
+    return prisma.buildingCategory.findMany({
+      select: {
+        Category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        Maintenances: {
+          select: {
+            Maintenance: {
+              select: {
+                id: true,
+                element: true,
+                activity: true,
+                frequency: true,
+                delay: true,
+                period: true,
+                responsible: true,
+                source: true,
+                observation: true,
+                ownerCompanyId: true,
+
+                FrequencyTimeInterval: {
+                  select: {
+                    id: true,
+                    name: true,
+                    pluralLabel: true,
+                    singularLabel: true,
+                  },
+                },
+                DelayTimeInterval: {
+                  select: {
+                    id: true,
+                    name: true,
+                    pluralLabel: true,
+                    singularLabel: true,
+                  },
+                },
+                PeriodTimeInterval: {
+                  select: {
+                    id: true,
+                    name: true,
+                    pluralLabel: true,
+                    singularLabel: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            Maintenance: {
+              element: 'asc',
+            },
+          },
+
+          where: {
+            Maintenance: {
+              element: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          },
+        },
+      },
+
+      where: {
+        buildingId,
+      },
+    });
   }
 }

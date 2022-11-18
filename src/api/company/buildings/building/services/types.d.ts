@@ -38,3 +38,8 @@ export interface IListBuildings {
   search: string;
   companyId: string;
 }
+
+export interface IListMaintenances {
+  search: string;
+  buildingId: string;
+}
