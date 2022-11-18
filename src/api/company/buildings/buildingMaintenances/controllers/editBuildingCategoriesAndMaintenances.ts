@@ -1,9 +1,9 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
-import { Validator } from '../../../../../../utils/validator/validator';
-import { SharedCategoryServices } from '../../../../../shared/categories/category/services/sharedCategoryServices';
-import { SharedMaintenanceServices } from '../../../../../shared/categories/maintenace/services/sharedMaintenanceServices';
-import { BuildingServices } from '../../../building/services/buildingServices';
+import { Validator } from '../../../../../utils/validator/validator';
+import { SharedCategoryServices } from '../../../../shared/categories/category/services/sharedCategoryServices';
+import { SharedMaintenanceServices } from '../../../../shared/categories/maintenace/services/sharedMaintenanceServices';
+import { BuildingServices } from '../../building/services/buildingServices';
 import { BuildingCategoryAndMaintenanceServices } from '../services/buildingCategoryAndMaintenaceServices';
 import { ICreateBuildingCategory } from '../services/types';
 
@@ -14,7 +14,6 @@ const buildingCategoryAndMaintenanceServices = new BuildingCategoryAndMaintenanc
 const sharedCategoryServices = new SharedCategoryServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 const buildingServices = new BuildingServices();
-
 // #endregion
 
 export async function editBuildingCategoriesAndMaintenaces(req: Request, res: Response) {

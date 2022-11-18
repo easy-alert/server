@@ -86,7 +86,7 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
     ]);
   }
 
-  if (data.email !== null && data.contactNumber !== null) {
+  if (data.email === null && data.contactNumber === null) {
     throw new ServerMessage({
       statusCode: 400,
       message: 'E-mail ou WhatsApp obrigatório.',

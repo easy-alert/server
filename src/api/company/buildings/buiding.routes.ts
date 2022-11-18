@@ -22,9 +22,10 @@ import {
 } from './notificationConfiguration/controllers';
 
 import {
-  createBuildingCategoriesAndMaintenaces,
+  // createBuildingCategoriesAndMaintenaces,
   editBuildingCategoriesAndMaintenaces,
-} from './buildingMaintenances/category/controllers';
+  listBuildingCategoriesAndMaintenances,
+} from './buildingMaintenances/controllers';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -52,5 +53,6 @@ buildingRouter.put('/notifications/edit', editBuildingNotificationConfiguration)
 buildingRouter.delete('/notifications/delete', deleteBuildingNotificationConfiguration);
 
 // BUILDING MAINTENANCES
-buildingRouter.post('/maintenances/create', createBuildingCategoriesAndMaintenaces);
+// buildingRouter.post('/maintenances/create', createBuildingCategoriesAndMaintenaces);
 buildingRouter.put('/maintenances/edit', editBuildingCategoriesAndMaintenaces);
+buildingRouter.get('/maintenances/list', listBuildingCategoriesAndMaintenances);

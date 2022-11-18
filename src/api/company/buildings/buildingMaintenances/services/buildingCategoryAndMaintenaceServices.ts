@@ -1,6 +1,6 @@
 import { ICreateBuildingCategory } from './types';
 
-import { prisma } from '../../../../../../../prisma';
+import { prisma } from '../../../../../../prisma';
 
 export class BuildingCategoryAndMaintenanceServices {
   async createCategoriesAndMaintenances(data: ICreateBuildingCategory) {
