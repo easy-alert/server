@@ -5,6 +5,7 @@ import { prisma } from '../../../../../../prisma';
 import {
   ICreateBuildingNotificationConfiguration,
   IEditBuildingNotificationConfiguration,
+  ISendEmailConfirmationForReceiveNotifications,
   ISendWhatsappConfirmationForReceiveNotifications,
 } from './types';
 
@@ -12,8 +13,11 @@ import {
 import { Validator } from '../../../../../utils/validator/validator';
 import { ZenviaServices } from '../../../../../utils/customsApis/Zenvia/services/zenviaServices';
 
+import { EmailTransporterServices } from '../../../../../utils/emailTransporter/emailTransporterServices';
+
 const validator = new Validator();
 const zenviaServices = new ZenviaServices();
+const emailTransporter = new EmailTransporterServices();
 
 // #endregion
 
@@ -219,6 +223,24 @@ export class BuildingNotificationConfigurationServices {
   }: ISendWhatsappConfirmationForReceiveNotifications) {
     await zenviaServices.postWhatsappConfirmation({
       receiverPhoneNumber,
+      link,
+    });
+
+    await this.editLastNotificationDate({
+      buildingNotificationConfigurationId,
+    });
+  }
+
+  async sendEmailConfirmForReceiveNotifications({
+    toEmail,
+    link,
+    buildingNotificationConfigurationId,
+  }: ISendEmailConfirmationForReceiveNotifications) {
+    await emailTransporter.sendEmail({
+      toEmail,
+      subject: 'Confirmação de e-mail',
+      text: 'Você está recebendo esta mensagem pois seu email foi apontado como responsável por uma edificação!',
+      template: 'confirmEmail',
       link,
     });
 

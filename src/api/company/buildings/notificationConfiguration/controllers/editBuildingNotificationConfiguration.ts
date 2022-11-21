@@ -143,36 +143,66 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
     });
 
   // #region SEND MESSAGE
+  if (buildingNotificationConfigurationEditedData.isMain) {
+    // if (
+    //   buildingNotificationConfigurationEditedData.contactNumber &&
+    //   !buildingNotificationConfigurationEditedData.contactNumberIsConfirmed
+    // ) {
+    //   if (
+    //     buildingNotificationConfigurationEditedData.contactNumber !==
+    //       buildingNotificationConfigurationData?.contactNumber ||
+    //     (!buildingNotificationConfigurationData?.isMain &&
+    //       buildingNotificationConfigurationEditedData.isMain)
+    //   ) {
+    //     const token = tokenServices.generate({
+    //       tokenData: {
+    //         id: buildingNotificationConfigurationId,
+    //         confirmType: 'whatsapp',
+    //       },
+    //     });
 
-  if (
-    buildingNotificationConfigurationEditedData.contactNumber &&
-    buildingNotificationConfigurationEditedData.isMain &&
-    !buildingNotificationConfigurationEditedData.contactNumberIsConfirmed
-  ) {
+    //     await tokenServices.saveInDatabase({ token });
+
+    //     await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
+    //       {
+    //         buildingNotificationConfigurationId,
+    //         receiverPhoneNumber: buildingNotificationConfigurationEditedData.contactNumber,
+    //         link: `${link}?token=${token}`,
+    //       },
+    //     );
+    //   }
+    // }
+
+    // EMAIL
+
     if (
-      buildingNotificationConfigurationEditedData.contactNumber !==
-        buildingNotificationConfigurationData?.contactNumber ||
-      (!buildingNotificationConfigurationData?.isMain &&
-        buildingNotificationConfigurationEditedData.isMain)
+      buildingNotificationConfigurationEditedData.email &&
+      !buildingNotificationConfigurationEditedData.emailIsConfirmed
     ) {
-      const token = tokenServices.generate({
-        tokenData: {
-          id: buildingNotificationConfigurationId,
-          confirmType: 'whatsapp',
-        },
-      });
+      if (
+        buildingNotificationConfigurationEditedData.emailIsConfirmed !==
+          buildingNotificationConfigurationData?.emailIsConfirmed ||
+        (!buildingNotificationConfigurationData?.isMain &&
+          buildingNotificationConfigurationEditedData.isMain)
+      ) {
+        const token = tokenServices.generate({
+          tokenData: {
+            id: buildingNotificationConfigurationEditedData.id,
+            confirmType: 'email',
+          },
+        });
 
-      await tokenServices.saveInDatabase({ token });
+        await tokenServices.saveInDatabase({ token });
 
-      await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
-        {
-          buildingNotificationConfigurationId,
-          receiverPhoneNumber: buildingNotificationConfigurationEditedData.contactNumber,
+        await buildingNotificationConfigurationServices.sendEmailConfirmForReceiveNotifications({
+          buildingNotificationConfigurationId: buildingNotificationConfigurationEditedData.id,
           link: `${link}?token=${token}`,
-        },
-      );
+          toEmail: buildingNotificationConfigurationEditedData.email,
+        });
+      }
     }
   }
+
   // #endregion
 
   return res.status(200).json({

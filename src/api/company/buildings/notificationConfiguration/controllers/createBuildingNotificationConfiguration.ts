@@ -100,29 +100,47 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
 
   // #region SEND MESSAGE
 
-  if (
-    buildingNotificationConfigurationData.isMain &&
-    buildingNotificationConfigurationData.contactNumber
-  ) {
-    const token = tokenServices.generate({
-      tokenData: {
-        id: buildingNotificationConfigurationData.id,
-        confirmType: 'whatsapp',
-      },
-    });
+  if (buildingNotificationConfigurationData.isMain) {
+    // if (buildingNotificationConfigurationData.contactNumber) {
+    //   const token = tokenServices.generate({
+    //     tokenData: {
+    //       id: buildingNotificationConfigurationData.id,
+    //       confirmType: 'whatsapp',
+    //     },
+    //   });
 
-    await tokenServices.saveInDatabase({ token });
+    //   await tokenServices.saveInDatabase({ token });
 
-    await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
-      {
+    //   await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
+    //     {
+    //       buildingNotificationConfigurationId: buildingNotificationConfigurationData.id,
+    //       receiverPhoneNumber: buildingNotificationConfigurationData.contactNumber,
+    //       link: `${link}?token=${token}`,
+    //     },
+    //   );
+    // }
+
+    if (buildingNotificationConfigurationData.email) {
+      const token = tokenServices.generate({
+        tokenData: {
+          id: buildingNotificationConfigurationData.id,
+          confirmType: 'email',
+        },
+      });
+
+      await tokenServices.saveInDatabase({ token });
+
+      await buildingNotificationConfigurationServices.sendEmailConfirmForReceiveNotifications({
         buildingNotificationConfigurationId: buildingNotificationConfigurationData.id,
-        receiverPhoneNumber: buildingNotificationConfigurationData.contactNumber,
         link: `${link}?token=${token}`,
-      },
-    );
 
-    // #endregion
+        toEmail: buildingNotificationConfigurationData.email,
+      });
+    }
   }
+
+  // #endregion
+
   return res.status(200).json({
     ServerMessage: {
       statusCode: 201,

@@ -25,3 +25,9 @@ export interface ISendWhatsappConfirmationForReceiveNotifications {
   link: string;
   buildingNotificationConfigurationId: string;
 }
+
+export interface ISendEmailConfirmationForReceiveNotifications {
+  toEmail: string;
+  link: string;
+  buildingNotificationConfigurationId: string;
+}
