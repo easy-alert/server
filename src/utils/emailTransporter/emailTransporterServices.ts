@@ -41,6 +41,7 @@ export class EmailTransporterServices {
       context: {
         link,
         text,
+        subject,
       },
     };
 
