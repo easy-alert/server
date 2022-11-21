@@ -17,7 +17,7 @@ export class BuildingCategoryAndMaintenanceServices {
     });
   }
 
-  async delteCategoriesAndMaintenances({ buildingId }: { buildingId: string }) {
+  async deleteCategoriesAndMaintenances({ buildingId }: { buildingId: string }) {
     await prisma.buildingCategory.deleteMany({
       where: {
         buildingId,

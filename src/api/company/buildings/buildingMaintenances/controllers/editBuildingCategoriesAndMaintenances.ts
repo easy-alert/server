@@ -64,7 +64,7 @@ export async function editBuildingCategoriesAndMaintenaces(req: Request, res: Re
   });
 
   if (existsMaintenances !== null) {
-    await buildingCategoryAndMaintenanceServices.delteCategoriesAndMaintenances({ buildingId });
+    await buildingCategoryAndMaintenanceServices.deleteCategoriesAndMaintenances({ buildingId });
   }
 
   // #endregion

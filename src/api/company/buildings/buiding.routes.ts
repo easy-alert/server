@@ -34,7 +34,7 @@ export const buildingRouter = Router();
 buildingRouter.post('/create', createBuilding);
 buildingRouter.put('/edit', editBuilding);
 buildingRouter.get('/list', listBuilding);
-buildingRouter.get('/listforselect', listBuildingForSelect);
+buildingRouter.get('/listforselect/:buildingId', listBuildingForSelect);
 
 buildingRouter.get('/list/details/:buildingId', listBuildingDetails);
 buildingRouter.delete('/delete', deleteBuilding);

@@ -898,10 +898,21 @@
       }
     },
 
-    "/buildings/listforselect": {
+    "/buildings/listforselect/{buildingId}": {
       "get": {
         "tags": ["Building"],
         "summary": "Lista todas as edificações para o select.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "buildingId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID da edificação"
+          }
+        ],
         "security": [
           {
             "bearerAuth": []
