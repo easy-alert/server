@@ -86,6 +86,24 @@ export class SharedMaintenanceServices {
     return maintenance;
   }
 
+  async countPerCompanyId({ companyId }: { companyId: string }) {
+    const [maintenancesCount, defaultMaintenances] = await prisma.$transaction([
+      prisma.maintenance.count({
+        where: {
+          ownerCompanyId: companyId,
+        },
+      }),
+
+      prisma.maintenance.count({
+        where: {
+          ownerCompanyId: null,
+        },
+      }),
+    ]);
+
+    return maintenancesCount + defaultMaintenances;
+  }
+
   async delete({ maintenanceId }: { maintenanceId: string }) {
     await this.findById({ maintenanceId });
 

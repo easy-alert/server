@@ -1,6 +1,7 @@
 // # region IMPORTS
 import { Request, Response } from 'express';
 import { Validator } from '../../../../../utils/validator/validator';
+import { SharedMaintenanceServices } from '../../../../shared/categories/maintenace/services/sharedMaintenanceServices';
 import { CategoryServices } from '../../../categories/category/services/categoryServices';
 
 // CLASS
@@ -9,6 +10,7 @@ import { IListBuildingCategoriesAndMaintenances } from './types';
 
 const buildingServices = new BuildingServices();
 const categoryServices = new CategoryServices();
+const sharedMaintenaceServices = new SharedMaintenanceServices();
 
 const validator = new Validator();
 // #endregion
@@ -37,8 +39,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
     buildingId,
   });
 
-  let totalMaintenacesCount = 0;
-  let usedMaintenacesCount = 0;
+  let usedMaintenancesCount = 0;
 
   // all categories
   for (
@@ -59,24 +60,27 @@ export async function listBuildingDetails(req: Request, res: Response) {
         categoriesDataMaintenanceIndex++
       ) {
         // maintenances bulding
+
         for (
           let buildingDataMaintenanceIndex = 0;
           buildingDataMaintenanceIndex < BuildingCategories[buildingDataIndex].Maintenances.length;
           buildingDataMaintenanceIndex++
         ) {
-          totalMaintenacesCount += 1;
-
           if (
             CategoriesData[categoriesDataIndex].Maintenances[categoriesDataMaintenanceIndex].id ===
             BuildingCategories[buildingDataIndex].Maintenances[buildingDataMaintenanceIndex]
               .Maintenance.id
           ) {
-            usedMaintenacesCount += 1;
+            usedMaintenancesCount += 1;
           }
         }
       }
     }
   }
+
+  const totalMaintenacesCount = await sharedMaintenaceServices.countPerCompanyId({
+    companyId: req.Company.id,
+  });
 
   // #endregion
 
@@ -86,5 +90,5 @@ export async function listBuildingDetails(req: Request, res: Response) {
 
   const BuildingDetails = await buildingServices.listDetails({ buildingId });
 
-  return res.status(200).json({ BuildingDetails, usedMaintenacesCount, totalMaintenacesCount });
+  return res.status(200).json({ BuildingDetails, usedMaintenancesCount, totalMaintenacesCount });
 }
