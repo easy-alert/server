@@ -1,2 +1,2 @@
-export * from './listBuildingCategoriesAdnMaintenances';
+export * from './listBuildingCategoriesAndMaintenances';
 export * from './editBuildingCategoriesAndMaintenances';

@@ -1109,9 +1109,53 @@
                     "type": "object",
                     "properties": {
                       "id": { "type": "string" },
-                      "name": { "type": "string", "default": "Monte Ravello" },
-                      "city": { "type": "string" },
-                      "neighborhood": { "type": "string" }
+                      "ownerCompanyId": { "type": "string" },
+                      "name": { "type": "string" },
+                      "Maintenances": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "id": { "type": "string" },
+                            "isSelected": { "type": "string" },
+                            "element": { "type": "string" },
+                            "activity": { "type": "string" },
+                            "frequency": { "type": "number" },
+                            "delay": { "type": "number" },
+                            "period": { "type": "number" },
+                            "responsible": { "type": "string" },
+                            "source": { "type": "string" },
+                            "observation": { "type": "string" },
+                            "ownerCompanyId": { "type": "string" },
+                            "FrequencyTimeInterval": {
+                              "type": "object",
+                              "properties": {
+                                "id": { "type": "string" },
+                                "name": { "type": "string" },
+                                "pluralLabel": { "type": "string" },
+                                "singularLabel": { "type": "string" }
+                              }
+                            },
+                            "DelayTimeInterval": {
+                              "type": "object",
+                              "properties": {
+                                "id": { "type": "string" },
+                                "name": { "type": "string" },
+                                "pluralLabel": { "type": "string" },
+                                "singularLabel": { "type": "string" }
+                              }
+                            },
+                            "PeriodTimeInterval": {
+                              "type": "object",
+                              "properties": {
+                                "id": { "type": "string" },
+                                "name": { "type": "string" },
+                                "pluralLabel": { "type": "string" },
+                                "singularLabel": { "type": "string" }
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -1341,7 +1385,7 @@
     "/buildings/notifications/contactconfirm": {
       "post": {
         "tags": ["Building Notification Send"],
-        "summary": "confirmar qualquer coisa (ARRUMAR)",
+        "summary": "Confirma os dados de contato (E-mail e WhatsApp).",
         "requestBody": {
           "required": true,
           "content": {

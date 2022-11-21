@@ -89,5 +89,5 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
     }
   }
 
-  return res.status(200).json({ CategoriesData });
+  return res.status(200).json(CategoriesData);
 }
