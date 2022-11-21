@@ -11,6 +11,7 @@ import {
   editBuilding,
   listBuilding,
   listBuildingDetails,
+  listBuildingDetailsMaintenances,
 } from './building/controllers';
 
 import {
@@ -20,6 +21,12 @@ import {
   sendWhatsappConfirmationBuildingNotificationConfiguration,
 } from './notificationConfiguration/controllers';
 
+import {
+  editBuildingCategoriesAndMaintenaces,
+  listBuildingCategoriesAndMaintenances,
+} from './buildingMaintenances/controllers';
+import { listBuildingForSelect } from './building/controllers/listBuildingsForSelect';
+
 // ROUTES
 export const buildingRouter = Router();
 
@@ -27,8 +34,11 @@ export const buildingRouter = Router();
 buildingRouter.post('/create', createBuilding);
 buildingRouter.put('/edit', editBuilding);
 buildingRouter.get('/list', listBuilding);
+buildingRouter.get('/listforselect', listBuildingForSelect);
+
 buildingRouter.get('/list/details/:buildingId', listBuildingDetails);
 buildingRouter.delete('/delete', deleteBuilding);
+buildingRouter.get('/list/details/:buildingId/maintenances', listBuildingDetailsMaintenances);
 
 // BUILDING TYPES
 buildingRouter.get('/types/list', listBuildingTypes);
@@ -43,3 +53,7 @@ buildingRouter.post('/notifications/create', createBuildingNotificationConfigura
 
 buildingRouter.put('/notifications/edit', editBuildingNotificationConfiguration);
 buildingRouter.delete('/notifications/delete', deleteBuildingNotificationConfiguration);
+
+// BUILDING MAINTENANCES
+buildingRouter.put('/maintenances/edit', editBuildingCategoriesAndMaintenaces);
+buildingRouter.post('/maintenances/list', listBuildingCategoriesAndMaintenances);

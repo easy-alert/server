@@ -1,8 +1,8 @@
 // #region IMPORTS
-import { prisma } from '../../../../../utils/prismaClient';
+import { prisma } from '../../../../../../prisma';
 
 // TYPES
-import { ICreateBuilding, IEditBuilding, IListBuildings } from './types';
+import { ICreateBuilding, IEditBuilding, IListBuildings, IListMaintenances } from './types';
 
 // // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
@@ -48,7 +48,7 @@ export class BuildingServices {
   }
 
   async list({ take = 20, page, search = '', companyId }: IListBuildings) {
-    const [Buildings, buildingsCount] = await prisma.$transaction([
+    const Buildings = await prisma.$transaction([
       prisma.building.findMany({
         select: {
           id: true,
@@ -70,19 +70,9 @@ export class BuildingServices {
         take,
         skip: (page - 1) * take,
       }),
-
-      prisma.building.count({
-        where: {
-          name: {
-            contains: search,
-            mode: 'insensitive',
-          },
-          companyId,
-        },
-      }),
     ]);
 
-    return { Buildings, buildingsCount };
+    return { Buildings };
   }
 
   async listDetails({ buildingId }: { buildingId: string }) {
@@ -128,5 +118,76 @@ export class BuildingServices {
     validator.needExist([{ label: 'Edificação', variable: Building }]);
 
     return Building;
+  }
+
+  async listMaintenances({ buildingId }: IListMaintenances) {
+    return prisma.buildingCategory.findMany({
+      include: {
+        Category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        Maintenances: {
+          select: {
+            Maintenance: {
+              select: {
+                id: true,
+                element: true,
+                activity: true,
+                frequency: true,
+                delay: true,
+                period: true,
+                responsible: true,
+                source: true,
+                observation: true,
+                ownerCompanyId: true,
+                FrequencyTimeInterval: {
+                  select: {
+                    id: true,
+                    name: true,
+                    pluralLabel: true,
+                    singularLabel: true,
+                  },
+                },
+                DelayTimeInterval: {
+                  select: {
+                    id: true,
+                    name: true,
+                    pluralLabel: true,
+                    singularLabel: true,
+                  },
+                },
+                PeriodTimeInterval: {
+                  select: {
+                    id: true,
+                    name: true,
+                    pluralLabel: true,
+                    singularLabel: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+
+      where: {
+        buildingId,
+      },
+    });
+  }
+
+  async listForSelect({ companyId }: { companyId: string }) {
+    return prisma.building.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+      where: {
+        companyId,
+      },
+    });
   }
 }

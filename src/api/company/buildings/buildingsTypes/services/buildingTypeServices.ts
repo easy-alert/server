@@ -1,5 +1,5 @@
 // PRISMA
-import { prisma } from '../../../../../utils/prismaClient';
+import { prisma } from '../../../../../../prisma';
 import { Validator } from '../../../../../utils/validator/validator';
 
 const validator = new Validator();

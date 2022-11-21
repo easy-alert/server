@@ -1,4 +1,4 @@
-import { prisma } from '../../../../../utils/prismaClient';
+import { prisma } from '../../../../../../prisma';
 
 // CLASS
 import { SharedCategoryServices } from '../../../../shared/categories/category/services/sharedCategoryServices';

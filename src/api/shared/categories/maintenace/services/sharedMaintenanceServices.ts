@@ -1,4 +1,4 @@
-import { prisma } from '../../../../../utils/prismaClient';
+import { prisma } from '../../../../../../prisma';
 import { ICreateMaintenance, IEditMaintenance } from './types';
 
 import { Validator } from '../../../../../utils/validator/validator';

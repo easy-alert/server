@@ -1,5 +1,5 @@
 // PRISMA
-import { prisma } from '../../../../utils/prismaClient';
+import { prisma } from '../../../../../prisma';
 
 // CLASS
 import { Validator } from '../../../../utils/validator/validator';

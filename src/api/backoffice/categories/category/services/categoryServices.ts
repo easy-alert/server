@@ -1,4 +1,4 @@
-import { prisma } from '../../../../../utils/prismaClient';
+import { prisma } from '../../../../../../prisma';
 
 export class CategoryServices {
   async list({ search }: { search: string }) {

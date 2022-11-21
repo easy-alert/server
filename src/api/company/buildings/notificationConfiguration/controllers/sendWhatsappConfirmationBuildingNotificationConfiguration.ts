@@ -44,6 +44,13 @@ export async function sendWhatsappConfirmationBuildingNotificationConfiguration(
       message: 'O usuário não esta configurado como principal para receber notificações.',
     });
   }
+  if (!notificationData?.contactNumber) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message:
+        'O usuário não possui um telefone configurado como principal para receber notificações.',
+    });
+  }
 
   // #region AWAIT 5 MINUTES FOR SEND OTHER NOTIFICATION
 
