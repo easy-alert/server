@@ -10,7 +10,7 @@ import { routes } from './api/index';
 
 // CLASS
 import { handlerMessage } from './utils/messages/handlerMessage';
-//import { corsOptions } from './middlewares/corsOptions';
+import { corsOptions } from './middlewares/corsOptions';
 
 export class App {
   public server: express.Application;
@@ -28,7 +28,7 @@ export class App {
   }
 
   router() {
-    this.server.use(cors());
+    this.server.use(cors(corsOptions));
     this.server.use('/api', routes);
   }
 
