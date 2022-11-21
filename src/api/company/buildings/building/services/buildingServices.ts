@@ -48,7 +48,7 @@ export class BuildingServices {
   }
 
   async list({ take = 20, page, search = '', companyId }: IListBuildings) {
-    const Buildings = await prisma.$transaction([
+    const [Buildings, buildingsCount] = await prisma.$transaction([
       prisma.building.findMany({
         select: {
           id: true,
@@ -70,9 +70,19 @@ export class BuildingServices {
         take,
         skip: (page - 1) * take,
       }),
+
+      prisma.building.count({
+        where: {
+          name: {
+            contains: search,
+            mode: 'insensitive',
+          },
+          companyId,
+        },
+      }),
     ]);
 
-    return { Buildings };
+    return { Buildings, buildingsCount };
   }
 
   async listDetails({ buildingId }: { buildingId: string }) {
@@ -179,7 +189,7 @@ export class BuildingServices {
     });
   }
 
-  async listForSelect({ companyId }: { companyId: string }) {
+  async listForSelect({ companyId, buildingId }: { companyId: string; buildingId: string }) {
     return prisma.building.findMany({
       select: {
         id: true,
@@ -187,6 +197,9 @@ export class BuildingServices {
       },
       where: {
         companyId,
+        NOT: {
+          id: buildingId,
+        },
       },
     });
   }
