@@ -239,7 +239,7 @@ export class BuildingNotificationConfigurationServices {
     await emailTransporter.sendEmail({
       toEmail,
       subject: 'Confirmação de e-mail',
-      text: 'Você está recebendo esta mensagem pois seu email foi apontado como responsável por uma edificação!',
+      text: 'Você está recebendo esta mensagem pois seu e-mail foi apontado como responsável por uma edificação!',
       template: 'confirmEmail',
       link,
     });
