@@ -34,9 +34,9 @@ transporter.use('compile', hbs(handlebarOptions));
 export class EmailTransporterServices {
   async sendEmail({ subject, toEmail, text, link, template }: ISendEmail) {
     const mail = {
-      from: `Easy Alert - ${subject} <noreply@adalovelace.com.br>`,
+      from: `${subject} <noreply@adalovelace.com.br>`,
       to: toEmail,
-      subject,
+      subject: `Easy Alert - ${subject}`,
       text,
       template,
       context: {
