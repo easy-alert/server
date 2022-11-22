@@ -43,7 +43,7 @@ export async function createBuildingAnnexe(req: Request, res: Response) {
   return res.status(200).json({
     Annexe,
     ServerMessage: {
-      message: `Anexo criado com sucesso.`,
+      message: `Anexo cadastrado com sucesso.`,
     },
   });
 }

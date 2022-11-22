@@ -28,6 +28,10 @@ export async function listBuildingDetails(req: Request, res: Response) {
     },
   ]);
 
+  await buildingServices.findById({ buildingId });
+
+  // #endregion
+
   // #region PROCESS DATA
 
   const CategoriesData = (await categoryServices.list({
@@ -81,10 +85,6 @@ export async function listBuildingDetails(req: Request, res: Response) {
   const totalMaintenacesCount = await sharedMaintenaceServices.countPerCompanyId({
     companyId: req.Company.id,
   });
-
-  // #endregion
-
-  await buildingServices.findById({ buildingId });
 
   // #endregion
 

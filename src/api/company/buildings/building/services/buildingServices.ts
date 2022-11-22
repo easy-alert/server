@@ -119,6 +119,13 @@ export class BuildingServices {
 
           orderBy: [{ isMain: 'desc' }, { name: 'asc' }],
         },
+        Annexes: {
+          select: {
+            id: true,
+            name: true,
+            url: true,
+          },
+        },
       },
       where: {
         id: buildingId,
