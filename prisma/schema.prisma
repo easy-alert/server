@@ -264,8 +264,9 @@ model BuildingAnnexe {
   id         String @id @unique @default(uuid())
   buildingId String
 
-  name String
-  url  String
+  name         String
+  originalName String
+  url          String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
