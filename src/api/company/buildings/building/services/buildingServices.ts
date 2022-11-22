@@ -123,6 +123,7 @@ export class BuildingServices {
           select: {
             id: true,
             name: true,
+            originalName: true,
             url: true,
           },
         },

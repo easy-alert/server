@@ -13,7 +13,7 @@ const buildingAnnexeServices = new BuildingAnnexeServices();
 // #endregion
 
 export async function createBuildingAnnexe(req: Request, res: Response) {
-  const { buildingId, name, url } = req.body;
+  const { buildingId, name, originalName, url } = req.body;
 
   // #region VALIDATION
   validator.check([
@@ -26,6 +26,11 @@ export async function createBuildingAnnexe(req: Request, res: Response) {
       label: 'nome do anexo',
       type: 'string',
       variable: name,
+    },
+    {
+      label: 'nome original do anexo',
+      type: 'string',
+      variable: originalName,
     },
     {
       label: 'URL do anexo',
