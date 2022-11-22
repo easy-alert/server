@@ -1,5 +1,6 @@
 // #region IMPORTS
 import { createTransport } from 'nodemailer';
+import { ServerMessage } from '../messages/serverMessage';
 import { ISendEmail } from './types';
 
 const path = require('path');
@@ -45,6 +46,11 @@ export class EmailTransporterServices {
       },
     };
 
-    transporter.sendMail(mail);
+    await transporter.sendMail(mail).catch(() => {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Oops! Encontramos um problema ao enviar a confirmação de email.',
+      });
+    });
   }
 }

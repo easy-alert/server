@@ -14,7 +14,7 @@ const tokenServices = new TokenServices();
 // #endregion
 
 export async function createBuildingNotificationConfiguration(req: Request, res: Response) {
-  const { link } = req.body;
+  const { linkPhone, linkEmail } = req.body;
 
   let { data } = req.body;
 
@@ -115,7 +115,7 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
         {
           buildingNotificationConfigurationId: buildingNotificationConfigurationData.id,
           receiverPhoneNumber: buildingNotificationConfigurationData.contactNumber,
-          link: `${link}?token=${token}`,
+          link: `${linkPhone}?token=${token}`,
         },
       );
     }
@@ -132,7 +132,7 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
 
       await buildingNotificationConfigurationServices.sendEmailConfirmForReceiveNotifications({
         buildingNotificationConfigurationId: buildingNotificationConfigurationData.id,
-        link: `${link}?token=${token}`,
+        link: `${linkEmail}?token=${token}`,
 
         toEmail: buildingNotificationConfigurationData.email,
       });

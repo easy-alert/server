@@ -1251,7 +1251,8 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "link": { "type": "string" },
+                  "linkPhone": { "type": "string" },
+                  "linkEmail": { "type": "string" },
 
                   "data": {
                     "type": "object",
@@ -1298,7 +1299,8 @@
                 "properties": {
                   "buildingNotificationConfigurationId": { "type": "string" },
                   "buildingId": { "type": "string" },
-                  "link": { "type": "string" },
+                  "linkPhone": { "type": "string" },
+                  "linkEmail": { "type": "string" },
                   "data": {
                     "type": "object",
                     "properties": {
@@ -1363,6 +1365,40 @@
       "post": {
         "tags": ["Building Notification Send"],
         "summary": "Envia uma notificação para confirmar o número de contato.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingNotificationConfigurationId": { "type": "string" },
+                  "link": { "type": "string", "default": "www.easyalert.com" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/notifications/sendconfirm/email": {
+      "post": {
+        "tags": ["Building Notification Send"],
+        "summary": "Envia uma notificação para confirmar o email de contato.",
         "security": [
           {
             "bearerAuth": []

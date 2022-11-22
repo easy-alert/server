@@ -14,7 +14,7 @@ const tokenServices = new TokenServices();
 // #endregion
 
 export async function editBuildingNotificationConfiguration(req: Request, res: Response) {
-  const { buildingNotificationConfigurationId, buildingId, link } = req.body;
+  const { buildingNotificationConfigurationId, buildingId, linkPhone, linkEmail } = req.body;
 
   let { data } = req.body;
 
@@ -76,6 +76,13 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
       buildingId,
       buildingNotificationConfigurationId,
     });
+
+    if (data.email !== buildingNotificationConfigurationData?.email) {
+      data = {
+        ...data,
+        emailIsConfirmed: false,
+      };
+    }
   }
 
   if (data.contactNumber) {
@@ -93,7 +100,7 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
     }
   }
   if (data.isMain) {
-    if (data.contactNumber) {
+    if (data.contactNumber || data.email) {
       const userMainForNotification =
         await buildingNotificationConfigurationServices.findNotificationConfigurationMainForEdit({
           buildingId,
@@ -108,7 +115,10 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
       ]);
 
       // #region AWAIT 5 MINUTES FOR SEND OTHER NOTIFICATION
-      if (buildingNotificationConfigurationData?.contactNumber !== data.contactNumber) {
+      if (
+        buildingNotificationConfigurationData?.contactNumber !== data.contactNumber ||
+        buildingNotificationConfigurationData?.email !== data.email
+      ) {
         const actualHoursInMs = new Date().getTime();
         const notificationHoursInMs = new Date(
           buildingNotificationConfigurationData!.lastNotificationDate,
@@ -144,34 +154,34 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
 
   // #region SEND MESSAGE
   if (buildingNotificationConfigurationEditedData.isMain) {
-    // if (
-    //   buildingNotificationConfigurationEditedData.contactNumber &&
-    //   !buildingNotificationConfigurationEditedData.contactNumberIsConfirmed
-    // ) {
-    //   if (
-    //     buildingNotificationConfigurationEditedData.contactNumber !==
-    //       buildingNotificationConfigurationData?.contactNumber ||
-    //     (!buildingNotificationConfigurationData?.isMain &&
-    //       buildingNotificationConfigurationEditedData.isMain)
-    //   ) {
-    //     const token = tokenServices.generate({
-    //       tokenData: {
-    //         id: buildingNotificationConfigurationId,
-    //         confirmType: 'whatsapp',
-    //       },
-    //     });
+    if (
+      buildingNotificationConfigurationEditedData.contactNumber &&
+      !buildingNotificationConfigurationEditedData.contactNumberIsConfirmed
+    ) {
+      if (
+        buildingNotificationConfigurationEditedData.contactNumber !==
+          buildingNotificationConfigurationData?.contactNumber ||
+        (!buildingNotificationConfigurationData?.isMain &&
+          buildingNotificationConfigurationEditedData.isMain)
+      ) {
+        const token = tokenServices.generate({
+          tokenData: {
+            id: buildingNotificationConfigurationId,
+            confirmType: 'whatsapp',
+          },
+        });
 
-    //     await tokenServices.saveInDatabase({ token });
+        await tokenServices.saveInDatabase({ token });
 
-    //     await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
-    //       {
-    //         buildingNotificationConfigurationId,
-    //         receiverPhoneNumber: buildingNotificationConfigurationEditedData.contactNumber,
-    //         link: `${link}?token=${token}`,
-    //       },
-    //     );
-    //   }
-    // }
+        await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
+          {
+            buildingNotificationConfigurationId,
+            receiverPhoneNumber: buildingNotificationConfigurationEditedData.contactNumber,
+            link: `${linkPhone}?token=${token}`,
+          },
+        );
+      }
+    }
 
     // EMAIL
 
@@ -180,8 +190,8 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
       !buildingNotificationConfigurationEditedData.emailIsConfirmed
     ) {
       if (
-        buildingNotificationConfigurationEditedData.emailIsConfirmed !==
-          buildingNotificationConfigurationData?.emailIsConfirmed ||
+        buildingNotificationConfigurationEditedData.email !==
+          buildingNotificationConfigurationData?.email ||
         (!buildingNotificationConfigurationData?.isMain &&
           buildingNotificationConfigurationEditedData.isMain)
       ) {
@@ -196,7 +206,7 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
 
         await buildingNotificationConfigurationServices.sendEmailConfirmForReceiveNotifications({
           buildingNotificationConfigurationId: buildingNotificationConfigurationEditedData.id,
-          link: `${link}?token=${token}`,
+          link: `${linkEmail}?token=${token}`,
           toEmail: buildingNotificationConfigurationEditedData.email,
         });
       }
