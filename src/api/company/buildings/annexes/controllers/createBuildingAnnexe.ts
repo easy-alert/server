@@ -40,5 +40,10 @@ export async function createBuildingAnnexe(req: Request, res: Response) {
 
   const Annexe = await buildingAnnexeServices.create({ data: req.body });
 
-  return res.status(200).json(Annexe);
+  return res.status(200).json({
+    Annexe,
+    ServerMessage: {
+      message: `Anexo criado com sucesso.`,
+    },
+  });
 }

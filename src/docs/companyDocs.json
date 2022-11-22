@@ -1483,7 +1483,23 @@
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/ServerMessage"
+            "description": "Retorna o anexo criado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "buildingId": { "type": "string" },
+                    "name": { "type": "string" },
+                    "url": { "type": "string" },
+
+                    "ServerMessage": {
+                      "message": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
             "$ref": "#/components/responses/ServerMessage"
