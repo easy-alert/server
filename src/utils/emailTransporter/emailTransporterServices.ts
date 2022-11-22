@@ -46,7 +46,7 @@ export class EmailTransporterServices {
       },
     };
 
-    await transporter.sendMail(mail).catch(() => {
+    transporter.sendMail(mail).catch(() => {
       throw new ServerMessage({
         statusCode: 400,
         message: 'Oops! Encontramos um problema ao enviar a confirmação de email.',
