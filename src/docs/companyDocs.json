@@ -1483,6 +1483,7 @@
                 "properties": {
                   "buildingId": { "type": "string" },
                   "name": { "type": "string" },
+                  "originalName": { "type": "string" },
                   "url": { "type": "string" }
                 }
               }
