@@ -265,5 +265,21 @@ export class BuildingNotificationConfigurationServices {
     });
   }
 
+  async confirmContactEmail({
+    buildingNotificationConfigurationId,
+  }: {
+    buildingNotificationConfigurationId: string;
+  }) {
+    await prisma.buildingNotificationConfiguration.update({
+      data: {
+        emailIsConfirmed: true,
+      },
+
+      where: {
+        id: buildingNotificationConfigurationId,
+      },
+    });
+  }
+
   // #endregion
 }
