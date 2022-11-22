@@ -14,7 +14,7 @@ const tokenServices = new TokenServices();
 // #endregion
 
 export async function createBuildingNotificationConfiguration(req: Request, res: Response) {
-  const { link } = req.body;
+  const { linkPhone, linkEmail } = req.body;
 
   let { data } = req.body;
 
@@ -100,29 +100,47 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
 
   // #region SEND MESSAGE
 
-  if (
-    buildingNotificationConfigurationData.isMain &&
-    buildingNotificationConfigurationData.contactNumber
-  ) {
-    const token = tokenServices.generate({
-      tokenData: {
-        id: buildingNotificationConfigurationData.id,
-        confirmType: 'whatsapp',
-      },
-    });
+  if (buildingNotificationConfigurationData.isMain) {
+    if (buildingNotificationConfigurationData.contactNumber) {
+      const token = tokenServices.generate({
+        tokenData: {
+          id: buildingNotificationConfigurationData.id,
+          confirmType: 'whatsapp',
+        },
+      });
 
-    await tokenServices.saveInDatabase({ token });
+      await tokenServices.saveInDatabase({ token });
 
-    await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
-      {
+      await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
+        {
+          buildingNotificationConfigurationId: buildingNotificationConfigurationData.id,
+          receiverPhoneNumber: buildingNotificationConfigurationData.contactNumber,
+          link: `${linkPhone}?token=${token}`,
+        },
+      );
+    }
+
+    if (buildingNotificationConfigurationData.email) {
+      const token = tokenServices.generate({
+        tokenData: {
+          id: buildingNotificationConfigurationData.id,
+          confirmType: 'email',
+        },
+      });
+
+      await tokenServices.saveInDatabase({ token });
+
+      await buildingNotificationConfigurationServices.sendEmailConfirmForReceiveNotifications({
         buildingNotificationConfigurationId: buildingNotificationConfigurationData.id,
-        receiverPhoneNumber: buildingNotificationConfigurationData.contactNumber,
-        link: `${link}?token=${token}`,
-      },
-    );
+        link: `${linkEmail}?token=${token}`,
 
-    // #endregion
+        toEmail: buildingNotificationConfigurationData.email,
+      });
+    }
   }
+
+  // #endregion
+
   return res.status(200).json({
     ServerMessage: {
       statusCode: 201,

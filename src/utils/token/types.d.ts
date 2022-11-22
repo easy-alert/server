@@ -20,7 +20,7 @@ export interface Itoken {
 
 export interface ITokenWhatsAppConfirmation {
   id: string;
-  confirmType: 'whatsapp';
+  confirmType: 'whatsapp' | 'email';
   iat: number;
   exp: number;
 }

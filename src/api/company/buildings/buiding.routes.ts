@@ -26,6 +26,7 @@ import {
   listBuildingCategoriesAndMaintenances,
 } from './buildingMaintenances/controllers';
 import { listBuildingForSelect } from './building/controllers/listBuildingsForSelect';
+import { sendEmailConfirmationBuildingNotificationConfiguration } from './notificationConfiguration/controllers/sendEmailConfirmationBuildingNotificationConfiguration';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -47,6 +48,11 @@ buildingRouter.get('/types/list', listBuildingTypes);
 buildingRouter.post(
   '/notifications/sendconfirm/phone',
   sendWhatsappConfirmationBuildingNotificationConfiguration,
+);
+
+buildingRouter.post(
+  '/notifications/sendconfirm/email',
+  sendEmailConfirmationBuildingNotificationConfiguration,
 );
 
 buildingRouter.post('/notifications/create', createBuildingNotificationConfiguration);

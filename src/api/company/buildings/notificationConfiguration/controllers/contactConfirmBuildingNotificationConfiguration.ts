@@ -1,7 +1,6 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
-// import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 import { TokenServices } from '../../../../../utils/token/tokenServices';
 import { ITokenWhatsAppConfirmation } from '../../../../../utils/token/types';
 
@@ -52,6 +51,20 @@ export async function contactConfirmBuildingNotificationConfiguration(req: Reque
         ServerMessage: {
           statusCode: 200,
           message: `Whatsapp confirmado com sucesso.`,
+        },
+      });
+
+    case 'email':
+      await buildingNotificationConfigurationServices.confirmContactEmail({
+        buildingNotificationConfigurationId,
+      });
+
+      await tokenServices.markAsUsed({ token });
+
+      return res.status(200).json({
+        ServerMessage: {
+          statusCode: 200,
+          message: `E-mail confirmado com sucesso.`,
         },
       });
 
