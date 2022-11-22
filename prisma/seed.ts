@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { prisma } from '../src/utils/prismaClient';
+import { prisma } from '.';
 import { SeedServices } from './seedServices';
 
 const seedServices = new SeedServices();

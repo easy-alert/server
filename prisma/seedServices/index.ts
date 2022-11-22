@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 import { Prisma } from '@prisma/client';
 import { hashSync } from 'bcrypt';
-import { prisma } from '../../src/utils/prismaClient';
 
 // CLASS
 import { PermissionServices } from '../../src/api/shared/permission/services/permissionServices';
 import { CompanyServices } from '../../src/api/backoffice/users/accounts/services/companyServices';
+import { prisma } from '..';
 
 const permissionServices = new PermissionServices();
 const companyServices = new CompanyServices();

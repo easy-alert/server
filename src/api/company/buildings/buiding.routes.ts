@@ -27,6 +27,7 @@ import {
 } from './buildingMaintenances/controllers';
 import { listBuildingForSelect } from './building/controllers/listBuildingsForSelect';
 import { sendEmailConfirmationBuildingNotificationConfiguration } from './notificationConfiguration/controllers/sendEmailConfirmationBuildingNotificationConfiguration';
+import { buildingAnnexeRouter } from './annexes/annexe.routes';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -63,3 +64,6 @@ buildingRouter.delete('/notifications/delete', deleteBuildingNotificationConfigu
 // BUILDING MAINTENANCES
 buildingRouter.put('/maintenances/edit', editBuildingCategoriesAndMaintenaces);
 buildingRouter.post('/maintenances/list', listBuildingCategoriesAndMaintenances);
+
+// BUILDING ANNEXES
+buildingRouter.use('/annexes', buildingAnnexeRouter);
