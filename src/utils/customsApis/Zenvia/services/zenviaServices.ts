@@ -5,7 +5,7 @@ import { IPostWhatsappConfirmation } from './types';
 export class ZenviaServices {
   async postWhatsappConfirmation({ receiverPhoneNumber, link }: IPostWhatsappConfirmation) {
     try {
-      await ApiZenvia.post('/v2/channels/whatsapp/messages', {
+      ApiZenvia.post('/v2/channels/whatsapp/messages', {
         from: '554891538634',
         to: `55${receiverPhoneNumber}`,
         contents: [

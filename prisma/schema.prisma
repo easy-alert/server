@@ -206,6 +206,7 @@ model Building {
   Company                     Company                             @relation(fields: [companyId], references: [id], onDelete: Cascade)
   NotificationsConfigurations BuildingNotificationConfiguration[]
   Categories                  BuildingCategory[]
+  Annexes                     BuildingAnnexe[]
 
   @@map("buildings")
 }
@@ -257,4 +258,19 @@ model BuildingMaintenance {
   Maintenance      Maintenance      @relation(fields: [maintenanceId], references: [id])
 
   @@map("buildingsMaintenances")
+}
+
+model BuildingAnnexe {
+  id         String @id @unique @default(uuid())
+  buildingId String
+
+  name String
+  url  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Building Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+
+  @@map("buildingsAnnexes")
 }
