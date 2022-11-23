@@ -53,7 +53,7 @@ export function emailTemplate({ variables }: { variables: IVariables }) {
               text-align: center;
           '
         >
-          ${variables.text}}
+          ${variables.text}
         </p>
 
       </div>
@@ -66,7 +66,7 @@ export function emailTemplate({ variables }: { variables: IVariables }) {
       >
 
         <a
-          href='${variables.link}}'
+          href='${variables.link}'
           target='__blank'
           style='
             max-width: 328px;
@@ -96,7 +96,7 @@ export function emailTemplate({ variables }: { variables: IVariables }) {
         </p>
 
         <a
-          href='${variables.link}}'
+          href='${variables.link}'
           style='
             color:#B21D1D;
             width: 328px;
@@ -105,7 +105,7 @@ export function emailTemplate({ variables }: { variables: IVariables }) {
             word-break: break-all;
           '
         >
-          ${variables.link}}
+          ${variables.link}
         </a>
 
       </div>
