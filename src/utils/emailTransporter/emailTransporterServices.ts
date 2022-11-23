@@ -1,10 +1,8 @@
 // #region IMPORTS
 import { createTransport } from 'nodemailer';
 import { ServerMessage } from '../messages/serverMessage';
+import { handlerTemplate } from './templates';
 import { ISendEmail } from './types';
-
-const path = require('path');
-const hbs = require('nodemailer-express-handlebars');
 
 // #endregion
 
@@ -19,17 +17,6 @@ const transporter = createTransport({
   },
   tls: { rejectUnauthorized: false },
 });
-const handlebarOptions = {
-  viewEngine: {
-    extName: '.hbs',
-    partialsDir: path.resolve(__dirname, 'views'),
-    defaultLayout: false,
-  },
-  viewPath: path.resolve(__dirname, 'views'),
-  extName: '.hbs',
-};
-transporter.use('compile', hbs(handlebarOptions));
-// #endregion
 
 export class EmailTransporterServices {
   async sendEmail({ subject, toEmail, text, link, template }: ISendEmail) {
@@ -38,12 +25,14 @@ export class EmailTransporterServices {
       to: toEmail,
       subject: `Easy Alert - ${subject}`,
       text,
-      template,
-      context: {
-        link,
-        text,
-        subject,
-      },
+      html: handlerTemplate({
+        template,
+        variables: {
+          link,
+          text,
+          subject,
+        },
+      }),
     };
 
     transporter.sendMail(mail).catch(() => {
