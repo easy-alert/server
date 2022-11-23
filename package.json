@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "ts-node-dev --respawn --exit-child --transpile-only --ignore-watch node_modules src/server.ts",
-    "start": "node dist/server.js",
+    "start": "node dist/src/server.js",
     "build": "tsc",
     "postinstall": "husky install",
     "pre-commit": "lint-staged"
