@@ -21,7 +21,7 @@ const transporter = createTransport({
 export class EmailTransporterServices {
   async sendEmail({ subject, toEmail, text, link, template }: ISendEmail) {
     const mail = {
-      from: `${subject} <noreply@adalovelace.com.br>`,
+      from: `${subject} <${process.env.EMAIL_USERNAME}>`,
       to: toEmail,
       subject: `Easy Alert - ${subject}`,
       text,
