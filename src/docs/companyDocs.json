@@ -1550,21 +1550,11 @@
       }
     },
 
-    "/calendars/list/{companyId}": {
+    "/calendars/list": {
       "get": {
         "tags": ["Calendar"],
         "summary": "Lista todas as manutencoes .",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "companyId",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "ID da empresa"
-          }
-        ],
+
         "security": [
           {
             "bearerAuth": []
