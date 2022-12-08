@@ -4,10 +4,11 @@ import { UserServices } from '../../../../shared/users/user/services/userService
 
 import { ICreateCompany, IListCompany } from './types';
 import { SharedCompanyServices } from '../../../../shared/users/accounts/services/sharedCompanyServices';
+import { Validator } from '../../../../../utils/validator/validator';
 
 const userServices = new UserServices();
 const sharedCompanyServices = new SharedCompanyServices();
-
+const validator = new Validator();
 export class CompanyServices {
   // #region create
 
@@ -117,5 +118,22 @@ export class CompanyServices {
     await sharedCompanyServices.findById({ companyId });
 
     await prisma.company.delete({ where: { id: companyId } });
+  }
+
+  async findById({ companyId }: { companyId: string }) {
+    const Company = await prisma.company.findFirst({
+      where: {
+        id: companyId,
+      },
+    });
+
+    validator.needExist([
+      {
+        label: 'Empresa',
+        variable: Company,
+      },
+    ]);
+
+    return Company!;
   }
 }

@@ -1548,6 +1548,52 @@
           }
         }
       }
+    },
+
+    "/calendars/list/{companyId}": {
+      "get": {
+        "tags": ["Calendar"],
+        "summary": "Lista todas as manutencoes .",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "companyId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID da empresa"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Lista todas as manutencoes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "name": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
     }
   }
 }
