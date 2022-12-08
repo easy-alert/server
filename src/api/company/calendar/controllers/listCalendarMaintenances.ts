@@ -36,7 +36,9 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
   // #endregion
 
   // #region PROCESS DATA
-  const MaintenancesData = await sharedMaintenanceServices.findMaintenancesPerPeriod({ companyId });
+  const MaintenancesData = await sharedMaintenanceServices.findMaintenancesPerPeriod({
+    companyId: req.Company.id,
+  });
 
   const Buildings = sharedCalendarServices.processData({ Maintenances: MaintenancesData });
   // #endregion

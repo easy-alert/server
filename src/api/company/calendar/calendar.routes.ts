@@ -9,4 +9,4 @@ export const calendarRouter = Router();
 
 // BUILDING
 
-calendarRouter.get('/list/:companyId', listCalendarMaintenances);
+calendarRouter.get('/list', listCalendarMaintenances);
