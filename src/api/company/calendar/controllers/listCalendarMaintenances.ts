@@ -6,7 +6,6 @@
 import { Request, Response } from 'express';
 
 // CLASS
-import { Validator } from '../../../../utils/validator/validator';
 import { CompanyServices } from '../../../backoffice/users/accounts/services/companyServices';
 import { SharedCalendarServices } from '../../../shared/calendar/services/SharedCalendarServices';
 import { SharedMaintenanceServices } from '../../../shared/categories/maintenace/services/sharedMaintenanceServices';
@@ -14,28 +13,18 @@ import { SharedMaintenanceServices } from '../../../shared/categories/maintenace
 const sharedCalendarServices = new SharedCalendarServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 const companyServices = new CompanyServices();
-const validator = new Validator();
 
 // #endregion
 
 export async function listCalendarMaintenances(req: Request, res: Response) {
-  const { companyId } = req.params;
-
   // #region VALIDATION
 
-  validator.check([
-    {
-      label: 'ID da empresa',
-      type: 'string',
-      variable: companyId,
-    },
-  ]);
-
-  await companyServices.findById({ companyId });
+  await companyServices.findById({ companyId: req.Company.id });
 
   // #endregion
 
   // #region PROCESS DATA
+
   const MaintenancesData = await sharedMaintenanceServices.findMaintenancesPerPeriod({
     companyId: req.Company.id,
   });
