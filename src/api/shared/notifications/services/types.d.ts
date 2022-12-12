@@ -8,6 +8,11 @@ export interface IRecurringDates {
   };
 }
 
+export interface IAddDays {
+  date: Date;
+  days: number;
+}
+
 interface IMaintenancesData {
   Maintenances: {
     name: string;

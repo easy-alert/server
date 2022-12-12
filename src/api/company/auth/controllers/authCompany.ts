@@ -49,7 +49,7 @@ export const authCompany = async (req: Request, res: Response) => {
       image: user.image,
       name: user.name,
       email: user.email,
-      lastAcess: user.lastAccess,
+      lastAccess: user.lastAccess,
       createdAt: user.createdAt,
       Permissions: user.Permissions,
     },

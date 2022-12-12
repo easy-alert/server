@@ -1,7 +1,8 @@
 // TYPES
 // import { Validator } from '../../../../utils/validator/validator';
 // import { prisma } from '../../../../../prisma';
-import { IAddDays, IMaintenancesData, IRecurringDates } from './types';
+import { addDays } from '../../../../utils/functions';
+import { IMaintenancesData, IRecurringDates } from './types';
 
 // CLASS
 
@@ -28,19 +29,13 @@ export class SharedCalendarServices {
     return newData;
   }
 
-  addDays({ date, days }: IAddDays) {
-    const newDate = new Date(date);
-    newDate.setDate(date.getDate() + days);
-    return newDate;
-  }
-
   recurringDates({ startDate, endDate, interval, maintenanceData }: IRecurringDates) {
     let date = startDate;
     const dates = [];
 
     while (date < endDate) {
       dates.push({ ...maintenanceData, date });
-      date = this.addDays({ date, days: interval });
+      date = addDays({ date, days: interval });
     }
 
     return dates;

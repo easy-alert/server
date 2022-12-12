@@ -9,6 +9,13 @@ const validator = new Validator();
 export class TimeIntervalServices {
   async list() {
     return prisma.timeInterval.findMany({
+      select: {
+        id: true,
+        name: true,
+        pluralLabel: true,
+        singularLabel: true,
+        unitTime: true,
+      },
       orderBy: {
         unitTime: 'asc',
       },
@@ -35,6 +42,7 @@ export class TimeIntervalServices {
         name: true,
         singularLabel: true,
         pluralLabel: true,
+        unitTime: true,
       },
       where: {
         id: timeIntervalId,
@@ -43,6 +51,6 @@ export class TimeIntervalServices {
 
     validator.notNull([{ label: 'ID do tempo de intervalo', variable: timeInterval }]);
 
-    return timeInterval;
+    return timeInterval!;
   }
 }

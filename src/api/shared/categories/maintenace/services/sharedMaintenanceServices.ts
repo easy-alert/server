@@ -1,5 +1,5 @@
 import { prisma } from '../../../../../../prisma';
-import { ICreateMaintenance, IEditMaintenance } from './types';
+import { ICreateMaintenance, IEditMaintenance, IMaintenanceHistory } from './types';
 
 import { Validator } from '../../../../../utils/validator/validator';
 
@@ -37,6 +37,12 @@ export class SharedMaintenanceServices {
         delayTimeIntervalId,
         observation,
       },
+    });
+  }
+
+  async createHistory({ data }: { data: IMaintenanceHistory[] }) {
+    await prisma.maintenanceHistory.createMany({
+      data,
     });
   }
 
@@ -83,7 +89,7 @@ export class SharedMaintenanceServices {
 
     validator.needExist([{ label: 'ID da manutenção', variable: maintenance }]);
 
-    return maintenance;
+    return maintenance!;
   }
 
   async findMaintenancesPerPeriod({ companyId }: { companyId: string }) {
