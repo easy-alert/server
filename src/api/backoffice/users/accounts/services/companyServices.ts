@@ -122,6 +122,18 @@ export class CompanyServices {
 
   async findById({ companyId }: { companyId: string }) {
     const Company = await prisma.company.findFirst({
+      include: {
+        UserCompanies: {
+          select: {
+            User: {
+              select: {
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
       where: {
         id: companyId,
       },
