@@ -19,6 +19,7 @@ import { maintenanceRouter } from './categories/maintenance/maintenance.routes';
 import { contactConfirmBuildingNotificationConfiguration } from './buildings/notificationConfiguration/controllers';
 import { buildingRouter } from './buildings/buiding.routes';
 import { listBuildingDetailsForConfirm } from './buildings/building/controllers/listBuildingDetailsForConfirm';
+import { calendarRouter } from './calendar/calendar.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -43,3 +44,5 @@ companyRouter.use('/account', authMiddleware, isCompany, accountRouter);
 companyRouter.use('/categories', authMiddleware, isCompany, categoryRouter);
 companyRouter.use('/buildings', authMiddleware, isCompany, buildingRouter);
 companyRouter.use('/maintenances', authMiddleware, isCompany, maintenanceRouter);
+
+companyRouter.use('/calendars', authMiddleware, isCompany, calendarRouter);

@@ -86,6 +86,60 @@ export class SharedMaintenanceServices {
     return maintenance;
   }
 
+  async findMaintenancesPerPeriod({ companyId }: { companyId: string }) {
+    return prisma.building.findMany({
+      select: {
+        name: true,
+        deliveryDate: true,
+        Categories: {
+          select: {
+            Maintenances: {
+              select: {
+                Maintenance: {
+                  select: {
+                    id: true,
+                    element: true,
+                    // frequency: true,
+                    // delay: true,
+                    // activity: true,
+                    // observation: true,
+                    // delayTimeIntervalId: true,
+                    // period: true,
+                    // responsible: true,
+                    // source: true,
+
+                    PeriodTimeInterval: {
+                      select: {
+                        name: true,
+                        unitTime: true,
+                      },
+                    },
+                    DelayTimeInterval: {
+                      select: {
+                        name: true,
+                        unitTime: true,
+                      },
+                    },
+                    FrequencyTimeInterval: {
+                      select: {
+                        name: true,
+                        unitTime: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+
+      where: {
+        companyId,
+      },
+    });
+  }
+
   async countPerCompanyId({ companyId }: { companyId: string }) {
     const [maintenancesCount, defaultMaintenances] = await prisma.$transaction([
       prisma.maintenance.count({
