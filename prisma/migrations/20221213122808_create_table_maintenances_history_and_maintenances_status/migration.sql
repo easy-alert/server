@@ -15,7 +15,7 @@ CREATE TABLE "maintenancesHistory" (
 );
 
 -- CreateTable
-CREATE TABLE "maintenacesStatus" (
+CREATE TABLE "maintenancesStatus" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "singularLabel" TEXT NOT NULL,
@@ -23,23 +23,23 @@ CREATE TABLE "maintenacesStatus" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "maintenacesStatus_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "maintenancesStatus_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "maintenancesHistory_id_key" ON "maintenancesHistory"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "maintenacesStatus_id_key" ON "maintenacesStatus"("id");
+CREATE UNIQUE INDEX "maintenancesStatus_id_key" ON "maintenancesStatus"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "maintenacesStatus_name_key" ON "maintenacesStatus"("name");
+CREATE UNIQUE INDEX "maintenancesStatus_name_key" ON "maintenancesStatus"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "maintenacesStatus_singularLabel_key" ON "maintenacesStatus"("singularLabel");
+CREATE UNIQUE INDEX "maintenancesStatus_singularLabel_key" ON "maintenancesStatus"("singularLabel");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "maintenacesStatus_pluralLabel_key" ON "maintenacesStatus"("pluralLabel");
+CREATE UNIQUE INDEX "maintenancesStatus_pluralLabel_key" ON "maintenancesStatus"("pluralLabel");
 
 -- AddForeignKey
 ALTER TABLE "maintenancesHistory" ADD CONSTRAINT "maintenancesHistory_buildingId_fkey" FOREIGN KEY ("buildingId") REFERENCES "buildings"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -51,4 +51,4 @@ ALTER TABLE "maintenancesHistory" ADD CONSTRAINT "maintenancesHistory_maintenanc
 ALTER TABLE "maintenancesHistory" ADD CONSTRAINT "maintenancesHistory_ownerCompanyId_fkey" FOREIGN KEY ("ownerCompanyId") REFERENCES "companies"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "maintenancesHistory" ADD CONSTRAINT "maintenancesHistory_maintenancesStatusId_fkey" FOREIGN KEY ("maintenancesStatusId") REFERENCES "maintenacesStatus"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "maintenancesHistory" ADD CONSTRAINT "maintenancesHistory_maintenancesStatusId_fkey" FOREIGN KEY ("maintenancesStatusId") REFERENCES "maintenancesStatus"("id") ON DELETE CASCADE ON UPDATE CASCADE;

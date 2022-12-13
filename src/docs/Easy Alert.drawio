@@ -926,7 +926,7 @@
                 <mxCell id="307" value="" style="shape=partialRectangle;top=0;left=0;bottom=0;html=1;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;part=1;" parent="306" connectable="0" vertex="1">
                     <mxGeometry width="30" height="26" as="geometry"/>
                 </mxCell>
-                <mxCell id="326" value="maintenacesStatus" style="swimlane;html=1;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=28;fillColor=#B21D1D;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=#ffffff;align=center;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=14;noLabel=0;snapToPoint=0;fixDash=0;autosize=1;container=0;sketch=0;separatorColor=none;portConstraintRotation=0;labelBorderColor=none;gradientColor=none;" parent="1" vertex="1">
+                <mxCell id="326" value="maintenancesStatus" style="swimlane;html=1;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=28;fillColor=#B21D1D;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;swimlaneFillColor=#ffffff;align=center;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=14;noLabel=0;snapToPoint=0;fixDash=0;autosize=1;container=0;sketch=0;separatorColor=none;portConstraintRotation=0;labelBorderColor=none;gradientColor=none;" parent="1" vertex="1">
                     <mxGeometry x="840" y="960" width="200" height="136" as="geometry">
                         <mxRectangle x="440" y="358" width="120" height="30" as="alternateBounds"/>
                     </mxGeometry>

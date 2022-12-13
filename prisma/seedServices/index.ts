@@ -168,7 +168,7 @@ export class SeedServices {
   }
 
   async createMaintenancesStatus() {
-    await prisma.maintenacesStatus.createMany({
+    await prisma.maintenancesStatus.createMany({
       data: [
         {
           name: 'expired',

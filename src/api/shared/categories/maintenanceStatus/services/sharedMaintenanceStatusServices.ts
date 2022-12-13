@@ -6,7 +6,7 @@ const validator = new Validator();
 
 export class SharedMaintenanceStatusServices {
   async findByName({ name }: { name: 'expired' | 'pending' | 'completed' | 'overdue' }) {
-    const maintenance = await prisma.maintenacesStatus.findUnique({
+    const maintenance = await prisma.maintenancesStatus.findUnique({
       where: {
         name,
       },
