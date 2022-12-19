@@ -43,44 +43,30 @@ export async function listBuildingDetails(req: Request, res: Response) {
     buildingId,
   });
 
-  let usedMaintenancesCount = 0;
+  // #region GROUP IDS
 
-  // all categories
-  for (
-    let categoriesDataIndex = 0;
-    categoriesDataIndex < CategoriesData.length;
-    categoriesDataIndex++
-  ) {
-    // categories building
-    for (
-      let buildingDataIndex = 0;
-      buildingDataIndex < BuildingCategories.length;
-      buildingDataIndex++
-    ) {
-      // all maintenances
-      for (
-        let categoriesDataMaintenanceIndex = 0;
-        categoriesDataMaintenanceIndex < CategoriesData[categoriesDataIndex].Maintenances.length;
-        categoriesDataMaintenanceIndex++
+  const buildingMaintenacesIds = [];
+
+  for (let i = 0; i < CategoriesData.length; i++) {
+    for (let j = 0; j < CategoriesData[i].Maintenances.length; j++) {
+      buildingMaintenacesIds.push(CategoriesData[i].Maintenances[j].id);
+    }
+  }
+
+  const usedBuildingMaintenacesIds: any = [];
+
+  for (let i = 0; i < BuildingCategories.length; i++) {
+    for (let j = 0; j < BuildingCategories[i].Maintenances.length; j++) {
+      // if the id exists in the array, do not add it again
+      if (
+        !usedBuildingMaintenacesIds.includes(BuildingCategories[i].Maintenances[j].Maintenance.id)
       ) {
-        // maintenances bulding
-
-        for (
-          let buildingDataMaintenanceIndex = 0;
-          buildingDataMaintenanceIndex < BuildingCategories[buildingDataIndex].Maintenances.length;
-          buildingDataMaintenanceIndex++
-        ) {
-          if (
-            CategoriesData[categoriesDataIndex].Maintenances[categoriesDataMaintenanceIndex].id ===
-            BuildingCategories[buildingDataIndex].Maintenances[buildingDataMaintenanceIndex]
-              .Maintenance.id
-          ) {
-            usedMaintenancesCount += 1;
-          }
-        }
+        usedBuildingMaintenacesIds.push(BuildingCategories[i].Maintenances[j].Maintenance.id);
       }
     }
   }
+
+  // #endregion
 
   const totalMaintenacesCount = await sharedMaintenaceServices.countPerCompanyId({
     companyId: req.Company.id,
@@ -90,5 +76,9 @@ export async function listBuildingDetails(req: Request, res: Response) {
 
   const BuildingDetails = await buildingServices.listDetails({ buildingId });
 
-  return res.status(200).json({ BuildingDetails, usedMaintenancesCount, totalMaintenacesCount });
+  return res.status(200).json({
+    BuildingDetails,
+    usedMaintenancesCount: usedBuildingMaintenacesIds.length,
+    totalMaintenacesCount,
+  });
 }
