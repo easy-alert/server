@@ -7,7 +7,8 @@ import { SharedMaintenanceServices } from '../../../../shared/categories/mainten
 import { SharedMaintenanceStatusServices } from '../../../../shared/categories/maintenanceStatus/services/sharedMaintenanceStatusServices';
 import { TimeIntervalServices } from '../../../../shared/timeInterval/services/timeIntervalServices';
 import { BuildingServices } from '../../building/services/buildingServices';
-import { BuildingCategoryAndMaintenanceServices } from '../services/buildingCategoryAndMaintenaceServices';
+import { BuildingMaintenanceHistoryServices } from '../../buildingMaintenancesHistory/services/buildingMaintenanceHistoryServices';
+import { BuildingCategoryAndMaintenanceServices } from '../services/buildingCategoryAndMaintenanceServices';
 import { ICreateBuildingCategory } from '../services/types';
 import { IDateForCreateHistory } from './types';
 
@@ -20,6 +21,7 @@ const sharedMaintenanceServices = new SharedMaintenanceServices();
 const buildingServices = new BuildingServices();
 const timeIntervalServices = new TimeIntervalServices();
 const maintenancesStatusServices = new SharedMaintenanceStatusServices();
+const buildingMaintenancesHistoryServices = new BuildingMaintenanceHistoryServices();
 // #endregion
 
 export async function editBuildingCategoriesAndMaintenaces(req: Request, res: Response) {
@@ -100,6 +102,8 @@ export async function editBuildingCategoriesAndMaintenaces(req: Request, res: Re
   }
 
   // #region CREATING MAINTENANCES HISTORY
+
+  await buildingMaintenancesHistoryServices.deletePendingMaintenancesHistory({ buildingId });
 
   const buildingDeliveryDate = Building!.deliveryDate;
   const maintenanceStatus = await maintenancesStatusServices.findByName({ name: 'pending' });

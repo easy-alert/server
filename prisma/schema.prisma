@@ -156,11 +156,11 @@ model Maintenance {
 }
 
 model MaintenanceHistory {
-  id                   String @id @unique @default(uuid())
-  buildingId           String
-  maintenanceId        String
-  ownerCompanyId       String
-  maintenancesStatusId String
+  id                  String @id @unique @default(uuid())
+  buildingId          String
+  maintenanceId       String
+  ownerCompanyId      String
+  maintenanceStatusId String
 
   notificationDate DateTime
   dueDate          DateTime?
@@ -172,7 +172,7 @@ model MaintenanceHistory {
   Building          Building           @relation(fields: [buildingId], references: [id], onDelete: Cascade)
   Maintenance       Maintenance        @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
   Company           Company            @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
-  MaintenacesStatus MaintenancesStatus @relation(fields: [maintenancesStatusId], references: [id], onDelete: Cascade)
+  MaintenacesStatus MaintenancesStatus @relation(fields: [maintenanceStatusId], references: [id], onDelete: Cascade)
 
   @@map("maintenancesHistory")
 }
