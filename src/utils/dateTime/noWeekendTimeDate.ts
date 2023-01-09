@@ -6,13 +6,13 @@ export const noWeekendTimeDate = ({ date }: { date: Date }) => {
 
   switch (date.getDay()) {
     case 0:
-      dateNoWeekend = removeTimeDate({
+      dateNoWeekend = addTimeDate({
         date,
         days: 1,
       });
       break;
     case 6:
-      dateNoWeekend = addTimeDate({
+      dateNoWeekend = removeTimeDate({
         date,
         days: 1,
       });
