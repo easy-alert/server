@@ -1,5 +1,6 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
+import { noWeekendTimeDate } from '../../../../../utils/dateTime/noWeekendTimeDate';
 import { addDays } from '../../../../../utils/functions';
 import { Validator } from '../../../../../utils/validator/validator';
 import { SharedCategoryServices } from '../../../../shared/categories/category/services/sharedCategoryServices';
@@ -100,6 +101,7 @@ export async function editBuildingCategoriesAndMaintenaces(req: Request, res: Re
 
     await buildingCategoryAndMaintenanceServices.createCategoriesAndMaintenances(data);
   }
+  // #endregion
 
   // #region CREATING MAINTENANCES HISTORY
 
@@ -125,14 +127,18 @@ export async function editBuildingCategoriesAndMaintenaces(req: Request, res: Re
       timeIntervalId: maintenances[i].periodTimeIntervalId,
     });
 
-    const notificationDate = addDays({
-      date: buildingDeliveryDate,
-      days: maintenances[i].delay * timeIntervalDelay.unitTime,
+    const notificationDate = noWeekendTimeDate({
+      date: addDays({
+        date: buildingDeliveryDate,
+        days: maintenances[i].delay * timeIntervalDelay.unitTime,
+      }),
     });
 
-    const dueDate = addDays({
-      date: notificationDate,
-      days: maintenances[i].period * timeIntervalPeriod.unitTime,
+    const dueDate = noWeekendTimeDate({
+      date: addDays({
+        date: notificationDate,
+        days: maintenances[i].period * timeIntervalPeriod.unitTime,
+      }),
     });
 
     DataForCreateHistory.push({
