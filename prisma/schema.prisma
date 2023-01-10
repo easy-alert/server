@@ -165,14 +165,15 @@ model MaintenanceHistory {
   notificationDate DateTime
   dueDate          DateTime?
   resolutionDate   DateTime?
+  wasNotified      Boolean   @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Building          Building           @relation(fields: [buildingId], references: [id], onDelete: Cascade)
-  Maintenance       Maintenance        @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
-  Company           Company            @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
-  MaintenacesStatus MaintenancesStatus @relation(fields: [maintenanceStatusId], references: [id], onDelete: Cascade)
+  Building           Building           @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  Maintenance        Maintenance        @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+  Company            Company            @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
+  MaintenancesStatus MaintenancesStatus @relation(fields: [maintenanceStatusId], references: [id], onDelete: Cascade)
 
   @@map("maintenancesHistory")
 }
