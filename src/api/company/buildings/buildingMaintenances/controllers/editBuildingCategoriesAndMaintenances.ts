@@ -145,7 +145,7 @@ export async function editBuildingCategoriesAndMaintenaces(req: Request, res: Re
       buildingId,
       maintenanceId: maintenances[i].id,
       ownerCompanyId: req.Company.id,
-      maintenancesStatusId: maintenanceStatus.id,
+      maintenanceStatusId: maintenanceStatus.id,
       notificationDate,
       dueDate,
     });
