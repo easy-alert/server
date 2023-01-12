@@ -6,7 +6,7 @@ export class BuildingMaintenanceHistoryServices {
     await prisma.maintenanceHistory.deleteMany({
       where: {
         buildingId,
-        maintenancesStatus: {
+        MaintenancesStatus: {
           name: 'pending',
         },
       },
