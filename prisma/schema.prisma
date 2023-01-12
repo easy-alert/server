@@ -248,7 +248,7 @@ model Building {
   Categories                  BuildingCategory[]
   Annexes                     BuildingAnnexe[]
 
-  MaintenacesHistory MaintenanceHistory[]
+  MaintenancesHistory MaintenanceHistory[]
 
   @@map("buildings")
 }
