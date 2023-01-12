@@ -22,7 +22,7 @@ import {
 } from './notificationConfiguration/controllers';
 
 import {
-  editBuildingCategoriesAndmaintenances,
+  editBuildingCategoriesAndMaintenances,
   listBuildingCategoriesAndMaintenances,
 } from './buildingMaintenances/controllers';
 import { listBuildingForSelect } from './building/controllers/listBuildingsForSelect';
@@ -62,7 +62,7 @@ buildingRouter.put('/notifications/edit', editBuildingNotificationConfiguration)
 buildingRouter.delete('/notifications/delete', deleteBuildingNotificationConfiguration);
 
 // BUILDING MAINTENANCES
-buildingRouter.put('/maintenances/edit', editBuildingCategoriesAndmaintenances);
+buildingRouter.put('/maintenances/edit', editBuildingCategoriesAndMaintenances);
 buildingRouter.post('/maintenances/list', listBuildingCategoriesAndMaintenances);
 
 // BUILDING ANNEXES

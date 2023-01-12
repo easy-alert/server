@@ -9,7 +9,7 @@ import { addDays } from '../../../../utils/functions';
 // CLASS
 import { CompanyServices } from '../../../backoffice/users/accounts/services/companyServices';
 import { SharedCalendarServices } from '../../../shared/calendar/services/SharedCalendarServices';
-import { SharedMaintenanceServices } from '../../../shared/categories/maintenace/services/sharedMaintenanceServices';
+import { SharedMaintenanceServices } from '../../../shared/categories/maintenance/services/sharedMaintenanceServices';
 
 const sharedCalendarServices = new SharedCalendarServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();

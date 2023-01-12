@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { sharedEditMaintenance } from '../../../../shared/categories/maintenace/controllers/sharedEditMaintenance';
+import { sharedEditMaintenance } from '../../../../shared/categories/maintenance/controllers/sharedEditMaintenance';
 
 export async function editMaintenance(req: Request, res: Response) {
   const maintenance = await sharedEditMaintenance({

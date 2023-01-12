@@ -1,7 +1,7 @@
 // # region IMPORTS
 import { Request, Response } from 'express';
 import { Validator } from '../../../../../utils/validator/validator';
-import { SharedMaintenanceServices } from '../../../../shared/categories/maintenace/services/sharedMaintenanceServices';
+import { SharedMaintenanceServices } from '../../../../shared/categories/maintenance/services/sharedMaintenanceServices';
 import { CategoryServices } from '../../../categories/category/services/categoryServices';
 
 // CLASS
@@ -10,7 +10,7 @@ import { IListBuildingCategoriesAndMaintenances } from './types';
 
 const buildingServices = new BuildingServices();
 const categoryServices = new CategoryServices();
-const sharedmaintenanceservices = new SharedMaintenanceServices();
+const sharedMaintenanceservices = new SharedMaintenanceServices();
 
 const validator = new Validator();
 // #endregion
@@ -45,30 +45,30 @@ export async function listBuildingDetails(req: Request, res: Response) {
 
   // #region GROUP IDS
 
-  const buildingmaintenancesIds = [];
+  const buildingMaintenancesIds = [];
 
   for (let i = 0; i < CategoriesData.length; i++) {
     for (let j = 0; j < CategoriesData[i].Maintenances.length; j++) {
-      buildingmaintenancesIds.push(CategoriesData[i].Maintenances[j].id);
+      buildingMaintenancesIds.push(CategoriesData[i].Maintenances[j].id);
     }
   }
 
-  const usedBuildingmaintenancesIds: any = [];
+  const usedBuildingMaintenancesIds: any = [];
 
   for (let i = 0; i < BuildingCategories.length; i++) {
     for (let j = 0; j < BuildingCategories[i].Maintenances.length; j++) {
       // if the id exists in the array, do not add it again
       if (
-        !usedBuildingmaintenancesIds.includes(BuildingCategories[i].Maintenances[j].Maintenance.id)
+        !usedBuildingMaintenancesIds.includes(BuildingCategories[i].Maintenances[j].Maintenance.id)
       ) {
-        usedBuildingmaintenancesIds.push(BuildingCategories[i].Maintenances[j].Maintenance.id);
+        usedBuildingMaintenancesIds.push(BuildingCategories[i].Maintenances[j].Maintenance.id);
       }
     }
   }
 
   // #endregion
 
-  const totalmaintenancesCount = await sharedmaintenanceservices.countPerCompanyId({
+  const totalMaintenancesCount = await sharedMaintenanceservices.countPerCompanyId({
     companyId: req.Company.id,
   });
 
@@ -78,7 +78,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
 
   return res.status(200).json({
     BuildingDetails,
-    usedMaintenancesCount: usedBuildingmaintenancesIds.length,
-    totalmaintenancesCount,
+    usedMaintenancesCount: usedBuildingMaintenancesIds.length,
+    totalMaintenancesCount,
   });
 }

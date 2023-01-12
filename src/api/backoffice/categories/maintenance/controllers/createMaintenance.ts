@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { sharedCreateMaintenance } from '../../../../shared/categories/maintenace/controllers/sharedCreateMaintenance';
+import { sharedCreateMaintenance } from '../../../../shared/categories/maintenance/controllers/sharedCreateMaintenance';
 
 export async function createMaintenance(req: Request, res: Response) {
   const maintenance = await sharedCreateMaintenance({

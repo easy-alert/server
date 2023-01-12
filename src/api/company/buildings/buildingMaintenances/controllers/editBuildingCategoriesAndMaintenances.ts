@@ -4,7 +4,7 @@ import { noWeekendTimeDate } from '../../../../../utils/dateTime/noWeekendTimeDa
 import { addDays } from '../../../../../utils/functions';
 import { Validator } from '../../../../../utils/validator/validator';
 import { SharedCategoryServices } from '../../../../shared/categories/category/services/sharedCategoryServices';
-import { SharedMaintenanceServices } from '../../../../shared/categories/maintenace/services/sharedMaintenanceServices';
+import { SharedMaintenanceServices } from '../../../../shared/categories/maintenance/services/sharedMaintenanceServices';
 import { SharedMaintenanceStatusServices } from '../../../../shared/categories/maintenanceStatus/services/sharedMaintenanceStatusServices';
 import { TimeIntervalServices } from '../../../../shared/timeInterval/services/timeIntervalServices';
 import { BuildingServices } from '../../building/services/buildingServices';
@@ -25,7 +25,7 @@ const maintenancesStatusServices = new SharedMaintenanceStatusServices();
 const buildingMaintenancesHistoryServices = new BuildingMaintenanceHistoryServices();
 // #endregion
 
-export async function editBuildingCategoriesAndmaintenances(req: Request, res: Response) {
+export async function editBuildingCategoriesAndMaintenances(req: Request, res: Response) {
   const { buildingId } = req.body;
   const bodyData = req.body.data;
 
