@@ -25,7 +25,7 @@ const maintenancesStatusServices = new SharedMaintenanceStatusServices();
 const buildingMaintenancesHistoryServices = new BuildingMaintenanceHistoryServices();
 // #endregion
 
-export async function editBuildingCategoriesAndMaintenaces(req: Request, res: Response) {
+export async function editBuildingCategoriesAndmaintenances(req: Request, res: Response) {
   const { buildingId } = req.body;
   const bodyData = req.body.data;
 

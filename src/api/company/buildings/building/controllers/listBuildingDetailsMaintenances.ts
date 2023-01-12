@@ -26,9 +26,9 @@ export async function listBuildingDetailsMaintenances(req: Request, res: Respons
 
   // #endregion
 
-  const BuldingMaintenaces = await buildingServices.listMaintenances({
+  const Buldingmaintenances = await buildingServices.listMaintenances({
     buildingId,
   });
 
-  return res.status(200).json(BuldingMaintenaces);
+  return res.status(200).json(Buldingmaintenances);
 }

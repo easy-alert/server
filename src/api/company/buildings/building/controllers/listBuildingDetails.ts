@@ -10,7 +10,7 @@ import { IListBuildingCategoriesAndMaintenances } from './types';
 
 const buildingServices = new BuildingServices();
 const categoryServices = new CategoryServices();
-const sharedMaintenaceServices = new SharedMaintenanceServices();
+const sharedmaintenanceservices = new SharedMaintenanceServices();
 
 const validator = new Validator();
 // #endregion
@@ -45,30 +45,30 @@ export async function listBuildingDetails(req: Request, res: Response) {
 
   // #region GROUP IDS
 
-  const buildingMaintenacesIds = [];
+  const buildingmaintenancesIds = [];
 
   for (let i = 0; i < CategoriesData.length; i++) {
     for (let j = 0; j < CategoriesData[i].Maintenances.length; j++) {
-      buildingMaintenacesIds.push(CategoriesData[i].Maintenances[j].id);
+      buildingmaintenancesIds.push(CategoriesData[i].Maintenances[j].id);
     }
   }
 
-  const usedBuildingMaintenacesIds: any = [];
+  const usedBuildingmaintenancesIds: any = [];
 
   for (let i = 0; i < BuildingCategories.length; i++) {
     for (let j = 0; j < BuildingCategories[i].Maintenances.length; j++) {
       // if the id exists in the array, do not add it again
       if (
-        !usedBuildingMaintenacesIds.includes(BuildingCategories[i].Maintenances[j].Maintenance.id)
+        !usedBuildingmaintenancesIds.includes(BuildingCategories[i].Maintenances[j].Maintenance.id)
       ) {
-        usedBuildingMaintenacesIds.push(BuildingCategories[i].Maintenances[j].Maintenance.id);
+        usedBuildingmaintenancesIds.push(BuildingCategories[i].Maintenances[j].Maintenance.id);
       }
     }
   }
 
   // #endregion
 
-  const totalMaintenacesCount = await sharedMaintenaceServices.countPerCompanyId({
+  const totalmaintenancesCount = await sharedmaintenanceservices.countPerCompanyId({
     companyId: req.Company.id,
   });
 
@@ -78,7 +78,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
 
   return res.status(200).json({
     BuildingDetails,
-    usedMaintenancesCount: usedBuildingMaintenacesIds.length,
-    totalMaintenacesCount,
+    usedMaintenancesCount: usedBuildingmaintenancesIds.length,
+    totalmaintenancesCount,
   });
 }
