@@ -4,6 +4,7 @@
 /* eslint-disable no-param-reassign */
 // # region IMPORTS
 import { Request, Response } from 'express';
+import { addDays } from '../../../../utils/functions';
 
 // CLASS
 import { CompanyServices } from '../../../backoffice/users/accounts/services/companyServices';
@@ -39,7 +40,7 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
     for (let j = 0; j < Buildings[i].Maintenances.length; j++) {
       const dates = sharedCalendarServices.recurringDates({
         startDate: new Date(Buildings[i].deliveryDate),
-        endDate: sharedCalendarServices.addDays({ date: Buildings[i].deliveryDate, days: 365 }),
+        endDate: addDays({ date: Buildings[i].deliveryDate, days: 365 }),
         interval: Buildings[i].Maintenances[j].FrequencyTimeInterval.unitTime,
         maintenanceData: {
           id: Buildings[i].Maintenances[j].id,

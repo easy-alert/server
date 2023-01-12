@@ -96,9 +96,10 @@ model Company {
 
   UserCompanies UserCompanies[]
 
-  Categories   Category[]
-  Maintenances Maintenance[]
-  Buildings    Building[]
+  Categories          Category[]
+  Maintenances        Maintenance[]
+  Buildings           Building[]
+  MaintenancesHistory MaintenanceHistory[]
 
   @@map("companies")
 }
@@ -149,7 +150,32 @@ model Maintenance {
   PeriodTimeInterval    TimeInterval @relation(name: "MaintenancePeriod", fields: [periodTimeIntervalId], references: [id])
   DelayTimeInterval     TimeInterval @relation(name: "MaintenanceDelay", fields: [delayTimeIntervalId], references: [id])
 
+  MaintenancesHistory MaintenanceHistory[]
+
   @@map("maintenances")
+}
+
+model MaintenanceHistory {
+  id                  String @id @unique @default(uuid())
+  buildingId          String
+  maintenanceId       String
+  ownerCompanyId      String
+  maintenanceStatusId String
+
+  notificationDate DateTime
+  dueDate          DateTime?
+  resolutionDate   DateTime?
+  wasNotified      Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Building           Building           @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  Maintenance        Maintenance        @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+  Company            Company            @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
+  MaintenancesStatus MaintenancesStatus @relation(fields: [maintenanceStatusId], references: [id], onDelete: Cascade)
+
+  @@map("maintenancesHistory")
 }
 
 model TimeInterval {
@@ -167,6 +193,20 @@ model TimeInterval {
   MaintenanceDelay     Maintenance[] @relation("MaintenanceDelay")
 
   @@map("timeIntervals")
+}
+
+model MaintenancesStatus {
+  id            String @id @unique @default(uuid())
+  name          String @unique
+  singularLabel String @unique
+  pluralLabel   String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  MaintenancesHistory MaintenanceHistory[]
+
+  @@map("maintenancesStatus")
 }
 
 //BUILDINGS
@@ -207,6 +247,8 @@ model Building {
   NotificationsConfigurations BuildingNotificationConfiguration[]
   Categories                  BuildingCategory[]
   Annexes                     BuildingAnnexe[]
+
+  MaintenancesHistory MaintenanceHistory[]
 
   @@map("buildings")
 }

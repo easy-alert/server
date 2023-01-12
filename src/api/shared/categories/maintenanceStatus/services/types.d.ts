@@ -26,8 +26,8 @@ export interface IMaintenanceHistory {
   ownerCompanyId: string;
   maintenanceId: string;
   maintenanceStatusId: string;
+  resolutionDate: Date;
   notificationDate: Date;
-  resolutionDate?: Date;
-  dueDate?: Date;
+  dueDate: Date;
 }
 

@@ -36,3 +36,13 @@ export interface IListBuildingCategoriesAndMaintenances {
   name: string;
   Maintenances: Maintenance[];
 }
+
+interface IDateForCreateHistory {
+  buildingId: string;
+  ownerCompanyId: string;
+  maintenanceId: string;
+  maintenanceStatusId: string;
+  notificationDate: Date;
+  resolutionDate?: Date;
+  dueDate?: Date;
+}

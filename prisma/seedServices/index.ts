@@ -166,4 +166,31 @@ export class SeedServices {
       data: buildingsTypes,
     });
   }
+
+  async createMaintenancesStatus() {
+    await prisma.maintenancesStatus.createMany({
+      data: [
+        {
+          name: 'expired',
+          singularLabel: 'vencida',
+          pluralLabel: 'vencidas',
+        },
+        {
+          name: 'pending',
+          singularLabel: 'pendente',
+          pluralLabel: 'pendentes',
+        },
+        {
+          name: 'completed',
+          singularLabel: 'concluída',
+          pluralLabel: 'concluídas',
+        },
+        {
+          name: 'overdue',
+          singularLabel: 'feita em atraso',
+          pluralLabel: 'feitas em atraso',
+        },
+      ],
+    });
+  }
 }
