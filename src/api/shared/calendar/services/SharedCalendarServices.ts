@@ -2,8 +2,9 @@
 // import { Validator } from '../../../../utils/validator/validator';
 // import { prisma } from '../../../../../prisma';
 import { prisma } from '../../../../../prisma';
+import { addTimeDate } from '../../../../utils/dateTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
-import { addDays } from '../../../../utils/functions';
+
 import { IRecurringDates } from './types';
 
 // CLASS
@@ -17,9 +18,8 @@ export class SharedCalendarServices {
 
     while (date < endDate) {
       dates.push({ ...maintenanceData, date });
-      date = noWeekendTimeDate({
-        date: addDays({ date, days: interval }),
-      });
+      date = noWeekendTimeDate({ date: addTimeDate({ date, days: interval }), interval });
+      console.log(date, '\n\n');
     }
 
     return dates;
@@ -80,6 +80,7 @@ export class SharedCalendarServices {
             select: {
               id: true,
               element: true,
+              frequency: true,
               FrequencyTimeInterval: {
                 select: {
                   unitTime: true,

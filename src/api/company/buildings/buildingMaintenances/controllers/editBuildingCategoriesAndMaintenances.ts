@@ -132,6 +132,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         date: buildingDeliveryDate,
         days: maintenances[i].delay * timeIntervalDelay.unitTime,
       }),
+      interval: timeIntervalDelay.unitTime,
     });
 
     const dueDate = noWeekendTimeDate({
@@ -139,6 +140,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         date: notificationDate,
         days: maintenances[i].period * timeIntervalPeriod.unitTime,
       }),
+      interval: timeIntervalDelay.unitTime,
     });
 
     DataForCreateHistory.push({

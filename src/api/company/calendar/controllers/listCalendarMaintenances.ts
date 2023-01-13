@@ -31,14 +31,16 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
   for (let i = 0; i < MaintenancesPending.length; i++) {
     const intervals = sharedCalendarServices.recurringDates({
       startDate: new Date(MaintenancesPending[i].notificationDate),
-      endDate: addDays({ date: MaintenancesPending[i].notificationDate, days: 30 }),
-      interval: MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
+      endDate: addDays({ date: MaintenancesPending[i].notificationDate, days: 365 }),
+      interval:
+        MaintenancesPending[i].Maintenance.frequency *
+        MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
       maintenanceData: MaintenancesPending[i],
     });
     Dates.push(...intervals);
   }
 
-  //   // #endregion
+  // #endregion
 
   return res.status(200).json({ Dates });
 }
