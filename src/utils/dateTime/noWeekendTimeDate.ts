@@ -18,12 +18,12 @@ export const noWeekendTimeDate = ({ date, interval }: { date: Date; interval: nu
           date,
           days: 2,
         });
-      } else {
-        dateNoWeekend = removeTimeDate({
-          date,
-          days: 1,
-        });
       }
+      dateNoWeekend = removeTimeDate({
+        date,
+        days: 1,
+      });
+
       break;
 
     default:

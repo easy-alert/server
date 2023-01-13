@@ -30,4 +30,3 @@ export interface IMaintenanceHistory {
   resolutionDate?: Date;
   dueDate?: Date;
 }
-

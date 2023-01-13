@@ -4,7 +4,7 @@ export const removeTimeDate = ({ date, days, minutes }: ITimeDate) => {
   let newDate = new Date(date);
 
   if (days) {
-    newDate.setDate(newDate.getUTCDate() - days);
+    newDate.setDate(newDate.getDate() - days);
   }
   if (minutes) {
     newDate = new Date(newDate.getTime() - minutes * 60000);
