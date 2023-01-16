@@ -32,6 +32,37 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
     Dates.push(...intervals);
   }
 
+  for (let i = 0; i < Dates.length; i++) {
+    let statusCount = {
+      completed: 0,
+      pending: 0,
+      expired: 0,
+    };
+    for (let j = 0; j < Dates.length; j++) {
+      if (Dates[i].notificationDate === Dates[j].notificationDate) {
+        statusCount = {
+          completed:
+            Dates[j].MaintenancesStatus.name === 'completed' ||
+            Dates[j].MaintenancesStatus.name === 'overdue'
+              ? (statusCount.completed += 1)
+              : (statusCount.pending += 0),
+
+          pending:
+            Dates[j].MaintenancesStatus.name === 'pending'
+              ? (statusCount.pending += 1)
+              : (statusCount.pending += 0),
+          expired:
+            Dates[j].MaintenancesStatus.name === 'expired'
+              ? (statusCount.expired += 1)
+              : (statusCount.pending += 0),
+        };
+
+        Dates[i] = { ...Dates[i], statusCount };
+      }
+    }
+  }
+
+  console.log(Dates);
   // #endregion
 
   return res.status(200).json({ Dates });
