@@ -19,10 +19,6 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
       companyId: req.Company.id,
     });
 
-  console.log('Maintenances', Maintenances);
-
-  console.log('MaintenancesPending', MaintenancesPending);
-
   // #region GENERATE FUTURE MAINTENANCES
   const Dates = [];
 
