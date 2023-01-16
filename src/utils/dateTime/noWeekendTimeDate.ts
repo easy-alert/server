@@ -13,16 +13,17 @@ export const noWeekendTimeDate = ({ date, interval }: { date: Date; interval: nu
 
       break;
     case 6:
-      if (interval < 2) {
+      if (interval === 1) {
         dateNoWeekend = addTimeDate({
           date,
           days: 2,
         });
+      } else {
+        dateNoWeekend = removeTimeDate({
+          date,
+          days: 1,
+        });
       }
-      dateNoWeekend = removeTimeDate({
-        date,
-        days: 1,
-      });
 
       break;
 
