@@ -41,9 +41,12 @@ export class SharedCalendarServices {
             select: {
               id: true,
               element: true,
+              frequency: true,
               FrequencyTimeInterval: {
                 select: {
                   unitTime: true,
+                  singularLabel: true,
+                  pluralLabel: true,
                 },
               },
             },
@@ -84,6 +87,8 @@ export class SharedCalendarServices {
               FrequencyTimeInterval: {
                 select: {
                   unitTime: true,
+                  singularLabel: true,
+                  pluralLabel: true,
                 },
               },
             },
