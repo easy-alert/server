@@ -16,7 +16,7 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
     });
 
   // #region GENERATE FUTURE MAINTENANCES
-  const Dates = [];
+  const Dates: any = [];
 
   Dates.push(...Maintenances);
 
@@ -32,38 +32,40 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
     Dates.push(...intervals);
   }
 
-  for (let i = 0; i < Dates.length; i++) {
-    let statusCount = {
-      completed: 0,
-      pending: 0,
-      expired: 0,
-    };
-    for (let j = 0; j < Dates.length; j++) {
-      if (Dates[i].notificationDate === Dates[j].notificationDate) {
-        statusCount = {
-          completed:
-            Dates[j].MaintenancesStatus.name === 'completed' ||
-            Dates[j].MaintenancesStatus.name === 'overdue'
-              ? (statusCount.completed += 1)
-              : (statusCount.pending += 0),
+  const groupBy = (data: any, key: any) =>
+    data.reduce((storage: any, item: any) => {
+      const group = item[key];
+      // eslint-disable-next-line no-param-reassign
+      storage[group] = storage[group] || [];
+      storage[group].push(item);
+      return storage;
+    }, {});
 
-          pending:
-            Dates[j].MaintenancesStatus.name === 'pending'
-              ? (statusCount.pending += 1)
-              : (statusCount.pending += 0),
-          expired:
-            Dates[j].MaintenancesStatus.name === 'expired'
-              ? (statusCount.expired += 1)
-              : (statusCount.pending += 0),
-        };
+  const gp = groupBy(Dates, 'notificationDate');
 
-        Dates[i] = { ...Dates[i], statusCount };
-      }
-    }
+  const arr = Object.keys(gp).map((k) => gp[k]);
+
+  const DatesWeeks = [];
+
+  for (let i = 0; i < arr.length; i += 1) {
+    DatesWeeks.push({
+      id: arr[i][0].notificationDate,
+      date: arr[i][0].notificationDate,
+      pending: arr[i].filter((e: any) => e.MaintenancesStatus.name === 'pending').length,
+      completed: arr[i].filter(
+        (e: any) =>
+          e.MaintenancesStatus.name === 'completed' || e.MaintenancesStatus.name === 'overdue',
+      ).length,
+      expired: arr[i].filter((e: any) => e.MaintenancesStatus.name === 'expired').length,
+    });
   }
 
-  console.log(Dates);
   // #endregion
 
-  return res.status(200).json({ Dates });
+  return res.status(200).json({
+    Dates: {
+      Months: DatesWeeks,
+      Weeks: Dates,
+    },
+  });
 }
