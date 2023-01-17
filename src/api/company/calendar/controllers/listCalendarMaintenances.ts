@@ -1,6 +1,6 @@
 // # region IMPORTS
 import { Request, Response } from 'express';
-import { addTimeDate, removeTimeDate } from '../../../../utils/dateTime';
+import { removeTimeDate } from '../../../../utils/dateTime';
 import { addDays } from '../../../../utils/functions';
 
 // CLASS
@@ -16,12 +16,9 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
   const { Maintenances, MaintenancesPending } =
     await sharedCalendarServices.findMaintenancesHistoryService({
       companyId: req.Company.id,
-      startDate: new Date(`01/01/${year}`),
-      endDate: addTimeDate({ date: new Date(`01/01/${year}`), days: 365 }),
+      startDate: removeTimeDate({ date: new Date(`01/01/${year}`), days: 365 }),
+      endDate: new Date(`01/01/${year}`),
     });
-
-  console.log(addTimeDate({ date: new Date(`01/01/${year}`), days: 365 }));
-  console.log(new Date(`01/01/${year}`));
 
   // #region GENERATE FUTURE MAINTENANCES
   const Dates: any = [];

@@ -118,10 +118,10 @@ export class SharedCalendarServices {
           MaintenancesStatus: {
             name: 'pending',
           },
-          notificationDate: {
-            lte: endDate,
-            gte: startDate,
-          },
+          // notificationDate: {
+          //   lte: endDate,
+          //   gte: startDate,
+          // },
         },
       }),
     ]);
