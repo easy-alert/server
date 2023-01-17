@@ -25,7 +25,15 @@ export class SharedCalendarServices {
     return dates;
   }
 
-  async findMaintenancesHistoryService({ companyId }: { companyId: string }) {
+  async findMaintenancesHistoryService({
+    companyId,
+    startDate,
+    endDate,
+  }: {
+    companyId: string;
+    startDate: Date;
+    endDate: Date;
+  }) {
     const [Maintenances, MaintenancesPending] = await prisma.$transaction([
       prisma.maintenanceHistory.findMany({
         select: {
@@ -66,6 +74,10 @@ export class SharedCalendarServices {
               name: 'pending',
             },
           },
+          notificationDate: {
+            lte: endDate,
+            gte: startDate,
+          },
         },
       }),
 
@@ -105,6 +117,10 @@ export class SharedCalendarServices {
           ownerCompanyId: companyId,
           MaintenancesStatus: {
             name: 'pending',
+          },
+          notificationDate: {
+            lte: endDate,
+            gte: startDate,
           },
         },
       }),
