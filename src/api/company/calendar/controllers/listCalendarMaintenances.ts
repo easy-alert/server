@@ -17,9 +17,11 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
     await sharedCalendarServices.findMaintenancesHistoryService({
       companyId: req.Company.id,
       startDate: removeTimeDate({ date: new Date(`01/01/${year}`), days: 365 }),
-      endDate: new Date(`01/01/${year}`),
+      endDate: new Date(`12/31/${year}`),
     });
 
+  console.log(new Date(`12/31/${year}`));
+  console.log(new Date(`01/01/${year}`));
   // #region GENERATE FUTURE MAINTENANCES
   const Dates: any = [];
 
@@ -28,7 +30,7 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
   for (let i = 0; i < MaintenancesPending.length; i++) {
     const intervals = sharedCalendarServices.recurringDates({
       startDate: new Date(MaintenancesPending[i].notificationDate),
-      endDate: addDays({ date: new Date(`01/01/${year}`), days: 365 }),
+      endDate: addDays({ date: new Date(`01/01/${year}`), days: 364 }),
       interval:
         MaintenancesPending[i].Maintenance.frequency *
         MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,

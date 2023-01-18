@@ -17,7 +17,6 @@ export class SharedCalendarServices {
     const dates = [];
 
     while (date < endDate) {
-      // console.log(date);
       dates.push({ ...maintenanceData, notificationDate: date });
       date = noWeekendTimeDate({ date: addTimeDate({ date, days: interval }), interval });
     }
