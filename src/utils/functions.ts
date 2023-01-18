@@ -8,4 +8,3 @@ export function addDays({ date, days }: IAddDays) {
   newDate.setDate(date.getDate() + days);
   return newDate;
 }
-

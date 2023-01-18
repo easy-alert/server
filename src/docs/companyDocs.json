@@ -1550,11 +1550,21 @@
       }
     },
 
-    "/calendars/list": {
+    "/calendars/list/{year}": {
       "get": {
         "tags": ["Calendar"],
-        "summary": "Lista todas as manutencoes .",
-
+        "summary": "Lista todas as manutencoes.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "year",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Ano para buscar manutenções"
+          }
+        ],
         "security": [
           {
             "bearerAuth": []

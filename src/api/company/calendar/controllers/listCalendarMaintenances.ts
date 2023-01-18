@@ -1,58 +1,78 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-bitwise */
-/* eslint-disable no-use-before-define */
-/* eslint-disable no-param-reassign */
 // # region IMPORTS
 import { Request, Response } from 'express';
+import { removeTimeDate } from '../../../../utils/dateTime';
 import { addDays } from '../../../../utils/functions';
 
 // CLASS
-import { CompanyServices } from '../../../backoffice/users/accounts/services/companyServices';
 import { SharedCalendarServices } from '../../../shared/calendar/services/SharedCalendarServices';
-import { SharedMaintenanceServices } from '../../../shared/categories/maintenance/services/sharedMaintenanceServices';
 
 const sharedCalendarServices = new SharedCalendarServices();
-const sharedMaintenanceServices = new SharedMaintenanceServices();
-const companyServices = new CompanyServices();
 
 // #endregion
 
 export async function listCalendarMaintenances(req: Request, res: Response) {
-  // #region VALIDATION
+  const { year } = req.params;
 
-  await companyServices.findById({ companyId: req.Company.id });
+  const { Maintenances, MaintenancesPending } =
+    await sharedCalendarServices.findMaintenancesHistoryService({
+      companyId: req.Company.id,
+      startDate: removeTimeDate({ date: new Date(`01/01/${year}`), days: 365 }),
+      endDate: new Date(`12/31/${year}`),
+    });
 
-  // #endregion
-
-  // #region PROCESS DATA
-
-  const MaintenancesData = await sharedMaintenanceServices.findMaintenancesPerPeriod({
-    companyId: req.Company.id,
-  });
-
-  const Buildings = sharedCalendarServices.processData({ Maintenances: MaintenancesData });
-  // #endregion
-
+  console.log(new Date(`12/31/${year}`));
+  console.log(new Date(`01/01/${year}`));
   // #region GENERATE FUTURE MAINTENANCES
-  const Dates = [];
+  const Dates: any = [];
 
-  for (let i = 0; i < Buildings.length; i++) {
-    for (let j = 0; j < Buildings[i].Maintenances.length; j++) {
-      const dates = sharedCalendarServices.recurringDates({
-        startDate: new Date(Buildings[i].deliveryDate),
-        endDate: addDays({ date: Buildings[i].deliveryDate, days: 365 }),
-        interval: Buildings[i].Maintenances[j].FrequencyTimeInterval.unitTime,
-        maintenanceData: {
-          id: Buildings[i].Maintenances[j].id,
-          element: Buildings[i].Maintenances[j].element,
-        },
-      });
+  Dates.push(...Maintenances);
 
-      Dates.push(...dates);
-    }
+  for (let i = 0; i < MaintenancesPending.length; i++) {
+    const intervals = sharedCalendarServices.recurringDates({
+      startDate: new Date(MaintenancesPending[i].notificationDate),
+      endDate: addDays({ date: new Date(`01/01/${year}`), days: 364 }),
+      interval:
+        MaintenancesPending[i].Maintenance.frequency *
+        MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
+      maintenanceData: MaintenancesPending[i],
+    });
+    Dates.push(...intervals);
+  }
+
+  const groupBy = (data: any, key: any) =>
+    data.reduce((storage: any, item: any) => {
+      const group = item[key];
+      // eslint-disable-next-line no-param-reassign
+      storage[group] = storage[group] || [];
+      storage[group].push(item);
+      return storage;
+    }, {});
+
+  const gp = groupBy(Dates, 'notificationDate');
+
+  const arr = Object.keys(gp).map((k) => gp[k]);
+
+  const DatesWeeks = [];
+
+  for (let i = 0; i < arr.length; i += 1) {
+    DatesWeeks.push({
+      id: arr[i][0].notificationDate,
+      date: arr[i][0].notificationDate,
+      pending: arr[i].filter((e: any) => e.MaintenancesStatus.name === 'pending').length,
+      completed: arr[i].filter(
+        (e: any) =>
+          e.MaintenancesStatus.name === 'completed' || e.MaintenancesStatus.name === 'overdue',
+      ).length,
+      expired: arr[i].filter((e: any) => e.MaintenancesStatus.name === 'expired').length,
+    });
   }
 
   // #endregion
 
-  return res.status(200).json({ Dates });
+  return res.status(200).json({
+    Dates: {
+      Months: DatesWeeks,
+      Weeks: Dates,
+    },
+  });
 }

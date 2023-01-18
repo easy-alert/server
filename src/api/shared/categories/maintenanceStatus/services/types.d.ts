@@ -30,4 +30,3 @@ export interface IMaintenanceHistory {
   notificationDate: Date;
   dueDate: Date;
 }
-
