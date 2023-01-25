@@ -129,6 +129,7 @@ export class CompanyServices {
               select: {
                 name: true,
                 email: true,
+                id: true,
               },
             },
           },
