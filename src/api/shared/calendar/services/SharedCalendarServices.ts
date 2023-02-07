@@ -26,10 +26,13 @@ export class SharedCalendarServices {
 
   async findMaintenancesHistoryService({
     companyId,
+    buildingName,
     startDate,
     endDate,
   }: {
     companyId: string;
+    buildingName: string | undefined;
+
     startDate: Date;
     endDate: Date;
   }) {
@@ -73,7 +76,11 @@ export class SharedCalendarServices {
               name: 'pending',
             },
           },
-
+          Building: {
+            name: {
+              in: buildingName,
+            },
+          },
           OR: [{ notificationDate: { lte: endDate, gte: startDate } }],
         },
       }),
@@ -115,6 +122,12 @@ export class SharedCalendarServices {
           MaintenancesStatus: {
             name: 'pending',
           },
+          Building: {
+            name: {
+              in: buildingName,
+            },
+          },
+
           OR: [{ notificationDate: { lte: endDate, gte: startDate } }],
         },
       }),

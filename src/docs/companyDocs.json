@@ -1563,6 +1563,13 @@
             },
             "required": true,
             "description": "Ano para buscar manutenções"
+          },
+          {
+            "name": "buildingName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "security": [

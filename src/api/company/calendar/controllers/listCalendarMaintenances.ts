@@ -11,13 +11,16 @@ const sharedCalendarServices = new SharedCalendarServices();
 
 export async function listCalendarMaintenances(req: Request, res: Response) {
   const { year } = req.params;
+  const filter = req.query;
 
-  // TODO: ajustar filtro , nao esta considerando as datas
+  const buildingName = filter.buildingName ? String(filter.buildingName) : undefined;
+
   const { Maintenances, MaintenancesPending } =
     await sharedCalendarServices.findMaintenancesHistoryService({
       companyId: req.Company.id,
       startDate: new Date(`01/01/${year}`),
       endDate: new Date(`12/31/${year}`),
+      buildingName,
     });
 
   // #region GENERATE FUTURE MAINTENANCES
