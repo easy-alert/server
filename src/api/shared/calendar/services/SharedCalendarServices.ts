@@ -73,10 +73,8 @@ export class SharedCalendarServices {
               name: 'pending',
             },
           },
-          notificationDate: {
-            lte: endDate,
-            gte: startDate,
-          },
+
+          OR: [{ notificationDate: { lte: endDate, gte: startDate } }],
         },
       }),
 
