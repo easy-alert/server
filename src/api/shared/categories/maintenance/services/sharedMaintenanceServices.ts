@@ -2,6 +2,7 @@ import { prisma } from '../../../../../../prisma';
 import { ICreateMaintenance, IEditMaintenance, IMaintenanceHistory } from './types';
 
 import { Validator } from '../../../../../utils/validator/validator';
+import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
 const validator = new Validator();
 
@@ -162,6 +163,21 @@ export class SharedMaintenanceServices {
     ]);
 
     return maintenancesCount + defaultMaintenances;
+  }
+
+  async checkMaintenanceIsUsed({ maintenanceId }: { maintenanceId: string }) {
+    const maintenance = await prisma.buildingMaintenance.findFirst({
+      where: {
+        maintenanceId,
+      },
+    });
+
+    if (maintenance) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Você não pode excluir uma manutenção em uso.',
+      });
+    }
   }
 
   async delete({ maintenanceId }: { maintenanceId: string }) {

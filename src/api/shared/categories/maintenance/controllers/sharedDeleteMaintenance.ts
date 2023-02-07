@@ -27,6 +27,8 @@ export async function sharedDeleteMaintenance({
     });
   }
 
+  await sharedMaintenanceServices.checkMaintenanceIsUsed({ maintenanceId });
+
   await sharedMaintenanceServices.delete({
     maintenanceId,
   });
