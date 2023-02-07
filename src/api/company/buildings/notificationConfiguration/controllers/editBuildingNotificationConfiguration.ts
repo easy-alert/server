@@ -99,43 +99,43 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
       };
     }
   }
-  if (data.isMain) {
-    if (data.contactNumber || data.email) {
-      const userMainForNotification =
-        await buildingNotificationConfigurationServices.findNotificationConfigurationMainForEdit({
-          buildingId,
-          buildingNotificationConfigurationId,
+  // if (data.isMain) {
+  if (data.contactNumber || data.email) {
+    const userMainForNotification =
+      await buildingNotificationConfigurationServices.findNotificationConfigurationMainForEdit({
+        buildingId,
+        buildingNotificationConfigurationId,
+      });
+
+    validator.cannotExists([
+      {
+        label: 'Usuário principal para receber notificação',
+        variable: userMainForNotification,
+      },
+    ]);
+
+    // #region AWAIT 5 MINUTES FOR SEND OTHER NOTIFICATION
+    if (
+      buildingNotificationConfigurationData?.contactNumber !== data.contactNumber ||
+      buildingNotificationConfigurationData?.email !== data.email
+    ) {
+      const actualHoursInMs = new Date().getTime();
+      const notificationHoursInMs = new Date(
+        buildingNotificationConfigurationData!.lastNotificationDate,
+      ).getTime();
+
+      const dateDiference = (actualHoursInMs - notificationHoursInMs) / 60000;
+
+      if (dateDiference <= 5) {
+        throw new ServerMessage({
+          statusCode: 400,
+          message: 'Aguarde ao menos 5 minutos para reenviar a confirmação.',
         });
-
-      validator.cannotExists([
-        {
-          label: 'Usuário principal para receber notificação',
-          variable: userMainForNotification,
-        },
-      ]);
-
-      // #region AWAIT 5 MINUTES FOR SEND OTHER NOTIFICATION
-      if (
-        buildingNotificationConfigurationData?.contactNumber !== data.contactNumber ||
-        buildingNotificationConfigurationData?.email !== data.email
-      ) {
-        const actualHoursInMs = new Date().getTime();
-        const notificationHoursInMs = new Date(
-          buildingNotificationConfigurationData!.lastNotificationDate,
-        ).getTime();
-
-        const dateDiference = (actualHoursInMs - notificationHoursInMs) / 60000;
-
-        if (dateDiference <= 5) {
-          throw new ServerMessage({
-            statusCode: 400,
-            message: 'Aguarde ao menos 5 minutos para reenviar a confirmação.',
-          });
-        }
       }
-      // #endregion
     }
+    // #endregion
   }
+  // }
 
   if (data.email === null && data.contactNumber === null) {
     throw new ServerMessage({

@@ -56,15 +56,14 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
   ]);
 
   if (data.email) {
-    await buildingNotificationConfigurationServices.findByEmail({
-      email: data.email,
-      buildingId: data.buildingId,
-    });
-
     data = {
       ...data,
       email: data.email.toLowerCase(),
     };
+    await buildingNotificationConfigurationServices.findByEmail({
+      email: data.email,
+      buildingId: data.buildingId,
+    });
   }
 
   if (data.isMain && data.contactNumber) {
