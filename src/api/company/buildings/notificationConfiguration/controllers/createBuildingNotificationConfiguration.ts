@@ -55,23 +55,7 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
     },
   ]);
 
-  if (data.email) {
-    data = {
-      ...data,
-      email: data.email.toLowerCase(),
-    };
-    await buildingNotificationConfigurationServices.findByEmail({
-      email: data.email,
-      buildingId: data.buildingId,
-    });
-  }
-
   if (data.isMain) {
-    await buildingNotificationConfigurationServices.findByContactNumber({
-      contactNumber: data.contactNumber,
-      buildingId: data.buildingId,
-    });
-
     const userMainForNotification =
       await buildingNotificationConfigurationServices.findNotificationConfigurationMainForCreate({
         buildingId: data.buildingId,
@@ -83,6 +67,24 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
         variable: userMainForNotification,
       },
     ]);
+  }
+
+  if (data.email) {
+    data = {
+      ...data,
+      email: data.email.toLowerCase(),
+    };
+    await buildingNotificationConfigurationServices.findByEmail({
+      email: data.email,
+      buildingId: data.buildingId,
+    });
+  }
+
+  if (data.contactNumber) {
+    await buildingNotificationConfigurationServices.findByContactNumber({
+      contactNumber: data.contactNumber,
+      buildingId: data.buildingId,
+    });
   }
 
   if (data.email === null && data.contactNumber === null) {
