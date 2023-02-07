@@ -66,7 +66,7 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
     });
   }
 
-  if (data.isMain && data.contactNumber) {
+  if (data.isMain) {
     await buildingNotificationConfigurationServices.findByContactNumber({
       contactNumber: data.contactNumber,
       buildingId: data.buildingId,
