@@ -119,26 +119,25 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
         },
       );
     }
-
-    if (buildingNotificationConfigurationData.email) {
-      const token = tokenServices.generate({
-        tokenData: {
-          id: buildingNotificationConfigurationData.id,
-          confirmType: 'email',
-        },
-      });
-
-      await tokenServices.saveInDatabase({ token });
-
-      await buildingNotificationConfigurationServices.sendEmailConfirmForReceiveNotifications({
-        buildingNotificationConfigurationId: buildingNotificationConfigurationData.id,
-        link: `${linkEmail}?token=${token}`,
-
-        toEmail: buildingNotificationConfigurationData.email,
-      });
-    }
   }
 
+  if (buildingNotificationConfigurationData.email) {
+    const token = tokenServices.generate({
+      tokenData: {
+        id: buildingNotificationConfigurationData.id,
+        confirmType: 'email',
+      },
+    });
+
+    await tokenServices.saveInDatabase({ token });
+
+    await buildingNotificationConfigurationServices.sendEmailConfirmForReceiveNotifications({
+      buildingNotificationConfigurationId: buildingNotificationConfigurationData.id,
+      link: `${linkEmail}?token=${token}`,
+
+      toEmail: buildingNotificationConfigurationData.email,
+    });
+  }
   // #endregion
 
   return res.status(200).json({

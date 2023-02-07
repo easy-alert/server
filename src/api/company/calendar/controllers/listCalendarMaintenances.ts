@@ -13,6 +13,7 @@ const sharedCalendarServices = new SharedCalendarServices();
 export async function listCalendarMaintenances(req: Request, res: Response) {
   const { year } = req.params;
 
+  // TODO: ajustar filtro , nao esta considerando as datas
   const { Maintenances, MaintenancesPending } =
     await sharedCalendarServices.findMaintenancesHistoryService({
       companyId: req.Company.id,

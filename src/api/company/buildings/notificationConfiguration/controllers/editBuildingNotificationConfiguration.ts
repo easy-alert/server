@@ -182,34 +182,32 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
         );
       }
     }
+  }
 
-    // EMAIL
+  // EMAIL
 
+  if (
+    buildingNotificationConfigurationEditedData.email &&
+    !buildingNotificationConfigurationEditedData.emailIsConfirmed
+  ) {
     if (
-      buildingNotificationConfigurationEditedData.email &&
-      !buildingNotificationConfigurationEditedData.emailIsConfirmed
+      buildingNotificationConfigurationEditedData.email !==
+      buildingNotificationConfigurationData?.email
     ) {
-      if (
-        buildingNotificationConfigurationEditedData.email !==
-          buildingNotificationConfigurationData?.email ||
-        (!buildingNotificationConfigurationData?.isMain &&
-          buildingNotificationConfigurationEditedData.isMain)
-      ) {
-        const token = tokenServices.generate({
-          tokenData: {
-            id: buildingNotificationConfigurationEditedData.id,
-            confirmType: 'email',
-          },
-        });
+      const token = tokenServices.generate({
+        tokenData: {
+          id: buildingNotificationConfigurationEditedData.id,
+          confirmType: 'email',
+        },
+      });
 
-        await tokenServices.saveInDatabase({ token });
+      await tokenServices.saveInDatabase({ token });
 
-        await buildingNotificationConfigurationServices.sendEmailConfirmForReceiveNotifications({
-          buildingNotificationConfigurationId: buildingNotificationConfigurationEditedData.id,
-          link: `${linkEmail}?token=${token}`,
-          toEmail: buildingNotificationConfigurationEditedData.email,
-        });
-      }
+      await buildingNotificationConfigurationServices.sendEmailConfirmForReceiveNotifications({
+        buildingNotificationConfigurationId: buildingNotificationConfigurationEditedData.id,
+        link: `${linkEmail}?token=${token}`,
+        toEmail: buildingNotificationConfigurationEditedData.email,
+      });
     }
   }
 
