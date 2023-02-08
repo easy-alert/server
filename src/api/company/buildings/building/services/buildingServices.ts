@@ -66,7 +66,7 @@ export class BuildingServices {
   }
 
   async findByName({ name }: { name: string }) {
-    const building = prisma.building.findFirst({
+    const building = await prisma.building.findFirst({
       where: {
         name,
       },
@@ -74,7 +74,7 @@ export class BuildingServices {
 
     validator.cannotExists([
       {
-        label: ' Nome da edificação',
+        label: 'Nome da edificação',
         variable: building,
       },
     ]);
