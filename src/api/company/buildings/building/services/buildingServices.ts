@@ -6,6 +6,7 @@ import { ICreateBuilding, IEditBuilding, IListBuildings, IListMaintenances } fro
 
 // // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
+import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
 const validator = new Validator();
 
@@ -45,6 +46,38 @@ export class BuildingServices {
     validator.needExist([{ label: 'Edificação', variable: building }]);
 
     return building;
+  }
+
+  async findMaintenancesPerBuilding({ buildingId }: { buildingId: string }) {
+    const buildingMaintenance = await prisma.buildingMaintenance.findFirst({
+      where: {
+        BuildingCategory: {
+          buildingId,
+        },
+      },
+    });
+
+    if (buildingMaintenance) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: `Você não pode excluir uma edificação em uso.`,
+      });
+    }
+  }
+
+  async findByName({ name }: { name: string }) {
+    const building = prisma.building.findFirst({
+      where: {
+        name,
+      },
+    });
+
+    validator.cannotExists([
+      {
+        label: ' Nome da edificação',
+        variable: building,
+      },
+    ]);
   }
 
   async list({ take = 20, page, search = '', companyId }: IListBuildings) {

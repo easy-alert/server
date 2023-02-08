@@ -1565,7 +1565,7 @@
             "description": "Ano para buscar manutenções"
           },
           {
-            "name": "buildingName",
+            "name": "buildingId",
             "in": "query",
             "schema": {
               "type": "string"

@@ -13,14 +13,14 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
   const { year } = req.params;
   const filter = req.query;
 
-  const buildingName = filter.buildingName ? String(filter.buildingName) : undefined;
+  const buildingId = filter.buildingId ? String(filter.buildingId) : undefined;
 
-  const { Maintenances, MaintenancesPending } =
+  const { Filter, Maintenances, MaintenancesPending } =
     await sharedCalendarServices.findMaintenancesHistoryService({
       companyId: req.Company.id,
       startDate: new Date(`01/01/${year}`),
       endDate: new Date(`12/31/${year}`),
-      buildingName,
+      buildingId,
     });
 
   // #region GENERATE FUTURE MAINTENANCES
@@ -71,6 +71,7 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
   // #endregion
 
   return res.status(200).json({
+    Filter,
     Dates: {
       Months: DatesWeeks,
       Weeks: Dates,

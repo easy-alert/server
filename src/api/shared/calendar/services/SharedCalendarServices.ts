@@ -26,17 +26,24 @@ export class SharedCalendarServices {
 
   async findMaintenancesHistoryService({
     companyId,
-    buildingName,
+    buildingId,
     startDate,
     endDate,
   }: {
     companyId: string;
-    buildingName: string | undefined;
+    buildingId: string | undefined;
 
     startDate: Date;
     endDate: Date;
   }) {
-    const [Maintenances, MaintenancesPending] = await prisma.$transaction([
+    const [Filter, Maintenances, MaintenancesPending] = await prisma.$transaction([
+      prisma.building.findMany({
+        select: { id: true, name: true },
+        where: {
+          companyId,
+        },
+      }),
+
       prisma.maintenanceHistory.findMany({
         select: {
           notificationDate: true,
@@ -71,16 +78,13 @@ export class SharedCalendarServices {
         },
         where: {
           ownerCompanyId: companyId,
+          buildingId,
           MaintenancesStatus: {
             NOT: {
               name: 'pending',
             },
           },
-          Building: {
-            name: {
-              in: buildingName,
-            },
-          },
+
           OR: [{ notificationDate: { lte: endDate, gte: startDate } }],
         },
       }),
@@ -119,13 +123,9 @@ export class SharedCalendarServices {
         },
         where: {
           ownerCompanyId: companyId,
+          buildingId,
           MaintenancesStatus: {
             name: 'pending',
-          },
-          Building: {
-            name: {
-              in: buildingName,
-            },
           },
 
           OR: [{ notificationDate: { lte: endDate, gte: startDate } }],
@@ -133,6 +133,6 @@ export class SharedCalendarServices {
       }),
     ]);
 
-    return { Maintenances, MaintenancesPending };
+    return { Filter, Maintenances, MaintenancesPending };
   }
 }
