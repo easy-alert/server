@@ -88,6 +88,18 @@ export class BuildingServices {
           name: true,
           neighborhood: true,
           city: true,
+
+          MaintenancesHistory: {
+            select: {
+              MaintenancesStatus: {
+                select: {
+                  name: true,
+                  pluralLabel: true,
+                  singularLabel: true,
+                },
+              },
+            },
+          },
         },
         where: {
           name: {
@@ -132,6 +144,17 @@ export class BuildingServices {
         deliveryDate: true,
         warrantyExpiration: true,
         keepNotificationAfterWarrantyEnds: true,
+        MaintenancesHistory: {
+          select: {
+            MaintenancesStatus: {
+              select: {
+                name: true,
+                pluralLabel: true,
+                singularLabel: true,
+              },
+            },
+          },
+        },
         BuildingType: {
           select: {
             id: true,
