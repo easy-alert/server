@@ -1,9 +1,9 @@
-import { prisma } from '../../../../../../prisma';
 // TYPES
+import { prisma } from '../../../../../prisma';
+import { Validator } from '../../../../utils/validator/validator';
 import { ICreateCategory } from './types';
 
 // CLASS
-import { Validator } from '../../../../../utils/validator/validator';
 
 const validator = new Validator();
 

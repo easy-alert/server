@@ -455,6 +455,67 @@
         }
       }
     },
+    "/maintenances/create/report": {
+      "post": {
+        "tags": ["Maintenance"],
+        "summary": "reporta uma manutenção.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "maintenanceHistoryId": {
+                    "type": "string"
+                  },
+                  "cost": {
+                    "type": "number"
+                  },
+                  "observation": {
+                    "type": "string"
+                  },
+
+                  "ReportAnnexes": {
+                    "type": "array",
+                    "items": {
+                      "properties": {
+                        "name": { "type": "string" },
+                        "originalName": { "type": "string" },
+                        "url": { "type": "string" }
+                      }
+                    }
+                  },
+                  "ReportImages": {
+                    "type": "array",
+                    "items": {
+                      "properties": {
+                        "name": { "type": "string" },
+                        "originalName": { "type": "string" },
+                        "url": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
 
     "/maintenances/edit": {
       "put": {

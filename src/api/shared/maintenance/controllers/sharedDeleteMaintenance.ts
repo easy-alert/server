@@ -1,7 +1,6 @@
-import { ServerMessage } from '../../../../../utils/messages/serverMessage';
-
 // CLASS
-import { Validator } from '../../../../../utils/validator/validator';
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
+import { Validator } from '../../../../utils/validator/validator';
 import { SharedMaintenanceServices } from '../services/sharedMaintenanceServices';
 
 const sharedMaintenanceServices = new SharedMaintenanceServices();

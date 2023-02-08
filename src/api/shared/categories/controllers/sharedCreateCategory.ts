@@ -1,6 +1,6 @@
 // CLASS
 
-import { Validator } from '../../../../../utils/validator/validator';
+import { Validator } from '../../../../utils/validator/validator';
 import { SharedCategoryServices } from '../services/sharedCategoryServices';
 
 const validator = new Validator();

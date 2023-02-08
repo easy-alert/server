@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
-
-import { sharedEditCategory } from '../../../../shared/categories/category/controllers/sharedEditCategory';
+import { sharedEditCategory } from '../../../../shared/categories/controllers/sharedEditCategory';
 
 export async function editCategory(req: Request, res: Response) {
   await sharedEditCategory({ ownerCompanyId: req.Company.id, body: req.body });

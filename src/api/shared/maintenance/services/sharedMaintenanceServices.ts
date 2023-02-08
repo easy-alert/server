@@ -1,8 +1,7 @@
-import { prisma } from '../../../../../../prisma';
+import { prisma } from '../../../../../prisma';
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
+import { Validator } from '../../../../utils/validator/validator';
 import { ICreateMaintenance, IEditMaintenance, IMaintenanceHistory } from './types';
-
-import { Validator } from '../../../../../utils/validator/validator';
-import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
 const validator = new Validator();
 
@@ -89,6 +88,16 @@ export class SharedMaintenanceServices {
     });
 
     validator.needExist([{ label: 'ID da manutenção', variable: maintenance }]);
+
+    return maintenance!;
+  }
+
+  async findHistoryById({ maintenanceHistoryId }: { maintenanceHistoryId: string }) {
+    const maintenance = await prisma.maintenanceHistory.findUnique({
+      where: { id: maintenanceHistoryId },
+    });
+
+    validator.needExist([{ label: 'ID do histórico da manutenção', variable: maintenance }]);
 
     return maintenance!;
   }

@@ -1,17 +1,18 @@
 // CLASS
-import { Validator } from '../../../../../utils/validator/validator';
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
+import { Validator } from '../../../../utils/validator/validator';
+import { TimeIntervalServices } from '../../timeInterval/services/timeIntervalServices';
 import { SharedMaintenanceServices } from '../services/sharedMaintenanceServices';
-import { TimeIntervalServices } from '../../../timeInterval/services/timeIntervalServices';
-import { ICreateMaintenanceBody } from './types';
+import { IEditMaintenance } from '../services/types';
 
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 const validator = new Validator();
 const timeIntervalServices = new TimeIntervalServices();
 
-export async function sharedCreateMaintenance({
+export async function sharedEditMaintenance({
   ownerCompanyId,
   body: {
-    categoryId,
+    maintenanceId,
     element,
     activity,
     frequency,
@@ -26,12 +27,10 @@ export async function sharedCreateMaintenance({
   },
 }: {
   ownerCompanyId: string | null;
-  body: ICreateMaintenanceBody;
+  body: IEditMaintenance;
 }) {
-  // #region validation
-
   validator.check([
-    { label: 'ID da categoria', variable: categoryId, type: 'string' },
+    { label: 'ID da manutenção', variable: maintenanceId, type: 'string' },
     { label: 'Elemento', variable: element, type: 'string' },
     { label: 'Atividade', variable: activity, type: 'string' },
     { label: 'Periodicidade', variable: frequency, type: 'number' },
@@ -63,6 +62,16 @@ export async function sharedCreateMaintenance({
     },
   ]);
 
+  const maintenace = await sharedMaintenanceServices.findById({
+    maintenanceId,
+  });
+
+  if (maintenace?.ownerCompanyId !== ownerCompanyId) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: `Você não possui permissão para executar esta ação, pois essa manutenção pertence a outra empresa.`,
+    });
+  }
   const frequencyData = await timeIntervalServices.findById({
     timeIntervalId: frequencyTimeIntervalId,
   });
@@ -73,10 +82,8 @@ export async function sharedCreateMaintenance({
     timeIntervalId: delayTimeIntervalId,
   });
 
-  // #endregion
-
-  const maintenance = await sharedMaintenanceServices.create({
-    categoryId,
+  const maintenance = await sharedMaintenanceServices.edit({
+    maintenanceId,
     ownerCompanyId,
     element,
     activity,

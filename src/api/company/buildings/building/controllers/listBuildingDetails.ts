@@ -1,7 +1,7 @@
 // # region IMPORTS
 import { Request, Response } from 'express';
 import { Validator } from '../../../../../utils/validator/validator';
-import { SharedMaintenanceServices } from '../../../../shared/categories/maintenance/services/sharedMaintenanceServices';
+import { SharedMaintenanceServices } from '../../../../shared/maintenance/services/sharedMaintenanceServices';
 import { CategoryServices } from '../../../categories/category/services/categoryServices';
 
 // CLASS
@@ -80,8 +80,8 @@ export async function listBuildingDetails(req: Request, res: Response) {
     const MaintenancesCount = [
       {
         name: 'expired',
-        pluralLabel: 'vencida',
-        singularLabel: 'vencidas',
+        singularLabel: 'vencida',
+        pluralLabel: 'vencidas',
         count: 0,
       },
       {

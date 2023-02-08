@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { sharedDeleteMaintenance } from '../../../../shared/categories/maintenance/controllers/sharedDeleteMaintenance';
+import { sharedDeleteMaintenance } from '../../../../shared/maintenance/controllers/sharedDeleteMaintenance';
 
 export async function deleteMaintenance(req: Request, res: Response) {
   await sharedDeleteMaintenance({

@@ -22,8 +22,8 @@ export async function listBuilding(req: Request, res: Response) {
     const MaintenancesCount = [
       {
         name: 'expired',
-        pluralLabel: 'vencida',
-        singularLabel: 'vencidas',
+        singularLabel: 'vencida',
+        pluralLabel: 'vencidas',
         count: 0,
       },
       {

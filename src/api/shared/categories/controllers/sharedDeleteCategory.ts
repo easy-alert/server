@@ -1,5 +1,5 @@
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { SharedCategoryServices } from '../services/sharedCategoryServices';
-import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
 const sharedCategoryServices = new SharedCategoryServices();
 
