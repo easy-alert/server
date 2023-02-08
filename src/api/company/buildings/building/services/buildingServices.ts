@@ -80,7 +80,7 @@ export class BuildingServices {
     ]);
   }
 
-  async findByForEditName({ name, buildingId }: { name: string; buildingId: string }) {
+  async findByNameForEdit({ name, buildingId }: { name: string; buildingId: string }) {
     const building = await prisma.building.findFirst({
       where: {
         name,

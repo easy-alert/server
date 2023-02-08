@@ -42,34 +42,32 @@ export async function listBuilding(req: Request, res: Response) {
 
     Buildings[i].MaintenancesHistory.forEach((maintenance) => {
       switch (maintenance.MaintenancesStatus.name) {
-        case 'pending':
+        case 'expired':
           MaintenancesCount[0] = {
             ...MaintenancesCount[0],
             count: MaintenancesCount[0].count + 1,
           };
           break;
 
+        case 'pending':
+          MaintenancesCount[1] = {
+            ...MaintenancesCount[1],
+            count: MaintenancesCount[1].count + 1,
+          };
+          break;
         case 'completed':
-          MaintenancesCount[1] = {
-            ...MaintenancesCount[1],
-            count: MaintenancesCount[1].count + 1,
-          };
-          break;
-
-        case 'overdue':
-          MaintenancesCount[1] = {
-            ...MaintenancesCount[1],
-            count: MaintenancesCount[1].count + 1,
-          };
-          break;
-
-        case 'expired':
           MaintenancesCount[2] = {
             ...MaintenancesCount[2],
             count: MaintenancesCount[2].count + 1,
           };
           break;
 
+        case 'overdue':
+          MaintenancesCount[2] = {
+            ...MaintenancesCount[2],
+            count: MaintenancesCount[2].count + 1,
+          };
+          break;
         default:
           break;
       }
