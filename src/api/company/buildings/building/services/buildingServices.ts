@@ -80,6 +80,24 @@ export class BuildingServices {
     ]);
   }
 
+  async findByForEditName({ name, buildingId }: { name: string; buildingId: string }) {
+    const building = await prisma.building.findFirst({
+      where: {
+        name,
+        NOT: {
+          id: buildingId,
+        },
+      },
+    });
+
+    validator.cannotExists([
+      {
+        label: 'Nome da edificação',
+        variable: building,
+      },
+    ]);
+  }
+
   async list({ take = 20, page, search = '', companyId }: IListBuildings) {
     const [Buildings, buildingsCount] = await prisma.$transaction([
       prisma.building.findMany({

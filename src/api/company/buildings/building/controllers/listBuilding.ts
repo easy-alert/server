@@ -28,14 +28,14 @@ export async function listBuilding(req: Request, res: Response) {
       },
       {
         name: 'pending',
-        pluralLabel: 'concluídas',
-        singularLabel: 'concluída',
+        singularLabel: 'pendente',
+        pluralLabel: 'pendentes',
         count: 0,
       },
       {
         name: 'completed',
-        pluralLabel: 'concluídas',
         singularLabel: 'concluída',
+        pluralLabel: 'concluídas',
         count: 0,
       },
     ];
