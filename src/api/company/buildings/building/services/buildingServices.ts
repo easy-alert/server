@@ -109,6 +109,7 @@ export class BuildingServices {
 
           MaintenancesHistory: {
             select: {
+              wasNotified: true,
               MaintenancesStatus: {
                 select: {
                   name: true,
@@ -149,7 +150,7 @@ export class BuildingServices {
   }
 
   async listDetails({ buildingId }: { buildingId: string }) {
-    const Building = await prisma.building.findUnique({
+    const Building = await prisma.building.findFirst({
       select: {
         id: true,
         name: true,
@@ -164,6 +165,7 @@ export class BuildingServices {
         keepNotificationAfterWarrantyEnds: true,
         MaintenancesHistory: {
           select: {
+            wasNotified: true,
             MaintenancesStatus: {
               select: {
                 name: true,

@@ -50,6 +50,8 @@ export async function listBuilding(req: Request, res: Response) {
           break;
 
         case 'pending':
+          if (!maintenance.wasNotified) break;
+
           MaintenancesCount[1] = {
             ...MaintenancesCount[1],
             count: MaintenancesCount[1].count + 1,
