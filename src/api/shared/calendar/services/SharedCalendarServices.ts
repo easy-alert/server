@@ -48,7 +48,6 @@ export class SharedCalendarServices {
 
       prisma.maintenanceHistory.findMany({
         select: {
-          id: true,
           notificationDate: true,
 
           Building: {
@@ -94,6 +93,7 @@ export class SharedCalendarServices {
 
       prisma.maintenanceHistory.findMany({
         select: {
+          id: true,
           notificationDate: true,
 
           Building: {
