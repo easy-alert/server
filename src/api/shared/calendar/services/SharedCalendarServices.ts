@@ -50,6 +50,7 @@ export class SharedCalendarServices {
         select: {
           id: true,
           notificationDate: true,
+          resolutionDate: true,
 
           Building: {
             select: {

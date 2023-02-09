@@ -15,6 +15,8 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
 
   const buildingId = filter.buildingId ? String(filter.buildingId) : undefined;
 
+  // #region GENERATE HISTORY MAINTENANCES
+
   const { Filter, Maintenances, MaintenancesPending } =
     await sharedCalendarServices.findMaintenancesHistoryService({
       companyId: req.Company.id,
@@ -23,10 +25,17 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
       buildingId,
     });
 
-  // #region GENERATE FUTURE MAINTENANCES
   const Dates = [];
 
-  Dates.push(...Maintenances);
+  Maintenances.forEach((maintenance) => {
+    Dates.push({
+      ...maintenance,
+      notificationDate: maintenance.resolutionDate,
+    });
+  });
+  // #endregion
+
+  // #region GENERATE FUTURE MAINTENANCES
 
   for (let i = 0; i < MaintenancesPending.length; i++) {
     const intervals = sharedCalendarServices.recurringDates({

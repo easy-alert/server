@@ -132,15 +132,15 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         date: buildingDeliveryDate,
         days: maintenances[i].delay * timeIntervalDelay.unitTime,
       }),
-      interval: timeIntervalDelay.unitTime,
+      interval: maintenances[i].delay * timeIntervalDelay.unitTime,
     });
 
     const dueDate = noWeekendTimeDate({
       date: addDays({
         date: notificationDate,
-        days: maintenances[i].period * timeIntervalPeriod.unitTime,
+        days: maintenances[i].frequency * timeIntervalPeriod.unitTime,
       }),
-      interval: timeIntervalDelay.unitTime,
+      interval: maintenances[i].frequency * timeIntervalPeriod.unitTime,
     });
 
     DataForCreateHistory.push({

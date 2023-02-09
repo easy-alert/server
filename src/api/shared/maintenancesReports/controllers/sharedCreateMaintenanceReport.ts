@@ -1,7 +1,7 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
+import { addTimeDate } from '../../../../utils/dateTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
-import { addDays } from '../../../../utils/functions';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { Validator } from '../../../../utils/validator/validator';
 import { SharedMaintenanceServices } from '../../maintenance/services/sharedMaintenanceServices';
@@ -119,12 +119,11 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
 
   // #region UPDATE MAINTENANCE HISTORY STATUS
   const today = new Date(new Date().toISOString().split('T')[0]);
-  let maintenanceUpdated = null;
 
   if (today > maintenanceHistory.dueDate) {
     const overdueStatus = await sharedMaintenanceStatusServices.findByName({ name: 'overdue' });
 
-    maintenanceUpdated = await sharedMaintenanceServices.changeMaintenanceHistoryStatus({
+    await sharedMaintenanceServices.changeMaintenanceHistoryStatus({
       maintenanceHistoryId,
       maintenanceStatusId: overdueStatus.id,
       resolutionDate: today,
@@ -132,7 +131,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   } else {
     const overdueStatus = await sharedMaintenanceStatusServices.findByName({ name: 'completed' });
 
-    maintenanceUpdated = await sharedMaintenanceServices.changeMaintenanceHistoryStatus({
+    await sharedMaintenanceServices.changeMaintenanceHistoryStatus({
       maintenanceHistoryId,
       maintenanceStatusId: overdueStatus.id,
       resolutionDate: today,
@@ -143,23 +142,37 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   // #region CREATE MAINTENANCE HISTORY
 
   const notificationDate = noWeekendTimeDate({
-    date: addDays({
-      date: maintenanceUpdated.resolutionDate!,
+    date: addTimeDate({
+      date: today,
       days:
         maintenanceHistory.Maintenance.frequency *
         maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime,
     }),
-    interval: 0,
+    interval:
+      maintenanceHistory.Maintenance.frequency *
+      maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime,
   });
 
+  // if (today.getUTCDay() === 6 && notificationDate.getUTCDay() === 6) {
+  //   notificationDate = noWeekendTimeDate({
+  //     date: addTimeDate({
+  //       date: today,
+  //       days: 2,
+  //     }),
+  //     interval: 2,
+  //   });
+  // }
+
   const dueDate = noWeekendTimeDate({
-    date: addDays({
+    date: addTimeDate({
       date: notificationDate,
       days:
         maintenanceHistory.Maintenance.period *
         maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
     }),
-    interval: 0,
+    interval:
+      maintenanceHistory.Maintenance.period *
+      maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
   });
 
   const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
