@@ -3,9 +3,9 @@ import { Request, Response } from 'express';
 import { noWeekendTimeDate } from '../../../../../utils/dateTime/noWeekendTimeDate';
 import { addDays } from '../../../../../utils/functions';
 import { Validator } from '../../../../../utils/validator/validator';
-import { SharedCategoryServices } from '../../../../shared/categories/category/services/sharedCategoryServices';
-import { SharedMaintenanceServices } from '../../../../shared/categories/maintenance/services/sharedMaintenanceServices';
-import { SharedMaintenanceStatusServices } from '../../../../shared/categories/maintenanceStatus/services/sharedMaintenanceStatusServices';
+import { SharedCategoryServices } from '../../../../shared/categories/services/sharedCategoryServices';
+import { SharedMaintenanceServices } from '../../../../shared/maintenance/services/sharedMaintenanceServices';
+import { SharedMaintenanceStatusServices } from '../../../../shared/maintenanceStatus/services/sharedMaintenanceStatusServices';
 import { TimeIntervalServices } from '../../../../shared/timeInterval/services/timeIntervalServices';
 import { BuildingServices } from '../../building/services/buildingServices';
 import { BuildingMaintenanceHistoryServices } from '../../buildingMaintenancesHistory/services/buildingMaintenanceHistoryServices';
@@ -132,15 +132,15 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         date: buildingDeliveryDate,
         days: maintenances[i].delay * timeIntervalDelay.unitTime,
       }),
-      interval: timeIntervalDelay.unitTime,
+      interval: maintenances[i].delay * timeIntervalDelay.unitTime,
     });
 
     const dueDate = noWeekendTimeDate({
       date: addDays({
         date: notificationDate,
-        days: maintenances[i].period * timeIntervalPeriod.unitTime,
+        days: maintenances[i].frequency * timeIntervalPeriod.unitTime,
       }),
-      interval: timeIntervalDelay.unitTime,
+      interval: maintenances[i].frequency * timeIntervalPeriod.unitTime,
     });
 
     DataForCreateHistory.push({

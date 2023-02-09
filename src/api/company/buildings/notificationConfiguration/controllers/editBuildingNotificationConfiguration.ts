@@ -99,42 +99,39 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
       };
     }
   }
-  if (data.isMain) {
-    if (data.contactNumber || data.email) {
-      const userMainForNotification =
-        await buildingNotificationConfigurationServices.findNotificationConfigurationMainForEdit({
-          buildingId,
-          buildingNotificationConfigurationId,
-        });
 
-      validator.cannotExists([
-        {
-          label: 'Usuário principal para receber notificação',
-          variable: userMainForNotification,
-        },
-      ]);
+  const userMainForNotification =
+    await buildingNotificationConfigurationServices.findNotificationConfigurationMainForEdit({
+      buildingId,
+      buildingNotificationConfigurationId,
+    });
 
-      // #region AWAIT 5 MINUTES FOR SEND OTHER NOTIFICATION
-      if (
-        buildingNotificationConfigurationData?.contactNumber !== data.contactNumber ||
-        buildingNotificationConfigurationData?.email !== data.email
-      ) {
-        const actualHoursInMs = new Date().getTime();
-        const notificationHoursInMs = new Date(
-          buildingNotificationConfigurationData!.lastNotificationDate,
-        ).getTime();
+  validator.cannotExists([
+    {
+      label: 'Usuário principal para receber notificação',
+      variable: userMainForNotification,
+    },
+  ]);
 
-        const dateDiference = (actualHoursInMs - notificationHoursInMs) / 60000;
+  // #region AWAIT 5 MINUTES FOR SEND OTHER NOTIFICATION
+  if (
+    buildingNotificationConfigurationData?.contactNumber !== data.contactNumber ||
+    buildingNotificationConfigurationData?.email !== data.email
+  ) {
+    const actualHoursInMs = new Date().getTime();
+    const notificationHoursInMs = new Date(
+      buildingNotificationConfigurationData!.lastNotificationDate,
+    ).getTime();
 
-        if (dateDiference <= 5) {
-          throw new ServerMessage({
-            statusCode: 400,
-            message: 'Aguarde ao menos 5 minutos para reenviar a confirmação.',
-          });
-        }
-      }
-      // #endregion
+    const dateDiference = (actualHoursInMs - notificationHoursInMs) / 60000;
+
+    if (dateDiference <= 5) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Aguarde ao menos 5 minutos para reenviar a confirmação.',
+      });
     }
+    // #endregion
   }
 
   if (data.email === null && data.contactNumber === null) {
@@ -182,34 +179,32 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
         );
       }
     }
+  }
 
-    // EMAIL
+  // EMAIL
 
+  if (
+    buildingNotificationConfigurationEditedData.email &&
+    !buildingNotificationConfigurationEditedData.emailIsConfirmed
+  ) {
     if (
-      buildingNotificationConfigurationEditedData.email &&
-      !buildingNotificationConfigurationEditedData.emailIsConfirmed
+      buildingNotificationConfigurationEditedData.email !==
+      buildingNotificationConfigurationData?.email
     ) {
-      if (
-        buildingNotificationConfigurationEditedData.email !==
-          buildingNotificationConfigurationData?.email ||
-        (!buildingNotificationConfigurationData?.isMain &&
-          buildingNotificationConfigurationEditedData.isMain)
-      ) {
-        const token = tokenServices.generate({
-          tokenData: {
-            id: buildingNotificationConfigurationEditedData.id,
-            confirmType: 'email',
-          },
-        });
+      const token = tokenServices.generate({
+        tokenData: {
+          id: buildingNotificationConfigurationEditedData.id,
+          confirmType: 'email',
+        },
+      });
 
-        await tokenServices.saveInDatabase({ token });
+      await tokenServices.saveInDatabase({ token });
 
-        await buildingNotificationConfigurationServices.sendEmailConfirmForReceiveNotifications({
-          buildingNotificationConfigurationId: buildingNotificationConfigurationEditedData.id,
-          link: `${linkEmail}?token=${token}`,
-          toEmail: buildingNotificationConfigurationEditedData.email,
-        });
-      }
+      await buildingNotificationConfigurationServices.sendEmailConfirmForReceiveNotifications({
+        buildingNotificationConfigurationId: buildingNotificationConfigurationEditedData.id,
+        link: `${linkEmail}?token=${token}`,
+        toEmail: buildingNotificationConfigurationEditedData.email,
+      });
     }
   }
 

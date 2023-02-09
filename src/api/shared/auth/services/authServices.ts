@@ -12,7 +12,7 @@ import { Validator } from '../../../../utils/validator/validator';
 const validator = new Validator();
 
 export class AuthServices {
-  async canLogin({ user, password }: { user: any; password: string }) {
+  async canLogin({ user, password }: { user: IUser; password: string }) {
     const isValuePassword = await compare(password, user.passwordHash);
 
     if (!isValuePassword) {
@@ -22,7 +22,9 @@ export class AuthServices {
       });
     }
 
-    if (user.isBlocked) {
+    const companyIsBlocked = user.Companies.some((company) => company.Company.isBlocked === true);
+
+    if (user.isBlocked || companyIsBlocked) {
       throw new ServerMessage({
         statusCode: 400,
         message: 'Sua conta está bloqueada, entre em contato com a administração.',
@@ -52,6 +54,7 @@ export class AuthServices {
                 CPF: true,
                 createdAt: true,
                 image: true,
+                isBlocked: true,
               },
             },
           },

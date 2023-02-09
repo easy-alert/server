@@ -1,7 +1,7 @@
 import { prisma } from '../../../../../../prisma';
+import { SharedCategoryServices } from '../../../../shared/categories/services/sharedCategoryServices';
 
 // CLASS
-import { SharedCategoryServices } from '../../../../shared/categories/category/services/sharedCategoryServices';
 
 const sharedCategoryServices = new SharedCategoryServices();
 

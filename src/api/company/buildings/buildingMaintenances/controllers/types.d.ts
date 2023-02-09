@@ -44,5 +44,5 @@ interface IDateForCreateHistory {
   maintenanceStatusId: string;
   notificationDate: Date;
   resolutionDate?: Date;
-  dueDate?: Date;
+  dueDate: Date;
 }

@@ -1,6 +1,5 @@
 // # region IMPORTS
 import { Request, Response } from 'express';
-import { removeTimeDate } from '../../../../utils/dateTime';
 import { addDays } from '../../../../utils/functions';
 
 // CLASS
@@ -12,25 +11,36 @@ const sharedCalendarServices = new SharedCalendarServices();
 
 export async function listCalendarMaintenances(req: Request, res: Response) {
   const { year } = req.params;
+  const filter = req.query;
 
-  const { Maintenances, MaintenancesPending } =
+  const buildingId = filter.buildingId ? String(filter.buildingId) : undefined;
+
+  // #region GENERATE HISTORY MAINTENANCES
+
+  const { Filter, Maintenances, MaintenancesPending } =
     await sharedCalendarServices.findMaintenancesHistoryService({
       companyId: req.Company.id,
-      startDate: removeTimeDate({ date: new Date(`01/01/${year}`), days: 365 }),
+      startDate: new Date(`01/01/${year}`),
       endDate: new Date(`12/31/${year}`),
+      buildingId,
     });
 
-  console.log(new Date(`12/31/${year}`));
-  console.log(new Date(`01/01/${year}`));
-  // #region GENERATE FUTURE MAINTENANCES
-  const Dates: any = [];
+  const Dates = [];
 
-  Dates.push(...Maintenances);
+  Maintenances.forEach((maintenance) => {
+    Dates.push({
+      ...maintenance,
+      notificationDate: maintenance.resolutionDate,
+    });
+  });
+  // #endregion
+
+  // #region GENERATE FUTURE MAINTENANCES
 
   for (let i = 0; i < MaintenancesPending.length; i++) {
     const intervals = sharedCalendarServices.recurringDates({
       startDate: new Date(MaintenancesPending[i].notificationDate),
-      endDate: addDays({ date: new Date(`01/01/${year}`), days: 364 }),
+      endDate: addDays({ date: new Date(`01/01/${year}`), days: 1095 }),
       interval:
         MaintenancesPending[i].Maintenance.frequency *
         MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
@@ -70,6 +80,7 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
   // #endregion
 
   return res.status(200).json({
+    Filter,
     Dates: {
       Months: DatesWeeks,
       Weeks: Dates,

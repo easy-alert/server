@@ -9,6 +9,7 @@ interface ICompany {
     CPF?: string;
     createdAt: Date;
     image: string;
+    isBlocked: boolean;
   };
 }
 

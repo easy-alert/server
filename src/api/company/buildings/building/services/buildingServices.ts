@@ -6,6 +6,7 @@ import { ICreateBuilding, IEditBuilding, IListBuildings, IListMaintenances } fro
 
 // // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
+import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
 const validator = new Validator();
 
@@ -47,6 +48,56 @@ export class BuildingServices {
     return building;
   }
 
+  async findMaintenancesPerBuilding({ buildingId }: { buildingId: string }) {
+    const buildingMaintenance = await prisma.buildingMaintenance.findFirst({
+      where: {
+        BuildingCategory: {
+          buildingId,
+        },
+      },
+    });
+
+    if (buildingMaintenance) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: `Você não pode excluir uma edificação em uso.`,
+      });
+    }
+  }
+
+  async findByName({ name }: { name: string }) {
+    const building = await prisma.building.findFirst({
+      where: {
+        name,
+      },
+    });
+
+    validator.cannotExists([
+      {
+        label: 'Nome da edificação',
+        variable: building,
+      },
+    ]);
+  }
+
+  async findByNameForEdit({ name, buildingId }: { name: string; buildingId: string }) {
+    const building = await prisma.building.findFirst({
+      where: {
+        name,
+        NOT: {
+          id: buildingId,
+        },
+      },
+    });
+
+    validator.cannotExists([
+      {
+        label: 'Nome da edificação',
+        variable: building,
+      },
+    ]);
+  }
+
   async list({ take = 20, page, search = '', companyId }: IListBuildings) {
     const [Buildings, buildingsCount] = await prisma.$transaction([
       prisma.building.findMany({
@@ -55,6 +106,19 @@ export class BuildingServices {
           name: true,
           neighborhood: true,
           city: true,
+
+          MaintenancesHistory: {
+            select: {
+              wasNotified: true,
+              MaintenancesStatus: {
+                select: {
+                  name: true,
+                  pluralLabel: true,
+                  singularLabel: true,
+                },
+              },
+            },
+          },
         },
         where: {
           name: {
@@ -86,7 +150,7 @@ export class BuildingServices {
   }
 
   async listDetails({ buildingId }: { buildingId: string }) {
-    const Building = await prisma.building.findUnique({
+    const Building = await prisma.building.findFirst({
       select: {
         id: true,
         name: true,
@@ -99,6 +163,18 @@ export class BuildingServices {
         deliveryDate: true,
         warrantyExpiration: true,
         keepNotificationAfterWarrantyEnds: true,
+        MaintenancesHistory: {
+          select: {
+            wasNotified: true,
+            MaintenancesStatus: {
+              select: {
+                name: true,
+                pluralLabel: true,
+                singularLabel: true,
+              },
+            },
+          },
+        },
         BuildingType: {
           select: {
             id: true,

@@ -163,19 +163,65 @@ model MaintenanceHistory {
   maintenanceStatusId String
 
   notificationDate DateTime
-  dueDate          DateTime?
+  dueDate          DateTime
   resolutionDate   DateTime?
   wasNotified      Boolean   @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Building           Building           @relation(fields: [buildingId], references: [id], onDelete: Cascade)
-  Maintenance        Maintenance        @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
-  Company            Company            @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
-  MaintenancesStatus MaintenancesStatus @relation(fields: [maintenanceStatusId], references: [id], onDelete: Cascade)
+  Building           Building            @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  Maintenance        Maintenance         @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+  Company            Company             @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
+  MaintenancesStatus MaintenancesStatus  @relation(fields: [maintenanceStatusId], references: [id], onDelete: Cascade)
+  MaintenanceReport  MaintenanceReport[]
 
   @@map("maintenancesHistory")
+}
+
+model MaintenanceReport {
+  id                   String  @id @unique @default(uuid())
+  maintenanceHistoryId String
+  observation          String?
+  cost                 Float?
+
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+  MaintenanceHistory MaintenanceHistory         @relation(fields: [maintenanceHistoryId], references: [id], onDelete: Cascade)
+  ReportAnnexes      MaintenanceReportAnnexes[]
+  ReportImages       MaintenanceReportImages[]
+
+  @@map("maintenancesReports")
+}
+
+model MaintenanceReportAnnexes {
+  id                  String @id @unique @default(uuid())
+  maintenanceReportId String
+
+  name         String
+  originalName String
+  url          String
+
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  MaintenanceReport MaintenanceReport @relation(fields: [maintenanceReportId], references: [id], onDelete: Cascade)
+
+  @@map("maintenancesReportsAnnexes")
+}
+
+model MaintenanceReportImages {
+  id                  String @id @unique @default(uuid())
+  maintenanceReportId String
+
+  name         String
+  originalName String
+  url          String
+
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  MaintenanceReport MaintenanceReport @relation(fields: [maintenanceReportId], references: [id], onDelete: Cascade)
+
+  @@map("maintenancesReportsImages")
 }
 
 model TimeInterval {

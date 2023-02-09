@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
-
-import { sharedDeleteCategory } from '../../../../shared/categories/category/controllers/sharedDeleteCategory';
+import { sharedDeleteCategory } from '../../../../shared/categories/controllers/sharedDeleteCategory';
 
 export async function deleteCategory(req: Request, res: Response) {
   await sharedDeleteCategory({ ownerCompanyId: null, body: req.body });

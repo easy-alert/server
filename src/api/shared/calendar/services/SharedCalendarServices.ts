@@ -15,10 +15,12 @@ export class SharedCalendarServices {
   recurringDates({ startDate, endDate, interval, maintenanceData }: IRecurringDates) {
     let date = startDate;
     const dates = [];
+    let isFuture = false;
 
     while (date < endDate) {
-      dates.push({ ...maintenanceData, notificationDate: date });
+      dates.push({ ...maintenanceData, notificationDate: date, isFuture });
       date = noWeekendTimeDate({ date: addTimeDate({ date, days: interval }), interval });
+      isFuture = true;
     }
 
     return dates;
@@ -26,17 +28,29 @@ export class SharedCalendarServices {
 
   async findMaintenancesHistoryService({
     companyId,
+    buildingId,
     startDate,
     endDate,
   }: {
     companyId: string;
+    buildingId: string | undefined;
+
     startDate: Date;
     endDate: Date;
   }) {
-    const [Maintenances, MaintenancesPending] = await prisma.$transaction([
+    const [Filter, Maintenances, MaintenancesPending] = await prisma.$transaction([
+      prisma.building.findMany({
+        select: { id: true, name: true },
+        where: {
+          companyId,
+        },
+      }),
+
       prisma.maintenanceHistory.findMany({
         select: {
+          id: true,
           notificationDate: true,
+          resolutionDate: true,
 
           Building: {
             select: {
@@ -68,20 +82,20 @@ export class SharedCalendarServices {
         },
         where: {
           ownerCompanyId: companyId,
+          buildingId,
           MaintenancesStatus: {
             NOT: {
               name: 'pending',
             },
           },
-          notificationDate: {
-            lte: endDate,
-            gte: startDate,
-          },
+
+          OR: [{ notificationDate: { lte: endDate, gte: startDate } }],
         },
       }),
 
       prisma.maintenanceHistory.findMany({
         select: {
+          id: true,
           notificationDate: true,
 
           Building: {
@@ -114,17 +128,16 @@ export class SharedCalendarServices {
         },
         where: {
           ownerCompanyId: companyId,
+          buildingId,
           MaintenancesStatus: {
             name: 'pending',
           },
-          // notificationDate: {
-          //   lte: endDate,
-          //   gte: startDate,
-          // },
+
+          OR: [{ notificationDate: { lte: endDate, gte: startDate } }],
         },
       }),
     ]);
 
-    return { Maintenances, MaintenancesPending };
+    return { Filter, Maintenances, MaintenancesPending };
   }
 }

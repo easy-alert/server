@@ -1,5 +1,5 @@
-import { Validator } from '../../../../../utils/validator/validator';
-import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
+import { Validator } from '../../../../utils/validator/validator';
 import { SharedCategoryServices } from '../services/sharedCategoryServices';
 
 const validator = new Validator();
