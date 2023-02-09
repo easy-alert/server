@@ -1,7 +1,7 @@
 export interface ICreateMaintenanceReports {
   data: {
     maintenanceHistoryId: string;
-    cost: string;
+    cost: number;
     observation: string;
     ReportImages: {
       createMany: {

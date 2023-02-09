@@ -1,6 +1,6 @@
 export interface ICreateMaintenanceReportsBody {
   maintenanceHistoryId: string;
-  cost: string;
+  cost: number;
   observation: string;
 
   ReportImages: {

@@ -1,6 +1,9 @@
 // LIBS
 import { Router } from 'express';
-import { sharedCreateMaintenanceReport } from '../../../shared/maintenancesReports/controllers/sharedCreateMaintenanceReport';
+import {
+  sharedCreateMaintenanceReport,
+  sharedMaintenanceHistoryDetails,
+} from '../../../shared/maintenancesReports/controllers';
 
 // FUNCTIONS
 import { createMaintenance } from './controllers/createMaintenance';
@@ -13,3 +16,4 @@ maintenanceRouter.post('/create', createMaintenance);
 maintenanceRouter.put('/edit', editMaintenance);
 maintenanceRouter.delete('/delete', deleteMaintenance);
 maintenanceRouter.post('/create/report', sharedCreateMaintenanceReport);
+maintenanceRouter.get('/list/details/:maintenanceHistoryId', sharedMaintenanceHistoryDetails);

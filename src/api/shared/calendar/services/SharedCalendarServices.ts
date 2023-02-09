@@ -15,10 +15,12 @@ export class SharedCalendarServices {
   recurringDates({ startDate, endDate, interval, maintenanceData }: IRecurringDates) {
     let date = startDate;
     const dates = [];
+    let isFuture = false;
 
     while (date < endDate) {
-      dates.push({ ...maintenanceData, notificationDate: date });
+      dates.push({ ...maintenanceData, notificationDate: date, isFuture });
       date = noWeekendTimeDate({ date: addTimeDate({ date, days: interval }), interval });
+      isFuture = true;
     }
 
     return dates;
@@ -46,6 +48,7 @@ export class SharedCalendarServices {
 
       prisma.maintenanceHistory.findMany({
         select: {
+          id: true,
           notificationDate: true,
 
           Building: {

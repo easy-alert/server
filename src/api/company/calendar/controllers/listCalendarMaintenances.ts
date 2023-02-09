@@ -24,7 +24,7 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
     });
 
   // #region GENERATE FUTURE MAINTENANCES
-  const Dates: any = [];
+  const Dates = [];
 
   Dates.push(...Maintenances);
 

@@ -1,14 +1,84 @@
 import { prisma } from '../../../../../prisma';
-// import { ServerMessage } from '../../../c../utils/messages/serverMessage';
-// import { Validator } from '../../../../utils/validator/validator';
+import { Validator } from '../../../../utils/validator/validator';
 import { ICreateMaintenanceReports } from './types';
 
-// const validator = new Validator();
+const validator = new Validator();
 
 export class SharedMaintenanceReportsServices {
   async create({ data }: ICreateMaintenanceReports) {
     return prisma.maintenanceReport.create({
       data,
     });
+  }
+
+  async listMaintenanceById({ maintenanceHistoryId }: { maintenanceHistoryId: string }) {
+    const maintenanceHistory = await prisma.maintenanceHistory.findFirst({
+      select: {
+        id: true,
+        dueDate: true,
+
+        MaintenanceReport: {
+          select: {
+            id: true,
+            cost: true,
+            observation: true,
+
+            ReportAnnexes: {
+              select: {
+                name: true,
+                originalName: true,
+                url: true,
+              },
+            },
+
+            ReportImages: {
+              select: {
+                name: true,
+                originalName: true,
+                url: true,
+              },
+            },
+          },
+        },
+
+        MaintenancesStatus: {
+          select: {
+            name: true,
+          },
+        },
+
+        Building: {
+          select: {
+            name: true,
+          },
+        },
+
+        Maintenance: {
+          select: {
+            Category: {
+              select: {
+                name: true,
+              },
+            },
+            element: true,
+            activity: true,
+            responsible: true,
+          },
+        },
+      },
+
+      where: {
+        id: maintenanceHistoryId,
+      },
+    });
+
+    validator.needExist([
+      {
+        label: 'Id do histórico de manutenção',
+        variable: maintenanceHistory,
+      },
+    ]);
+
+    return maintenanceHistory!;
   }
 }
