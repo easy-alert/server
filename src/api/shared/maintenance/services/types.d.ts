@@ -28,5 +28,11 @@ export interface IMaintenanceHistory {
   maintenanceStatusId: string;
   notificationDate: Date;
   resolutionDate?: Date;
-  dueDate?: Date;
+  dueDate: Date;
+}
+
+export interface IChangeMaintenanceHistoryStatus {
+  maintenanceHistoryId: string;
+  maintenanceStatusId: string;
+  resolutionDate: Date;
 }

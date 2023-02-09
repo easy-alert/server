@@ -1,7 +1,11 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
+import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
+import { addDays } from '../../../../utils/functions';
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { Validator } from '../../../../utils/validator/validator';
 import { SharedMaintenanceServices } from '../../maintenance/services/sharedMaintenanceServices';
+import { SharedMaintenanceStatusServices } from '../../maintenanceStatus/services/sharedMaintenanceStatusServices';
 import { SharedMaintenanceReportsServices } from '../services/SharedMaintenanceReportsServices';
 import { ICreateMaintenanceReportsBody } from './types';
 
@@ -10,6 +14,7 @@ import { ICreateMaintenanceReportsBody } from './types';
 const validator = new Validator();
 const sharedMaintenanceReportsServices = new SharedMaintenanceReportsServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
+const sharedMaintenanceStatusServices = new SharedMaintenanceStatusServices();
 
 // #endregion
 
@@ -33,11 +38,13 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       label: 'custo da manutenção',
       type: 'number',
       variable: cost,
+      isOptional: true,
     },
     {
       label: 'observação da manutenção',
       type: 'string',
       variable: observation,
+      isOptional: true,
     },
   ]);
 
@@ -81,8 +88,16 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     ]);
   });
 
-  await sharedMaintenanceServices.findHistoryById({ maintenanceHistoryId });
+  const maintenanceHistory = await sharedMaintenanceServices.findHistoryById({
+    maintenanceHistoryId,
+  });
 
+  if (maintenanceHistory.MaintenanceReport.length > 0) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: 'Um relato já foi enviado nesta manutenção.',
+    });
+  }
   // #endregion
 
   const data = {
@@ -100,8 +115,68 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       },
     },
   };
-
   await sharedMaintenanceReportsServices.create({ data });
+
+  // #region UPDATE MAINTENANCE HISTORY STATUS
+  const today = new Date(new Date().toISOString().split('T')[0]);
+  let maintenanceUpdated = null;
+
+  if (today > maintenanceHistory.dueDate) {
+    const overdueStatus = await sharedMaintenanceStatusServices.findByName({ name: 'overdue' });
+
+    maintenanceUpdated = await sharedMaintenanceServices.changeMaintenanceHistoryStatus({
+      maintenanceHistoryId,
+      maintenanceStatusId: overdueStatus.id,
+      resolutionDate: today,
+    });
+  } else {
+    const overdueStatus = await sharedMaintenanceStatusServices.findByName({ name: 'completed' });
+
+    maintenanceUpdated = await sharedMaintenanceServices.changeMaintenanceHistoryStatus({
+      maintenanceHistoryId,
+      maintenanceStatusId: overdueStatus.id,
+      resolutionDate: today,
+    });
+  }
+  // #endregion
+
+  // #region CREATE MAINTENANCE HISTORY
+
+  const notificationDate = noWeekendTimeDate({
+    date: addDays({
+      date: maintenanceUpdated.resolutionDate!,
+      days:
+        maintenanceHistory.Maintenance.frequency *
+        maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime,
+    }),
+    interval: 0,
+  });
+
+  const dueDate = noWeekendTimeDate({
+    date: addDays({
+      date: notificationDate,
+      days:
+        maintenanceHistory.Maintenance.period *
+        maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
+    }),
+    interval: 0,
+  });
+
+  const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
+
+  await sharedMaintenanceServices.createHistory({
+    data: [
+      {
+        ownerCompanyId: req.Company.id,
+        maintenanceId: maintenanceHistory.Maintenance.id,
+        buildingId: maintenanceHistory.Building.id,
+        maintenanceStatusId: pendingStatus.id,
+        notificationDate,
+        dueDate,
+      },
+    ],
+  });
+  // endregion
 
   return res.status(200).json({
     ServerMessage: {

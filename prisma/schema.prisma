@@ -163,7 +163,7 @@ model MaintenanceHistory {
   maintenanceStatusId String
 
   notificationDate DateTime
-  dueDate          DateTime?
+  dueDate          DateTime
   resolutionDate   DateTime?
   wasNotified      Boolean   @default(false)
 

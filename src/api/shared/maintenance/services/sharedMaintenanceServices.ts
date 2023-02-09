@@ -1,7 +1,12 @@
 import { prisma } from '../../../../../prisma';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { Validator } from '../../../../utils/validator/validator';
-import { ICreateMaintenance, IEditMaintenance, IMaintenanceHistory } from './types';
+import {
+  IChangeMaintenanceHistoryStatus,
+  ICreateMaintenance,
+  IEditMaintenance,
+  IMaintenanceHistory,
+} from './types';
 
 const validator = new Validator();
 
@@ -43,6 +48,22 @@ export class SharedMaintenanceServices {
   async createHistory({ data }: { data: IMaintenanceHistory[] }) {
     await prisma.maintenanceHistory.createMany({
       data,
+    });
+  }
+
+  async changeMaintenanceHistoryStatus({
+    maintenanceHistoryId,
+    maintenanceStatusId,
+    resolutionDate,
+  }: IChangeMaintenanceHistoryStatus) {
+    return prisma.maintenanceHistory.update({
+      data: {
+        maintenanceStatusId,
+        resolutionDate,
+      },
+      where: {
+        id: maintenanceHistoryId,
+      },
     });
   }
 
@@ -94,6 +115,36 @@ export class SharedMaintenanceServices {
 
   async findHistoryById({ maintenanceHistoryId }: { maintenanceHistoryId: string }) {
     const maintenance = await prisma.maintenanceHistory.findUnique({
+      include: {
+        MaintenanceReport: {
+          select: {
+            id: true,
+          },
+        },
+        Building: {
+          select: {
+            id: true,
+          },
+        },
+        Maintenance: {
+          select: {
+            id: true,
+            frequency: true,
+            FrequencyTimeInterval: {
+              select: {
+                unitTime: true,
+              },
+            },
+
+            period: true,
+            PeriodTimeInterval: {
+              select: {
+                unitTime: true,
+              },
+            },
+          },
+        },
+      },
       where: { id: maintenanceHistoryId },
     });
 
@@ -195,5 +246,5 @@ export class SharedMaintenanceServices {
     await prisma.maintenance.delete({
       where: { id: maintenanceId },
     });
-  } // criar logica de nao excluir caso alguem use
+  }
 }
