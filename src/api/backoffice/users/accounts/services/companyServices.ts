@@ -130,6 +130,7 @@ export class CompanyServices {
                 name: true,
                 email: true,
                 id: true,
+                lastAccess: true,
               },
             },
           },

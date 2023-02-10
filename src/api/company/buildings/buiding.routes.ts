@@ -28,6 +28,7 @@ import {
 import { listBuildingForSelect } from './building/controllers/listBuildingsForSelect';
 import { sendEmailConfirmationBuildingNotificationConfiguration } from './notificationConfiguration/controllers/sendEmailConfirmationBuildingNotificationConfiguration';
 import { buildingAnnexeRouter } from './annexes/annexe.routes';
+import { buildingChangeBanner } from './buildingBanners/controllers/buildingChangeBanner';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -67,3 +68,6 @@ buildingRouter.post('/maintenances/list', listBuildingCategoriesAndMaintenances)
 
 // BUILDING ANNEXES
 buildingRouter.use('/annexes', buildingAnnexeRouter);
+
+// BUILDING BANNERS
+buildingRouter.post('/banners/change', buildingChangeBanner);

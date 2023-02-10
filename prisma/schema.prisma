@@ -372,11 +372,12 @@ model BuildingBanners {
   name        String
   url         String
   type        String
-  RedirectUrl String
+  redirectUrl String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Building  Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+
+  Building Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
 
   @@map("buildingsBanners")
 }
