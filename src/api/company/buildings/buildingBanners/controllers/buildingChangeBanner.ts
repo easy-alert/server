@@ -17,37 +17,37 @@ export async function buildingChangeBanner(req: Request, res: Response) {
 
   // #region VALIDATIONS
 
-  await buildingServices.findById({ buildingId: data[0].buildingId });
+  for (let i = 0; i < data.length; i++) {
+    await buildingServices.findById({ buildingId: data[0].buildingId });
 
-  data.forEach((banner) => {
     validator.check([
       {
         label: 'nome do banner',
         type: 'string',
-        variable: banner.bannerName,
+        variable: data[i].bannerName,
       },
       {
         label: 'nome do arquivo',
         type: 'string',
-        variable: banner.originalName,
+        variable: data[i].originalName,
       },
       {
         label: 'tipo do banner',
         type: 'string',
-        variable: banner.type,
+        variable: data[i].type,
       },
       {
         label: 'url do banner',
         type: 'string',
-        variable: banner.url,
+        variable: data[i].url,
       },
       {
         label: 'url de redirecionamento do banner',
         type: 'string',
-        variable: banner.redirectUrl,
+        variable: data[i].redirectUrl,
       },
     ]);
-  });
+  }
 
   // #endregion
 
@@ -56,7 +56,8 @@ export async function buildingChangeBanner(req: Request, res: Response) {
   return res.status(200).json({
     ServerMessage: {
       statusCode: 201,
-      message: `Edificação cadastrada com sucesso.`,
+      message:
+        data.length >= 1 ? `Banners cadastrados com sucesso` : `Banner cadastrado com sucesso.`,
     },
   });
 }
