@@ -149,6 +149,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
       Annexes: BuildingDetails.Annexes,
       BuildingType: BuildingDetails.BuildingType,
       NotificationsConfigurations: BuildingDetails.NotificationsConfigurations,
+      Banners: BuildingDetails.Banners,
       // @ts-ignore
       MaintenancesCount,
     };
