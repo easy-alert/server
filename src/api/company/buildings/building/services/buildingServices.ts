@@ -203,6 +203,15 @@ export class BuildingServices {
             url: true,
           },
         },
+        Banners: {
+          select: {
+            bannerName: true,
+            originalName: true,
+            redirectUrl: true,
+            type: true,
+            url: true,
+          },
+        },
       },
       where: {
         id: buildingId,
