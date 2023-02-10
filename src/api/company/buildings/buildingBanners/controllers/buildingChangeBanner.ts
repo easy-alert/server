@@ -27,7 +27,7 @@ export async function buildingChangeBanner(req: Request, res: Response) {
         variable: data[i].bannerName,
       },
       {
-        label: 'nome do arquivo',
+        label: 'arquivo',
         type: 'string',
         variable: data[i].originalName,
       },

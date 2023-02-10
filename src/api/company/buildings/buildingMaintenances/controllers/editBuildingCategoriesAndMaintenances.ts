@@ -136,7 +136,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         date: buildingDeliveryDate,
         days:
           maintenances[i].frequency * timeIntervalFrequency.unitTime +
-          maintenances[i].period * timeIntervalPeriod.unitTime,
+          maintenances[i].delay * timeIntervalDelay.unitTime,
       }),
       interval: maintenances[i].delay * timeIntervalDelay.unitTime,
     });
