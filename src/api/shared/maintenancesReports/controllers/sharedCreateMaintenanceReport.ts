@@ -1,6 +1,6 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
-import { addTimeDate } from '../../../../utils/dateTime';
+import { addTimeDate, removeTimeDate } from '../../../../utils/dateTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { Validator } from '../../../../utils/validator/validator';
@@ -98,6 +98,22 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       message: 'Um relato já foi enviado nesta manutenção.',
     });
   }
+
+  const today = new Date(new Date().toISOString().split('T')[0]);
+
+  const period =
+    maintenanceHistory.Maintenance.period *
+    maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime;
+
+  const canReportDate = removeTimeDate({ date: maintenanceHistory.notificationDate, days: period });
+
+  if (today < canReportDate) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: 'Você não pode reportar uma manutenção antes do tempo de resposta.',
+    });
+  }
+
   // #endregion
 
   const data = {
@@ -118,7 +134,6 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   await sharedMaintenanceReportsServices.create({ data });
 
   // #region UPDATE MAINTENANCE HISTORY STATUS
-  const today = new Date(new Date().toISOString().split('T')[0]);
 
   if (today > maintenanceHistory.dueDate) {
     const overdueStatus = await sharedMaintenanceStatusServices.findByName({ name: 'overdue' });
@@ -152,16 +167,6 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       maintenanceHistory.Maintenance.frequency *
       maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime,
   });
-
-  // if (today.getUTCDay() === 6 && notificationDate.getUTCDay() === 6) {
-  //   notificationDate = noWeekendTimeDate({
-  //     date: addTimeDate({
-  //       date: today,
-  //       days: 2,
-  //     }),
-  //     interval: 2,
-  //   });
-  // }
 
   const dueDate = noWeekendTimeDate({
     date: addTimeDate({
