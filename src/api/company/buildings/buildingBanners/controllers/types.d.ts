@@ -1,7 +1,8 @@
 export interface IBuildingChangeBanner {
   data: {
     buildingId: string;
-    name: string;
+    bannerName: string;
+    originalName: string;
     type: string;
     url: string;
     redirectUrl: string;

@@ -24,7 +24,12 @@ export async function buildingChangeBanner(req: Request, res: Response) {
       {
         label: 'nome do banner',
         type: 'string',
-        variable: banner.name,
+        variable: banner.bannerName,
+      },
+      {
+        label: 'nome do arquivo',
+        type: 'string',
+        variable: banner.originalName,
       },
       {
         label: 'tipo do banner',

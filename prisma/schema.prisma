@@ -369,10 +369,11 @@ model BuildingBanners {
   id         String @id @unique @default(uuid())
   buildingId String
 
-  name        String
-  url         String
-  type        String
-  redirectUrl String
+  bannerName   String
+  originalName String
+  url          String
+  type         String
+  redirectUrl  String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -1646,7 +1646,10 @@
                         "buildingId": {
                           "type": "string"
                         },
-                        "name": {
+                        "bannerName": {
+                          "type": "string"
+                        },
+                        "originalName": {
                           "type": "string"
                         },
                         "type": {
