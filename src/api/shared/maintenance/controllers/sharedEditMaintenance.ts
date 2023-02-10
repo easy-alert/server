@@ -72,6 +72,7 @@ export async function sharedEditMaintenance({
       message: `Você não possui permissão para executar esta ação, pois essa manutenção pertence a outra empresa.`,
     });
   }
+
   const frequencyData = await timeIntervalServices.findById({
     timeIntervalId: frequencyTimeIntervalId,
   });
@@ -81,6 +82,13 @@ export async function sharedEditMaintenance({
   const delayData = await timeIntervalServices.findById({
     timeIntervalId: delayTimeIntervalId,
   });
+
+  if (period * periodData.unitTime >= frequency * frequencyData.unitTime) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: 'O tempo para resposta não pode ser maior ou igual a frequência.',
+    });
+  }
 
   const maintenance = await sharedMaintenanceServices.edit({
     maintenanceId,
