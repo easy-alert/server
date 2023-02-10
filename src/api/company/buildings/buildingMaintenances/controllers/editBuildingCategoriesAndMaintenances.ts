@@ -123,9 +123,9 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       timeIntervalId: maintenances[i].delayTimeIntervalId,
     });
 
-    const timeIntervalPeriod = await timeIntervalServices.findById({
-      timeIntervalId: maintenances[i].periodTimeIntervalId,
-    });
+    // const timeIntervalPeriod = await timeIntervalServices.findById({
+    //   timeIntervalId: maintenances[i].periodTimeIntervalId,
+    // });
 
     const timeIntervalFrequency = await timeIntervalServices.findById({
       timeIntervalId: maintenances[i].frequencyTimeIntervalId,
