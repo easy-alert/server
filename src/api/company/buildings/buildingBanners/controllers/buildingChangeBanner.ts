@@ -56,8 +56,7 @@ export async function buildingChangeBanner(req: Request, res: Response) {
   return res.status(200).json({
     ServerMessage: {
       statusCode: 201,
-      message:
-        data.length > 1 ? `Banners cadastrados com sucesso` : `Banner cadastrado com sucesso.`,
+      message: 'Lista de banners atualiza com sucesso.',
     },
   });
 }
