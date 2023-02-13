@@ -1,0 +1,107 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Easy Alert - Client",
+    "description": "Api do modulo de empresas.",
+    "version": "1.0.0",
+    "contact": {
+      "email": "produto@adalovelace.com.br",
+      "name": "Ada Lovelace"
+    }
+  },
+  "servers": [
+    {
+      "description": "Local Development",
+      "url": "http://localhost:8080/api/client/"
+    },
+    {
+      "description": "//CHANGE HERE",
+      "url": "//CHANGE HERE"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "ServerMessage": {
+        "description": "Mensagem de erro padrão do backend.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ServerMessage": {
+                  "properties": {
+                    "statusCode": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/building/{buildingId}/syndic/{syndicId}": {
+      "get": {
+        "tags": ["Calendar"],
+        "summary": "Lista todas as manutencoes.",
+        "parameters": [
+          {
+            "name": "buildingId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "syndicId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Lista todas as manutencoes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "name": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    }
+  }
+}

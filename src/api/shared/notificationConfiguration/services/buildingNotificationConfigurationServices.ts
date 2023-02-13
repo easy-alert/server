@@ -1,5 +1,5 @@
 // #region IMPORTS
-import { prisma } from '../../../../../../prisma';
+import { prisma } from '../../../../../prisma';
 
 // TYPES
 import {
@@ -10,10 +10,10 @@ import {
 } from './types';
 
 // // CLASS
-import { Validator } from '../../../../../utils/validator/validator';
-import { ZenviaServices } from '../../../../../utils/customsApis/Zenvia/services/zenviaServices';
+import { Validator } from '../../../../utils/validator/validator';
+import { ZenviaServices } from '../../../../utils/customsApis/Zenvia/services/zenviaServices';
 
-import { EmailTransporterServices } from '../../../../../utils/emailTransporter/emailTransporterServices';
+import { EmailTransporterServices } from '../../../../utils/emailTransporter/emailTransporterServices';
 
 const validator = new Validator();
 const zenviaServices = new ZenviaServices();
@@ -21,7 +21,7 @@ const emailTransporter = new EmailTransporterServices();
 
 // #endregion
 
-export class BuildingNotificationConfigurationServices {
+export class SharedBuildingNotificationConfigurationServices {
   async create({ data }: ICreateBuildingNotificationConfiguration) {
     return prisma.buildingNotificationConfiguration.create({
       data,
@@ -82,7 +82,7 @@ export class BuildingNotificationConfigurationServices {
 
     validator.needExist([
       {
-        label: 'Configuração de notificação',
+        label: 'configuração de notificação',
         variable: buildingConfigurationNotification,
       },
     ]);

@@ -5,12 +5,13 @@ import { TokenServices } from '../../../../../utils/token/tokenServices';
 
 // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
-import { BuildingNotificationConfigurationServices } from '../services/buildingNotificationConfigurationServices';
+import { SharedBuildingNotificationConfigurationServices } from '../../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
 
 const validator = new Validator();
 const tokenServices = new TokenServices();
 
-const buildingNotificationConfigurationServices = new BuildingNotificationConfigurationServices();
+const buildingNotificationConfigurationServices =
+  new SharedBuildingNotificationConfigurationServices();
 
 // #endregion
 

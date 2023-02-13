@@ -43,7 +43,7 @@ export class BuildingServices {
       },
     });
 
-    validator.needExist([{ label: 'Edificação', variable: building }]);
+    validator.needExist([{ label: 'edificação', variable: building }]);
 
     return building;
   }

@@ -3,10 +3,11 @@ import { Request, Response } from 'express';
 
 // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
-import { BuildingNotificationConfigurationServices } from '../services/buildingNotificationConfigurationServices';
+import { SharedBuildingNotificationConfigurationServices } from '../../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
 
 const validator = new Validator();
-const buildingNotificationConfigurationServices = new BuildingNotificationConfigurationServices();
+const buildingNotificationConfigurationServices =
+  new SharedBuildingNotificationConfigurationServices();
 
 // #endregion
 
