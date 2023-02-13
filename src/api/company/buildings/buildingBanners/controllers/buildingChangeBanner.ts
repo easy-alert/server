@@ -13,7 +13,7 @@ const buildingServices = new BuildingServices();
 // #endregion
 
 export async function buildingChangeBanner(req: Request, res: Response) {
-  const { data }: IBuildingChangeBanner = req.body;
+  const { buildingId, data }: IBuildingChangeBanner = req.body;
 
   // #region VALIDATIONS
 
@@ -51,7 +51,7 @@ export async function buildingChangeBanner(req: Request, res: Response) {
 
   // #endregion
 
-  await buildingBannersServices.changeBanners({ data });
+  await buildingBannersServices.changeBanners({ buildingId, data });
 
   return res.status(200).json({
     ServerMessage: {

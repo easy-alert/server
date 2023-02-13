@@ -1,4 +1,5 @@
 export interface IBuildingChangeBanner {
+  buildingId: string;
   data: {
     buildingId: string;
     bannerName: string;
