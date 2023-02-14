@@ -58,8 +58,13 @@ export class ClientBuildingServices {
     ];
 
     data.forEach((maintenance: any) => {
-      const dateInfos = getDateInfos(maintenance.notificationDate);
-      switch (maintenance.notificationDate.getMonth()) {
+      let maintenanceDate = null;
+
+      if (maintenance.resolutionDate === null) maintenanceDate = maintenance.notificationDate;
+      else maintenanceDate = maintenance.resolutionDate;
+
+      const dateInfos = getDateInfos(maintenanceDate);
+      switch (maintenanceDate.getMonth()) {
         case 0:
           months[0].dates.push({
             element: maintenance.Maintenance.element,
@@ -185,6 +190,17 @@ export class ClientBuildingServices {
           select: {
             id: true,
             name: true,
+
+            Banners: {
+              select: {
+                id: true,
+                bannerName: true,
+                originalName: true,
+                redirectUrl: true,
+                url: true,
+                type: true,
+              },
+            },
           },
         },
         Maintenance: {

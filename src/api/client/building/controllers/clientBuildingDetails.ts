@@ -2,7 +2,6 @@
 import { Request, Response } from 'express';
 import { Validator } from '../../../../utils/validator/validator';
 import { BuildingServices } from '../../../company/buildings/building/services/buildingServices';
-import { SharedBuildingNotificationConfigurationServices } from '../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { ClientBuildingServices } from '../services/clientBuildingServices';
 
 // CLASS
@@ -10,14 +9,11 @@ import { ClientBuildingServices } from '../services/clientBuildingServices';
 const clienBuildingServices = new ClientBuildingServices();
 const buildingServices = new BuildingServices();
 
-const sharedBuildingNotificationConfigurationServices =
-  new SharedBuildingNotificationConfigurationServices();
-
 const validator = new Validator();
 // #endregion
 
 export async function clientBuildingDetails(req: Request, res: Response) {
-  const { buildingId, syndicId } = req.params;
+  const { buildingId } = req.params;
 
   // #region VALIDATION
 
@@ -27,17 +23,9 @@ export async function clientBuildingDetails(req: Request, res: Response) {
       type: 'string',
       variable: buildingId,
     },
-    {
-      label: 'Id da síndico',
-      type: 'string',
-      variable: syndicId,
-    },
   ]);
 
   await buildingServices.findById({ buildingId });
-  await sharedBuildingNotificationConfigurationServices.findById({
-    buildingNotificationConfigurationId: syndicId,
-  });
 
   // #endregion
 
@@ -53,5 +41,12 @@ export async function clientBuildingDetails(req: Request, res: Response) {
 
   // #endregion
 
-  return res.status(200).json({ months });
+  return res.status(200).json({
+    building: {
+      id: MaintenancesHistory[0].Building.id,
+      name: MaintenancesHistory[0].Building.name,
+      Banners: MaintenancesHistory[0].Building.Banners,
+    },
+    months,
+  });
 }
