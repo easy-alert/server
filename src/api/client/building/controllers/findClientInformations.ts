@@ -15,7 +15,7 @@ export async function findClientInformations(req: Request, res: Response) {
   const formattedMainContact = {
     buldingName: mainContact?.name,
     annexes: mainContact?.Annexes,
-    mainContact: mainContact?.NotificationsConfigurations,
+    mainContact: mainContact?.NotificationsConfigurations[0],
   };
 
   return res.status(200).json(formattedMainContact);
