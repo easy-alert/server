@@ -340,8 +340,6 @@ export class ClientBuildingServices {
       },
     });
 
-    console.log(mainContact);
-
     validator.needExist([{ label: 'edificação', variable: mainContact }]);
 
     return mainContact;
