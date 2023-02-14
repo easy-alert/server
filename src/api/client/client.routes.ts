@@ -4,11 +4,9 @@ import swaggerUi from 'swagger-ui-express';
 
 import swaggerFile from '../../docs/clientDocs.json';
 
-// MIDDLEWARES
 import { uploadRouter } from '../shared/upload/upload.routes';
 import { clientBuildingDetails } from './building/controllers/clientBuildingDetails';
-
-// CHIELD ROUTES
+import { findClientInformations } from './building/controllers/findClientInformations';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -20,4 +18,5 @@ clientRouter.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
 
 clientRouter.use('/upload', uploadRouter);
 
-clientRouter.use('/building/:buildingId/syndic/:syndicId', clientBuildingDetails);
+clientRouter.get('/building/:buildingId', clientBuildingDetails);
+clientRouter.get('/building/informations/:buildingId', findClientInformations);

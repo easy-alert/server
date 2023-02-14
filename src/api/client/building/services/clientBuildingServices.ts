@@ -309,4 +309,41 @@ export class ClientBuildingServices {
 
     return { MaintenancesHistory, MaintenancesPending };
   }
+
+  async findMainContactInformation({ buildingId }: { buildingId: string }) {
+    const mainContact = await prisma.building.findFirst({
+      select: {
+        name: true,
+
+        Annexes: {
+          select: {
+            name: true,
+            url: true,
+            originalName: true,
+          },
+        },
+
+        NotificationsConfigurations: {
+          select: {
+            name: true,
+            email: true,
+            contactNumber: true,
+            role: true,
+          },
+          where: {
+            isMain: true,
+          },
+        },
+      },
+      where: {
+        id: buildingId,
+      },
+    });
+
+    console.log(mainContact);
+
+    validator.needExist([{ label: 'edificação', variable: mainContact }]);
+
+    return mainContact;
+  }
 }

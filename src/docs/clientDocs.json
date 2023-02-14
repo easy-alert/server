@@ -53,7 +53,7 @@
     }
   },
   "paths": {
-    "/building/{buildingId}/syndic/{syndicId}": {
+    "/building/{buildingId}": {
       "get": {
         "tags": ["Calendar"],
         "summary": "Lista todas as manutencoes.",
@@ -64,9 +64,45 @@
             "schema": {
               "type": "string"
             }
-          },
+          }
+        ],
+        "security": [
           {
-            "name": "syndicId",
+            "bearerAuth": []
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Lista todas as manutencoes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "name": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+    "/building/informations/{buildingId}": {
+      "get": {
+        "tags": ["Calendar"],
+        "summary": "Bucas as informações da manutencão.",
+        "parameters": [
+          {
+            "name": "buildingId",
             "in": "path",
             "schema": {
               "type": "string"
