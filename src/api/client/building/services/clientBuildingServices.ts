@@ -60,8 +60,8 @@ export class ClientBuildingServices {
     data.forEach((maintenance: any) => {
       let maintenanceDate = null;
 
-      if (maintenance.resolutionDate === null) maintenanceDate = maintenance.notificationDate;
-      else maintenanceDate = maintenance.resolutionDate;
+      if (maintenance.resolutionDate) maintenanceDate = maintenance.resolutionDate;
+      else maintenanceDate = maintenance.notificationDate;
 
       const dateInfos = getDateInfos(maintenanceDate);
       switch (maintenanceDate.getMonth()) {
@@ -180,71 +180,133 @@ export class ClientBuildingServices {
     startDate: Date;
     endDate: Date;
   }) {
-    const maintenanceHistory = await prisma.maintenanceHistory.findMany({
-      select: {
-        id: true,
-        notificationDate: true,
-        resolutionDate: true,
+    const [MaintenancesHistory, MaintenancesPending] = await prisma.$transaction([
+      prisma.maintenanceHistory.findMany({
+        select: {
+          id: true,
+          notificationDate: true,
+          resolutionDate: true,
 
-        Building: {
-          select: {
-            id: true,
-            name: true,
+          Building: {
+            select: {
+              id: true,
+              name: true,
 
-            Banners: {
-              select: {
-                id: true,
-                bannerName: true,
-                originalName: true,
-                redirectUrl: true,
-                url: true,
-                type: true,
+              Banners: {
+                select: {
+                  id: true,
+                  bannerName: true,
+                  originalName: true,
+                  redirectUrl: true,
+                  url: true,
+                  type: true,
+                },
               },
             },
           },
-        },
-        Maintenance: {
-          select: {
-            id: true,
-            element: true,
-            frequency: true,
-            activity: true,
-            FrequencyTimeInterval: {
-              select: {
-                unitTime: true,
-                singularLabel: true,
-                pluralLabel: true,
+          Maintenance: {
+            select: {
+              id: true,
+              element: true,
+              frequency: true,
+              activity: true,
+              FrequencyTimeInterval: {
+                select: {
+                  unitTime: true,
+                  singularLabel: true,
+                  pluralLabel: true,
+                },
               },
             },
           },
-        },
-        MaintenancesStatus: {
-          select: {
-            name: true,
-            pluralLabel: true,
-            singularLabel: true,
+          MaintenancesStatus: {
+            select: {
+              name: true,
+              pluralLabel: true,
+              singularLabel: true,
+            },
           },
         },
-      },
-      where: {
-        buildingId,
-        MaintenancesStatus: {
-          NOT: {
+        where: {
+          buildingId,
+          MaintenancesStatus: {
+            NOT: {
+              name: 'pending',
+            },
+          },
+
+          OR: [{ notificationDate: { lte: endDate, gte: startDate } }],
+        },
+      }),
+
+      prisma.maintenanceHistory.findMany({
+        select: {
+          id: true,
+          notificationDate: true,
+          resolutionDate: true,
+
+          Building: {
+            select: {
+              id: true,
+              name: true,
+
+              Banners: {
+                select: {
+                  id: true,
+                  bannerName: true,
+                  originalName: true,
+                  redirectUrl: true,
+                  url: true,
+                  type: true,
+                },
+              },
+            },
+          },
+          Maintenance: {
+            select: {
+              id: true,
+              element: true,
+              frequency: true,
+              activity: true,
+              FrequencyTimeInterval: {
+                select: {
+                  unitTime: true,
+                  singularLabel: true,
+                  pluralLabel: true,
+                },
+              },
+            },
+          },
+          MaintenancesStatus: {
+            select: {
+              name: true,
+              pluralLabel: true,
+              singularLabel: true,
+            },
+          },
+        },
+        where: {
+          buildingId,
+          MaintenancesStatus: {
             name: 'pending',
           },
-        },
 
-        OR: [{ notificationDate: { lte: endDate, gte: startDate } }],
-      },
-    });
+          OR: [{ notificationDate: { lte: endDate, gte: startDate } }],
+        },
+      }),
+    ]);
 
     validator.needExist([
       {
         label: 'histórico de manutenção',
-        variable: maintenanceHistory,
+        variable: MaintenancesHistory,
+      },
+      {
+        label: 'histórico de manutenção',
+        variable: MaintenancesPending,
       },
     ]);
 
-    return maintenanceHistory!;
+    return { MaintenancesHistory, MaintenancesPending };
   }
 }

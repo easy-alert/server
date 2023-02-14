@@ -2,12 +2,14 @@
 import { Request, Response } from 'express';
 import { Validator } from '../../../../utils/validator/validator';
 import { BuildingServices } from '../../../company/buildings/building/services/buildingServices';
+import { SharedCalendarServices } from '../../../shared/calendar/services/SharedCalendarServices';
 import { ClientBuildingServices } from '../services/clientBuildingServices';
 
 // CLASS
 
-const clienBuildingServices = new ClientBuildingServices();
+const clientBuildingServices = new ClientBuildingServices();
 const buildingServices = new BuildingServices();
+const sharedCalendarServices = new SharedCalendarServices();
 
 const validator = new Validator();
 // #endregion
@@ -31,13 +33,29 @@ export async function clientBuildingDetails(req: Request, res: Response) {
 
   // #region PROCESS DATA
 
-  const MaintenancesHistory = await clienBuildingServices.findMaintenanceHistory({
-    buildingId,
-    startDate: new Date(`01/01/${new Date().getFullYear()}`),
-    endDate: new Date(`12/31/${new Date().getFullYear()}`),
-  });
+  const { MaintenancesHistory, MaintenancesPending } =
+    await clientBuildingServices.findMaintenanceHistory({
+      buildingId,
+      startDate: new Date(`01/01/${new Date().getFullYear()}`),
+      endDate: new Date(`12/31/${new Date().getFullYear()}`),
+    });
 
-  const months = clienBuildingServices.separePerMonth({ data: MaintenancesHistory });
+  const maintenances = [];
+  maintenances.push(...MaintenancesHistory);
+
+  for (let i = 0; i < MaintenancesPending.length; i++) {
+    const intervals = sharedCalendarServices.recurringDates({
+      startDate: new Date(MaintenancesPending[i].notificationDate),
+      endDate: new Date(`12/31/${new Date().getFullYear()}`),
+      interval:
+        MaintenancesPending[i].Maintenance.frequency *
+        MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
+      maintenanceData: MaintenancesPending[i],
+    });
+    maintenances.push(...intervals);
+  }
+
+  const months = clientBuildingServices.separePerMonth({ data: maintenances });
 
   // #endregion
 
