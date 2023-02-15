@@ -44,7 +44,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   });
 
   // #region MOUNTING FILTERS
-  const filters = {
+  const Filters = {
     years: ['2021', '2022', '2023', '2024', '2025'],
     months: [
       {
@@ -114,6 +114,6 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
 
   return res.status(200).json({
     kanban,
-    filters,
+    Filters,
   });
 }
