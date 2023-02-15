@@ -44,67 +44,65 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   });
 
   // #region MOUNTING FILTERS
-  const filters = [
-    {
-      years: ['2021', '2022', '2023', '2024', '2025'],
-      months: [
-        {
-          number: '01',
-          labe: 'janeiro',
-        },
-        {
-          number: '02',
-          labe: 'fevereiro',
-        },
-        {
-          number: '03',
-          labe: 'março',
-        },
-        {
-          number: '04',
-          labe: 'abril',
-        },
-        {
-          number: '05',
-          labe: 'maio',
-        },
-        {
-          number: '06',
-          labe: 'junho',
-        },
-        {
-          number: '07',
-          labe: 'julho',
-        },
-        {
-          number: '08',
-          labe: 'agosto',
-        },
-        {
-          number: '09',
-          labe: 'setembro',
-        },
-        {
-          number: '10',
-          labe: 'outubro',
-        },
-        {
-          number: '11',
-          labe: 'novembro',
-        },
-        {
-          number: '12',
-          labe: 'dezembro',
-        },
-      ],
-      status: [
-        { name: 'expired', label: 'vencidas' },
-        { name: 'pending', label: 'pendentes' },
-        { name: 'completed', label: 'concluídas' },
-        { name: 'overdue', label: 'feitas em atraso' },
-      ],
-    },
-  ];
+  const filters = {
+    years: ['2021', '2022', '2023', '2024', '2025'],
+    months: [
+      {
+        number: '01',
+        label: 'janeiro',
+      },
+      {
+        number: '02',
+        label: 'fevereiro',
+      },
+      {
+        number: '03',
+        label: 'março',
+      },
+      {
+        number: '04',
+        label: 'abril',
+      },
+      {
+        number: '05',
+        label: 'maio',
+      },
+      {
+        number: '06',
+        label: 'junho',
+      },
+      {
+        number: '07',
+        label: 'julho',
+      },
+      {
+        number: '08',
+        label: 'agosto',
+      },
+      {
+        number: '09',
+        label: 'setembro',
+      },
+      {
+        number: '10',
+        label: 'outubro',
+      },
+      {
+        number: '11',
+        label: 'novembro',
+      },
+      {
+        number: '12',
+        label: 'dezembro',
+      },
+    ],
+    status: [
+      { name: 'expired', label: 'vencidas' },
+      { name: 'pending', label: 'pendentes' },
+      { name: 'completed', label: 'concluídas' },
+      { name: 'overdue', label: 'feitas em atraso' },
+    ],
+  };
 
   // #endregion
 
