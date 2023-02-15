@@ -1,21 +1,20 @@
 // # region IMPORTS
 import { Request, Response } from 'express';
 import { Validator } from '../../../../utils/validator/validator';
-import { BuildingServices } from '../../../company/buildings/building/services/buildingServices';
-import { SharedCalendarServices } from '../../../shared/calendar/services/SharedCalendarServices';
+import { SharedBuildingNotificationConfigurationServices } from '../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { ClientBuildingServices } from '../services/clientBuildingServices';
 
 // CLASS
 
 const clientBuildingServices = new ClientBuildingServices();
-const buildingServices = new BuildingServices();
-const sharedCalendarServices = new SharedCalendarServices();
+const sharedBuildingNotificationConfigurationServices =
+  new SharedBuildingNotificationConfigurationServices();
 
 const validator = new Validator();
 // #endregion
 
-export async function clientBuildingDetails(req: Request, res: Response) {
-  const { buildingId } = req.params;
+export async function clientSyndicBuildingDetails(req: Request, res: Response) {
+  const { syndicId } = req.params;
 
   const { year, month, status } = req.query;
 
@@ -23,26 +22,29 @@ export async function clientBuildingDetails(req: Request, res: Response) {
 
   validator.check([
     {
-      label: 'Id da edificação',
+      label: 'Id do síndico',
       type: 'string',
-      variable: buildingId,
+      variable: syndicId,
     },
   ]);
 
-  const building = await buildingServices.findById({ buildingId });
+  const buildingNotificationConfig = await sharedBuildingNotificationConfigurationServices.findById(
+    {
+      buildingNotificationConfigurationId: syndicId,
+    },
+  );
 
   // #endregion
 
-  const { MaintenancesHistory, MaintenancesPending } =
-    await clientBuildingServices.findMaintenanceHistory({
-      buildingId,
-      status: status ? String(status) : undefined,
-      startDate: new Date(`${month ?? '01'}/01/${year ?? new Date().getFullYear()}`),
-      endDate: new Date(`${month ?? '12'}/31/${year ?? new Date().getFullYear()}`),
-    });
+  const { MaintenancesHistory } = await clientBuildingServices.findSyndicMaintenanceHistory({
+    buildingId: buildingNotificationConfig?.Building.id,
+    status: status ? String(status) : undefined,
+    startDate: new Date(`${month ?? '01'}/01/${year ?? new Date().getFullYear()}`),
+    endDate: new Date(`${month ?? '12'}/31/${year ?? new Date().getFullYear()}`),
+  });
 
   // #region MOUNTING FILTERS
-  const Filters = [
+  const filters = [
     {
       years: ['2021', '2022', '2023', '2024', '2025'],
       months: [
@@ -108,32 +110,12 @@ export async function clientBuildingDetails(req: Request, res: Response) {
 
   // #region PROCESS DATA
 
-  const maintenances = [];
-  maintenances.push(...MaintenancesHistory);
-
-  for (let i = 0; i < MaintenancesPending.length; i++) {
-    const intervals = sharedCalendarServices.recurringDates({
-      startDate: new Date(MaintenancesPending[i].notificationDate),
-      endDate: new Date(`${month ?? '12'}/31/${year ?? new Date().getFullYear()}`),
-      interval:
-        MaintenancesPending[i].Maintenance.frequency *
-        MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
-      maintenanceData: MaintenancesPending[i],
-    });
-    maintenances.push(...intervals);
-  }
-
-  const months = clientBuildingServices.separePerMonth({ data: maintenances });
+  const kanban = clientBuildingServices.syndicSeparePerMonth({ data: MaintenancesHistory });
 
   // #endregion
 
   return res.status(200).json({
-    Filters,
-    building: {
-      id: building?.id,
-      name: building?.name,
-      Banners: building?.Banners,
-    },
-    months,
+    kanban,
+    filters,
   });
 }

@@ -75,6 +75,9 @@ export class SharedBuildingNotificationConfigurationServices {
   }) {
     const buildingConfigurationNotification =
       await prisma.buildingNotificationConfiguration.findUnique({
+        include: {
+          Building: true,
+        },
         where: {
           id: buildingNotificationConfigurationId,
         },
@@ -87,7 +90,7 @@ export class SharedBuildingNotificationConfigurationServices {
       },
     ]);
 
-    return buildingConfigurationNotification;
+    return buildingConfigurationNotification!;
   }
 
   async findByEmail({ email, buildingId }: { email: string; buildingId: string }) {

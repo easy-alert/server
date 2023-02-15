@@ -1,6 +1,7 @@
 import { prisma } from '../../../../../prisma';
 import { getDateInfos } from '../../../../utils/dateTime/getDateInfos';
 import { Validator } from '../../../../utils/validator/validator';
+import { ISeparePerMonthData } from './types';
 
 const validator = new Validator();
 
@@ -171,54 +172,137 @@ export class ClientBuildingServices {
     return months;
   }
 
+  syndicSeparePerMonth({ data }: { data: ISeparePerMonthData[] }) {
+    const kanban: any = [
+      {
+        status: 'pending',
+        maintenances: [],
+      },
+      {
+        status: 'expired',
+        maintenances: [],
+      },
+      {
+        status: 'completed',
+        maintenances: [],
+      },
+    ];
+
+    data.forEach((maintenance) => {
+      let maintenanceDate = {
+        date: new Date(),
+        label: '',
+      };
+
+      if (maintenance.resolutionDate) {
+        maintenanceDate = {
+          date: maintenance.resolutionDate,
+          label: '',
+        };
+
+        if (maintenance.resolutionDate > maintenance.dueDate) {
+          const lateDays =
+            (maintenance.resolutionDate.getTime() - maintenance.dueDate.getTime()) /
+            (1000 * 60 * 60 * 24);
+
+          maintenanceDate = {
+            date: maintenance.resolutionDate,
+            label: `Feita com atrasdo de ${lateDays.toFixed()} ${lateDays > 1 ? 'dias' : 'dia'}`,
+          };
+        }
+      } else {
+        // PENDING
+        const missingDays =
+          (maintenance.notificationDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24);
+
+        maintenanceDate = {
+          date: maintenance.notificationDate,
+          label: `Vence em ${missingDays.toFixed()} ${missingDays > 1 ? 'dias' : 'dia'}`,
+        };
+
+        // EXPIRED
+        if (maintenance.dueDate < new Date()) {
+          const lateDays =
+            (maintenance.dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24);
+
+          maintenanceDate = {
+            date: maintenance.notificationDate,
+            label: `Atrasado à ${Math.abs(lateDays).toFixed()} ${
+              Math.abs(lateDays) > 1 ? 'dias' : 'dia'
+            }`,
+          };
+        }
+      }
+
+      switch (maintenance.MaintenancesStatus.name) {
+        case 'pending':
+          kanban[0].maintenances.push({
+            id: maintenance.Maintenance.id,
+            element: maintenance.Maintenance.element,
+            activity: maintenance.Maintenance.activity,
+            status: maintenance.MaintenancesStatus.name,
+            ...maintenanceDate,
+          });
+          break;
+
+        case 'expired':
+          kanban[1].maintenances.push({
+            id: maintenance.Maintenance.id,
+            element: maintenance.Maintenance.element,
+            activity: maintenance.Maintenance.activity,
+            status: maintenance.MaintenancesStatus.name,
+            ...maintenanceDate,
+          });
+          break;
+        case 'completed':
+          kanban[2].maintenances.push({
+            id: maintenance.Maintenance.id,
+            element: maintenance.Maintenance.element,
+            activity: maintenance.Maintenance.activity,
+            status: maintenance.MaintenancesStatus.name,
+            ...maintenanceDate,
+          });
+          break;
+        case 'overdue':
+          kanban[2].maintenances.push({
+            id: maintenance.Maintenance.id,
+            element: maintenance.Maintenance.element,
+            activity: maintenance.Maintenance.activity,
+            status: maintenance.MaintenancesStatus.name,
+            ...maintenanceDate,
+          });
+          break;
+
+        default:
+          break;
+      }
+    });
+
+    return kanban;
+  }
+
   async findMaintenanceHistory({
     buildingId,
     startDate,
     endDate,
+    status,
   }: {
     buildingId: string;
     startDate: Date;
     endDate: Date;
+    status: string | undefined;
   }) {
-    const [MaintenancesHistory, MaintenancesPending] = await prisma.$transaction([
+    let pendingStatus = 'pending';
+
+    if (status !== undefined && status !== 'pending') pendingStatus = 'notFilter';
+
+    const [Filters, MaintenancesHistory, MaintenancesPending] = await prisma.$transaction([
       prisma.maintenanceHistory.findMany({
         select: {
           id: true,
           notificationDate: true,
           resolutionDate: true,
 
-          Building: {
-            select: {
-              id: true,
-              name: true,
-
-              Banners: {
-                select: {
-                  id: true,
-                  bannerName: true,
-                  originalName: true,
-                  redirectUrl: true,
-                  url: true,
-                  type: true,
-                },
-              },
-            },
-          },
-          Maintenance: {
-            select: {
-              id: true,
-              element: true,
-              frequency: true,
-              activity: true,
-              FrequencyTimeInterval: {
-                select: {
-                  unitTime: true,
-                  singularLabel: true,
-                  pluralLabel: true,
-                },
-              },
-            },
-          },
           MaintenancesStatus: {
             select: {
               name: true,
@@ -230,12 +314,10 @@ export class ClientBuildingServices {
         where: {
           buildingId,
           MaintenancesStatus: {
-            NOT: {
-              name: 'pending',
+            name: {
+              in: status,
             },
           },
-
-          OR: [{ notificationDate: { lte: endDate, gte: startDate } }],
         },
       }),
 
@@ -288,10 +370,92 @@ export class ClientBuildingServices {
         where: {
           buildingId,
           MaintenancesStatus: {
-            name: 'pending',
+            name: {
+              in: status,
+            },
+
+            NOT: {
+              name: 'pending',
+            },
           },
 
-          OR: [{ notificationDate: { lte: endDate, gte: startDate } }],
+          OR: [
+            { notificationDate: { lte: endDate, gte: startDate } },
+            { resolutionDate: { lte: endDate, gte: startDate } },
+          ],
+        },
+      }),
+
+      prisma.maintenanceHistory.findMany({
+        select: {
+          id: true,
+          notificationDate: true,
+          resolutionDate: true,
+
+          Building: {
+            select: {
+              id: true,
+              name: true,
+
+              Banners: {
+                select: {
+                  id: true,
+                  bannerName: true,
+                  originalName: true,
+                  redirectUrl: true,
+                  url: true,
+                  type: true,
+                },
+              },
+            },
+          },
+          Maintenance: {
+            select: {
+              id: true,
+              element: true,
+              frequency: true,
+              activity: true,
+              FrequencyTimeInterval: {
+                select: {
+                  unitTime: true,
+                  singularLabel: true,
+                  pluralLabel: true,
+                },
+              },
+            },
+          },
+          MaintenancesStatus: {
+            select: {
+              name: true,
+              pluralLabel: true,
+              singularLabel: true,
+            },
+          },
+        },
+        where: {
+          buildingId,
+          MaintenancesStatus: {
+            name: {
+              in: pendingStatus,
+            },
+
+            NOT: [
+              {
+                name: 'expired',
+              },
+              {
+                name: 'completed',
+              },
+              {
+                name: 'overdue',
+              },
+            ],
+          },
+
+          OR: [
+            { notificationDate: { lte: endDate, gte: startDate } },
+            { resolutionDate: { lte: endDate, gte: startDate } },
+          ],
         },
       }),
     ]);
@@ -307,7 +471,92 @@ export class ClientBuildingServices {
       },
     ]);
 
-    return { MaintenancesHistory, MaintenancesPending };
+    return { Filters, MaintenancesHistory, MaintenancesPending };
+  }
+
+  async findSyndicMaintenanceHistory({
+    buildingId,
+    startDate,
+    endDate,
+    status,
+  }: {
+    buildingId: string;
+    startDate: Date;
+    endDate: Date;
+    status: string | undefined;
+  }) {
+    const [MaintenancesHistory] = await prisma.$transaction([
+      prisma.maintenanceHistory.findMany({
+        select: {
+          id: true,
+          notificationDate: true,
+          resolutionDate: true,
+          dueDate: true,
+
+          Building: {
+            select: {
+              id: true,
+              name: true,
+
+              Banners: {
+                select: {
+                  id: true,
+                  bannerName: true,
+                  originalName: true,
+                  redirectUrl: true,
+                  url: true,
+                  type: true,
+                },
+              },
+            },
+          },
+          Maintenance: {
+            select: {
+              id: true,
+              element: true,
+              frequency: true,
+              activity: true,
+              FrequencyTimeInterval: {
+                select: {
+                  unitTime: true,
+                  singularLabel: true,
+                  pluralLabel: true,
+                },
+              },
+            },
+          },
+          MaintenancesStatus: {
+            select: {
+              name: true,
+              pluralLabel: true,
+              singularLabel: true,
+            },
+          },
+        },
+        where: {
+          buildingId,
+          MaintenancesStatus: {
+            name: {
+              in: status,
+            },
+          },
+
+          OR: [
+            { notificationDate: { lte: endDate, gte: startDate } },
+            { resolutionDate: { lte: endDate, gte: startDate } },
+          ],
+        },
+      }),
+    ]);
+
+    validator.needExist([
+      {
+        label: 'histórico de manutenção',
+        variable: MaintenancesHistory,
+      },
+    ]);
+
+    return { MaintenancesHistory };
   }
 
   async findMainContactInformation({ buildingId }: { buildingId: string }) {

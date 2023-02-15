@@ -38,6 +38,9 @@ export class BuildingServices {
 
   async findById({ buildingId }: { buildingId: string }) {
     const building = await prisma.building.findUnique({
+      include: {
+        Banners: true,
+      },
       where: {
         id: buildingId,
       },
