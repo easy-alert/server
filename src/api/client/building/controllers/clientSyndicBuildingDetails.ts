@@ -48,51 +48,51 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
     years: ['2021', '2022', '2023', '2024', '2025'],
     months: [
       {
-        dayNumber: '01',
+        monthNumber: '01',
         label: 'janeiro',
       },
       {
-        dayNumber: '02',
+        monthNumber: '02',
         label: 'fevereiro',
       },
       {
-        dayNumber: '03',
+        monthNumber: '03',
         label: 'março',
       },
       {
-        dayNumber: '04',
+        monthNumber: '04',
         label: 'abril',
       },
       {
-        dayNumber: '05',
+        monthNumber: '05',
         label: 'maio',
       },
       {
-        dayNumber: '06',
+        monthNumber: '06',
         label: 'junho',
       },
       {
-        dayNumber: '07',
+        monthNumber: '07',
         label: 'julho',
       },
       {
-        dayNumber: '08',
+        monthNumber: '08',
         label: 'agosto',
       },
       {
-        dayNumber: '09',
+        monthNumber: '09',
         label: 'setembro',
       },
       {
-        dayNumber: '10',
+        monthNumber: '10',
         label: 'outubro',
       },
       {
-        dayNumber: '11',
+        monthNumber: '11',
         label: 'novembro',
       },
       {
-        dayNumber: '12',
+        monthNumber: '12',
         label: 'dezembro',
       },
     ],
