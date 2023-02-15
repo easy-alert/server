@@ -101,7 +101,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
         { name: 'expired', label: 'vencidas' },
         { name: 'pending', label: 'pendentes' },
         { name: 'completed', label: 'concluídas' },
-        { name: 'overdue', label: 'feitas em atrasos' },
+        { name: 'overdue', label: 'feitas em atraso' },
       ],
     },
   ];

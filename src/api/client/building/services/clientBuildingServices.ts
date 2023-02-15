@@ -207,7 +207,7 @@ export class ClientBuildingServices {
 
           maintenanceDate = {
             date: maintenance.resolutionDate,
-            label: `Feita com atrasdo de ${lateDays.toFixed()} ${lateDays > 1 ? 'dias' : 'dia'}`,
+            label: `Feita com atraso de ${lateDays.toFixed()} ${lateDays > 1 ? 'dias' : 'dia'}`,
           };
         }
       } else {
