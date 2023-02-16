@@ -67,6 +67,7 @@ export class ClientBuildingServices {
       switch (maintenanceDate.getMonth()) {
         case 0:
           months[0].dates.push({
+            id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
@@ -76,6 +77,7 @@ export class ClientBuildingServices {
 
         case 1:
           months[1].dates.push({
+            id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
@@ -84,6 +86,7 @@ export class ClientBuildingServices {
           break;
         case 2:
           months[2].dates.push({
+            id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
@@ -92,6 +95,7 @@ export class ClientBuildingServices {
           break;
         case 3:
           months[3].dates.push({
+            id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
@@ -100,6 +104,7 @@ export class ClientBuildingServices {
           break;
         case 4:
           months[4].dates.push({
+            id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
@@ -108,6 +113,7 @@ export class ClientBuildingServices {
           break;
         case 5:
           months[5].dates.push({
+            id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
@@ -116,6 +122,7 @@ export class ClientBuildingServices {
           break;
         case 6:
           months[6].dates.push({
+            id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
@@ -124,6 +131,7 @@ export class ClientBuildingServices {
           break;
         case 7:
           months[7].dates.push({
+            id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
@@ -132,6 +140,7 @@ export class ClientBuildingServices {
           break;
         case 8:
           months[8].dates.push({
+            id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
@@ -140,6 +149,7 @@ export class ClientBuildingServices {
           break;
         case 9:
           months[9].dates.push({
+            id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
@@ -148,6 +158,7 @@ export class ClientBuildingServices {
           break;
         case 10:
           months[10].dates.push({
+            id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
@@ -156,6 +167,7 @@ export class ClientBuildingServices {
           break;
         case 11:
           months[11].dates.push({
+            id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
@@ -178,7 +190,7 @@ export class ClientBuildingServices {
         maintenances: [],
       },
       {
-        status: 'expired',
+        status: 'Vencidas',
         label: 'Vencidas',
         maintenances: [],
       },
@@ -212,6 +224,12 @@ export class ClientBuildingServices {
         }
       } else {
         // PENDING
+
+        console.log(
+          maintenance.Maintenance.frenquency *
+            maintenance.Maintenance.FrequencyTimeInterval.unitTime,
+        );
+
         const missingDays =
           (maintenance.notificationDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24);
 
@@ -237,7 +255,7 @@ export class ClientBuildingServices {
       switch (maintenance.MaintenancesStatus.name) {
         case 'pending':
           kanban[0].maintenances.push({
-            id: maintenance.Maintenance.id,
+            id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
@@ -247,7 +265,7 @@ export class ClientBuildingServices {
 
         case 'expired':
           kanban[1].maintenances.push({
-            id: maintenance.Maintenance.id,
+            id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
@@ -256,7 +274,7 @@ export class ClientBuildingServices {
           break;
         case 'completed':
           kanban[2].maintenances.push({
-            id: maintenance.Maintenance.id,
+            id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
@@ -265,7 +283,7 @@ export class ClientBuildingServices {
           break;
         case 'overdue':
           kanban[2].maintenances.push({
-            id: maintenance.Maintenance.id,
+            id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,

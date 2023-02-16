@@ -1,10 +1,12 @@
+import { addZeroInNumberFront } from './addZeroInNumberFront';
+
 export const getDateInfos = (date: Date) => {
-  let infos = { dayNumber: 0, name: '', smName: '' };
+  let infos = { dayNumber: '', name: '', smName: '' };
 
   switch (date.getUTCDay()) {
     case 0:
       infos = {
-        dayNumber: date.getUTCDate(),
+        dayNumber: addZeroInNumberFront(date.getUTCDate()),
         name: 'Domingo',
         smName: 'Dom',
       };
@@ -12,7 +14,7 @@ export const getDateInfos = (date: Date) => {
 
     case 1:
       infos = {
-        dayNumber: date.getUTCDate(),
+        dayNumber: addZeroInNumberFront(date.getUTCDate()),
         name: 'Segunda',
         smName: 'Seg',
       };
@@ -20,7 +22,7 @@ export const getDateInfos = (date: Date) => {
 
     case 2:
       infos = {
-        dayNumber: date.getUTCDate(),
+        dayNumber: addZeroInNumberFront(date.getUTCDate()),
         name: 'Terça',
         smName: 'Ter',
       };
@@ -28,7 +30,7 @@ export const getDateInfos = (date: Date) => {
 
     case 3:
       infos = {
-        dayNumber: date.getUTCDate(),
+        dayNumber: addZeroInNumberFront(date.getUTCDate()),
         name: 'Quarta',
         smName: 'Qua',
       };
@@ -36,7 +38,7 @@ export const getDateInfos = (date: Date) => {
 
     case 4:
       infos = {
-        dayNumber: date.getUTCDate(),
+        dayNumber: addZeroInNumberFront(date.getUTCDate()),
         name: 'Quinta',
         smName: 'Qui',
       };
@@ -44,7 +46,7 @@ export const getDateInfos = (date: Date) => {
 
     case 5:
       infos = {
-        dayNumber: date.getUTCDate(),
+        dayNumber: addZeroInNumberFront(date.getUTCDate()),
         name: 'Sexta',
         smName: 'Sex',
       };
@@ -52,7 +54,7 @@ export const getDateInfos = (date: Date) => {
 
     case 6:
       infos = {
-        dayNumber: date.getUTCDate(),
+        dayNumber: addZeroInNumberFront(date.getUTCDate()),
         name: 'Sabado',
         smName: 'Sab',
       };
