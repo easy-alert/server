@@ -1,12 +1,10 @@
-import { getMonthDay } from './getMonthDay';
-
 export const getDateInfos = (date: Date) => {
   let infos = { dayNumber: 0, name: '', smName: '' };
 
-  switch (date.getDay()) {
+  switch (date.getUTCDay()) {
     case 0:
       infos = {
-        dayNumber: getMonthDay(date),
+        dayNumber: date.getUTCDate(),
         name: 'Domingo',
         smName: 'Dom',
       };
@@ -14,7 +12,7 @@ export const getDateInfos = (date: Date) => {
 
     case 1:
       infos = {
-        dayNumber: getMonthDay(date),
+        dayNumber: date.getUTCDate(),
         name: 'Segunda',
         smName: 'Seg',
       };
@@ -22,7 +20,7 @@ export const getDateInfos = (date: Date) => {
 
     case 2:
       infos = {
-        dayNumber: getMonthDay(date),
+        dayNumber: date.getUTCDate(),
         name: 'Terça',
         smName: 'Ter',
       };
@@ -30,7 +28,7 @@ export const getDateInfos = (date: Date) => {
 
     case 3:
       infos = {
-        dayNumber: getMonthDay(date),
+        dayNumber: date.getUTCDate(),
         name: 'Quarta',
         smName: 'Qua',
       };
@@ -38,7 +36,7 @@ export const getDateInfos = (date: Date) => {
 
     case 4:
       infos = {
-        dayNumber: getMonthDay(date),
+        dayNumber: date.getUTCDate(),
         name: 'Quinta',
         smName: 'Qui',
       };
@@ -46,7 +44,7 @@ export const getDateInfos = (date: Date) => {
 
     case 5:
       infos = {
-        dayNumber: getMonthDay(date),
+        dayNumber: date.getUTCDate(),
         name: 'Sexta',
         smName: 'Sex',
       };
@@ -54,7 +52,7 @@ export const getDateInfos = (date: Date) => {
 
     case 6:
       infos = {
-        dayNumber: getMonthDay(date),
+        dayNumber: date.getUTCDate(),
         name: 'Sabado',
         smName: 'Sab',
       };
