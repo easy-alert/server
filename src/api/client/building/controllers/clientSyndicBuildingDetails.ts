@@ -126,7 +126,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   // #endregion
 
   return res.status(200).json({
-    buildingName: buildingNotificationConfig.name,
+    buildingName: buildingNotificationConfig.Building.name,
     kanban,
     Filters,
   });

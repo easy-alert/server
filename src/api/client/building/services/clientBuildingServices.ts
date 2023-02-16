@@ -1,4 +1,5 @@
 import { prisma } from '../../../../../prisma';
+import { removeTimeDate } from '../../../../utils/dateTime';
 import { getDateInfos } from '../../../../utils/dateTime/getDateInfos';
 import { Validator } from '../../../../utils/validator/validator';
 
@@ -201,10 +202,7 @@ export class ClientBuildingServices {
     ];
 
     data.forEach((maintenance: any) => {
-      let maintenanceDate = {
-        date: new Date(),
-        label: '',
-      };
+      let maintenanceDate = null;
 
       if (maintenance.resolutionDate) {
         maintenanceDate = {
@@ -225,18 +223,21 @@ export class ClientBuildingServices {
       } else {
         // PENDING
 
-        console.log(
-          maintenance.Maintenance.frenquency *
-            maintenance.Maintenance.FrequencyTimeInterval.unitTime,
-        );
-
-        const missingDays =
-          (maintenance.notificationDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24);
-
-        maintenanceDate = {
+        const canView = removeTimeDate({
           date: maintenance.notificationDate,
-          label: `Vence em ${missingDays.toFixed()} ${missingDays > 1 ? 'dias' : 'dia'}`,
-        };
+          days:
+            maintenance.Maintenance.period * maintenance.Maintenance.PeriodTimeInterval.unitTime,
+        });
+
+        if (canView < new Date()) {
+          const missingDays =
+            (maintenance.notificationDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24);
+
+          maintenanceDate = {
+            date: maintenance.notificationDate,
+            label: `Vence em ${missingDays.toFixed()} ${missingDays > 1 ? 'dias' : 'dia'}`,
+          };
+        }
 
         // EXPIRED
         if (maintenance.dueDate < new Date()) {
@@ -540,7 +541,15 @@ export class ClientBuildingServices {
               element: true,
               frequency: true,
               activity: true,
+              period: true,
               FrequencyTimeInterval: {
+                select: {
+                  unitTime: true,
+                  singularLabel: true,
+                  pluralLabel: true,
+                },
+              },
+              PeriodTimeInterval: {
                 select: {
                   unitTime: true,
                   singularLabel: true,
