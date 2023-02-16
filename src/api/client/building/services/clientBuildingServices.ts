@@ -174,15 +174,16 @@ export class ClientBuildingServices {
   syndicSeparePerMonth({ data }: { data: any }) {
     const kanban: any = [
       {
-        status: 'pending',
+        status: 'Pendentes',
         maintenances: [],
       },
       {
         status: 'expired',
+        label: 'Vencidas',
         maintenances: [],
       },
       {
-        status: 'completed',
+        status: 'Concluídas',
         maintenances: [],
       },
     ];
@@ -293,7 +294,10 @@ export class ClientBuildingServices {
   }) {
     let pendingStatus = 'pending';
 
+    console.log(status);
     if (status !== undefined && status !== 'pending') pendingStatus = 'notFilter';
+
+    console.log(pendingStatus);
 
     const [Filters, MaintenancesHistory, MaintenancesPending] = await prisma.$transaction([
       prisma.maintenanceHistory.findMany({
@@ -480,8 +484,8 @@ export class ClientBuildingServices {
     status,
   }: {
     buildingId: string;
-    startDate: Date;
-    endDate: Date;
+    startDate: Date | undefined;
+    endDate: Date | undefined;
     status: string | undefined;
   }) {
     const [MaintenancesHistory] = await prisma.$transaction([

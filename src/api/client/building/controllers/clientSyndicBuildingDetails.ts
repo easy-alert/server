@@ -18,6 +18,19 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
 
   const { year, month, status } = req.query;
 
+  const statusFilter = status === '' ? undefined : String(status);
+  const monthFilter = month === '' ? undefined : String(month);
+
+  const startDate =
+    year === ''
+      ? new Date(`${monthFilter ?? '01'}/01/${String(Number(new Date().getFullYear()) - 2)}`)
+      : new Date(`${monthFilter ?? '01'}/01/${String(year)}`);
+
+  const endDate =
+    year === ''
+      ? new Date(`${monthFilter ?? '12'}/31/${String(Number(new Date().getFullYear()) + 2)}`)
+      : new Date(`${monthFilter ?? '12'}/31/${String(year)}`);
+
   // #region VALIDATION
 
   validator.check([
@@ -38,9 +51,9 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
 
   const { MaintenancesHistory } = await clientBuildingServices.findSyndicMaintenanceHistory({
     buildingId: buildingNotificationConfig?.Building.id,
-    status: status ? String(status) : undefined,
-    startDate: new Date(`${month ?? '01'}/01/${year ?? new Date().getFullYear()}`),
-    endDate: new Date(`${month ?? '12'}/31/${year ?? new Date().getFullYear()}`),
+    status: statusFilter,
+    startDate,
+    endDate,
   });
 
   // #region MOUNTING FILTERS
@@ -113,6 +126,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   // #endregion
 
   return res.status(200).json({
+    buildingName: buildingNotificationConfig.name,
     kanban,
     Filters,
   });
