@@ -40,8 +40,8 @@ export async function clientBuildingDetails(req: Request, res: Response) {
     await clientBuildingServices.findMaintenanceHistory({
       buildingId,
       status: statusFilter,
-      startDate: new Date(`${monthFilter ?? '01'}/01/${String(year)}`),
-      endDate: new Date(`${monthFilter ?? '12'}/31/${String(year)}`),
+      month: monthFilter,
+      year: String(year),
     });
 
   // #region MOUNTING FILTERS
@@ -115,12 +115,13 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   for (let i = 0; i < MaintenancesPending.length; i++) {
     const intervals = sharedCalendarServices.recurringDates({
       startDate: new Date(MaintenancesPending[i].notificationDate),
-      endDate: new Date(`${monthFilter ?? '12'}/31/${year ?? new Date().getFullYear()}`),
+      endDate: new Date(`12/31/${year ?? new Date().getFullYear()}`),
       interval:
         MaintenancesPending[i].Maintenance.frequency *
         MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
       maintenanceData: MaintenancesPending[i],
     });
+
     maintenances.push(...intervals);
   }
 
@@ -129,11 +130,13 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   let months: any = [];
 
   if (month) {
-    monthsData.forEach((element: any) => {
-      if (element.dates.length >= 1) {
-        months.push(element);
+    for (let i = 0; i < monthsData.length; ++i) {
+      if (Number(month) === i + 1 && new Date().getFullYear() === Number(year)) {
+        if (monthsData[i].dates.length >= 1) {
+          months.push(monthsData[i]);
+        }
       }
-    });
+    }
   } else {
     months = monthsData;
   }
