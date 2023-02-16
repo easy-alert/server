@@ -1,7 +1,6 @@
 import { prisma } from '../../../../../prisma';
 import { getDateInfos } from '../../../../utils/dateTime/getDateInfos';
 import { Validator } from '../../../../utils/validator/validator';
-import { ISeparePerMonthData } from './types';
 
 const validator = new Validator();
 
@@ -172,7 +171,7 @@ export class ClientBuildingServices {
     return months;
   }
 
-  syndicSeparePerMonth({ data }: { data: ISeparePerMonthData[] }) {
+  syndicSeparePerMonth({ data }: { data: any }) {
     const kanban: any = [
       {
         status: 'pending',
@@ -188,7 +187,7 @@ export class ClientBuildingServices {
       },
     ];
 
-    data.forEach((maintenance) => {
+    data.forEach((maintenance: any) => {
       let maintenanceDate = {
         date: new Date(),
         label: '',

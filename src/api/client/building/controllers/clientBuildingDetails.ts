@@ -19,6 +19,9 @@ export async function clientBuildingDetails(req: Request, res: Response) {
 
   const { year, month, status } = req.query;
 
+  const statusFilter = status === '' ? undefined : String(status);
+  const monthFilter = month === '' ? undefined : String(month);
+
   // #region VALIDATION
 
   validator.check([
@@ -36,9 +39,9 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   const { MaintenancesHistory, MaintenancesPending } =
     await clientBuildingServices.findMaintenanceHistory({
       buildingId,
-      status: status ? String(status) : undefined,
-      startDate: new Date(`${month ?? '01'}/01/${year ?? new Date().getFullYear()}`),
-      endDate: new Date(`${month ?? '12'}/31/${year ?? new Date().getFullYear()}`),
+      status: statusFilter,
+      startDate: new Date(`${monthFilter ?? '01'}/01/${String(year)}`),
+      endDate: new Date(`${monthFilter ?? '12'}/31/${String(year)}`),
     });
 
   // #region MOUNTING FILTERS
@@ -98,7 +101,7 @@ export async function clientBuildingDetails(req: Request, res: Response) {
       { name: 'expired', label: 'vencidas' },
       { name: 'pending', label: 'pendentes' },
       { name: 'completed', label: 'concluídas' },
-      { name: 'overdue', label: 'feitas em atrasos' },
+      { name: 'overdue', label: 'feitas em atraso' },
     ],
   };
 
@@ -121,7 +124,19 @@ export async function clientBuildingDetails(req: Request, res: Response) {
     maintenances.push(...intervals);
   }
 
-  const months = clientBuildingServices.separePerMonth({ data: maintenances });
+  const monthsData = clientBuildingServices.separePerMonth({ data: maintenances });
+
+  let months: any = [];
+
+  if (month) {
+    monthsData.forEach((element: any) => {
+      if (element.dates.length >= 1) {
+        months.push(element);
+      }
+    });
+  } else {
+    months = monthsData;
+  }
 
   // #endregion
 
