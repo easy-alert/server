@@ -140,6 +140,12 @@ export async function clientBuildingDetails(req: Request, res: Response) {
 
   // #endregion
 
+  for (let i = 0; i < months.length; i++) {
+    months[i].dates.sort((a: any, b: any) =>
+      a.dateInfos.dayNumber > b.dateInfos.dayNumber ? 1 : -1,
+    );
+  }
+
   return res.status(200).json({
     Filters,
     building: {
