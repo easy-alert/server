@@ -205,7 +205,7 @@ export class ClientBuildingServices {
       let auxiliaryData = null;
       let period = null;
       let canReportDate = null;
-      const today = new Date(new Date('02/23/2023').toISOString().split('T')[0]);
+      const today = new Date(new Date().setHours(0, 0));
 
       switch (maintenance.MaintenancesStatus.name) {
         case 'pending':
@@ -219,8 +219,7 @@ export class ClientBuildingServices {
 
           if (today >= canReportDate) {
             auxiliaryData =
-              (maintenance.notificationDate.getTime() - new Date().getTime()) /
-              (1000 * 60 * 60 * 24);
+              (maintenance.dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
 
             kanban[0].maintenances.push({
               id: maintenance.id,
