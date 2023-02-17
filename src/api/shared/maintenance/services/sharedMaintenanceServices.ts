@@ -126,6 +126,11 @@ export class SharedMaintenanceServices {
             id: true,
           },
         },
+        Company: {
+          select: {
+            id: true,
+          },
+        },
         Maintenance: {
           select: {
             id: true,

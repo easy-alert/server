@@ -202,7 +202,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   await sharedMaintenanceServices.createHistory({
     data: [
       {
-        ownerCompanyId: req.Company.id,
+        ownerCompanyId: maintenanceHistory.Company.id,
         maintenanceId: maintenanceHistory.Maintenance.id,
         buildingId: maintenanceHistory.Building.id,
         maintenanceStatusId: pendingStatus.id,
