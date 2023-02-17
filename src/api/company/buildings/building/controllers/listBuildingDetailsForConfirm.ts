@@ -3,14 +3,15 @@ import { Request, Response } from 'express';
 import { TokenServices } from '../../../../../utils/token/tokenServices';
 import { ITokenWhatsAppConfirmation } from '../../../../../utils/token/types';
 import { Validator } from '../../../../../utils/validator/validator';
-import { BuildingNotificationConfigurationServices } from '../../notificationConfiguration/services/buildingNotificationConfigurationServices';
+import { SharedBuildingNotificationConfigurationServices } from '../../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
 
 // CLASS
 import { BuildingServices } from '../services/buildingServices';
 
 const buildingServices = new BuildingServices();
 const validator = new Validator();
-const buildingNotificationConfigurationServices = new BuildingNotificationConfigurationServices();
+const buildingNotificationConfigurationServices =
+  new SharedBuildingNotificationConfigurationServices();
 const tokenServices = new TokenServices();
 
 // #endregion

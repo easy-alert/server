@@ -1,4 +1,5 @@
 // CLASS
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { Validator } from '../../../../utils/validator/validator';
 import { TimeIntervalServices } from '../../timeInterval/services/timeIntervalServices';
 import { SharedMaintenanceServices } from '../services/sharedMaintenanceServices';
@@ -72,6 +73,13 @@ export async function sharedCreateMaintenance({
   const delayData = await timeIntervalServices.findById({
     timeIntervalId: delayTimeIntervalId,
   });
+
+  if (period * periodData.unitTime >= frequency * frequencyData.unitTime) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: 'O tempo para resposta não pode ser maior ou igual a frequência.',
+    });
+  }
 
   // #endregion
 

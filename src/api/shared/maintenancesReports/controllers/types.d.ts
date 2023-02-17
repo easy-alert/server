@@ -2,6 +2,7 @@ export interface ICreateMaintenanceReportsBody {
   maintenanceHistoryId: string;
   cost: number;
   observation: string;
+  responsibleSyndicId?: string;
 
   ReportImages: {
     name: string;

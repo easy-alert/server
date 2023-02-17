@@ -1,11 +1,12 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
-import { addTimeDate } from '../../../../utils/dateTime';
+import { addTimeDate, removeTimeDate } from '../../../../utils/dateTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { Validator } from '../../../../utils/validator/validator';
 import { SharedMaintenanceServices } from '../../maintenance/services/sharedMaintenanceServices';
 import { SharedMaintenanceStatusServices } from '../../maintenanceStatus/services/sharedMaintenanceStatusServices';
+import { SharedBuildingNotificationConfigurationServices } from '../../notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { SharedMaintenanceReportsServices } from '../services/SharedMaintenanceReportsServices';
 import { ICreateMaintenanceReportsBody } from './types';
 
@@ -15,6 +16,8 @@ const validator = new Validator();
 const sharedMaintenanceReportsServices = new SharedMaintenanceReportsServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 const sharedMaintenanceStatusServices = new SharedMaintenanceStatusServices();
+const sharedBuildingNotificationConfigurationServices =
+  new SharedBuildingNotificationConfigurationServices();
 
 // #endregion
 
@@ -22,6 +25,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   const {
     cost,
     maintenanceHistoryId,
+    responsibleSyndicId,
     observation,
     ReportAnnexes,
     ReportImages,
@@ -44,6 +48,12 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       label: 'observação da manutenção',
       type: 'string',
       variable: observation,
+      isOptional: true,
+    },
+    {
+      label: 'Id do síndico responsável',
+      type: 'string',
+      variable: responsibleSyndicId,
       isOptional: true,
     },
   ]);
@@ -98,12 +108,35 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       message: 'Um relato já foi enviado nesta manutenção.',
     });
   }
+
+  if (responsibleSyndicId) {
+    await sharedBuildingNotificationConfigurationServices.findById({
+      buildingNotificationConfigurationId: responsibleSyndicId,
+    });
+  }
+  // const today = new Date(new Date().setHours(0, 0));
+  const today = new Date(new Date().toISOString().split('T')[0]);
+
+  const period =
+    maintenanceHistory.Maintenance.period *
+    maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime;
+
+  const canReportDate = removeTimeDate({ date: maintenanceHistory.notificationDate, days: period });
+
+  if (today < canReportDate) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: 'Você não pode reportar uma manutenção antes do tempo de resposta.',
+    });
+  }
+
   // #endregion
 
   const data = {
     maintenanceHistoryId,
     cost,
     observation,
+    responsibleSyndicId,
     ReportImages: {
       createMany: {
         data: ReportImages,
@@ -118,7 +151,6 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   await sharedMaintenanceReportsServices.create({ data });
 
   // #region UPDATE MAINTENANCE HISTORY STATUS
-  const today = new Date(new Date().toISOString().split('T')[0]);
 
   if (today > maintenanceHistory.dueDate) {
     const overdueStatus = await sharedMaintenanceStatusServices.findByName({ name: 'overdue' });
@@ -153,16 +185,6 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime,
   });
 
-  // if (today.getUTCDay() === 6 && notificationDate.getUTCDay() === 6) {
-  //   notificationDate = noWeekendTimeDate({
-  //     date: addTimeDate({
-  //       date: today,
-  //       days: 2,
-  //     }),
-  //     interval: 2,
-  //   });
-  // }
-
   const dueDate = noWeekendTimeDate({
     date: addTimeDate({
       date: notificationDate,
@@ -180,7 +202,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   await sharedMaintenanceServices.createHistory({
     data: [
       {
-        ownerCompanyId: req.Company.id,
+        ownerCompanyId: maintenanceHistory.Company.id,
         maintenanceId: maintenanceHistory.Maintenance.id,
         buildingId: maintenanceHistory.Building.id,
         maintenanceStatusId: pendingStatus.id,
@@ -189,7 +211,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       },
     ],
   });
-  // endregion
+  // #endregion
 
   return res.status(200).json({
     ServerMessage: {

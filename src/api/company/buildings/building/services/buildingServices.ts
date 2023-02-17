@@ -38,12 +38,15 @@ export class BuildingServices {
 
   async findById({ buildingId }: { buildingId: string }) {
     const building = await prisma.building.findUnique({
+      include: {
+        Banners: true,
+      },
       where: {
         id: buildingId,
       },
     });
 
-    validator.needExist([{ label: 'Edificação', variable: building }]);
+    validator.needExist([{ label: 'edificação', variable: building }]);
 
     return building;
   }
@@ -200,6 +203,15 @@ export class BuildingServices {
             id: true,
             name: true,
             originalName: true,
+            url: true,
+          },
+        },
+        Banners: {
+          select: {
+            bannerName: true,
+            originalName: true,
+            redirectUrl: true,
+            type: true,
             url: true,
           },
         },

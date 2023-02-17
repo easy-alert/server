@@ -1623,6 +1623,79 @@
       }
     },
 
+    "/buildings/banners/change": {
+      "post": {
+        "tags": ["Building Banners"],
+        "summary": "Atualiza os banners de uma edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "properties": {
+                        "buildingId": {
+                          "type": "string"
+                        },
+                        "bannerName": {
+                          "type": "string"
+                        },
+                        "originalName": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "redirectUrl": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retorna o anexo criado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "buildingId": { "type": "string" },
+                    "name": { "type": "string" },
+                    "url": { "type": "string" },
+
+                    "ServerMessage": {
+                      "message": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
     "/buildings/annexes/delete": {
       "delete": {
         "tags": ["Building Annexes"],
