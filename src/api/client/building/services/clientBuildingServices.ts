@@ -202,93 +202,79 @@ export class ClientBuildingServices {
     ];
 
     data.forEach((maintenance: any) => {
-      let maintenanceDate = null;
-
-      if (maintenance.resolutionDate) {
-        maintenanceDate = {
-          date: maintenance.resolutionDate,
-          label: '',
-        };
-
-        if (maintenance.resolutionDate > maintenance.dueDate) {
-          const lateDays =
-            (maintenance.resolutionDate.getTime() - maintenance.dueDate.getTime()) /
-            (1000 * 60 * 60 * 24);
-
-          maintenanceDate = {
-            date: maintenance.resolutionDate,
-            label: `Feita com atraso de ${lateDays.toFixed()} ${lateDays > 1 ? 'dias' : 'dia'}`,
-          };
-        }
-      } else {
-        // PENDING
-
-        const canView = removeTimeDate({
-          date: maintenance.notificationDate,
-          days:
-            maintenance.Maintenance.period * maintenance.Maintenance.PeriodTimeInterval.unitTime,
-        });
-
-        if (canView < new Date()) {
-          const missingDays =
-            (maintenance.notificationDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24);
-
-          maintenanceDate = {
-            date: maintenance.notificationDate,
-            label: `Vence em ${missingDays.toFixed()} ${missingDays > 1 ? 'dias' : 'dia'}`,
-          };
-        }
-
-        // EXPIRED
-        if (maintenance.dueDate < new Date()) {
-          const lateDays =
-            (maintenance.dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24);
-
-          maintenanceDate = {
-            date: maintenance.notificationDate,
-            label: `Atrasado à ${Math.abs(lateDays).toFixed()} ${
-              Math.abs(lateDays) > 1 ? 'dias' : 'dia'
-            }`,
-          };
-        }
-      }
+      let auxiliaryData = null;
+      let period = null;
+      let canReportDate = null;
+      const today = new Date(new Date('02/23/2023').toISOString().split('T')[0]);
 
       switch (maintenance.MaintenancesStatus.name) {
         case 'pending':
-          kanban[0].maintenances.push({
-            id: maintenance.id,
-            element: maintenance.Maintenance.element,
-            activity: maintenance.Maintenance.activity,
-            status: maintenance.MaintenancesStatus.name,
-            ...maintenanceDate,
+          period =
+            maintenance.Maintenance.period * maintenance.Maintenance.PeriodTimeInterval.unitTime;
+
+          canReportDate = removeTimeDate({
+            date: maintenance.notificationDate,
+            days: period,
           });
+
+          if (today >= canReportDate) {
+            auxiliaryData =
+              (maintenance.notificationDate.getTime() - new Date().getTime()) /
+              (1000 * 60 * 60 * 24);
+
+            kanban[0].maintenances.push({
+              id: maintenance.id,
+              element: maintenance.Maintenance.element,
+              activity: maintenance.Maintenance.activity,
+              status: maintenance.MaintenancesStatus.name,
+              date: maintenance.notificationDate,
+              label: `Vence em ${auxiliaryData.toFixed()} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
+            });
+          }
+
           break;
 
         case 'expired':
+          auxiliaryData =
+            (maintenance.dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24);
+
           kanban[1].maintenances.push({
             id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
-            ...maintenanceDate,
+            date: maintenance.notificationDate,
+            label: `Atrasado à ${Math.abs(auxiliaryData).toFixed()} ${
+              Math.abs(auxiliaryData) > 1 ? 'dias' : 'dia'
+            }`,
           });
           break;
+
         case 'completed':
           kanban[2].maintenances.push({
             id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
-            ...maintenanceDate,
+            date: maintenance.resolutionDate,
+            label: '',
           });
           break;
+
         case 'overdue':
+          auxiliaryData =
+            (maintenance.resolutionDate.getTime() - maintenance.dueDate.getTime()) /
+            (1000 * 60 * 60 * 24);
+
           kanban[2].maintenances.push({
             id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
-            ...maintenanceDate,
+            date: maintenance.resolutionDate,
+            label: `Feita com atraso de ${auxiliaryData.toFixed()} ${
+              auxiliaryData > 1 ? 'dias' : 'dia'
+            }`,
           });
           break;
 
