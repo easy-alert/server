@@ -114,8 +114,8 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       buildingNotificationConfigurationId: responsibleSyndicId,
     });
   }
-
-  const today = new Date(new Date().toISOString().split('T')[0]);
+  const today = new Date(new Date().setHours(0, 0));
+  // const today = new Date(new Date().toISOString().split('T')[0]);
 
   const period =
     maintenanceHistory.Maintenance.period *
