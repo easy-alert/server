@@ -123,9 +123,9 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       timeIntervalId: maintenances[i].delayTimeIntervalId,
     });
 
-    // const timeIntervalPeriod = await timeIntervalServices.findById({
-    //   timeIntervalId: maintenances[i].periodTimeIntervalId,
-    // });
+    const timeIntervalPeriod = await timeIntervalServices.findById({
+      timeIntervalId: maintenances[i].periodTimeIntervalId,
+    });
 
     const timeIntervalFrequency = await timeIntervalServices.findById({
       timeIntervalId: maintenances[i].frequencyTimeIntervalId,
@@ -144,9 +144,9 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
     const dueDate = noWeekendTimeDate({
       date: addDays({
         date: notificationDate,
-        days: maintenances[i].frequency * timeIntervalFrequency.unitTime,
+        days: maintenances[i].period * timeIntervalPeriod.unitTime,
       }),
-      interval: maintenances[i].frequency * timeIntervalFrequency.unitTime,
+      interval: maintenances[i].period * timeIntervalFrequency.unitTime,
     });
 
     DataForCreateHistory.push({
