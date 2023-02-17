@@ -87,11 +87,6 @@
             }
           }
         ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
 
         "responses": {
           "200": {
@@ -151,11 +146,6 @@
             }
           }
         ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
 
         "responses": {
           "200": {
@@ -194,11 +184,6 @@
             }
           }
         ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
 
         "responses": {
           "200": {
@@ -217,6 +202,66 @@
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+    "/maintenances/create/report": {
+      "post": {
+        "tags": ["Maintenance"],
+        "summary": "reporta uma manutenção.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "maintenanceHistoryId": {
+                    "type": "string"
+                  },
+                  "cost": {
+                    "type": "number"
+                  },
+                  "observation": {
+                    "type": "string"
+                  },
+
+                  "responsibleSyndicId": {
+                    "type": "string"
+                  },
+
+                  "ReportAnnexes": {
+                    "type": "array",
+                    "items": {
+                      "properties": {
+                        "name": { "type": "string" },
+                        "originalName": { "type": "string" },
+                        "url": { "type": "string" }
+                      }
+                    }
+                  },
+                  "ReportImages": {
+                    "type": "array",
+                    "items": {
+                      "properties": {
+                        "name": { "type": "string" },
+                        "originalName": { "type": "string" },
+                        "url": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
           },
           "400": {
             "$ref": "#/components/responses/ServerMessage"

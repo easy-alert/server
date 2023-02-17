@@ -184,12 +184,14 @@ model MaintenanceReport {
   maintenanceHistoryId String
   observation          String?
   cost                 Float?
+  responsibleSyndicId  String?
 
-  createdAt          DateTime                   @default(now())
-  updatedAt          DateTime                   @updatedAt
-  MaintenanceHistory MaintenanceHistory         @relation(fields: [maintenanceHistoryId], references: [id], onDelete: Cascade)
+  createdAt          DateTime                           @default(now())
+  updatedAt          DateTime                           @updatedAt
+  MaintenanceHistory MaintenanceHistory                 @relation(fields: [maintenanceHistoryId], references: [id], onDelete: Cascade)
   ReportAnnexes      MaintenanceReportAnnexes[]
   ReportImages       MaintenanceReportImages[]
+  ResponsibleSyndic  BuildingNotificationConfiguration? @relation(fields: [responsibleSyndicId], references: [id], onDelete: Cascade)
 
   @@map("maintenancesReports")
 }
@@ -313,9 +315,10 @@ model BuildingNotificationConfiguration {
   isMain                   Boolean  @default(false)
   lastNotificationDate     DateTime @default(now())
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Building  Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  Building          Building            @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  MaintenanceReport MaintenanceReport[]
 
   @@map("buildingsNotificationsConfigurations")
 }

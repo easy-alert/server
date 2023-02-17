@@ -6,6 +6,7 @@ import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { Validator } from '../../../../utils/validator/validator';
 import { SharedMaintenanceServices } from '../../maintenance/services/sharedMaintenanceServices';
 import { SharedMaintenanceStatusServices } from '../../maintenanceStatus/services/sharedMaintenanceStatusServices';
+import { SharedBuildingNotificationConfigurationServices } from '../../notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { SharedMaintenanceReportsServices } from '../services/SharedMaintenanceReportsServices';
 import { ICreateMaintenanceReportsBody } from './types';
 
@@ -15,6 +16,8 @@ const validator = new Validator();
 const sharedMaintenanceReportsServices = new SharedMaintenanceReportsServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 const sharedMaintenanceStatusServices = new SharedMaintenanceStatusServices();
+const sharedBuildingNotificationConfigurationServices =
+  new SharedBuildingNotificationConfigurationServices();
 
 // #endregion
 
@@ -22,6 +25,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   const {
     cost,
     maintenanceHistoryId,
+    responsibleSyndicId,
     observation,
     ReportAnnexes,
     ReportImages,
@@ -44,6 +48,12 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       label: 'observação da manutenção',
       type: 'string',
       variable: observation,
+      isOptional: true,
+    },
+    {
+      label: 'Id do síndico responsável',
+      type: 'string',
+      variable: responsibleSyndicId,
       isOptional: true,
     },
   ]);
@@ -99,6 +109,12 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     });
   }
 
+  if (responsibleSyndicId) {
+    await sharedBuildingNotificationConfigurationServices.findById({
+      buildingNotificationConfigurationId: responsibleSyndicId,
+    });
+  }
+
   const today = new Date(new Date().toISOString().split('T')[0]);
 
   const period =
@@ -120,6 +136,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     maintenanceHistoryId,
     cost,
     observation,
+    responsibleSyndicId,
     ReportImages: {
       createMany: {
         data: ReportImages,

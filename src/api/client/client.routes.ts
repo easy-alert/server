@@ -3,7 +3,10 @@ import { Router } from 'express';
 import swaggerUi from 'swagger-ui-express';
 
 import swaggerFile from '../../docs/clientDocs.json';
-import { sharedMaintenanceHistoryDetails } from '../shared/maintenancesReports/controllers';
+import {
+  sharedCreateMaintenanceReport,
+  sharedMaintenanceHistoryDetails,
+} from '../shared/maintenancesReports/controllers';
 
 import { uploadRouter } from '../shared/upload/upload.routes';
 import { clientBuildingDetails } from './building/controllers/clientBuildingDetails';
@@ -28,3 +31,4 @@ clientRouter.get(
 );
 
 clientRouter.get('/building/informations/:buildingId', findClientInformations);
+clientRouter.post('/maintenances/create/report', sharedCreateMaintenanceReport);
