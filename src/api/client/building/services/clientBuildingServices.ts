@@ -221,13 +221,20 @@ export class ClientBuildingServices {
             auxiliaryData =
               (maintenance.dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
 
+            let label = '';
+            if (auxiliaryData < 1) {
+              label = 'Vence hoje';
+            } else {
+              label = `Vence em ${auxiliaryData.toFixed()} ${auxiliaryData > 1 ? 'dias' : 'dia'}`;
+            }
+
             kanban[0].maintenances.push({
               id: maintenance.id,
               element: maintenance.Maintenance.element,
               activity: maintenance.Maintenance.activity,
               status: maintenance.MaintenancesStatus.name,
               date: maintenance.notificationDate,
-              label: `Vence em ${auxiliaryData.toFixed()} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
+              label,
             });
           }
 
@@ -243,7 +250,7 @@ export class ClientBuildingServices {
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
             date: maintenance.notificationDate,
-            label: `Atrasado à ${Math.abs(auxiliaryData).toFixed()} ${
+            label: `Atrasada há ${Math.abs(auxiliaryData).toFixed()} ${
               Math.abs(auxiliaryData) > 1 ? 'dias' : 'dia'
             }`,
           });
