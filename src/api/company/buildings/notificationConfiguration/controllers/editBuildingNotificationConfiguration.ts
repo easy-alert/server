@@ -54,7 +54,7 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
       isOptional: true,
     },
     {
-      label: 'Número de telefone Principal',
+      label: 'Contato Principal',
       type: 'boolean',
       variable: data.isMain,
       isOptional: true,
@@ -107,12 +107,16 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
       buildingNotificationConfigurationId,
     });
 
-  validator.cannotExists([
-    {
-      label: 'Usuário principal para receber notificação',
-      variable: userMainForNotification,
-    },
-  ]);
+  console.log(buildingNotificationConfigurationId);
+  console.log(userMainForNotification);
+
+  if (userMainForNotification && data.isMain) {
+    throw new ServerMessage({
+      message:
+        'A informação: Usuário principal para receber notificação já existe na base de dados.',
+      statusCode: 400,
+    });
+  }
 
   // #region AWAIT 5 MINUTES FOR SEND OTHER NOTIFICATION
   if (

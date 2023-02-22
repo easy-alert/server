@@ -45,6 +45,7 @@ export async function buildingChangeBanner(req: Request, res: Response) {
         label: 'url de redirecionamento do banner',
         type: 'string',
         variable: data[i].redirectUrl,
+        isOptional: true,
       },
     ]);
   }

@@ -49,7 +49,7 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
       isOptional: true,
     },
     {
-      label: 'Número de telefone Principal',
+      label: 'Contato Principal',
       type: 'boolean',
       variable: data.isMain,
       isOptional: true,
