@@ -143,7 +143,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
     const today = new Date();
 
-    if (notificationDate < today) {
+    if (buildingDeliveryDate < today) {
       notificationDate = noWeekendTimeDate({
         date: addDays({
           date: today,
