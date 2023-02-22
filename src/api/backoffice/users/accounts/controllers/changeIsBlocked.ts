@@ -22,7 +22,9 @@ export async function changeIsBlocked(req: Request, res: Response) {
   });
 
   return res.status(200).json({
-    statusCode: 200,
-    message: `Status alterado com sucesso.`,
+    ServerMessage: {
+      statusCode: 200,
+      message: `Status alterado com sucesso.`,
+    },
   });
 }

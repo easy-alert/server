@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { prisma } from '../src/utils/prismaClient';
+import { prisma } from '.';
 import { SeedServices } from './seedServices';
 
 const seedServices = new SeedServices();
@@ -15,6 +15,10 @@ async function main() {
   await seedServices.createAdminCompany();
 
   await seedServices.createTimeIntervals();
+
+  await seedServices.createBuildingsTypes();
+
+  await seedServices.createMaintenancesStatus();
 }
 
 main()

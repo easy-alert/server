@@ -1,0 +1,220 @@
+// #region IMPORTS
+import { Request, Response } from 'express';
+import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+import { TokenServices } from '../../../../../utils/token/tokenServices';
+
+// CLASS
+import { Validator } from '../../../../../utils/validator/validator';
+import { SharedBuildingNotificationConfigurationServices } from '../../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
+
+const validator = new Validator();
+const buildingNotificationConfigurationServices =
+  new SharedBuildingNotificationConfigurationServices();
+const tokenServices = new TokenServices();
+
+// #endregion
+
+export async function editBuildingNotificationConfiguration(req: Request, res: Response) {
+  const { buildingNotificationConfigurationId, buildingId, linkPhone, linkEmail } = req.body;
+
+  let { data } = req.body;
+
+  // #region VALIDATIONS
+  validator.check([
+    {
+      label: 'ID da configuração de notificação',
+      type: 'string',
+      variable: buildingNotificationConfigurationId,
+    },
+    {
+      label: 'ID da Edificação',
+      type: 'string',
+      variable: buildingId,
+    },
+    {
+      label: 'Nome',
+      type: 'string',
+      variable: data.name,
+    },
+    {
+      label: 'E-mail',
+      type: 'string',
+      variable: data.email,
+      isOptional: true,
+    },
+    {
+      label: 'Função',
+      type: 'string',
+      variable: data.role,
+    },
+    {
+      label: 'Número de telefone',
+      type: 'string',
+      variable: data.contactNumber,
+      isOptional: true,
+    },
+    {
+      label: 'Número de telefone Principal',
+      type: 'boolean',
+      variable: data.isMain,
+      isOptional: true,
+    },
+  ]);
+
+  const buildingNotificationConfigurationData =
+    await buildingNotificationConfigurationServices.findById({
+      buildingNotificationConfigurationId,
+    });
+
+  if (data.email) {
+    data = {
+      ...data,
+      email: data.email.toLowerCase(),
+    };
+
+    await buildingNotificationConfigurationServices.findByEmailForEdit({
+      email: data.email,
+      buildingId,
+      buildingNotificationConfigurationId,
+    });
+
+    if (data.email !== buildingNotificationConfigurationData?.email) {
+      data = {
+        ...data,
+        emailIsConfirmed: false,
+      };
+    }
+  }
+
+  if (data.contactNumber) {
+    await buildingNotificationConfigurationServices.findByContactNumberForEdit({
+      contactNumber: data.contactNumber,
+      buildingId,
+      buildingNotificationConfigurationId,
+    });
+
+    if (data.contactNumber !== buildingNotificationConfigurationData?.contactNumber) {
+      data = {
+        ...data,
+        contactNumberIsConfirmed: false,
+      };
+    }
+  }
+
+  const userMainForNotification =
+    await buildingNotificationConfigurationServices.findNotificationConfigurationMainForEdit({
+      buildingId,
+      buildingNotificationConfigurationId,
+    });
+
+  validator.cannotExists([
+    {
+      label: 'Usuário principal para receber notificação',
+      variable: userMainForNotification,
+    },
+  ]);
+
+  // #region AWAIT 5 MINUTES FOR SEND OTHER NOTIFICATION
+  if (
+    buildingNotificationConfigurationData?.contactNumber !== data.contactNumber ||
+    buildingNotificationConfigurationData?.email !== data.email
+  ) {
+    const actualHoursInMs = new Date().getTime();
+    const notificationHoursInMs = new Date(
+      buildingNotificationConfigurationData!.lastNotificationDate,
+    ).getTime();
+
+    const dateDiference = (actualHoursInMs - notificationHoursInMs) / 60000;
+
+    if (dateDiference <= 5) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Aguarde ao menos 5 minutos para reenviar a confirmação.',
+      });
+    }
+    // #endregion
+  }
+
+  if (data.email === null && data.contactNumber === null) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: 'E-mail ou WhatsApp obrigatório.',
+    });
+  }
+
+  // #endregion
+
+  const buildingNotificationConfigurationEditedData =
+    await buildingNotificationConfigurationServices.edit({
+      buildingNotificationConfigurationId,
+      data,
+    });
+
+  // #region SEND MESSAGE
+  if (buildingNotificationConfigurationEditedData.isMain) {
+    if (
+      buildingNotificationConfigurationEditedData.contactNumber &&
+      !buildingNotificationConfigurationEditedData.contactNumberIsConfirmed
+    ) {
+      if (
+        buildingNotificationConfigurationEditedData.contactNumber !==
+          buildingNotificationConfigurationData?.contactNumber ||
+        (!buildingNotificationConfigurationData?.isMain &&
+          buildingNotificationConfigurationEditedData.isMain)
+      ) {
+        const token = tokenServices.generate({
+          tokenData: {
+            id: buildingNotificationConfigurationId,
+            confirmType: 'whatsapp',
+          },
+        });
+
+        await tokenServices.saveInDatabase({ token });
+
+        await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
+          {
+            buildingNotificationConfigurationId,
+            receiverPhoneNumber: buildingNotificationConfigurationEditedData.contactNumber,
+            link: `${linkPhone}?token=${token}`,
+          },
+        );
+      }
+    }
+  }
+
+  // EMAIL
+
+  if (
+    buildingNotificationConfigurationEditedData.email &&
+    !buildingNotificationConfigurationEditedData.emailIsConfirmed
+  ) {
+    if (
+      buildingNotificationConfigurationEditedData.email !==
+      buildingNotificationConfigurationData?.email
+    ) {
+      const token = tokenServices.generate({
+        tokenData: {
+          id: buildingNotificationConfigurationEditedData.id,
+          confirmType: 'email',
+        },
+      });
+
+      await tokenServices.saveInDatabase({ token });
+
+      await buildingNotificationConfigurationServices.sendEmailConfirmForReceiveNotifications({
+        buildingNotificationConfigurationId: buildingNotificationConfigurationEditedData.id,
+        link: `${linkEmail}?token=${token}`,
+        toEmail: buildingNotificationConfigurationEditedData.email,
+      });
+    }
+  }
+
+  // #endregion
+
+  return res.status(200).json({
+    ServerMessage: {
+      statusCode: 200,
+      message: `Usuário para notificação editado com sucesso.`,
+    },
+  });
+}

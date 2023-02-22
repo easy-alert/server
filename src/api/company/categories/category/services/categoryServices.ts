@@ -1,7 +1,7 @@
-import { prisma } from '../../../../../utils/prismaClient';
+import { prisma } from '../../../../../../prisma';
+import { SharedCategoryServices } from '../../../../shared/categories/services/sharedCategoryServices';
 
 // CLASS
-import { SharedCategoryServices } from '../../../../shared/categories/category/services/sharedCategoryServices';
 
 const sharedCategoryServices = new SharedCategoryServices();
 
@@ -14,29 +14,127 @@ export class CategoryServices {
     });
   } // criar logica de nao excluir caso alguem use
 
-  async list({
-    search,
-    ownerCompanyId,
-  }: {
-    search: string;
-    ownerCompanyId: string;
-  }) {
-    return prisma.category.findMany({
+  async list({ search, ownerCompanyId }: { search: string; ownerCompanyId: string }) {
+    const defaultCategories = await prisma.category.findMany({
       select: {
         id: true,
+        ownerCompanyId: true,
         name: true,
-        Maintenances: true,
+
+        Maintenances: {
+          select: {
+            id: true,
+            element: true,
+            activity: true,
+            frequency: true,
+            delay: true,
+            period: true,
+            responsible: true,
+            source: true,
+            observation: true,
+            ownerCompanyId: true,
+
+            FrequencyTimeInterval: {
+              select: {
+                id: true,
+                name: true,
+                pluralLabel: true,
+                singularLabel: true,
+              },
+            },
+            DelayTimeInterval: {
+              select: {
+                id: true,
+                name: true,
+                pluralLabel: true,
+                singularLabel: true,
+              },
+            },
+            PeriodTimeInterval: {
+              select: {
+                id: true,
+                name: true,
+                pluralLabel: true,
+                singularLabel: true,
+              },
+            },
+          },
+        },
       },
       where: {
-        name: {
-          contains: search,
-          mode: 'insensitive',
+        AND: {
+          name: {
+            contains: search,
+            mode: 'insensitive',
+          },
+          ownerCompanyId: null,
         },
-        ownerCompanyId,
       },
       orderBy: {
         name: 'asc',
       },
     });
+
+    const companyCategories = await prisma.category.findMany({
+      select: {
+        id: true,
+        ownerCompanyId: true,
+        name: true,
+
+        Maintenances: {
+          select: {
+            id: true,
+            element: true,
+            activity: true,
+            frequency: true,
+            delay: true,
+            period: true,
+            responsible: true,
+            source: true,
+            observation: true,
+            ownerCompanyId: true,
+
+            FrequencyTimeInterval: {
+              select: {
+                id: true,
+                name: true,
+                pluralLabel: true,
+                singularLabel: true,
+              },
+            },
+            DelayTimeInterval: {
+              select: {
+                id: true,
+                name: true,
+                pluralLabel: true,
+                singularLabel: true,
+              },
+            },
+            PeriodTimeInterval: {
+              select: {
+                id: true,
+                name: true,
+                pluralLabel: true,
+                singularLabel: true,
+              },
+            },
+          },
+        },
+      },
+      where: {
+        AND: {
+          name: {
+            contains: search,
+            mode: 'insensitive',
+          },
+          ownerCompanyId,
+        },
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+
+    return [...defaultCategories, ...companyCategories];
   }
 }

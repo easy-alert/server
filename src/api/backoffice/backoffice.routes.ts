@@ -1,7 +1,7 @@
 // LIBS
 import { Router } from 'express';
 import swaggerUi from 'swagger-ui-express';
-import swaggerFile from './docs/swagger.json';
+import swaggerFile from '../../docs/backofficeDocs.json';
 
 // MIDDLEWARES
 import { authMiddleware } from '../../middlewares/auth';
@@ -26,18 +26,8 @@ backofficeRouter.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
 
 backofficeRouter.use('/auth', authRouter);
 
-backofficeRouter.use(
-  '/categories',
-  authMiddleware,
-  isBackoffice,
-  categoryRouter,
-);
-backofficeRouter.use(
-  '/maintenances',
-  authMiddleware,
-  isBackoffice,
-  maintenanceRouter,
-);
+backofficeRouter.use('/categories', authMiddleware, isBackoffice, categoryRouter);
+backofficeRouter.use('/maintenances', authMiddleware, isBackoffice, maintenanceRouter);
 backofficeRouter.use('/companies', authMiddleware, isBackoffice, companyRouter);
 
-companyRouter.get('/timeinterval/list', listTimeIntervals);
+backofficeRouter.get('/timeinterval/list', listTimeIntervals);

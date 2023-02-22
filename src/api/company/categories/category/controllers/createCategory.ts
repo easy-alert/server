@@ -1,24 +1,10 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { Request, Response } from 'express';
-
-// CLASS
-
-import { Validator } from '../../../../../utils/validator/validator';
-import { SharedCategoryServices } from '../../../../shared/categories/category/services/sharedCategoryServices';
-
-const validator = new Validator();
-const sharedCategoryServices = new SharedCategoryServices();
+import { sharedCreateCategory } from '../../../../shared/categories/controllers/sharedCreateCategory';
 
 export async function createCategory(req: Request, res: Response) {
-  const { name } = req.body;
-
-  validator.notNull([{ label: 'nome da categoria', variable: name }]);
-
-  const category = await sharedCategoryServices.create({
-    name,
+  const category = await sharedCreateCategory({
     ownerCompanyId: req.Company.id,
+    body: req.body,
   });
 
   return res.status(200).json({

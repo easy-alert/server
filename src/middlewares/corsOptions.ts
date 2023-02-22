@@ -2,8 +2,12 @@ import cors from 'cors';
 
 // CHANGE HERE
 const allowedOrigins = [
-  'http://backoffice-easyalert-sandbox.s3-website-us-west-2.amazonaws.com',
-  'http://backoffice-easyalert-production.s3-website-us-west-2.amazonaws.com',
+  'https://backoffice.easyalert.com.br',
+  'https://company.easyalert.com.br',
+  'https://public.easyalert.com.br',
+  'https://sandbox.backoffice.easyalert.com.br',
+  'https://sandbox.company.easyalert.com.br',
+  'https://sandbox.public.easyalert.com.br',
   'http://localhost:3000',
   'http://localhost:3001',
   'http://localhost:3002',

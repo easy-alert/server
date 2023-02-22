@@ -3,7 +3,7 @@ import { Response, Request } from 'express';
 
 // CLASS
 import { AuthServices } from '../../../shared/auth/services/authServices';
-import { HandlerToken } from '../../../../utils/token/handlerToken';
+import { TokenServices } from '../../../../utils/token/tokenServices';
 import { Validator } from '../../../../utils/validator/validator';
 import { UserServices } from '../../../shared/users/user/services/userServices';
 
@@ -11,7 +11,7 @@ import { PermissionServices } from '../../../shared/permission/services/permissi
 
 const permissionServices = new PermissionServices();
 const authServices = new AuthServices();
-const handlerToken = new HandlerToken();
+const tokenServices = new TokenServices();
 const userServices = new UserServices();
 
 const validator = new Validator();
@@ -35,7 +35,7 @@ export const authBackoffice = async (req: Request, res: Response) => {
 
   await userServices.updateLastAccess({ userId: user.id! });
 
-  const token = handlerToken.generateToken({
+  const token = tokenServices.generate({
     tokenData: {
       userId: user.id!,
       Permissions: user.Permissions,
@@ -48,7 +48,7 @@ export const authBackoffice = async (req: Request, res: Response) => {
       image: user.image,
       name: user.name,
       email: user.email,
-      lastAcess: user.lastAccess,
+      lastAccess: user.lastAccess,
       createdAt: user.createdAt,
       Permissions: user.Permissions,
     },

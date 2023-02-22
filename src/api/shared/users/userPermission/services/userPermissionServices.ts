@@ -1,4 +1,4 @@
-import { prisma } from '../../../../../utils/prismaClient';
+import { prisma } from '../../../../../../prisma';
 import { ICreateUserPermission } from '../types';
 
 export class UserPermissionServices {

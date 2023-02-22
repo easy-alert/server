@@ -1,0 +1,1785 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Easy Alert - Company",
+    "description": "Api do modulo de empresas.",
+    "version": "1.0.0",
+    "contact": {
+      "email": "produto@adalovelace.com.br",
+      "name": "Ada Lovelace"
+    }
+  },
+  "servers": [
+    {
+      "description": "Local Development",
+      "url": "http://localhost:8080/api/company/"
+    },
+    {
+      "description": "//CHANGE HERE",
+      "url": "//CHANGE HERE"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "ServerMessage": {
+        "description": "Mensagem de erro padrão do backend.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ServerMessage": {
+                  "properties": {
+                    "statusCode": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login do usuário na empresa.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "default": "company@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "default": 123123123
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "description": "Retorna as informações do usuário e um token válido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "image": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/account/edit": {
+      "put": {
+        "tags": ["Account"],
+        "summary": "Edita as informações do usuário e empresa.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "default": "Carlos Pasquali"
+                  },
+                  "email": {
+                    "type": "string",
+                    "default": "carlosdpasqualip@hotmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "default": 123123123
+                  },
+                  "image": {
+                    "type": "string",
+                    "default": "larguei.s3.us-west-2.amazonaws.com/favicon%201-1661888030888.png"
+                  },
+                  "companyName": {
+                    "type": "string",
+                    "default": "Ada lovelace"
+                  },
+                  "CNPJ": {
+                    "type": "string",
+                    "default": "28060992000161"
+                  },
+                  "CPF": {
+                    "type": "string",
+                    "default": "12365172024"
+                  },
+                  "contactNumber": {
+                    "type": "string",
+                    "default": "48996345409"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/categories/create": {
+      "post": {
+        "tags": ["Categories"],
+        "summary": "Cria uma nova categoria.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "default": "Sistema hidrossanitário"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/categories/list": {
+      "get": {
+        "tags": ["Categories"],
+        "summary": "Lista todas as categorias.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Retorna as categorias encontradas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "Maintenance": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "MaintenanceHistory": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "activity": {
+                                  "type": "string"
+                                },
+                                "frequency": {
+                                  "type": "number"
+                                },
+                                "responsible": {
+                                  "type": "string"
+                                },
+                                "source": {
+                                  "type": "string"
+                                },
+                                "period": {
+                                  "type": "number"
+                                },
+                                "delay": {
+                                  "type": "number"
+                                },
+                                "observation": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/categories/edit": {
+      "put": {
+        "tags": ["Categories"],
+        "summary": "Edita uma categoria.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "categoryId": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string",
+                    "default": "Sistema hidrossanitário Atualizado"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/categories/delete": {
+      "delete": {
+        "tags": ["Categories"],
+        "summary": "Exclui uma categoria. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "categoryId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/maintenances/create": {
+      "post": {
+        "tags": ["Maintenance"],
+        "summary": "Cria uma manutenção em uma categoria.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "categoryId": {
+                    "type": "string"
+                  },
+
+                  "element": {
+                    "type": "string",
+                    "default": "Ar condicionado, Paredes"
+                  },
+                  "activity": {
+                    "type": "string",
+                    "default": "Pintar Paredes"
+                  },
+                  "frequency": {
+                    "type": "number",
+                    "default": 3
+                  },
+                  "frequencyTimeIntervalId": {
+                    "type": "string"
+                  },
+                  "responsible": {
+                    "type": "string",
+                    "default": "Construtora"
+                  },
+                  "source": {
+                    "type": "string",
+                    "default": "NBR 5674:2012;"
+                  },
+                  "period": {
+                    "type": "number",
+                    "default": 2
+                  },
+                  "periodTimeIntervalId": {
+                    "type": "string"
+                  },
+                  "delay": {
+                    "type": "number",
+                    "default": 3
+                  },
+                  "delayTimeIntervalId": {
+                    "type": "string"
+                  },
+                  "observation": {
+                    "type": "string",
+                    "default": "A obra deve ser concluída o mais rapido possível."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/maintenances/create/report": {
+      "post": {
+        "tags": ["Maintenance"],
+        "summary": "reporta uma manutenção.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "maintenanceHistoryId": {
+                    "type": "string"
+                  },
+                  "cost": {
+                    "type": "number"
+                  },
+                  "observation": {
+                    "type": "string"
+                  },
+
+                  "ReportAnnexes": {
+                    "type": "array",
+                    "items": {
+                      "properties": {
+                        "name": { "type": "string" },
+                        "originalName": { "type": "string" },
+                        "url": { "type": "string" }
+                      }
+                    }
+                  },
+                  "ReportImages": {
+                    "type": "array",
+                    "items": {
+                      "properties": {
+                        "name": { "type": "string" },
+                        "originalName": { "type": "string" },
+                        "url": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/maintenances/list/details/{maintenanceHistoryId}": {
+      "get": {
+        "tags": ["Maintenance"],
+        "summary": "Busca os detalhes da manutenção.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+
+        "parameters": [
+          {
+            "in": "path",
+            "name": "maintenanceHistoryId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID do histórico da manutenção"
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Retorna os detalhes da manutenção.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {}
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/maintenances/edit": {
+      "put": {
+        "tags": ["Maintenance"],
+        "summary": "Edita uma manutenção. (Cria um novo registro para não afetar registros anteriores).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "maintenanceId": {
+                    "type": "string"
+                  },
+                  "element": {
+                    "type": "string",
+                    "default": "Ar condicionado, Paredes"
+                  },
+                  "activity": {
+                    "type": "string",
+                    "default": "Pintar Paredes"
+                  },
+                  "frequency": {
+                    "type": "number",
+                    "default": 2
+                  },
+                  "frequencyTimeIntervalId": {
+                    "type": "string"
+                  },
+                  "responsible": {
+                    "type": "string",
+                    "default": "Construtora"
+                  },
+                  "source": {
+                    "type": "string",
+                    "default": "NBR 5674:2012;"
+                  },
+                  "period": {
+                    "type": "number",
+                    "default": 2
+                  },
+                  "periodTimeIntervalId": {
+                    "type": "string"
+                  },
+                  "delay": {
+                    "type": "number",
+                    "default": 3
+                  },
+                  "delayTimeIntervalId": {
+                    "type": "string"
+                  },
+                  "observation": {
+                    "type": "string",
+                    "default": "A obra deve ser concluída o mais rapido possível."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/maintenances/delete": {
+      "delete": {
+        "tags": ["Maintenance"],
+        "summary": "Exclui uma manutenção. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "maintenanceId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/create": {
+      "post": {
+        "tags": ["Building"],
+        "summary": "Cria uma edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingTypeId": { "type": "string" },
+                  "name": { "type": "string" },
+                  "cep": { "type": "string" },
+                  "city": { "type": "string" },
+                  "state": { "type": "string" },
+                  "neighborhood": { "type": "string" },
+                  "streetName": { "type": "string" },
+                  "area": { "type": "string" },
+                  "deliveryDate": { "type": "string", "format": "date-time" },
+                  "warrantyExpiration": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "keepNotificationAfterWarrantyEnds": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/list/details/{buildingId}": {
+      "get": {
+        "tags": ["Building"],
+        "summary": "Busca os detalhes da edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+
+        "parameters": [
+          {
+            "in": "path",
+            "name": "buildingId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID da edificação"
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Retorna os detalhes da edificação.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "name": { "type": "string" },
+                      "cep": { "type": "string" },
+                      "city": { "type": "string" },
+                      "state": { "type": "string" },
+                      "neighborhood": { "type": "string" },
+                      "streetName": { "type": "string" },
+                      "area": { "type": "string" },
+                      "deliveryDate": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "warrantyExpiration": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "keepNotificationAfterWarrantyEnds": {
+                        "type": "boolean"
+                      },
+                      "BuidingType": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "name": { "type": "string" }
+                        }
+                      },
+                      "NotificationConfiguration": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "id": { "type": "string" },
+                            "name": { "type": "string" },
+                            "email": { "type": "string" },
+                            "emailIsConfirmed": { "type": "boolean" },
+                            "contactNumber": { "type": "string" },
+                            "contactNumberIsConfirmed": { "type": "boolean" },
+                            "role": { "type": "string" },
+                            "isMain": { "type": "boolean" }
+                          }
+                        }
+                      },
+                      "Annexes": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "name": { "type": "string" },
+                          "url": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/list/details/{buildingId}/maintenances": {
+      "get": {
+        "tags": ["Building"],
+        "summary": "Busca as manutenções da edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "buildingId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID da edificação"
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Retorna as manutenções da edificação.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "Category": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "name": { "type": "string" }
+                        }
+                      },
+                      "Maintenance": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "id": { "type": "string" },
+
+                            "element": { "type": "string" },
+                            "activity": { "type": "string" },
+                            "frequency": { "type": "number" },
+                            "delay": { "type": "number" },
+                            "period": { "type": "number" },
+                            "responsible": { "type": "string" },
+                            "source": { "type": "string" },
+                            "observation": { "type": "string" },
+                            "FrequencyTimeInterval": {
+                              "type": "object",
+                              "properties": {
+                                "id": { "type": "string" },
+                                "name": { "type": "string" },
+                                "pluralLabel": { "type": "string" },
+                                "singularLabel": { "type": "string" }
+                              }
+                            },
+                            "DelayTimeInterval": {
+                              "type": "object",
+                              "properties": {
+                                "id": { "type": "string" },
+                                "name": { "type": "string" },
+                                "pluralLabel": { "type": "string" },
+                                "singularLabel": { "type": "string" }
+                              }
+                            },
+                            "PeriodTimeInterval": {
+                              "type": "object",
+                              "properties": {
+                                "id": { "type": "string" },
+                                "name": { "type": "string" },
+                                "pluralLabel": { "type": "string" },
+                                "singularLabel": { "type": "string" }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/list/detailsforconfirm": {
+      "post": {
+        "tags": ["Building"],
+        "summary": "Busca os detalhes da edificação para confirmação de conta.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retorna os detalhes da edificação.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/list": {
+      "get": {
+        "tags": ["Building"],
+        "summary": "Lista todas as edificações.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Retorna as edificações encontradas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "name": { "type": "string", "default": "Monte Ravello" },
+                      "city": { "type": "string" },
+                      "neighborhood": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/listforselect/{buildingId}": {
+      "get": {
+        "tags": ["Building"],
+        "summary": "Lista todas as edificações para o select.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "buildingId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID da edificação"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Lista todas as edificações para o select.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "name": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/types/list": {
+      "get": {
+        "tags": ["Building"],
+        "summary": "Lista todos os tipos de edificações.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Retorna todos os tipos de edificações encontrados.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "Maintenance": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "id": { "type": "string" },
+                            "name": { "type": "string" }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/edit": {
+      "put": {
+        "tags": ["Building"],
+        "summary": "Edita uma edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingId": { "type": "string" },
+                  "data": {
+                    "properties": {
+                      "buildingTypeId": { "type": "string" },
+                      "name": { "type": "string" },
+                      "cep": { "type": "string" },
+                      "city": { "type": "string" },
+                      "state": { "type": "string" },
+                      "neighborhood": { "type": "string" },
+                      "streetName": { "type": "string" },
+                      "area": { "type": "string" },
+                      "deliveryDate": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "warrantyExpiration": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "keepNotificationAfterWarrantyEnds": { "type": "boolean" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/delete": {
+      "delete": {
+        "tags": ["Building"],
+        "summary": "Exclui uma edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingId": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/maintenances/list": {
+      "post": {
+        "tags": ["Building Maintenances"],
+        "summary": "Lista todas as edificações.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingId": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "description": "Retorna as edificações encontradas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "ownerCompanyId": { "type": "string" },
+                      "name": { "type": "string" },
+                      "Maintenances": {
+                        "type": "array",
+                        "items": {
+                          "properties": {
+                            "id": { "type": "string" },
+                            "isSelected": { "type": "string" },
+                            "element": { "type": "string" },
+                            "activity": { "type": "string" },
+                            "frequency": { "type": "number" },
+                            "delay": { "type": "number" },
+                            "period": { "type": "number" },
+                            "responsible": { "type": "string" },
+                            "source": { "type": "string" },
+                            "observation": { "type": "string" },
+                            "ownerCompanyId": { "type": "string" },
+                            "FrequencyTimeInterval": {
+                              "type": "object",
+                              "properties": {
+                                "id": { "type": "string" },
+                                "name": { "type": "string" },
+                                "pluralLabel": { "type": "string" },
+                                "singularLabel": { "type": "string" }
+                              }
+                            },
+                            "DelayTimeInterval": {
+                              "type": "object",
+                              "properties": {
+                                "id": { "type": "string" },
+                                "name": { "type": "string" },
+                                "pluralLabel": { "type": "string" },
+                                "singularLabel": { "type": "string" }
+                              }
+                            },
+                            "PeriodTimeInterval": {
+                              "type": "object",
+                              "properties": {
+                                "id": { "type": "string" },
+                                "name": { "type": "string" },
+                                "pluralLabel": { "type": "string" },
+                                "singularLabel": { "type": "string" }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/maintenances/edit": {
+      "put": {
+        "tags": ["Building Maintenances"],
+        "summary": "Edita categorias e manutenções em uma edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingId": {
+                    "type": "string"
+                  },
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "properties": {
+                        "categoryId": {
+                          "type": "string"
+                        },
+                        "Maintenances": {
+                          "type": "array",
+                          "items": {
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/notifications/create": {
+      "post": {
+        "tags": ["Building Notification"],
+        "summary": "Cria um novo usuário para receber notificações sobre a edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "linkPhone": { "type": "string" },
+                  "linkEmail": { "type": "string" },
+
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "buildingId": { "type": "string" },
+                      "name": { "type": "string" },
+                      "email": { "type": "string" },
+                      "role": { "type": "string" },
+                      "contactNumber": { "type": "string" },
+                      "isMain": { "type": "boolean" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/notifications/edit": {
+      "put": {
+        "tags": ["Building Notification"],
+        "summary": "Edita o usuário que recebe notificações sobre a edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingNotificationConfigurationId": { "type": "string" },
+                  "buildingId": { "type": "string" },
+                  "linkPhone": { "type": "string" },
+                  "linkEmail": { "type": "string" },
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "name": { "type": "string" },
+                      "email": { "type": "string" },
+                      "role": { "type": "string" },
+                      "contactNumber": { "type": "string" },
+                      "isMain": { "type": "boolean" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/notifications/delete": {
+      "delete": {
+        "tags": ["Building Notification"],
+        "summary": "Exclui uma configuração de notificação da edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingNotificationConfigurationId": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/notifications/sendconfirm/phone": {
+      "post": {
+        "tags": ["Building Notification Send"],
+        "summary": "Envia uma notificação para confirmar o número de contato.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingNotificationConfigurationId": { "type": "string" },
+                  "link": { "type": "string", "default": "www.easyalert.com" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/notifications/sendconfirm/email": {
+      "post": {
+        "tags": ["Building Notification Send"],
+        "summary": "Envia uma notificação para confirmar o email de contato.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingNotificationConfigurationId": { "type": "string" },
+                  "link": { "type": "string", "default": "www.easyalert.com" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/notifications/contactconfirm": {
+      "post": {
+        "tags": ["Building Notification Send"],
+        "summary": "Confirma os dados de contato (E-mail e WhatsApp).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/annexes/create": {
+      "post": {
+        "tags": ["Building Annexes"],
+        "summary": "Cria um anexo atrelado a uma edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingId": { "type": "string" },
+                  "name": { "type": "string" },
+                  "originalName": { "type": "string" },
+                  "url": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retorna o anexo criado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "buildingId": { "type": "string" },
+                    "name": { "type": "string" },
+                    "url": { "type": "string" },
+
+                    "ServerMessage": {
+                      "message": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/banners/change": {
+      "post": {
+        "tags": ["Building Banners"],
+        "summary": "Atualiza os banners de uma edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "properties": {
+                        "buildingId": {
+                          "type": "string"
+                        },
+                        "bannerName": {
+                          "type": "string"
+                        },
+                        "originalName": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "redirectUrl": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retorna o anexo criado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "buildingId": { "type": "string" },
+                    "name": { "type": "string" },
+                    "url": { "type": "string" },
+
+                    "ServerMessage": {
+                      "message": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/annexes/delete": {
+      "delete": {
+        "tags": ["Building Annexes"],
+        "summary": "Deleta um anexo atrelado a uma edificação.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "annexeId": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/calendars/list/{year}": {
+      "get": {
+        "tags": ["Calendar"],
+        "summary": "Lista todas as manutencoes.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "year",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Ano para buscar manutenções"
+          },
+          {
+            "name": "buildingId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Lista todas as manutencoes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "name": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    }
+  }
+}

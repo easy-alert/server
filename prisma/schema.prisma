@@ -10,6 +10,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//VALIDATIONS TOKENS
+
+model ValidationToken {
+  id      String  @id @unique @default(uuid())
+  token   String  @unique
+  hasUsed Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("validationsTokens")
+}
+
 //USER
 model User {
   id           String    @id @unique @default(uuid())
@@ -83,8 +96,10 @@ model Company {
 
   UserCompanies UserCompanies[]
 
-  Categories   Category[]
-  Maintenances Maintenance[]
+  Categories          Category[]
+  Maintenances        Maintenance[]
+  Buildings           Building[]
+  MaintenancesHistory MaintenanceHistory[]
 
   @@map("companies")
 }
@@ -99,8 +114,9 @@ model Category {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  OwnerCompany Company?      @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
+  OwnerCompany Company?           @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
   Maintenances Maintenance[]
+  Buildings    BuildingCategory[]
 
   @@map("categories")
 }
@@ -126,14 +142,88 @@ model Maintenance {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Category     Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  OwnerCompany Company? @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
+  Category              Category              @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  OwnerCompany          Company?              @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
+  BuildingsMaintenances BuildingMaintenance[]
 
   FrequencyTimeInterval TimeInterval @relation(name: "MaintenanceFrequency", fields: [frequencyTimeIntervalId], references: [id])
   PeriodTimeInterval    TimeInterval @relation(name: "MaintenancePeriod", fields: [periodTimeIntervalId], references: [id])
   DelayTimeInterval     TimeInterval @relation(name: "MaintenanceDelay", fields: [delayTimeIntervalId], references: [id])
 
+  MaintenancesHistory MaintenanceHistory[]
+
   @@map("maintenances")
+}
+
+model MaintenanceHistory {
+  id                  String @id @unique @default(uuid())
+  buildingId          String
+  maintenanceId       String
+  ownerCompanyId      String
+  maintenanceStatusId String
+
+  notificationDate DateTime
+  dueDate          DateTime
+  resolutionDate   DateTime?
+  wasNotified      Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Building           Building            @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  Maintenance        Maintenance         @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+  Company            Company             @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
+  MaintenancesStatus MaintenancesStatus  @relation(fields: [maintenanceStatusId], references: [id], onDelete: Cascade)
+  MaintenanceReport  MaintenanceReport[]
+
+  @@map("maintenancesHistory")
+}
+
+model MaintenanceReport {
+  id                   String  @id @unique @default(uuid())
+  maintenanceHistoryId String
+  observation          String?
+  cost                 Float?
+  responsibleSyndicId  String?
+
+  createdAt          DateTime                           @default(now())
+  updatedAt          DateTime                           @updatedAt
+  MaintenanceHistory MaintenanceHistory                 @relation(fields: [maintenanceHistoryId], references: [id], onDelete: Cascade)
+  ReportAnnexes      MaintenanceReportAnnexes[]
+  ReportImages       MaintenanceReportImages[]
+  ResponsibleSyndic  BuildingNotificationConfiguration? @relation(fields: [responsibleSyndicId], references: [id], onDelete: Cascade)
+
+  @@map("maintenancesReports")
+}
+
+model MaintenanceReportAnnexes {
+  id                  String @id @unique @default(uuid())
+  maintenanceReportId String
+
+  name         String
+  originalName String
+  url          String
+
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  MaintenanceReport MaintenanceReport @relation(fields: [maintenanceReportId], references: [id], onDelete: Cascade)
+
+  @@map("maintenancesReportsAnnexes")
+}
+
+model MaintenanceReportImages {
+  id                  String @id @unique @default(uuid())
+  maintenanceReportId String
+
+  name         String
+  originalName String
+  url          String
+
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  MaintenanceReport MaintenanceReport @relation(fields: [maintenanceReportId], references: [id], onDelete: Cascade)
+
+  @@map("maintenancesReportsImages")
 }
 
 model TimeInterval {
@@ -151,4 +241,147 @@ model TimeInterval {
   MaintenanceDelay     Maintenance[] @relation("MaintenanceDelay")
 
   @@map("timeIntervals")
+}
+
+model MaintenancesStatus {
+  id            String @id @unique @default(uuid())
+  name          String @unique
+  singularLabel String @unique
+  pluralLabel   String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  MaintenancesHistory MaintenanceHistory[]
+
+  @@map("maintenancesStatus")
+}
+
+//BUILDINGS
+
+model BuildingType {
+  id   String @id @unique @default(uuid())
+  name String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Buildings Building[]
+
+  @@map("buildingsTypes")
+}
+
+model Building {
+  id             String @id @unique @default(uuid())
+  buildingTypeId String
+  companyId      String
+
+  name                              String
+  cep                               String?
+  city                              String?
+  state                             String?
+  neighborhood                      String?
+  streetName                        String?
+  area                              String?
+  deliveryDate                      DateTime
+  warrantyExpiration                DateTime
+  keepNotificationAfterWarrantyEnds Boolean
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  BuildingType                BuildingType                        @relation(fields: [buildingTypeId], references: [id], onDelete: Cascade)
+  Company                     Company                             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  NotificationsConfigurations BuildingNotificationConfiguration[]
+  Categories                  BuildingCategory[]
+  Annexes                     BuildingAnnexe[]
+  Banners                     BuildingBanners[]
+
+  MaintenancesHistory MaintenanceHistory[]
+
+  @@map("buildings")
+}
+
+model BuildingNotificationConfiguration {
+  id         String @id @unique @default(uuid())
+  buildingId String
+
+  name                     String
+  email                    String?
+  emailIsConfirmed         Boolean  @default(false)
+  role                     String
+  contactNumber            String?
+  contactNumberIsConfirmed Boolean  @default(false)
+  isMain                   Boolean  @default(false)
+  lastNotificationDate     DateTime @default(now())
+
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  Building          Building            @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  MaintenanceReport MaintenanceReport[]
+
+  @@map("buildingsNotificationsConfigurations")
+}
+
+model BuildingCategory {
+  id         String @id @unique @default(uuid())
+  buildingId String
+  categoryId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Building     Building              @relation(fields: [buildingId], references: [id])
+  Category     Category              @relation(fields: [categoryId], references: [id])
+  Maintenances BuildingMaintenance[]
+
+  @@map("buildingsCategories")
+}
+
+model BuildingMaintenance {
+  id                 String @id @unique @default(uuid())
+  buildingCategoryId String
+  maintenanceId      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  BuildingCategory BuildingCategory @relation(fields: [buildingCategoryId], references: [id], onDelete: Cascade)
+  Maintenance      Maintenance      @relation(fields: [maintenanceId], references: [id])
+
+  @@map("buildingsMaintenances")
+}
+
+model BuildingAnnexe {
+  id         String @id @unique @default(uuid())
+  buildingId String
+
+  name         String
+  originalName String
+  url          String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Building Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+
+  @@map("buildingsAnnexes")
+}
+
+model BuildingBanners {
+  id         String @id @unique @default(uuid())
+  buildingId String
+
+  bannerName   String
+  originalName String
+  url          String
+  type         String
+  redirectUrl  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Building Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+
+  @@map("buildingsBanners")
 }

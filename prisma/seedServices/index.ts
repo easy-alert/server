@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 import { Prisma } from '@prisma/client';
 import { hashSync } from 'bcrypt';
-import { prisma } from '../../src/utils/prismaClient';
 
 // CLASS
 import { PermissionServices } from '../../src/api/shared/permission/services/permissionServices';
 import { CompanyServices } from '../../src/api/backoffice/users/accounts/services/companyServices';
+import { prisma } from '..';
 
 const permissionServices = new PermissionServices();
 const companyServices = new CompanyServices();
@@ -81,7 +81,7 @@ export class SeedServices {
       name: 'Company',
       contactNumber: '0000000000',
       CNPJ: '00000000000000',
-      CPF: '00000000000',
+      CPF: null,
       image:
         'https://media-exp1.licdn.com/dms/image/C4E0BAQF64xW4lNwbcg/company-logo_200_200/0/1635276982966?e=2147483647&v=beta&t=HKGD4nOWB9-zMFmm9U5MMvyxdXhQYnypageYeBPnIBE',
     });
@@ -148,5 +148,49 @@ export class SeedServices {
       });
       console.log('timeIntervals ', timeInterval.name, ' inserted.');
     }
+  }
+
+  async createBuildingsTypes() {
+    console.log('\n\nstarting Building Types creation ...');
+
+    const buildingsTypes = [
+      { name: 'ampliações' },
+      { name: 'casa' },
+      { name: 'condomínio horizontal' },
+      { name: 'prédio' },
+      { name: 'reformas' },
+      { name: 'outro' },
+    ];
+
+    await prisma.buildingType.createMany({
+      data: buildingsTypes,
+    });
+  }
+
+  async createMaintenancesStatus() {
+    await prisma.maintenancesStatus.createMany({
+      data: [
+        {
+          name: 'expired',
+          singularLabel: 'vencida',
+          pluralLabel: 'vencidas',
+        },
+        {
+          name: 'pending',
+          singularLabel: 'pendente',
+          pluralLabel: 'pendentes',
+        },
+        {
+          name: 'completed',
+          singularLabel: 'concluída',
+          pluralLabel: 'concluídas',
+        },
+        {
+          name: 'overdue',
+          singularLabel: 'feita em atraso',
+          pluralLabel: 'feitas em atraso',
+        },
+      ],
+    });
   }
 }

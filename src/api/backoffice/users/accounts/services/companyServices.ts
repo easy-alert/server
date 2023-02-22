@@ -1,23 +1,18 @@
-import { prisma } from '../../../../../utils/prismaClient';
+import { prisma } from '../../../../../../prisma';
 
 import { UserServices } from '../../../../shared/users/user/services/userServices';
 
 import { ICreateCompany, IListCompany } from './types';
 import { SharedCompanyServices } from '../../../../shared/users/accounts/services/sharedCompanyServices';
+import { Validator } from '../../../../../utils/validator/validator';
 
 const userServices = new UserServices();
 const sharedCompanyServices = new SharedCompanyServices();
-
+const validator = new Validator();
 export class CompanyServices {
   // #region create
 
-  async create({
-    name,
-    CNPJ = null,
-    CPF = null,
-    contactNumber,
-    image,
-  }: ICreateCompany) {
+  async create({ name, CNPJ = null, CPF = null, contactNumber, image }: ICreateCompany) {
     return prisma.company.create({
       data: {
         name,
@@ -123,5 +118,36 @@ export class CompanyServices {
     await sharedCompanyServices.findById({ companyId });
 
     await prisma.company.delete({ where: { id: companyId } });
+  }
+
+  async findById({ companyId }: { companyId: string }) {
+    const Company = await prisma.company.findFirst({
+      include: {
+        UserCompanies: {
+          select: {
+            User: {
+              select: {
+                name: true,
+                email: true,
+                id: true,
+                lastAccess: true,
+              },
+            },
+          },
+        },
+      },
+      where: {
+        id: companyId,
+      },
+    });
+
+    validator.needExist([
+      {
+        label: 'Empresa',
+        variable: Company,
+      },
+    ]);
+
+    return Company!;
   }
 }

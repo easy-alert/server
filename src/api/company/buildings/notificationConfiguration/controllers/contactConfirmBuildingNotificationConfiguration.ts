@@ -1,0 +1,78 @@
+// #region IMPORTS
+import { Request, Response } from 'express';
+import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+import { TokenServices } from '../../../../../utils/token/tokenServices';
+import { ITokenWhatsAppConfirmation } from '../../../../../utils/token/types';
+
+// CLASS
+import { Validator } from '../../../../../utils/validator/validator';
+import { SharedBuildingNotificationConfigurationServices } from '../../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
+
+const validator = new Validator();
+const tokenServices = new TokenServices();
+
+const buildingNotificationConfigurationServices =
+  new SharedBuildingNotificationConfigurationServices();
+
+// #endregion
+
+export async function contactConfirmBuildingNotificationConfiguration(req: Request, res: Response) {
+  const { token } = req.body;
+
+  // #region VALIDATIONS
+  validator.check([
+    {
+      label: 'Token',
+      type: 'string',
+      variable: token,
+    },
+  ]);
+
+  await tokenServices.find({ token });
+
+  const { id: buildingNotificationConfigurationId, confirmType } = tokenServices.decode({
+    token,
+  }) as ITokenWhatsAppConfirmation;
+
+  await buildingNotificationConfigurationServices.findById({
+    buildingNotificationConfigurationId,
+  });
+
+  // #endregion
+
+  switch (confirmType) {
+    case 'whatsapp':
+      await buildingNotificationConfigurationServices.confirmContactNumber({
+        buildingNotificationConfigurationId,
+      });
+
+      await tokenServices.markAsUsed({ token });
+
+      return res.status(200).json({
+        ServerMessage: {
+          statusCode: 200,
+          message: `Whatsapp confirmado com sucesso.`,
+        },
+      });
+
+    case 'email':
+      await buildingNotificationConfigurationServices.confirmContactEmail({
+        buildingNotificationConfigurationId,
+      });
+
+      await tokenServices.markAsUsed({ token });
+
+      return res.status(200).json({
+        ServerMessage: {
+          statusCode: 200,
+          message: `E-mail confirmado com sucesso.`,
+        },
+      });
+
+    default:
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Tipo do Token inválido',
+      });
+  }
+}

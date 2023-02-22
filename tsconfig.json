@@ -10,7 +10,7 @@
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "allowUnreachableCode":false ,
+    "allowUnreachableCode": false,
     "allowUnusedLabels": true,
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
@@ -20,9 +20,7 @@
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
     "strictNullChecks": true,
-    "importsNotUsedAsValues": "remove",
+    "importsNotUsedAsValues": "remove"
   },
-  "include": ["src"],
-  
+  "include": ["src", "prisma/index.ts"]
 }
-

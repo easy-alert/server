@@ -1,31 +1,13 @@
 import { Request, Response } from 'express';
-
-// CLASS
-
-import { CategoryServices } from '../services/categoryServices';
-import { SharedCategoryServices } from '../../../../shared/categories/category/services/sharedCategoryServices';
-import { ServerMessage } from '../../../../../utils/messages/serverMessage';
-
-const sharedCategoryServices = new SharedCategoryServices();
-
-const categoryServices = new CategoryServices();
+import { sharedDeleteCategory } from '../../../../shared/categories/controllers/sharedDeleteCategory';
 
 export async function deleteCategory(req: Request, res: Response) {
-  const { categoryId } = req.body;
-
-  const category = await sharedCategoryServices.findById({ categoryId });
-
-  if (category?.ownerCompanyId !== null) {
-    throw new ServerMessage({
-      statusCode: 400,
-      message: `Você não possui permissão para executar esta ação, pois essa categoria pertence a uma empresa.`,
-    });
-  }
-
-  await categoryServices.delete({ categoryId });
+  await sharedDeleteCategory({ ownerCompanyId: null, body: req.body });
 
   return res.status(200).json({
-    statusCode: 201,
-    message: 'Categoria excluída com sucesso.',
+    ServerMessage: {
+      statusCode: 200,
+      message: 'Categoria excluída com sucesso.',
+    },
   });
 }

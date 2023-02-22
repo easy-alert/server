@@ -1,7 +1,7 @@
 // PRISMA
 import { Prisma } from '@prisma/client';
 import { hashSync } from 'bcrypt';
-import { prisma } from '../../../../../utils/prismaClient';
+import { prisma } from '../../../../../../prisma';
 import { Validator } from '../../../../../utils/validator/validator';
 
 // TYPES
@@ -87,13 +87,7 @@ export class UserServices {
     return user;
   }
 
-  async findByEmailForEdit({
-    email,
-    userId,
-  }: {
-    email: string;
-    userId: string;
-  }) {
+  async findByEmailForEdit({ email, userId }: { email: string; userId: string }) {
     const user = await prisma.user.findFirst({
       select: {
         id: true,
