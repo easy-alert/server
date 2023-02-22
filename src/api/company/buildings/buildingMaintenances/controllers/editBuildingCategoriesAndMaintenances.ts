@@ -131,7 +131,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       timeIntervalId: maintenances[i].frequencyTimeIntervalId,
     });
 
-    const notificationDate = noWeekendTimeDate({
+    let notificationDate = noWeekendTimeDate({
       date: addDays({
         date: buildingDeliveryDate,
         days:
@@ -140,6 +140,20 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       }),
       interval: maintenances[i].delay * timeIntervalDelay.unitTime,
     });
+
+    const today = new Date();
+
+    if (notificationDate < today) {
+      notificationDate = noWeekendTimeDate({
+        date: addDays({
+          date: today,
+          days:
+            maintenances[i].frequency * timeIntervalFrequency.unitTime +
+            maintenances[i].delay * timeIntervalDelay.unitTime,
+        }),
+        interval: maintenances[i].delay * timeIntervalDelay.unitTime,
+      });
+    }
 
     const dueDate = noWeekendTimeDate({
       date: addDays({
