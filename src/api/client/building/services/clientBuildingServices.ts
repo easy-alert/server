@@ -72,6 +72,7 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+
             dateInfos,
           });
           break;
