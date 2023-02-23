@@ -184,7 +184,7 @@ export class ClientBuildingServices {
     return months;
   }
 
-  syndicSeparePerMonth({ data }: { data: any }) {
+  syndicSeparePerStatus({ data }: { data: any }) {
     const kanban: any = [
       {
         status: 'Pendentes',

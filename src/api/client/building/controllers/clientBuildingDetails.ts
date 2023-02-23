@@ -1,5 +1,6 @@
 // # region IMPORTS
 import { Request, Response } from 'express';
+import { DynamicFutureYears } from '../../../../utils/dateTime/dynamicFutureYears';
 import { Validator } from '../../../../utils/validator/validator';
 import { BuildingServices } from '../../../company/buildings/building/services/buildingServices';
 import { SharedCalendarServices } from '../../../shared/calendar/services/SharedCalendarServices';
@@ -44,9 +45,11 @@ export async function clientBuildingDetails(req: Request, res: Response) {
       year: String(year),
     });
 
+  const filterYears = DynamicFutureYears({ showFutureYears: true });
+
   // #region MOUNTING FILTERS
   const Filters = {
-    years: ['2021', '2022', '2023', '2024', '2025'],
+    years: filterYears,
     months: [
       {
         monthNumber: '01',
@@ -115,7 +118,7 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   for (let i = 0; i < MaintenancesPending.length; i++) {
     const intervals = sharedCalendarServices.recurringDates({
       startDate: new Date(MaintenancesPending[i].notificationDate),
-      endDate: new Date(`12/31/${year ?? new Date().getFullYear()}`),
+      endDate: new Date(`12/31/${new Date().getFullYear() + 3}`),
       interval:
         MaintenancesPending[i].Maintenance.frequency *
         MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
@@ -148,6 +151,8 @@ export async function clientBuildingDetails(req: Request, res: Response) {
       a.dateInfos.dayNumber > b.dateInfos.dayNumber ? 1 : -1,
     );
   }
+
+  console.log(months);
 
   return res.status(200).json({
     Filters,
