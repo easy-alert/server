@@ -107,9 +107,6 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
       buildingNotificationConfigurationId,
     });
 
-  console.log(buildingNotificationConfigurationId);
-  console.log(userMainForNotification);
-
   if (userMainForNotification && data.isMain) {
     throw new ServerMessage({
       message:

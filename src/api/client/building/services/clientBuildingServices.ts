@@ -205,7 +205,7 @@ export class ClientBuildingServices {
       let auxiliaryData = null;
       let period = null;
       let canReportDate = null;
-      const today = new Date(new Date().setHours(0, 0));
+      const today = new Date(new Date().toISOString().split('T')[0]);
 
       switch (maintenance.MaintenancesStatus.name) {
         case 'pending':

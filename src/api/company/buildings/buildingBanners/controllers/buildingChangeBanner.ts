@@ -57,7 +57,7 @@ export async function buildingChangeBanner(req: Request, res: Response) {
   return res.status(200).json({
     ServerMessage: {
       statusCode: 201,
-      message: 'Lista de banners atualiza com sucesso.',
+      message: 'Lista de banners atualizada com sucesso.',
     },
   });
 }

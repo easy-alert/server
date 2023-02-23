@@ -1,5 +1,6 @@
 // TYPES
 import { prisma } from '../../../../../prisma';
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { Validator } from '../../../../utils/validator/validator';
 import { ICreateCategory } from './types';
 
@@ -15,6 +16,21 @@ export class SharedCategoryServices {
         ownerCompanyId,
       },
     });
+  }
+
+  async checkCategoryIsUsed({ categoryId }: { categoryId: string }) {
+    const category = await prisma.buildingCategory.findFirst({
+      where: {
+        categoryId,
+      },
+    });
+
+    if (category) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Você não pode excluir uma categoria em uso.',
+      });
+    }
   }
 
   async edit({ name, categoryId }: { name: string; categoryId: string }) {
