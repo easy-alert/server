@@ -152,8 +152,6 @@ export async function clientBuildingDetails(req: Request, res: Response) {
     );
   }
 
-  console.log(months);
-
   return res.status(200).json({
     Filters,
     building: {
