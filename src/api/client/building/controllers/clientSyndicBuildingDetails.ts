@@ -134,10 +134,6 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   }
   //
 
-  for (const iterator of kanban) {
-    console.log(iterator);
-  }
-
   // #endregion
 
   return res.status(200).json({
