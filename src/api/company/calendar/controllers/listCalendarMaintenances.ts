@@ -30,7 +30,7 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
   Maintenances.forEach((maintenance) => {
     Dates.push({
       ...maintenance,
-      notificationDate: maintenance.resolutionDate,
+      notificationDate: maintenance.resolutionDate ?? maintenance.notificationDate,
     });
   });
   // #endregion
