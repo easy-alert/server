@@ -1,5 +1,6 @@
 // # region IMPORTS
 import { Request, Response } from 'express';
+import { DynamicFutureYears } from '../../../../utils/dateTime/dynamicFutureYears';
 import { Validator } from '../../../../utils/validator/validator';
 import { BuildingServices } from '../../../company/buildings/building/services/buildingServices';
 import { SharedCalendarServices } from '../../../shared/calendar/services/SharedCalendarServices';
@@ -17,10 +18,7 @@ const validator = new Validator();
 export async function clientBuildingDetails(req: Request, res: Response) {
   const { buildingId } = req.params;
 
-  const { year, month, status } = req.query;
-
-  const statusFilter = status === '' ? undefined : String(status);
-  const monthFilter = month === '' ? undefined : String(month);
+  const { year } = req.query;
 
   // #region VALIDATION
 
@@ -39,14 +37,14 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   const { MaintenancesHistory, MaintenancesPending } =
     await clientBuildingServices.findMaintenanceHistory({
       buildingId,
-      status: statusFilter,
-      month: monthFilter,
       year: String(year),
     });
 
+  const filterYears = DynamicFutureYears({ showFutureYears: true });
+
   // #region MOUNTING FILTERS
   const Filters = {
-    years: ['2021', '2022', '2023', '2024', '2025'],
+    years: filterYears,
     months: [
       {
         monthNumber: '01',
@@ -115,7 +113,7 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   for (let i = 0; i < MaintenancesPending.length; i++) {
     const intervals = sharedCalendarServices.recurringDates({
       startDate: new Date(MaintenancesPending[i].notificationDate),
-      endDate: new Date(`12/31/${year ?? new Date().getFullYear()}`),
+      endDate: new Date(`12/31/${new Date().getFullYear() + 2}`),
       interval:
         MaintenancesPending[i].Maintenance.frequency *
         MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
@@ -125,21 +123,7 @@ export async function clientBuildingDetails(req: Request, res: Response) {
     maintenances.push(...intervals);
   }
 
-  const monthsData = clientBuildingServices.separePerMonth({ data: maintenances });
-
-  let months: any = [];
-
-  if (month) {
-    for (let i = 0; i < monthsData.length; ++i) {
-      if (Number(month) === i + 1 && new Date().getFullYear() === Number(year)) {
-        if (monthsData[i].dates.length >= 1) {
-          months.push(monthsData[i]);
-        }
-      }
-    }
-  } else {
-    months = monthsData;
-  }
+  const months = clientBuildingServices.separePerMonth({ data: maintenances });
 
   // #endregion
 

@@ -10,50 +10,62 @@ export class ClientBuildingServices {
     const months: any = [
       {
         name: 'Janeiro',
+        monthNumber: '01',
         dates: [],
       },
       {
         name: 'Fevereiro',
+        monthNumber: '02',
         dates: [],
       },
       {
         name: 'Março',
+        monthNumber: '03',
         dates: [],
       },
       {
         name: 'Abril',
+        monthNumber: '04',
         dates: [],
       },
       {
         name: 'Maio',
+        monthNumber: '05',
         dates: [],
       },
       {
         name: 'Junho',
+        monthNumber: '06',
         dates: [],
       },
       {
         name: 'Julho',
+        monthNumber: '07',
         dates: [],
       },
       {
         name: 'Agosto',
+        monthNumber: '08',
         dates: [],
       },
       {
         name: 'Setembro',
+        monthNumber: '09',
         dates: [],
       },
       {
         name: 'Outubro',
+        monthNumber: '10',
         dates: [],
       },
       {
         name: 'Novembro',
+        monthNumber: '11',
         dates: [],
       },
       {
         name: 'Dezembro',
+        monthNumber: '12',
         dates: [],
       },
     ];
@@ -72,6 +84,7 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+
             dateInfos,
           });
           break;
@@ -184,7 +197,7 @@ export class ClientBuildingServices {
     return months;
   }
 
-  syndicSeparePerMonth({ data }: { data: any }) {
+  syndicSeparePerStatus({ data }: { data: any }) {
     const kanban: any = [
       {
         status: 'Pendentes',
@@ -294,26 +307,12 @@ export class ClientBuildingServices {
     return kanban;
   }
 
-  async findMaintenanceHistory({
-    buildingId,
-    month,
-    year,
-    status,
-  }: {
-    buildingId: string;
-    status: string | undefined;
-    month: string | undefined;
-    year: string;
-  }) {
-    const startDate = new Date(`${month ?? '01'}/01/${String(year)}`);
-    const endDate = new Date(`${month ?? '12'}/31/${String(year)}`);
+  async findMaintenanceHistory({ buildingId, year }: { buildingId: string; year: string }) {
+    const startDate = new Date(`${'01'}/01/${String(year)}`);
+    const endDate = new Date(`${'12'}/31/${String(year)}`);
 
     const startDatePending = new Date(`01/01/${String(year)}`);
     const endDatePending = new Date(`12/31/${String(year)}`);
-
-    let pendingStatus = 'pending';
-
-    if (status !== undefined && status !== 'pending') pendingStatus = 'notFilter';
 
     const [Filters, MaintenancesHistory, MaintenancesPending] = await prisma.$transaction([
       prisma.maintenanceHistory.findMany({
@@ -332,11 +331,6 @@ export class ClientBuildingServices {
         },
         where: {
           buildingId,
-          MaintenancesStatus: {
-            name: {
-              in: status,
-            },
-          },
         },
       }),
 
@@ -389,10 +383,6 @@ export class ClientBuildingServices {
         where: {
           buildingId,
           MaintenancesStatus: {
-            name: {
-              in: status,
-            },
-
             NOT: {
               name: 'pending',
             },
@@ -454,10 +444,6 @@ export class ClientBuildingServices {
         where: {
           buildingId,
           MaintenancesStatus: {
-            name: {
-              in: pendingStatus,
-            },
-
             NOT: [
               {
                 name: 'expired',

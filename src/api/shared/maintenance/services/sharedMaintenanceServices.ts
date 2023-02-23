@@ -124,6 +124,8 @@ export class SharedMaintenanceServices {
         Building: {
           select: {
             id: true,
+            warrantyExpiration: true,
+            keepNotificationAfterWarrantyEnds: true,
           },
         },
         Company: {
