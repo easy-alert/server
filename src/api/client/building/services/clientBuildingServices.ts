@@ -218,14 +218,18 @@ export class ClientBuildingServices {
           });
 
           if (today >= canReportDate) {
-            auxiliaryData =
-              (maintenance.dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
+            auxiliaryData = Math.floor(
+              (maintenance.dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+            );
 
             let label = '';
-            if (auxiliaryData < 1) {
+
+            if (auxiliaryData === 0) {
               label = 'Vence hoje';
-            } else {
-              label = `Vence em ${auxiliaryData.toFixed()} ${auxiliaryData > 1 ? 'dias' : 'dia'}`;
+            }
+
+            if (auxiliaryData >= 1) {
+              label = `Vence em ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`;
             }
 
             kanban[0].maintenances.push({
@@ -241,8 +245,9 @@ export class ClientBuildingServices {
           break;
 
         case 'expired':
-          auxiliaryData =
-            (maintenance.dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24);
+          auxiliaryData = Math.floor(
+            (new Date().getTime() - maintenance.dueDate.getTime()) / (1000 * 60 * 60 * 24),
+          );
 
           kanban[1].maintenances.push({
             id: maintenance.id,
@@ -250,9 +255,7 @@ export class ClientBuildingServices {
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
             date: maintenance.notificationDate,
-            label: `Atrasada há ${Math.abs(auxiliaryData).toFixed()} ${
-              Math.abs(auxiliaryData) > 1 ? 'dias' : 'dia'
-            }`,
+            label: `Atrasada há ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
           });
           break;
 
@@ -268,9 +271,10 @@ export class ClientBuildingServices {
           break;
 
         case 'overdue':
-          auxiliaryData =
+          auxiliaryData = Math.floor(
             (maintenance.resolutionDate.getTime() - maintenance.dueDate.getTime()) /
-            (1000 * 60 * 60 * 24);
+              (1000 * 60 * 60 * 24),
+          );
 
           kanban[2].maintenances.push({
             id: maintenance.id,
@@ -278,9 +282,7 @@ export class ClientBuildingServices {
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
             date: maintenance.resolutionDate,
-            label: `Feita com atraso de ${auxiliaryData.toFixed()} ${
-              auxiliaryData > 1 ? 'dias' : 'dia'
-            }`,
+            label: `Feita com atraso de ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
           });
           break;
 
