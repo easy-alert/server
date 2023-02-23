@@ -18,9 +18,7 @@ const validator = new Validator();
 export async function clientBuildingDetails(req: Request, res: Response) {
   const { buildingId } = req.params;
 
-  const { year, status } = req.query;
-
-  const statusFilter = status === '' ? undefined : String(status);
+  const { year } = req.query;
 
   // #region VALIDATION
 
@@ -39,7 +37,6 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   const { MaintenancesHistory, MaintenancesPending } =
     await clientBuildingServices.findMaintenanceHistory({
       buildingId,
-      status: statusFilter,
       year: String(year),
     });
 

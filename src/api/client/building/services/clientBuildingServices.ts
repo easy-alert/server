@@ -307,24 +307,12 @@ export class ClientBuildingServices {
     return kanban;
   }
 
-  async findMaintenanceHistory({
-    buildingId,
-    year,
-    status,
-  }: {
-    buildingId: string;
-    status: string | undefined;
-    year: string;
-  }) {
+  async findMaintenanceHistory({ buildingId, year }: { buildingId: string; year: string }) {
     const startDate = new Date(`${'01'}/01/${String(year)}`);
     const endDate = new Date(`${'12'}/31/${String(year)}`);
 
     const startDatePending = new Date(`01/01/${String(year)}`);
     const endDatePending = new Date(`12/31/${String(year)}`);
-
-    let pendingStatus = 'pending';
-
-    if (status !== undefined && status !== 'pending') pendingStatus = 'notFilter';
 
     const [Filters, MaintenancesHistory, MaintenancesPending] = await prisma.$transaction([
       prisma.maintenanceHistory.findMany({
@@ -343,11 +331,6 @@ export class ClientBuildingServices {
         },
         where: {
           buildingId,
-          MaintenancesStatus: {
-            name: {
-              in: status,
-            },
-          },
         },
       }),
 
@@ -400,10 +383,6 @@ export class ClientBuildingServices {
         where: {
           buildingId,
           MaintenancesStatus: {
-            name: {
-              in: status,
-            },
-
             NOT: {
               name: 'pending',
             },
@@ -465,10 +444,6 @@ export class ClientBuildingServices {
         where: {
           buildingId,
           MaintenancesStatus: {
-            name: {
-              in: pendingStatus,
-            },
-
             NOT: [
               {
                 name: 'expired',
