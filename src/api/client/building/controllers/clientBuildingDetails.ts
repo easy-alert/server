@@ -113,7 +113,7 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   for (let i = 0; i < MaintenancesPending.length; i++) {
     const intervals = sharedCalendarServices.recurringDates({
       startDate: new Date(MaintenancesPending[i].notificationDate),
-      endDate: new Date(`12/31/${new Date().getFullYear() + 3}`),
+      endDate: new Date(`12/31/${new Date().getFullYear() + 2}`),
       interval:
         MaintenancesPending[i].Maintenance.frequency *
         MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
