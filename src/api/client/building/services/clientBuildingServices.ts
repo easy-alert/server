@@ -309,17 +309,15 @@ export class ClientBuildingServices {
 
   async findMaintenanceHistory({
     buildingId,
-    month,
     year,
     status,
   }: {
     buildingId: string;
     status: string | undefined;
-    month: string | undefined;
     year: string;
   }) {
-    const startDate = new Date(`${month ?? '01'}/01/${String(year)}`);
-    const endDate = new Date(`${month ?? '12'}/31/${String(year)}`);
+    const startDate = new Date(`${'01'}/01/${String(year)}`);
+    const endDate = new Date(`${'12'}/31/${String(year)}`);
 
     const startDatePending = new Date(`01/01/${String(year)}`);
     const endDatePending = new Date(`12/31/${String(year)}`);

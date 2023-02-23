@@ -18,10 +18,9 @@ const validator = new Validator();
 export async function clientBuildingDetails(req: Request, res: Response) {
   const { buildingId } = req.params;
 
-  const { year, month, status } = req.query;
+  const { year, status } = req.query;
 
   const statusFilter = status === '' ? undefined : String(status);
-  const monthFilter = month === '' ? undefined : String(month);
 
   // #region VALIDATION
 
@@ -41,7 +40,6 @@ export async function clientBuildingDetails(req: Request, res: Response) {
     await clientBuildingServices.findMaintenanceHistory({
       buildingId,
       status: statusFilter,
-      month: monthFilter,
       year: String(year),
     });
 
@@ -128,21 +126,7 @@ export async function clientBuildingDetails(req: Request, res: Response) {
     maintenances.push(...intervals);
   }
 
-  const monthsData = clientBuildingServices.separePerMonth({ data: maintenances });
-
-  let months: any = [];
-
-  if (month) {
-    for (let i = 0; i < monthsData.length; ++i) {
-      if (Number(month) === i + 1 && new Date().getFullYear() === Number(year)) {
-        if (monthsData[i].dates.length >= 1) {
-          months.push(monthsData[i]);
-        }
-      }
-    }
-  } else {
-    months = monthsData;
-  }
+  const months = clientBuildingServices.separePerMonth({ data: maintenances });
 
   // #endregion
 

@@ -127,6 +127,17 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
 
   const kanban = clientBuildingServices.syndicSeparePerStatus({ data: MaintenancesHistory });
 
+  for (let i = 0; i < kanban.length; i++) {
+    for (let j = 0; j < kanban[i].maintenances.length; j++) {
+      kanban[i].maintenances.sort((a: any, b: any) => (a.date > b.date ? 1 : -1));
+    }
+  }
+  //
+
+  for (const iterator of kanban) {
+    console.log(iterator);
+  }
+
   // #endregion
 
   return res.status(200).json({
