@@ -10,50 +10,62 @@ export class ClientBuildingServices {
     const months: any = [
       {
         name: 'Janeiro',
+        monthNumber: '01',
         dates: [],
       },
       {
         name: 'Fevereiro',
+        monthNumber: '02',
         dates: [],
       },
       {
         name: 'Março',
+        monthNumber: '03',
         dates: [],
       },
       {
         name: 'Abril',
+        monthNumber: '04',
         dates: [],
       },
       {
         name: 'Maio',
+        monthNumber: '05',
         dates: [],
       },
       {
         name: 'Junho',
+        monthNumber: '06',
         dates: [],
       },
       {
         name: 'Julho',
+        monthNumber: '07',
         dates: [],
       },
       {
         name: 'Agosto',
+        monthNumber: '08',
         dates: [],
       },
       {
         name: 'Setembro',
+        monthNumber: '09',
         dates: [],
       },
       {
         name: 'Outubro',
+        monthNumber: '10',
         dates: [],
       },
       {
         name: 'Novembro',
+        monthNumber: '11',
         dates: [],
       },
       {
         name: 'Dezembro',
+        monthNumber: '12',
         dates: [],
       },
     ];
