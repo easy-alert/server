@@ -199,10 +199,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     categoryName: maintenanceHistory.Maintenance.Category.name,
     element: maintenanceHistory.Maintenance.element,
     cost: maskeredCost,
-    observation:
-      maintenanceHistory.Maintenance.observation === null
-        ? '-'
-        : maintenanceHistory.Maintenance.observation,
+    observation: data.observation === null ? '-' : data.observation,
     reportDate: formattedDate,
     subject: 'Comprovante de relato',
     syndicName: responsibleName,
