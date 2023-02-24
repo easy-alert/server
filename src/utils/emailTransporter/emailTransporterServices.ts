@@ -53,11 +53,13 @@ export class EmailTransporterServices {
     syndicName,
     subject,
     toEmail,
+    attachments,
   }: ISendProofOfReport) {
     const mail = {
       from: `${subject} <${process.env.EMAIL_USERNAME}>`,
       to: toEmail,
       subject: `Easy Alert - ${subject}`,
+      attachments,
       html: emailTemplates.proofOfReport({
         activity,
         buildingName,

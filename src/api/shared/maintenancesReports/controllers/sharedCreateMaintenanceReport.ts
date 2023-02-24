@@ -9,7 +9,7 @@ import { SharedMaintenanceServices } from '../../maintenance/services/sharedMain
 import { SharedMaintenanceStatusServices } from '../../maintenanceStatus/services/sharedMaintenanceStatusServices';
 import { SharedBuildingNotificationConfigurationServices } from '../../notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { SharedMaintenanceReportsServices } from '../services/SharedMaintenanceReportsServices';
-import { ICreateMaintenanceReportsBody } from './types';
+import { IAttachments, ICreateMaintenanceReportsBody } from './types';
 
 // CLASS
 
@@ -119,7 +119,6 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       buildingNotificationConfigurationId: responsibleSyndicId,
     });
   }
-  // const today = new Date(new Date().setHours(0, 0));
   const today = new Date(new Date().toISOString().split('T')[0]);
 
   const period =
@@ -155,6 +154,23 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   };
   await sharedMaintenanceReportsServices.create({ data });
 
+  // #region PROCESS DATA FOR SEND EMAIL
+  const attachments: IAttachments[] = [];
+
+  ReportAnnexes.forEach((annex) => {
+    attachments.push({
+      filename: annex.originalName,
+      path: annex.url,
+    });
+  });
+
+  ReportImages.forEach((image) => {
+    attachments.push({
+      filename: image.originalName,
+      path: image.url,
+    });
+  });
+
   const maskeredCost =
     data.cost === null
       ? '-'
@@ -165,23 +181,34 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
 
   const formattedDate = `${new Date().toLocaleString('pt-BR')}`;
 
+  let emailToSend = null;
+  let responsibleName = null;
+
   if (syndicData !== null && syndicData !== undefined) {
-    await emailTransporter.sendProofOfReport({
-      buildingName: maintenanceHistory.Building.name,
-      activity: maintenanceHistory.Maintenance.activity,
-      categoryName: maintenanceHistory.Maintenance.Category.name,
-      element: maintenanceHistory.Maintenance.element,
-      cost: maskeredCost,
-      observation:
-        maintenanceHistory.Maintenance.observation === null
-          ? '-'
-          : maintenanceHistory.Maintenance.observation,
-      reportDate: formattedDate,
-      subject: 'Comprovante de relato',
-      syndicName: syndicData.name,
-      toEmail: syndicData.email!,
-    });
+    emailToSend = syndicData.email!;
+    responsibleName = syndicData.name;
+  } else {
+    emailToSend = maintenanceHistory.Company.UserCompanies[0].User.email;
+    responsibleName = maintenanceHistory.Company.name;
   }
+  // #endregion
+
+  await emailTransporter.sendProofOfReport({
+    buildingName: maintenanceHistory.Building.name,
+    activity: maintenanceHistory.Maintenance.activity,
+    categoryName: maintenanceHistory.Maintenance.Category.name,
+    element: maintenanceHistory.Maintenance.element,
+    cost: maskeredCost,
+    observation:
+      maintenanceHistory.Maintenance.observation === null
+        ? '-'
+        : maintenanceHistory.Maintenance.observation,
+    reportDate: formattedDate,
+    subject: 'Comprovante de relato',
+    syndicName: responsibleName,
+    toEmail: emailToSend,
+    attachments,
+  });
 
   // #region UPDATE MAINTENANCE HISTORY STATUS
 

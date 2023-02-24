@@ -135,6 +135,16 @@ export class SharedMaintenanceServices {
         Company: {
           select: {
             id: true,
+            name: true,
+            UserCompanies: {
+              select: {
+                User: {
+                  select: {
+                    email: true,
+                  },
+                },
+              },
+            },
           },
         },
         Maintenance: {

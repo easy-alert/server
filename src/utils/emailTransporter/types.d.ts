@@ -7,6 +7,10 @@ export interface ISendConfirmEmail {
 
 export interface ISendProofOfReport {
   toEmail?: string;
+  attachments?: {
+    filename: string;
+    path: string;
+  }[];
   subject: string;
   element: string;
   buildingName: string;
