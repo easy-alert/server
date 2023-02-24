@@ -8,6 +8,7 @@ export interface ISendConfirmEmail {
 export interface ISendProofOfReport {
   toEmail?: string;
   subject: string;
+  element: string;
   buildingName: string;
   reportDate: string;
   cost: number | string;

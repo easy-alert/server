@@ -170,6 +170,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       buildingName: maintenanceHistory.Building.name,
       activity: maintenanceHistory.Maintenance.activity,
       categoryName: maintenanceHistory.Maintenance.Category.name,
+      element: maintenanceHistory.Maintenance.element,
       cost: maskeredCost,
       observation:
         maintenanceHistory.Maintenance.observation === null

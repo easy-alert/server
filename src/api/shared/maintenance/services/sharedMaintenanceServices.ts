@@ -143,6 +143,7 @@ export class SharedMaintenanceServices {
             frequency: true,
             activity: true,
             observation: true,
+            element: true,
 
             Category: {
               select: {

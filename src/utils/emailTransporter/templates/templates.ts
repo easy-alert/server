@@ -120,6 +120,7 @@ export class EmailTemplates {
     buildingName,
     reportDate,
     cost,
+    element,
     categoryName,
     syndicName,
     activity,
@@ -142,7 +143,7 @@ export class EmailTemplates {
     />
 
     <div style="width: 328px; margin: 0 auto;">
-      <h3 style="color: #000000; margin: 40px 0 16px; text-align: center;">
+      <h3 style="color: #000000; margin: 40px 0 24px; text-align: center;">
        ${subject}
       </h3>
 
@@ -156,15 +157,11 @@ export class EmailTemplates {
         ${reportDate}
       </p>
 
-      <p>
-        <strong>Custo: </strong>
-        ${cost}
-      </p>
+      <p><strong>Categoria: </strong>${categoryName}</p>
 
-      <p><strong>Categoria: </strong>Sistemas Hidrossanitários</p>
       <p>
         <strong>Elemento: </strong>
-       ${categoryName}
+        ${element}
       </p>
 
       <p>
@@ -173,9 +170,13 @@ export class EmailTemplates {
       </p>
 
       <p>
-
-      <strong>Responsável: </strong>
+        <strong>Responsável: </strong>
         ${syndicName}
+      </p>
+
+      <p>
+        <strong>Custo: </strong>
+        ${cost}
       </p>
 
       <p>
