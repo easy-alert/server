@@ -12,6 +12,7 @@ import { uploadRouter } from '../shared/upload/upload.routes';
 import { clientBuildingDetails } from './building/controllers/clientBuildingDetails';
 import { clientSyndicBuildingDetails } from './building/controllers/clientSyndicBuildingDetails';
 import { findClientInformations } from './building/controllers/findClientInformations';
+import { findCompanyLogo } from './building/controllers/findCompanyLogo';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -23,12 +24,16 @@ clientRouter.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
 
 clientRouter.use('/upload', uploadRouter);
 
-clientRouter.get('/building/:buildingId', clientBuildingDetails);
 clientRouter.get('/syndic/:syndicId', clientSyndicBuildingDetails);
 clientRouter.get(
   '/maintenances/list/details/:maintenanceHistoryId',
   sharedMaintenanceHistoryDetails,
 );
 
+clientRouter.get('/building/:buildingId', clientBuildingDetails);
+
 clientRouter.get('/building/informations/:buildingId', findClientInformations);
+
+clientRouter.get('/building/logo/:buildingId', findCompanyLogo);
+
 clientRouter.post('/maintenances/create/report', sharedCreateMaintenanceReport);

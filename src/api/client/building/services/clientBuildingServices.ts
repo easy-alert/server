@@ -606,4 +606,23 @@ export class ClientBuildingServices {
 
     return mainContact;
   }
+
+  async findCompanyLogo({ buildingId }: { buildingId: string }) {
+    const companyLogo = await prisma.building.findFirst({
+      select: {
+        Company: {
+          select: {
+            image: true,
+          },
+        },
+      },
+      where: {
+        id: buildingId,
+      },
+    });
+
+    validator.needExist([{ label: 'Logo da empresa', variable: companyLogo }]);
+
+    return companyLogo?.Company.image;
+  }
 }
