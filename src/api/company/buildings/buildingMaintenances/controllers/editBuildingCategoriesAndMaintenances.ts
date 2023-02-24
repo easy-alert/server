@@ -141,7 +141,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       interval: maintenances[i].delay * timeIntervalDelay.unitTime,
     });
 
-    const today = new Date();
+    const today = new Date(new Date().toISOString().split('T')[0]);
 
     if (buildingDeliveryDate < today) {
       notificationDate = noWeekendTimeDate({
