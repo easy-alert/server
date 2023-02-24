@@ -9,8 +9,8 @@ export interface ISendProofOfReport {
   toEmail?: string;
   subject: string;
   buildingName: string;
-  reportDate: Date;
-  cost: number;
+  reportDate: string;
+  cost: number | string;
   categoryName: string;
   syndicName: string;
   activity: string;

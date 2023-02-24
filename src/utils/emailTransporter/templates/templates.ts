@@ -158,7 +158,7 @@ export class EmailTemplates {
 
       <p>
         <strong>Custo: </strong>
-        R$ ${cost}
+        ${cost}
       </p>
 
       <p><strong>Categoria: </strong>Sistemas Hidrossanitários</p>
@@ -168,12 +168,14 @@ export class EmailTemplates {
       </p>
 
       <p>
-        <strong>Responsável: </strong>
-       ${syndicName}
-      </p>
-      <p>
         <strong>Atividade: </strong>
         ${activity}
+      </p>
+
+      <p>
+
+      <strong>Responsável: </strong>
+        ${syndicName}
       </p>
 
       <p>
