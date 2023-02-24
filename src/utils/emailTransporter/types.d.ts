@@ -1,17 +1,18 @@
-export interface ISendEmail {
-  toEmail: string;
-  subject: string;
-  text: string;
-  link: string;
-  template: 'confirmEmail';
-}
-export interface IVariables {
+export interface ISendConfirmEmail {
+  toEmail?: string;
   link: string;
   subject: string;
   text: string;
 }
 
-export interface IHandlerTemplate {
-  template: 'confirmEmail';
-  variables: IVariables;
+export interface ISendProofOfReport {
+  toEmail?: string;
+  subject: string;
+  buildingName: string;
+  reportDate: Date;
+  cost: number;
+  categoryName: string;
+  syndicName: string;
+  activity: string;
+  observation: string;
 }

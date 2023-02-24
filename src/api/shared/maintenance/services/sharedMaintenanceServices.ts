@@ -115,15 +115,19 @@ export class SharedMaintenanceServices {
 
   async findHistoryById({ maintenanceHistoryId }: { maintenanceHistoryId: string }) {
     const maintenance = await prisma.maintenanceHistory.findUnique({
-      include: {
+      select: {
+        notificationDate: true,
+        dueDate: true,
         MaintenanceReport: {
           select: {
             id: true,
+            cost: true,
           },
         },
         Building: {
           select: {
             id: true,
+            name: true,
             warrantyExpiration: true,
             keepNotificationAfterWarrantyEnds: true,
           },
@@ -137,6 +141,14 @@ export class SharedMaintenanceServices {
           select: {
             id: true,
             frequency: true,
+            activity: true,
+            observation: true,
+
+            Category: {
+              select: {
+                name: true,
+              },
+            },
             FrequencyTimeInterval: {
               select: {
                 unitTime: true,

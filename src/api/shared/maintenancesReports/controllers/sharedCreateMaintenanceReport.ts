@@ -2,6 +2,7 @@
 import { Request, Response } from 'express';
 import { addTimeDate, removeTimeDate } from '../../../../utils/dateTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
+import { EmailTransporterServices } from '../../../../utils/emailTransporter/emailTransporterServices';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { Validator } from '../../../../utils/validator/validator';
 import { SharedMaintenanceServices } from '../../maintenance/services/sharedMaintenanceServices';
@@ -16,6 +17,8 @@ const validator = new Validator();
 const sharedMaintenanceReportsServices = new SharedMaintenanceReportsServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 const sharedMaintenanceStatusServices = new SharedMaintenanceStatusServices();
+const emailTransporter = new EmailTransporterServices();
+
 const sharedBuildingNotificationConfigurationServices =
   new SharedBuildingNotificationConfigurationServices();
 
@@ -109,8 +112,10 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     });
   }
 
+  let syndicData = null;
+
   if (responsibleSyndicId) {
-    await sharedBuildingNotificationConfigurationServices.findById({
+    syndicData = await sharedBuildingNotificationConfigurationServices.findById({
       buildingNotificationConfigurationId: responsibleSyndicId,
     });
   }
@@ -149,6 +154,20 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     },
   };
   await sharedMaintenanceReportsServices.create({ data });
+
+  if (syndicData !== null && syndicData !== undefined) {
+    await emailTransporter.sendProofOfReport({
+      buildingName: maintenanceHistory.Building.name,
+      activity: maintenanceHistory.Maintenance.activity,
+      categoryName: maintenanceHistory.Maintenance.Category.name,
+      cost: maintenanceHistory.MaintenanceReport[0].cost!,
+      observation: maintenanceHistory.Maintenance.observation!,
+      reportDate: new Date(),
+      subject: 'Comprovante de relato',
+      syndicName: syndicData.name,
+      toEmail: syndicData.email!,
+    });
+  }
 
   // #region UPDATE MAINTENANCE HISTORY STATUS
 
