@@ -239,11 +239,10 @@ export class SharedBuildingNotificationConfigurationServices {
     link,
     buildingNotificationConfigurationId,
   }: ISendEmailConfirmationForReceiveNotifications) {
-    await emailTransporter.sendEmail({
+    await emailTransporter.sendConfirmEmail({
       toEmail,
       subject: 'Confirmação de e-mail',
       text: 'Você está recebendo esta mensagem pois seu e-mail foi apontado como responsável por uma edificação!',
-      template: 'confirmEmail',
       link,
     });
 

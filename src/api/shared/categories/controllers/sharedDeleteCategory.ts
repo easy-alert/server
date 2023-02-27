@@ -19,5 +19,7 @@ export async function sharedDeleteCategory({
     });
   }
 
+  await sharedCategoryServices.checkCategoryIsUsed({ categoryId });
+
   await sharedCategoryServices.delete({ categoryId });
 }

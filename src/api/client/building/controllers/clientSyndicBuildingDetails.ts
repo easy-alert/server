@@ -1,5 +1,6 @@
 // # region IMPORTS
 import { Request, Response } from 'express';
+import { DynamicFutureYears } from '../../../../utils/dateTime/dynamicFutureYears';
 import { Validator } from '../../../../utils/validator/validator';
 import { SharedBuildingNotificationConfigurationServices } from '../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { ClientBuildingServices } from '../services/clientBuildingServices';
@@ -57,8 +58,11 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   });
 
   // #region MOUNTING FILTERS
+
+  const filterYears = DynamicFutureYears({ showFutureYears: false });
+
   const Filters = {
-    years: ['2021', '2022', '2023', '2024', '2025'],
+    years: filterYears,
     months: [
       {
         monthNumber: '01',
@@ -121,7 +125,14 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
 
   // #region PROCESS DATA
 
-  const kanban = clientBuildingServices.syndicSeparePerMonth({ data: MaintenancesHistory });
+  const kanban = clientBuildingServices.syndicSeparePerStatus({ data: MaintenancesHistory });
+
+  for (let i = 0; i < kanban.length; i++) {
+    for (let j = 0; j < kanban[i].maintenances.length; j++) {
+      kanban[i].maintenances.sort((a: any, b: any) => (a.date > b.date ? 1 : -1));
+    }
+  }
+  //
 
   // #endregion
 

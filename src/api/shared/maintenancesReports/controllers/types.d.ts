@@ -16,3 +16,8 @@ export interface ICreateMaintenanceReportsBody {
     url: string;
   }[];
 }
+
+export interface IAttachments {
+  filename: string;
+  path: string;
+}

@@ -1,10 +1,12 @@
 // #region IMPORTS
 import { createTransport } from 'nodemailer';
 import { ServerMessage } from '../messages/serverMessage';
-import { handlerTemplate } from './templates';
-import { ISendEmail } from './types';
+import { EmailTemplates } from './templates/templates';
+import { ISendConfirmEmail, ISendProofOfReport } from './types';
 
 // #endregion
+
+const emailTemplates = new EmailTemplates();
 
 // #region CONFIG
 const transporter = createTransport({
@@ -19,19 +21,16 @@ const transporter = createTransport({
 });
 
 export class EmailTransporterServices {
-  async sendEmail({ subject, toEmail, text, link, template }: ISendEmail) {
+  async sendConfirmEmail({ subject, toEmail, text, link }: ISendConfirmEmail) {
     const mail = {
       from: `${subject} <${process.env.EMAIL_USERNAME}>`,
       to: toEmail,
       subject: `Easy Alert - ${subject}`,
       text,
-      html: handlerTemplate({
-        template,
-        variables: {
-          link,
-          text,
-          subject,
-        },
+      html: emailTemplates.confirmEmail({
+        link,
+        text,
+        subject,
       }),
     };
 
@@ -39,6 +38,46 @@ export class EmailTransporterServices {
       throw new ServerMessage({
         statusCode: 400,
         message: 'Oops! Encontramos um problema ao enviar a confirmação de email.',
+      });
+    });
+  }
+
+  async sendProofOfReport({
+    activity,
+    buildingName,
+    categoryName,
+    cost,
+    observation,
+    reportDate,
+    element,
+    syndicName,
+    subject,
+    toEmail,
+    attachments,
+  }: ISendProofOfReport) {
+    const mail = {
+      from: `${subject} <${process.env.EMAIL_USERNAME}>`,
+      to: toEmail,
+      subject: `Easy Alert - ${subject}`,
+      attachments,
+      html: emailTemplates.proofOfReport({
+        activity,
+        buildingName,
+        categoryName,
+        cost,
+        observation,
+        reportDate,
+        element,
+        syndicName,
+        toEmail,
+        subject,
+      }),
+    };
+
+    transporter.sendMail(mail).catch(() => {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Oops! Encontramos um problema ao enviar o comprovante de relato por email.',
       });
     });
   }

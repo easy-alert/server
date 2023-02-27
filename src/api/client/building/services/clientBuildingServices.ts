@@ -10,50 +10,62 @@ export class ClientBuildingServices {
     const months: any = [
       {
         name: 'Janeiro',
+        monthNumber: '01',
         dates: [],
       },
       {
         name: 'Fevereiro',
+        monthNumber: '02',
         dates: [],
       },
       {
         name: 'Março',
+        monthNumber: '03',
         dates: [],
       },
       {
         name: 'Abril',
+        monthNumber: '04',
         dates: [],
       },
       {
         name: 'Maio',
+        monthNumber: '05',
         dates: [],
       },
       {
         name: 'Junho',
+        monthNumber: '06',
         dates: [],
       },
       {
         name: 'Julho',
+        monthNumber: '07',
         dates: [],
       },
       {
         name: 'Agosto',
+        monthNumber: '08',
         dates: [],
       },
       {
         name: 'Setembro',
+        monthNumber: '09',
         dates: [],
       },
       {
         name: 'Outubro',
+        monthNumber: '10',
         dates: [],
       },
       {
         name: 'Novembro',
+        monthNumber: '11',
         dates: [],
       },
       {
         name: 'Dezembro',
+        monthNumber: '12',
         dates: [],
       },
     ];
@@ -72,6 +84,7 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+
             dateInfos,
           });
           break;
@@ -184,7 +197,7 @@ export class ClientBuildingServices {
     return months;
   }
 
-  syndicSeparePerMonth({ data }: { data: any }) {
+  syndicSeparePerStatus({ data }: { data: any }) {
     const kanban: any = [
       {
         status: 'Pendentes',
@@ -205,7 +218,7 @@ export class ClientBuildingServices {
       let auxiliaryData = null;
       let period = null;
       let canReportDate = null;
-      const today = new Date(new Date().setHours(0, 0));
+      const today = new Date(new Date().toISOString().split('T')[0]);
 
       switch (maintenance.MaintenancesStatus.name) {
         case 'pending':
@@ -218,14 +231,18 @@ export class ClientBuildingServices {
           });
 
           if (today >= canReportDate) {
-            auxiliaryData =
-              (maintenance.dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
+            auxiliaryData = Math.floor(
+              (maintenance.dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+            );
 
             let label = '';
-            if (auxiliaryData < 1) {
+
+            if (auxiliaryData === 0) {
               label = 'Vence hoje';
-            } else {
-              label = `Vence em ${auxiliaryData.toFixed()} ${auxiliaryData > 1 ? 'dias' : 'dia'}`;
+            }
+
+            if (auxiliaryData >= 1) {
+              label = `Vence em ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`;
             }
 
             kanban[0].maintenances.push({
@@ -241,8 +258,9 @@ export class ClientBuildingServices {
           break;
 
         case 'expired':
-          auxiliaryData =
-            (maintenance.dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24);
+          auxiliaryData = Math.floor(
+            (new Date().getTime() - maintenance.dueDate.getTime()) / (1000 * 60 * 60 * 24),
+          );
 
           kanban[1].maintenances.push({
             id: maintenance.id,
@@ -250,9 +268,7 @@ export class ClientBuildingServices {
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
             date: maintenance.notificationDate,
-            label: `Atrasada há ${Math.abs(auxiliaryData).toFixed()} ${
-              Math.abs(auxiliaryData) > 1 ? 'dias' : 'dia'
-            }`,
+            label: `Atrasada há ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
           });
           break;
 
@@ -268,9 +284,10 @@ export class ClientBuildingServices {
           break;
 
         case 'overdue':
-          auxiliaryData =
+          auxiliaryData = Math.floor(
             (maintenance.resolutionDate.getTime() - maintenance.dueDate.getTime()) /
-            (1000 * 60 * 60 * 24);
+              (1000 * 60 * 60 * 24),
+          );
 
           kanban[2].maintenances.push({
             id: maintenance.id,
@@ -278,9 +295,7 @@ export class ClientBuildingServices {
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
             date: maintenance.resolutionDate,
-            label: `Feita com atraso de ${auxiliaryData.toFixed()} ${
-              auxiliaryData > 1 ? 'dias' : 'dia'
-            }`,
+            label: `Feita com atraso de ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
           });
           break;
 
@@ -292,26 +307,12 @@ export class ClientBuildingServices {
     return kanban;
   }
 
-  async findMaintenanceHistory({
-    buildingId,
-    month,
-    year,
-    status,
-  }: {
-    buildingId: string;
-    status: string | undefined;
-    month: string | undefined;
-    year: string;
-  }) {
-    const startDate = new Date(`${month ?? '01'}/01/${String(year)}`);
-    const endDate = new Date(`${month ?? '12'}/31/${String(year)}`);
+  async findMaintenanceHistory({ buildingId, year }: { buildingId: string; year: string }) {
+    const startDate = new Date(`${'01'}/01/${String(year)}`);
+    const endDate = new Date(`${'12'}/31/${String(year)}`);
 
     const startDatePending = new Date(`01/01/${String(year)}`);
     const endDatePending = new Date(`12/31/${String(year)}`);
-
-    let pendingStatus = 'pending';
-
-    if (status !== undefined && status !== 'pending') pendingStatus = 'notFilter';
 
     const [Filters, MaintenancesHistory, MaintenancesPending] = await prisma.$transaction([
       prisma.maintenanceHistory.findMany({
@@ -330,11 +331,6 @@ export class ClientBuildingServices {
         },
         where: {
           buildingId,
-          MaintenancesStatus: {
-            name: {
-              in: status,
-            },
-          },
         },
       }),
 
@@ -387,10 +383,6 @@ export class ClientBuildingServices {
         where: {
           buildingId,
           MaintenancesStatus: {
-            name: {
-              in: status,
-            },
-
             NOT: {
               name: 'pending',
             },
@@ -452,10 +444,6 @@ export class ClientBuildingServices {
         where: {
           buildingId,
           MaintenancesStatus: {
-            name: {
-              in: pendingStatus,
-            },
-
             NOT: [
               {
                 name: 'expired',
@@ -617,5 +605,24 @@ export class ClientBuildingServices {
     validator.needExist([{ label: 'edificação', variable: mainContact }]);
 
     return mainContact;
+  }
+
+  async findCompanyLogo({ buildingId }: { buildingId: string }) {
+    const companyLogo = await prisma.building.findFirst({
+      select: {
+        Company: {
+          select: {
+            image: true,
+          },
+        },
+      },
+      where: {
+        id: buildingId,
+      },
+    });
+
+    validator.needExist([{ label: 'Logo da empresa', variable: companyLogo }]);
+
+    return companyLogo?.Company.image;
   }
 }

@@ -2,13 +2,14 @@
 import { Request, Response } from 'express';
 import { addTimeDate, removeTimeDate } from '../../../../utils/dateTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
+import { EmailTransporterServices } from '../../../../utils/emailTransporter/emailTransporterServices';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { Validator } from '../../../../utils/validator/validator';
 import { SharedMaintenanceServices } from '../../maintenance/services/sharedMaintenanceServices';
 import { SharedMaintenanceStatusServices } from '../../maintenanceStatus/services/sharedMaintenanceStatusServices';
 import { SharedBuildingNotificationConfigurationServices } from '../../notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { SharedMaintenanceReportsServices } from '../services/SharedMaintenanceReportsServices';
-import { ICreateMaintenanceReportsBody } from './types';
+import { IAttachments, ICreateMaintenanceReportsBody } from './types';
 
 // CLASS
 
@@ -16,6 +17,8 @@ const validator = new Validator();
 const sharedMaintenanceReportsServices = new SharedMaintenanceReportsServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 const sharedMaintenanceStatusServices = new SharedMaintenanceStatusServices();
+const emailTransporter = new EmailTransporterServices();
+
 const sharedBuildingNotificationConfigurationServices =
   new SharedBuildingNotificationConfigurationServices();
 
@@ -109,12 +112,13 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     });
   }
 
+  let syndicData = null;
+
   if (responsibleSyndicId) {
-    await sharedBuildingNotificationConfigurationServices.findById({
+    syndicData = await sharedBuildingNotificationConfigurationServices.findById({
       buildingNotificationConfigurationId: responsibleSyndicId,
     });
   }
-  // const today = new Date(new Date().setHours(0, 0));
   const today = new Date(new Date().toISOString().split('T')[0]);
 
   const period =
@@ -150,6 +154,59 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   };
   await sharedMaintenanceReportsServices.create({ data });
 
+  // #region PROCESS DATA FOR SEND EMAIL
+  const attachments: IAttachments[] = [];
+
+  ReportAnnexes.forEach((annex) => {
+    attachments.push({
+      filename: annex.originalName,
+      path: annex.url,
+    });
+  });
+
+  ReportImages.forEach((image) => {
+    attachments.push({
+      filename: image.originalName,
+      path: image.url,
+    });
+  });
+
+  const maskeredCost =
+    data.cost === null
+      ? '-'
+      : (Number(String(data.cost).replace(/[^0-9]*/g, '')) / 100).toLocaleString('pt-br', {
+          style: 'currency',
+          currency: 'BRL',
+        });
+
+  const formattedDate = `${new Date().toLocaleString('pt-BR')}`;
+
+  let emailToSend = null;
+  let responsibleName = null;
+
+  if (syndicData !== null && syndicData !== undefined) {
+    emailToSend = syndicData.email!;
+    responsibleName = syndicData.name;
+  } else {
+    emailToSend = maintenanceHistory.Company.UserCompanies[0].User.email;
+    responsibleName = maintenanceHistory.Company.name;
+  }
+  // #endregion
+
+  await emailTransporter.sendProofOfReport({
+    buildingName: maintenanceHistory.Building.name,
+    activity: maintenanceHistory.Maintenance.activity,
+    categoryName: maintenanceHistory.Maintenance.Category.name,
+    element: maintenanceHistory.Maintenance.element,
+    cost: maskeredCost,
+    observation: data.observation === null ? '-' : data.observation,
+    reportDate: formattedDate,
+    subject: 'Comprovante de relato',
+    syndicName: responsibleName,
+    toEmail: emailToSend,
+    attachments,
+  });
+
   // #region UPDATE MAINTENANCE HISTORY STATUS
 
   if (today > maintenanceHistory.dueDate) {
@@ -172,6 +229,18 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   // #endregion
 
   // #region CREATE MAINTENANCE HISTORY
+
+  if (
+    today > maintenanceHistory.Building.warrantyExpiration &&
+    !maintenanceHistory.Building.keepNotificationAfterWarrantyEnds
+  ) {
+    return res.status(200).json({
+      ServerMessage: {
+        statusCode: 201,
+        message: `Manutenção reportada com sucesso.`,
+      },
+    });
+  }
 
   const notificationDate = noWeekendTimeDate({
     date: addTimeDate({
