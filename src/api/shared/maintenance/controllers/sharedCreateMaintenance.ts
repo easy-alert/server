@@ -37,7 +37,7 @@ export async function sharedCreateMaintenance({
     { label: 'Atividade', variable: activity, type: 'string' },
     { label: 'Periodicidade', variable: frequency, type: 'number' },
     {
-      label: 'ID do tempo de intervalo da frequência',
+      label: 'ID da unidade da frequência',
       variable: frequencyTimeIntervalId,
       type: 'string',
     },
@@ -46,13 +46,13 @@ export async function sharedCreateMaintenance({
     { label: 'Fonte', variable: source, type: 'string' },
     { label: 'Tempo para resposta', variable: period, type: 'number' },
     {
-      label: 'ID do tempo de intervalo da período',
+      label: 'ID da unidade do período',
       variable: periodTimeIntervalId,
       type: 'string',
     },
     { label: 'Delay', variable: delay, type: 'number' },
     {
-      label: 'ID do tempo de intervalo do delay',
+      label: 'ID da unidade do delay',
       variable: delayTimeIntervalId,
       type: 'string',
     },
@@ -77,7 +77,7 @@ export async function sharedCreateMaintenance({
   if (period * periodData.unitTime >= frequency * frequencyData.unitTime) {
     throw new ServerMessage({
       statusCode: 400,
-      message: 'O tempo para resposta não pode ser maior ou igual a frequência.',
+      message: 'O prazo para execução não pode ser maior ou igual a frequência.',
     });
   }
 
