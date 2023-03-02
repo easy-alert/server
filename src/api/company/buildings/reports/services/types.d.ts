@@ -1,4 +1,5 @@
 export interface IFindBuildingMaintenancesHistory {
+  companyId: string;
   queryFilter: {
     maintenanceStatusId: string | undefined;
     buildingId: string | undefined;

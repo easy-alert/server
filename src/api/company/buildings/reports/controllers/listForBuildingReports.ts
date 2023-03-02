@@ -15,10 +15,13 @@ const buildingReportsServices = new BuildingReportsServices();
 export async function listForBuildingReports(req: Request, res: Response) {
   // @ts-ignore                                         por causa do bug do PaserdQs
   const queryFilter = buildingReportsServices.mountQueryFilter({ query: req.query });
+  // TODO Fazer filtro para frontend
 
-  const maintenancesHistory = await buildingReportsServices.findBuildingMaintenancesHistory({
-    queryFilter,
-  });
+  const { maintenancesHistory, filters } =
+    await buildingReportsServices.findBuildingMaintenancesHistory({
+      companyId: req.Company.id,
+      queryFilter,
+    });
 
   const maintenances: IMaintenancesData[] = [];
   const statusCount = {
@@ -72,5 +75,5 @@ export async function listForBuildingReports(req: Request, res: Response) {
     });
   });
 
-  return res.status(200).json({ totalCost, statusCount, maintenances });
+  return res.status(200).json({ filters, totalCost, statusCount, maintenances });
 }

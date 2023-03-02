@@ -41,70 +41,139 @@ export class BuildingReportsServices {
     };
   }
 
-  async findBuildingMaintenancesHistory({ queryFilter }: IFindBuildingMaintenancesHistory) {
-    return prisma.maintenanceHistory.findMany({
-      select: {
-        id: true,
-        notificationDate: true,
-        resolutionDate: true,
-
-        MaintenanceReport: {
-          select: {
-            cost: true,
-          },
-          where: {
-            id: queryFilter.responsibleSyndicId,
-          },
+  async findBuildingMaintenancesHistory({
+    companyId,
+    queryFilter,
+  }: IFindBuildingMaintenancesHistory) {
+    const [
+      buildinds,
+      companyCategories,
+      defaultCategories,
+      responsibles,
+      status,
+      maintenancesHistory,
+    ] = await prisma.$transaction([
+      prisma.building.findMany({
+        select: {
+          id: true,
+          name: true,
         },
-        MaintenancesStatus: {
-          select: {
-            name: true,
-          },
+        where: {
+          companyId,
         },
-
-        Building: {
-          select: {
-            name: true,
-
-            NotificationsConfigurations: {
-              select: {
-                name: true,
-              },
-              where: {
-                isMain: true,
+      }),
+      prisma.category.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+        where: {
+          ownerCompanyId: companyId,
+        },
+      }),
+      prisma.category.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+        where: {
+          ownerCompanyId: null,
+        },
+      }),
+      prisma.buildingNotificationConfiguration.findMany({
+        select: {
+          id: true,
+          name: true,
+          Building: {
+            select: {
+              Company: {
+                select: {
+                  name: true,
+                },
               },
             },
           },
         },
-        Maintenance: {
-          select: {
-            element: true,
-            activity: true,
-            Category: {
-              select: {
-                name: true,
+        where: {
+          isMain: true,
+          Building: {
+            companyId,
+          },
+        },
+      }),
+      prisma.maintenancesStatus.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+      }),
+
+      prisma.maintenanceHistory.findMany({
+        select: {
+          id: true,
+          notificationDate: true,
+          resolutionDate: true,
+
+          MaintenanceReport: {
+            select: {
+              cost: true,
+            },
+            where: {
+              id: queryFilter.responsibleSyndicId,
+            },
+          },
+          MaintenancesStatus: {
+            select: {
+              name: true,
+            },
+          },
+
+          Building: {
+            select: {
+              name: true,
+
+              NotificationsConfigurations: {
+                select: {
+                  name: true,
+                },
+                where: {
+                  isMain: true,
+                },
+              },
+            },
+          },
+          Maintenance: {
+            select: {
+              element: true,
+              activity: true,
+              Category: {
+                select: {
+                  name: true,
+                },
               },
             },
           },
         },
-      },
-      where: {
-        maintenanceStatusId: queryFilter.maintenanceStatusId,
-        buildingId: queryFilter.buildingId,
+        where: {
+          maintenanceStatusId: queryFilter.maintenanceStatusId,
+          buildingId: queryFilter.buildingId,
+          ownerCompanyId: companyId,
+          Maintenance: {
+            categoryId: queryFilter.categoryId,
+          },
 
-        Maintenance: {
-          categoryId: queryFilter.categoryId,
+          OR: queryFilter.dateFilter,
         },
-        // MaintenanceReport: {
-        //   every: {
-        //     ResponsibleSyndic: {
-        //       id: queryFilter.responsibleSyndicId,
-        //     },
-        //   },
-        // },
+      }),
+    ]);
 
-        OR: queryFilter.dateFilter,
-      },
-    });
+    const filters = {
+      buildinds,
+      categories: [...companyCategories, ...defaultCategories],
+      responsibles,
+      status,
+    };
+
+    return { maintenancesHistory, filters };
   }
 }
