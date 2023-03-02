@@ -38,6 +38,8 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
     buildingId,
   });
 
+  const buildingName = BuildingCategories[0].Building.name;
+
   // #region PROCESS DATA
 
   for (let i = 0; i < CategoriesData.length; i++) {
@@ -89,5 +91,5 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
     }
   }
 
-  return res.status(200).json(CategoriesData);
+  return res.status(200).json({ buildingName, CategoriesData });
 }

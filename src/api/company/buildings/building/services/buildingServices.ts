@@ -229,6 +229,12 @@ export class BuildingServices {
   async listMaintenances({ buildingId }: IListMaintenances) {
     return prisma.buildingCategory.findMany({
       include: {
+        Building: {
+          select: {
+            name: true,
+          },
+        },
+
         Category: {
           select: {
             id: true,
