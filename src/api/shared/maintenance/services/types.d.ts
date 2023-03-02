@@ -31,6 +31,24 @@ export interface IMaintenanceHistory {
   dueDate: Date;
 }
 
+export interface ICreateMaintenanceHistoryAndReport {
+  buildingId: string;
+  ownerCompanyId: string;
+  maintenanceId: string;
+  maintenanceStatusId: string;
+  notificationDate: Date;
+  resolutionDate?: Date;
+  dueDate: Date;
+
+  MaintenanceReport: {
+    create: {
+      cost: number;
+      observation: string;
+      responsibleSyndicId: string | null;
+    };
+  };
+}
+
 export interface IChangeMaintenanceHistoryStatus {
   maintenanceHistoryId: string;
   maintenanceStatusId: string;

@@ -218,11 +218,11 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       resolutionDate: today,
     });
   } else {
-    const overdueStatus = await sharedMaintenanceStatusServices.findByName({ name: 'completed' });
+    const completedStatus = await sharedMaintenanceStatusServices.findByName({ name: 'completed' });
 
     await sharedMaintenanceServices.changeMaintenanceHistoryStatus({
       maintenanceHistoryId,
-      maintenanceStatusId: overdueStatus.id,
+      maintenanceStatusId: completedStatus.id,
       resolutionDate: today,
     });
   }
@@ -284,7 +284,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
 
   return res.status(200).json({
     ServerMessage: {
-      statusCode: 201,
+      statusCode: 200,
       message: `Manutenção reportada com sucesso.`,
     },
   });
