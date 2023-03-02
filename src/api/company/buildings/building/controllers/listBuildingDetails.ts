@@ -79,9 +79,9 @@ export async function listBuildingDetails(req: Request, res: Response) {
   if (BuildingDetails?.MaintenancesHistory) {
     const MaintenancesCount = [
       {
-        name: 'expired',
-        singularLabel: 'vencida',
-        pluralLabel: 'vencidas',
+        name: 'completed',
+        singularLabel: 'concluída',
+        pluralLabel: 'concluídas',
         count: 0,
       },
       {
@@ -91,19 +91,33 @@ export async function listBuildingDetails(req: Request, res: Response) {
         count: 0,
       },
       {
-        name: 'completed',
-        singularLabel: 'concluída',
-        pluralLabel: 'concluídas',
+        name: 'expired',
+        singularLabel: 'vencida',
+        pluralLabel: 'vencidas',
         count: 0,
       },
     ];
 
     BuildingDetails.MaintenancesHistory.forEach((maintenance) => {
       switch (maintenance.MaintenancesStatus.name) {
-        case 'expired':
+        case 'completed':
           MaintenancesCount[0] = {
             ...MaintenancesCount[0],
             count: MaintenancesCount[0].count + 1,
+          };
+          break;
+
+        case 'overdue':
+          MaintenancesCount[0] = {
+            ...MaintenancesCount[0],
+            count: MaintenancesCount[0].count + 1,
+          };
+          break;
+
+        case 'expired':
+          MaintenancesCount[2] = {
+            ...MaintenancesCount[2],
+            count: MaintenancesCount[2].count + 1,
           };
           break;
 
@@ -115,19 +129,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
             count: MaintenancesCount[1].count + 1,
           };
           break;
-        case 'completed':
-          MaintenancesCount[2] = {
-            ...MaintenancesCount[2],
-            count: MaintenancesCount[2].count + 1,
-          };
-          break;
 
-        case 'overdue':
-          MaintenancesCount[2] = {
-            ...MaintenancesCount[2],
-            count: MaintenancesCount[2].count + 1,
-          };
-          break;
         default:
           break;
       }
