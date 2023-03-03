@@ -28,7 +28,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
     },
   ]);
 
-  await buildingServices.findById({ buildingId });
+  const building = await buildingServices.findById({ buildingId });
 
   // #endregion
 
@@ -158,6 +158,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
   }
 
   return res.status(200).json({
+    building,
     BuildingDetails,
     usedMaintenancesCount: usedBuildingMaintenancesIds.length,
     totalMaintenancesCount,

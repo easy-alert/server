@@ -32,9 +32,6 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
   const { buildingId } = req.body;
   const bodyData = req.body.data;
 
-  console.log(bodyData);
-  console.log(bodyData.Maintenances);
-
   // #region VALIDATIONS
 
   validator.check([
