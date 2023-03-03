@@ -95,9 +95,10 @@ export async function createBuilding(req: Request, res: Response) {
 
   // #endregion
 
-  await buildingServices.create({ data });
+  const building = await buildingServices.create({ data });
 
   return res.status(200).json({
+    building,
     ServerMessage: {
       statusCode: 201,
       message: `Edificação cadastrada com sucesso.`,

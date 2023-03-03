@@ -27,7 +27,6 @@ export async function listBuildingDetails(req: Request, res: Response) {
       variable: buildingId,
     },
   ]);
-
   await buildingServices.findById({ buildingId });
 
   // #endregion

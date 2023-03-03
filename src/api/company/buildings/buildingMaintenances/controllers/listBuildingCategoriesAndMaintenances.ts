@@ -24,7 +24,7 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
       variable: buildingId,
     },
   ]);
-  await buildingServices.findById({
+  const building = await buildingServices.findById({
     buildingId,
   });
   // #endregion
@@ -37,8 +37,6 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
   const BuildingCategories = await buildingServices.listMaintenances({
     buildingId,
   });
-
-  const buildingName = BuildingCategories[0].Building.name;
 
   // #region PROCESS DATA
 
@@ -69,7 +67,7 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
         categoriesDataMaintenanceIndex < CategoriesData[categoriesDataIndex].Maintenances.length;
         categoriesDataMaintenanceIndex++
       ) {
-        // maintenances bulding
+        // maintenances building
         for (
           let buildingDataMaintenanceIndex = 0;
           buildingDataMaintenanceIndex < BuildingCategories[buildingDataIndex].Maintenances.length;
@@ -91,5 +89,5 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
     }
   }
 
-  return res.status(200).json({ buildingName, CategoriesData });
+  return res.status(200).json({ buildingName: building?.name, CategoriesData });
 }
