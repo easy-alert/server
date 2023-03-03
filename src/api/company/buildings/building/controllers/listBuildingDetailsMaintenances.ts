@@ -30,5 +30,5 @@ export async function listBuildingDetailsMaintenances(req: Request, res: Respons
     buildingId,
   });
 
-  return res.status(200).json({ building, BuildingMaintenances });
+  return res.status(200).json({ buildingName: building?.name, BuildingMaintenances });
 }
