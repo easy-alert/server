@@ -30,12 +30,12 @@ export class BuildingReportsServices {
                   gte: new Date(new Date(String(query.startDate)).toISOString().split('T')[0]),
                 },
               },
-              {
-                resolutionDate: {
-                  lte: new Date(new Date(String(query.endDate)).toISOString().split('T')[0]),
-                  gte: new Date(new Date(String(query.startDate)).toISOString().split('T')[0]),
-                },
-              },
+              // {
+              //   resolutionDate: {
+              //     lte: new Date(new Date(String(query.endDate)).toISOString().split('T')[0]),
+              //     gte: new Date(new Date(String(query.startDate)).toISOString().split('T')[0]),
+              //   },
+              // },
             ]
           : undefined,
     };

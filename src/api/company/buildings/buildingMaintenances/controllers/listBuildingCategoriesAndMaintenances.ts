@@ -67,7 +67,7 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
         categoriesDataMaintenanceIndex < CategoriesData[categoriesDataIndex].Maintenances.length;
         categoriesDataMaintenanceIndex++
       ) {
-        // maintenances bulding
+        // maintenances building
         for (
           let buildingDataMaintenanceIndex = 0;
           buildingDataMaintenanceIndex < BuildingCategories[buildingDataIndex].Maintenances.length;

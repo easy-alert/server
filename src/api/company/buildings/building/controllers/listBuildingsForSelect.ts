@@ -23,10 +23,10 @@ export async function listBuildingForSelect(req: Request, res: Response) {
 
   await buildingServices.findById({ buildingId });
 
-  const BuldingsForSelect = await buildingServices.listForSelect({
+  const BuildingsForSelect = await buildingServices.listForSelect({
     companyId: req.Company.id,
     buildingId,
   });
 
-  return res.status(200).json(BuldingsForSelect);
+  return res.status(200).json(BuildingsForSelect);
 }

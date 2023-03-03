@@ -14,7 +14,7 @@ const validator = new Validator();
 
 export class BuildingServices {
   async create({ data }: ICreateBuilding) {
-    await prisma.building.create({
+    return prisma.building.create({
       data,
     });
   }
