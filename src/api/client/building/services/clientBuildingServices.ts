@@ -85,6 +85,8 @@ export class ClientBuildingServices {
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
             isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -96,6 +98,8 @@ export class ClientBuildingServices {
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
             isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
