@@ -16,11 +16,10 @@ export async function listForBuildingReports(req: Request, res: Response) {
   // @ts-ignore                                         por causa do bug do PaserdQs
   const queryFilter = buildingReportsServices.mountQueryFilter({ query: req.query });
 
-  const { maintenancesHistory, filters } =
-    await buildingReportsServices.findBuildingMaintenancesHistory({
-      companyId: req.Company.id,
-      queryFilter,
-    });
+  const { maintenancesHistory } = await buildingReportsServices.findBuildingMaintenancesHistory({
+    companyId: req.Company.id,
+    queryFilter,
+  });
 
   const maintenances: IMaintenancesData[] = [];
   const counts = {
@@ -76,5 +75,5 @@ export async function listForBuildingReports(req: Request, res: Response) {
     });
   });
 
-  return res.status(200).json({ filters, counts, maintenances });
+  return res.status(200).json({ counts, maintenances });
 }
