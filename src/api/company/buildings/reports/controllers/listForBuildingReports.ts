@@ -15,7 +15,6 @@ const buildingReportsServices = new BuildingReportsServices();
 export async function listForBuildingReports(req: Request, res: Response) {
   // @ts-ignore                                         por causa do bug do PaserdQs
   const queryFilter = buildingReportsServices.mountQueryFilter({ query: req.query });
-  // TODO Fazer filtro para frontend
 
   const { maintenancesHistory, filters } =
     await buildingReportsServices.findBuildingMaintenancesHistory({
@@ -24,37 +23,36 @@ export async function listForBuildingReports(req: Request, res: Response) {
     });
 
   const maintenances: IMaintenancesData[] = [];
-  const statusCount = {
+  const counts = {
     completed: 0,
     pending: 0,
     expired: 0,
+    totalCost: 0,
   };
-
-  let totalCost = 0;
 
   maintenancesHistory.forEach((maintenance) => {
     if (
       maintenance.MaintenanceReport.length > 0 &&
       maintenance.MaintenanceReport[0].cost !== null
     ) {
-      totalCost += maintenance.MaintenanceReport[0].cost;
+      counts.totalCost += maintenance.MaintenanceReport[0].cost;
     }
 
     switch (maintenance.MaintenancesStatus.name) {
       case 'completed':
-        statusCount.completed += 1;
+        counts.completed += 1;
         break;
 
       case 'overdue':
-        statusCount.completed += 1;
+        counts.completed += 1;
         break;
 
       case 'pending':
-        statusCount.pending += 1;
+        counts.pending += 1;
         break;
 
       case 'expired':
-        statusCount.expired += 1;
+        counts.expired += 1;
         break;
 
       default:
@@ -67,7 +65,10 @@ export async function listForBuildingReports(req: Request, res: Response) {
       categoryName: maintenance.Maintenance.Category.name,
       element: maintenance.Maintenance.element,
       activity: maintenance.Maintenance.activity,
-      responsible: maintenance.Building.NotificationsConfigurations[0].name,
+      responsible:
+        maintenance.Building.NotificationsConfigurations.length > 0
+          ? maintenance.Building.NotificationsConfigurations[0].name
+          : null,
       notificationDate: maintenance.notificationDate,
       resolutionDate: maintenance.resolutionDate,
       status: maintenance.MaintenancesStatus.name,
@@ -75,5 +76,5 @@ export async function listForBuildingReports(req: Request, res: Response) {
     });
   });
 
-  return res.status(200).json({ filters, totalCost, statusCount, maintenances });
+  return res.status(200).json({ filters, counts, maintenances });
 }

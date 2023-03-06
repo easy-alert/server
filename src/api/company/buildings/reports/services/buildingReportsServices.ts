@@ -46,7 +46,7 @@ export class BuildingReportsServices {
     queryFilter,
   }: IFindBuildingMaintenancesHistory) {
     const [
-      buildinds,
+      buildings,
       companyCategories,
       defaultCategories,
       responsibles,
@@ -84,15 +84,15 @@ export class BuildingReportsServices {
         select: {
           id: true,
           name: true,
-          Building: {
-            select: {
-              Company: {
-                select: {
-                  name: true,
-                },
-              },
-            },
-          },
+          // Building: {
+          //   select: {
+          //     Company: {
+          //       select: {
+          //         name: true,
+          //       },
+          //     },
+          //   },
+          // },
         },
         where: {
           isMain: true,
@@ -105,9 +105,10 @@ export class BuildingReportsServices {
         select: {
           id: true,
           name: true,
+          pluralLabel: true,
+          singularLabel: true,
         },
       }),
-
       prisma.maintenanceHistory.findMany({
         select: {
           id: true,
@@ -168,7 +169,7 @@ export class BuildingReportsServices {
     ]);
 
     const filters = {
-      buildinds,
+      buildings,
       categories: [...companyCategories, ...defaultCategories],
       responsibles,
       status,

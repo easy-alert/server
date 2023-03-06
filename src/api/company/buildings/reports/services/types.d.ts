@@ -26,7 +26,7 @@ export interface IMaintenancesData {
   categoryName: string;
   element: string;
   activity: string;
-  responsible: string;
+  responsible: string | null;
   notificationDate: Date;
   resolutionDate: Date | null;
   status: string;
