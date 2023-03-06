@@ -5,6 +5,7 @@ import { addDays } from '../../../../../utils/functions';
 import { Validator } from '../../../../../utils/validator/validator';
 import { SharedCategoryServices } from '../../../../shared/categories/services/sharedCategoryServices';
 import { SharedMaintenanceServices } from '../../../../shared/maintenance/services/sharedMaintenanceServices';
+import { ICreateMaintenanceHistoryAndReport } from '../../../../shared/maintenance/services/types';
 import { SharedMaintenanceStatusServices } from '../../../../shared/maintenanceStatus/services/sharedMaintenanceStatusServices';
 import { TimeIntervalServices } from '../../../../shared/timeInterval/services/timeIntervalServices';
 import { BuildingServices } from '../../building/services/buildingServices';
@@ -12,6 +13,7 @@ import { BuildingMaintenanceHistoryServices } from '../../buildingMaintenancesHi
 import { BuildingCategoryAndMaintenanceServices } from '../services/buildingCategoryAndMaintenanceServices';
 import { ICreateBuildingCategory } from '../services/types';
 import { IDateForCreateHistory } from './types';
+import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
 // CLASS
 
@@ -23,11 +25,15 @@ const buildingServices = new BuildingServices();
 const timeIntervalServices = new TimeIntervalServices();
 const maintenancesStatusServices = new SharedMaintenanceStatusServices();
 const buildingMaintenancesHistoryServices = new BuildingMaintenanceHistoryServices();
+const sharedMaintenanceStatusServices = new SharedMaintenanceStatusServices();
+
 // #endregion
 
 export async function editBuildingCategoriesAndMaintenances(req: Request, res: Response) {
   const { buildingId } = req.body;
   const bodyData = req.body.data;
+
+  const today = new Date(new Date().toISOString().split('T')[0]);
 
   // #region VALIDATIONS
 
@@ -61,6 +67,26 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         },
       ]);
 
+      if (
+        bodyData[i].Maintenances[j].resolutionDate &&
+        new Date(bodyData[i].Maintenances[j].resolutionDate) > today
+      ) {
+        throw new ServerMessage({
+          statusCode: 400,
+          message: 'A data da última conclusão deve ser menor ou igual a hoje',
+        });
+      }
+
+      if (
+        bodyData[i].Maintenances[j].notificationDate &&
+        new Date(bodyData[i].Maintenances[j].notificationDate) < today
+      ) {
+        throw new ServerMessage({
+          statusCode: 400,
+          message: 'A data da primeira notificação deve ser maior que hoje',
+        });
+      }
+
       await sharedMaintenanceServices.findById({ maintenanceId: bodyData[i].Maintenances[j].id });
     }
   }
@@ -68,7 +94,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
   // #endregion
 
   // #region DELETING OLD DATA
-  const existsMaintenances = await buildingCategoryAndMaintenanceServices.findByBuldingId({
+  const existsMaintenances = await buildingCategoryAndMaintenanceServices.findByBuildingId({
     buildingId,
   });
 
@@ -79,14 +105,26 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
   // #endregion
 
   // #region CREATING NEW DATA
+
   let data: ICreateBuildingCategory;
 
   const DataForCreateHistory: IDateForCreateHistory[] = [];
   const maintenances = [];
+  const maintenancesForHistory = [];
 
   for (let i = 0; i < bodyData.length; i++) {
     for (let j = 0; j < bodyData[i].Maintenances.length; j++) {
       maintenances.push({ maintenanceId: bodyData[i].Maintenances[j].id });
+
+      maintenancesForHistory.push({
+        maintenanceId: bodyData[i].Maintenances[j].id,
+        resolutionDate: bodyData[i].Maintenances[j].resolutionDate
+          ? new Date(bodyData[i].Maintenances[j].resolutionDate)
+          : null,
+        notificationDate: bodyData[i].Maintenances[j].notificationDate
+          ? new Date(bodyData[i].Maintenances[j].notificationDate)
+          : null,
+      });
     }
 
     data = {
@@ -101,6 +139,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
     await buildingCategoryAndMaintenanceServices.createCategoriesAndMaintenances(data);
   }
+
   // #endregion
 
   // #region CREATING MAINTENANCES HISTORY
@@ -110,49 +149,119 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
   const buildingDeliveryDate = Building!.deliveryDate;
   const maintenanceStatus = await maintenancesStatusServices.findByName({ name: 'pending' });
 
-  for (let i = 0; i < maintenances.length; i++) {
+  for (let i = 0; i < maintenancesForHistory.length; i++) {
     // getting maintenances data
     const maintenance: any = await sharedMaintenanceServices.findById({
-      maintenanceId: maintenances[i].maintenanceId,
+      maintenanceId: maintenancesForHistory[i].maintenanceId,
     });
-    maintenances[i] = maintenance;
+
+    maintenances[i] = {
+      ...maintenance,
+      notificationDate: maintenancesForHistory[i].notificationDate,
+      resolutionDate: maintenancesForHistory[i].resolutionDate,
+    };
   }
+
+  const completedStatus = await sharedMaintenanceStatusServices.findByName({ name: 'completed' });
+
+  let notificationDate = null;
 
   for (let i = 0; i < maintenances.length; i++) {
     const timeIntervalDelay = await timeIntervalServices.findById({
       timeIntervalId: maintenances[i].delayTimeIntervalId,
     });
-
     const timeIntervalPeriod = await timeIntervalServices.findById({
       timeIntervalId: maintenances[i].periodTimeIntervalId,
     });
-
     const timeIntervalFrequency = await timeIntervalServices.findById({
       timeIntervalId: maintenances[i].frequencyTimeIntervalId,
     });
 
-    let notificationDate = noWeekendTimeDate({
-      date: addDays({
-        date: buildingDeliveryDate,
-        days:
-          maintenances[i].frequency * timeIntervalFrequency.unitTime +
-          maintenances[i].delay * timeIntervalDelay.unitTime,
-      }),
-      interval: maintenances[i].delay * timeIntervalDelay.unitTime,
-    });
-
-    const today = new Date(new Date().toISOString().split('T')[0]);
-
-    if (buildingDeliveryDate < today) {
+    if (maintenances[i].resolutionDate === null) {
       notificationDate = noWeekendTimeDate({
         date: addDays({
-          date: today,
+          date: buildingDeliveryDate,
           days:
             maintenances[i].frequency * timeIntervalFrequency.unitTime +
             maintenances[i].delay * timeIntervalDelay.unitTime,
         }),
         interval: maintenances[i].delay * timeIntervalDelay.unitTime,
       });
+
+      if (buildingDeliveryDate < today) {
+        notificationDate = noWeekendTimeDate({
+          date: addDays({
+            date: today,
+            days:
+              maintenances[i].frequency * timeIntervalFrequency.unitTime +
+              maintenances[i].delay * timeIntervalDelay.unitTime,
+          }),
+          interval: maintenances[i].delay * timeIntervalDelay.unitTime,
+        });
+      }
+
+      if (maintenances[i].notificationDate !== null) {
+        notificationDate = maintenances[i].notificationDate;
+      }
+    } else {
+      // #region Create History for maintenanceHistory
+      const dataForCreateHistoryAndReport: ICreateMaintenanceHistoryAndReport = {
+        buildingId,
+        maintenanceId: maintenances[i].id,
+        ownerCompanyId: req.Company.id,
+        maintenanceStatusId: completedStatus.id,
+        notificationDate: maintenances[i].resolutionDate,
+        resolutionDate: maintenances[i].resolutionDate,
+        dueDate: maintenances[i].resolutionDate,
+        MaintenanceReport: {
+          create: {
+            cost: 0,
+            observation: '',
+            responsibleSyndicId: null,
+          },
+        },
+      };
+      await sharedMaintenanceServices.createHistoryAndReport({
+        data: dataForCreateHistoryAndReport,
+      });
+
+      // #endregion
+
+      const resolutionDate = noWeekendTimeDate({
+        date: addDays({
+          date: maintenances[i].resolutionDate,
+          days:
+            maintenances[i].frequency * timeIntervalFrequency.unitTime +
+            maintenances[i].delay * timeIntervalDelay.unitTime,
+        }),
+        interval: maintenances[i].delay * timeIntervalDelay.unitTime,
+      });
+
+      notificationDate = noWeekendTimeDate({
+        date: addDays({
+          date: resolutionDate,
+          days:
+            maintenances[i].frequency * timeIntervalFrequency.unitTime +
+            maintenances[i].delay * timeIntervalDelay.unitTime,
+        }),
+        interval: maintenances[i].delay * timeIntervalDelay.unitTime,
+      });
+
+      if (resolutionDate < today) {
+        notificationDate = noWeekendTimeDate({
+          date: addDays({
+            date: today,
+            days:
+              maintenances[i].frequency * timeIntervalFrequency.unitTime +
+              maintenances[i].delay * timeIntervalDelay.unitTime,
+          }),
+          interval: maintenances[i].delay * timeIntervalDelay.unitTime,
+        });
+      }
+
+      if (maintenances[i].notificationDate !== null) {
+        notificationDate = maintenances[i].notificationDate;
+      }
     }
 
     const dueDate = noWeekendTimeDate({

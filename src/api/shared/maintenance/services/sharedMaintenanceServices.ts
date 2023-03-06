@@ -4,6 +4,7 @@ import { Validator } from '../../../../utils/validator/validator';
 import {
   IChangeMaintenanceHistoryStatus,
   ICreateMaintenance,
+  ICreateMaintenanceHistoryAndReport,
   IEditMaintenance,
   IMaintenanceHistory,
 } from './types';
@@ -46,7 +47,13 @@ export class SharedMaintenanceServices {
   }
 
   async createHistory({ data }: { data: IMaintenanceHistory[] }) {
-    await prisma.maintenanceHistory.createMany({
+    return prisma.maintenanceHistory.createMany({
+      data,
+    });
+  }
+
+  async createHistoryAndReport({ data }: { data: ICreateMaintenanceHistoryAndReport }) {
+    return prisma.maintenanceHistory.create({
       data,
     });
   }

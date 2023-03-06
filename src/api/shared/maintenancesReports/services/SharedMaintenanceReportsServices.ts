@@ -15,6 +15,7 @@ export class SharedMaintenanceReportsServices {
     const maintenanceHistory = await prisma.maintenanceHistory.findFirst({
       select: {
         id: true,
+        notificationDate: true,
         dueDate: true,
 
         MaintenanceReport: {
@@ -63,6 +64,8 @@ export class SharedMaintenanceReportsServices {
             element: true,
             activity: true,
             responsible: true,
+            source: true,
+            observation: true,
           },
         },
       },

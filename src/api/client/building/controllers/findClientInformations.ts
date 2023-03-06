@@ -13,7 +13,7 @@ export async function findClientInformations(req: Request, res: Response) {
   const mainContact = await clientBuildingServices.findMainContactInformation({ buildingId });
 
   const formattedMainContact = {
-    buldingName: mainContact?.name,
+    buildingName: mainContact?.name,
     annexes: mainContact?.Annexes,
     mainContact: mainContact?.NotificationsConfigurations[0] ?? null,
   };

@@ -25,10 +25,12 @@ import {
   editBuildingCategoriesAndMaintenances,
   listBuildingCategoriesAndMaintenances,
 } from './buildingMaintenances/controllers';
+
 import { listBuildingForSelect } from './building/controllers/listBuildingsForSelect';
 import { sendEmailConfirmationBuildingNotificationConfiguration } from './notificationConfiguration/controllers/sendEmailConfirmationBuildingNotificationConfiguration';
 import { buildingAnnexeRouter } from './annexes/annexe.routes';
 import { buildingChangeBanner } from './buildingBanners/controllers/buildingChangeBanner';
+import { listForBuildingReports } from './reports/controllers/listForBuildingReports';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -71,3 +73,6 @@ buildingRouter.use('/annexes', buildingAnnexeRouter);
 
 // BUILDING BANNERS
 buildingRouter.post('/banners/change', buildingChangeBanner);
+
+// BUILDING REPORTS
+buildingRouter.get('/reports/list', listForBuildingReports);

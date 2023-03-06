@@ -14,7 +14,7 @@ const validator = new Validator();
 
 export class BuildingServices {
   async create({ data }: ICreateBuilding) {
-    await prisma.building.create({
+    return prisma.building.create({
       data,
     });
   }
@@ -229,6 +229,12 @@ export class BuildingServices {
   async listMaintenances({ buildingId }: IListMaintenances) {
     return prisma.buildingCategory.findMany({
       include: {
+        Building: {
+          select: {
+            name: true,
+          },
+        },
+
         Category: {
           select: {
             id: true,
