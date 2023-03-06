@@ -118,6 +118,9 @@ export async function clientBuildingDetails(req: Request, res: Response) {
         MaintenancesPending[i].Maintenance.frequency *
         MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
       maintenanceData: MaintenancesPending[i],
+      periodDaysInterval:
+        MaintenancesPending[i].Maintenance.period *
+        MaintenancesPending[i].Maintenance.PeriodTimeInterval.unitTime,
     });
 
     maintenances.push(...intervals);

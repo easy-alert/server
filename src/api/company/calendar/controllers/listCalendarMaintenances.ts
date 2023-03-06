@@ -45,6 +45,9 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
         MaintenancesPending[i].Maintenance.frequency *
         MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
       maintenanceData: MaintenancesPending[i],
+      periodDaysInterval:
+        MaintenancesPending[i].Maintenance.period *
+        MaintenancesPending[i].Maintenance.PeriodTimeInterval.unitTime,
     });
     Dates.push(...intervals);
   }
@@ -62,10 +65,10 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
 
   const arr = Object.keys(gp).map((k) => gp[k]);
 
-  const DatesWeeks = [];
+  const DatesMonths = [];
 
   for (let i = 0; i < arr.length; i += 1) {
-    DatesWeeks.push({
+    DatesMonths.push({
       id: arr[i][0].notificationDate,
       date: arr[i][0].notificationDate,
       pending: arr[i].filter((e: any) => e.MaintenancesStatus.name === 'pending').length,
@@ -82,7 +85,7 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
   return res.status(200).json({
     Filter,
     Dates: {
-      Months: DatesWeeks,
+      Months: DatesMonths,
       Weeks: Dates,
     },
   });

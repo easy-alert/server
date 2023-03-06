@@ -84,7 +84,7 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
-
+            isFuture: maintenance.isFuture ?? false,
             dateInfos,
           });
           break;
@@ -95,6 +95,7 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
             dateInfos,
           });
           break;
@@ -104,6 +105,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -113,6 +117,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -122,6 +129,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -131,6 +141,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -140,6 +153,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -149,6 +165,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -158,6 +177,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -167,6 +189,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -176,6 +201,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -185,6 +213,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -425,6 +456,15 @@ export class ClientBuildingServices {
               frequency: true,
               activity: true,
               FrequencyTimeInterval: {
+                select: {
+                  unitTime: true,
+                  singularLabel: true,
+                  pluralLabel: true,
+                },
+              },
+
+              period: true,
+              PeriodTimeInterval: {
                 select: {
                   unitTime: true,
                   singularLabel: true,

@@ -1,7 +1,12 @@
 import { addZeroInNumberFront } from './addZeroInNumberFront';
 
 export const getDateInfos = (date: Date) => {
-  let infos = { dayNumber: '', name: '', smName: '', year: 0 };
+  let infos = {
+    dayNumber: '',
+    name: '',
+    smName: '',
+    year: 0,
+  };
 
   switch (date.getUTCDay()) {
     case 0:
