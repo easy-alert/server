@@ -4,6 +4,7 @@
 import { prisma } from '../../../../../prisma';
 import { addTimeDate } from '../../../../utils/dateTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
+import { addDays } from '../../../../utils/functions';
 
 import { IRecurringDates } from './types';
 
@@ -12,13 +13,32 @@ import { IRecurringDates } from './types';
 // const validator = new Validator();
 
 export class SharedCalendarServices {
-  recurringDates({ startDate, endDate, interval, maintenanceData }: IRecurringDates) {
+  recurringDates({
+    startDate,
+    endDate,
+    interval,
+    maintenanceData,
+    periodDaysInterval,
+  }: IRecurringDates) {
     let date = startDate;
     const dates = [];
     let isFuture = false;
 
     while (date < endDate) {
-      dates.push({ ...maintenanceData, notificationDate: date, isFuture });
+      dates.push({
+        ...maintenanceData,
+        notificationDate: date,
+        isFuture,
+        periodDaysInterval,
+        expectedNotificationDate: date,
+        expectedDueDate: noWeekendTimeDate({
+          date: addDays({
+            date,
+            days: periodDaysInterval,
+          }),
+          interval: periodDaysInterval,
+        }),
+      });
       date = noWeekendTimeDate({ date: addTimeDate({ date, days: interval }), interval });
       isFuture = true;
     }
@@ -110,6 +130,15 @@ export class SharedCalendarServices {
               element: true,
               frequency: true,
               FrequencyTimeInterval: {
+                select: {
+                  unitTime: true,
+                  singularLabel: true,
+                  pluralLabel: true,
+                },
+              },
+
+              period: true,
+              PeriodTimeInterval: {
                 select: {
                   unitTime: true,
                   singularLabel: true,

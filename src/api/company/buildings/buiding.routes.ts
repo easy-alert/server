@@ -31,6 +31,7 @@ import { sendEmailConfirmationBuildingNotificationConfiguration } from './notifi
 import { buildingAnnexeRouter } from './annexes/annexe.routes';
 import { buildingChangeBanner } from './buildingBanners/controllers/buildingChangeBanner';
 import { listForBuildingReports } from './reports/controllers/listForBuildingReports';
+import { listForSelectBuildingReports } from './reports/controllers/listForSelectBuildingReports';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -75,4 +76,6 @@ buildingRouter.use('/annexes', buildingAnnexeRouter);
 buildingRouter.post('/banners/change', buildingChangeBanner);
 
 // BUILDING REPORTS
+buildingRouter.get('/reports/listforselect', listForSelectBuildingReports);
+
 buildingRouter.get('/reports/list', listForBuildingReports);
