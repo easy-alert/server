@@ -1,5 +1,6 @@
 // #region IMPORTS
 import { prisma } from '../../../../../../prisma';
+import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
 // TYPES
 import { IFindBuildingMaintenancesHistory, IListForBuildingReportQuery } from './types';
@@ -14,6 +15,13 @@ import { IFindBuildingMaintenancesHistory, IListForBuildingReportQuery } from '.
 
 export class BuildingReportsServices {
   mountQueryFilter({ query }: IListForBuildingReportQuery) {
+    if ((query.startDate && !query.endDate) || (!query.startDate && query.endDate)) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'A data de notificação inicial deve ser menor que a data de notificação final',
+      });
+    }
+
     return {
       maintenanceStatusId:
         query.maintenanceStatusId !== ' ' ? String(query.maintenanceStatusId) : undefined,
