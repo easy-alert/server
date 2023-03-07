@@ -12,7 +12,7 @@ import { BuildingServices } from '../../building/services/buildingServices';
 import { BuildingMaintenanceHistoryServices } from '../../buildingMaintenancesHistory/services/buildingMaintenanceHistoryServices';
 import { BuildingCategoryAndMaintenanceServices } from '../services/buildingCategoryAndMaintenanceServices';
 import { ICreateBuildingCategory } from '../services/types';
-import { IDateForCreateHistory } from './types';
+import { IDateForCreateHistory, IMaintenancesForHistorySelected } from './types';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
 // CLASS
@@ -109,22 +109,31 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
   let data: ICreateBuildingCategory;
 
   const DataForCreateHistory: IDateForCreateHistory[] = [];
-  const maintenances = [];
-  const maintenancesForHistory = [];
+  const maintenancesForCreate = [];
+
+  const maintenancesForHistorySelected: IMaintenancesForHistorySelected[] = [];
+  const maintenancesForHistorySelectedIds = [];
+
+  const maintenancesForHistoryNotSelectedIds = [];
 
   for (let i = 0; i < bodyData.length; i++) {
     for (let j = 0; j < bodyData[i].Maintenances.length; j++) {
-      maintenances.push({ maintenanceId: bodyData[i].Maintenances[j].id });
+      if (bodyData[i].Maintenances[j].isSelected) {
+        maintenancesForCreate.push({ maintenanceId: bodyData[i].Maintenances[j].id });
+        maintenancesForHistorySelected.push({
+          maintenanceId: bodyData[i].Maintenances[j].id,
+          resolutionDate: bodyData[i].Maintenances[j].resolutionDate
+            ? new Date(bodyData[i].Maintenances[j].resolutionDate)
+            : null,
+          notificationDate: bodyData[i].Maintenances[j].notificationDate
+            ? new Date(bodyData[i].Maintenances[j].notificationDate)
+            : null,
+        });
 
-      maintenancesForHistory.push({
-        maintenanceId: bodyData[i].Maintenances[j].id,
-        resolutionDate: bodyData[i].Maintenances[j].resolutionDate
-          ? new Date(bodyData[i].Maintenances[j].resolutionDate)
-          : null,
-        notificationDate: bodyData[i].Maintenances[j].notificationDate
-          ? new Date(bodyData[i].Maintenances[j].notificationDate)
-          : null,
-      });
+        maintenancesForHistorySelectedIds.push(bodyData[i].Maintenances[j].id);
+      } else {
+        maintenancesForHistoryNotSelectedIds.push(bodyData[i].Maintenances[j].id);
+      }
     }
 
     data = {
@@ -132,7 +141,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       categoryId: bodyData[i].categoryId,
       Maintenances: {
         createMany: {
-          data: maintenances,
+          data: maintenancesForCreate,
         },
       },
     };
@@ -144,48 +153,67 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
   // #region CREATING MAINTENANCES HISTORY
 
-  await buildingMaintenancesHistoryServices.deletePendingMaintenancesHistory({ buildingId });
+  await buildingMaintenancesHistoryServices.deletePendingMaintenancesHistory({
+    maintenancesIds: maintenancesForHistoryNotSelectedIds,
+  });
 
   const buildingDeliveryDate = Building!.deliveryDate;
   const maintenanceStatus = await maintenancesStatusServices.findByName({ name: 'pending' });
 
-  for (let i = 0; i < maintenancesForHistory.length; i++) {
+  const maintenanceHistory = await sharedMaintenanceServices.findManyHistory({ buildingId });
+
+  const maintenancesForCreateHistory = [];
+
+  for (let i = 0; i < maintenancesForHistorySelected.length; i++) {
+    const maintenanceInHistory = maintenanceHistory.some(
+      (maintenance) =>
+        maintenance.maintenanceId === maintenancesForHistorySelected[i].maintenanceId,
+    );
+
+    if (!maintenanceInHistory) {
+      maintenancesForCreateHistory.push(maintenancesForHistorySelected[i]);
+    }
+  }
+
+  const updatedsMaintenances = [];
+
+  for (let i = 0; i < maintenancesForCreateHistory.length; i++) {
     // getting maintenances data
+
     const maintenance: any = await sharedMaintenanceServices.findById({
-      maintenanceId: maintenancesForHistory[i].maintenanceId,
+      maintenanceId: maintenancesForCreateHistory[i].maintenanceId,
     });
 
-    maintenances[i] = {
+    updatedsMaintenances[i] = {
       ...maintenance,
-      notificationDate: maintenancesForHistory[i].notificationDate,
-      resolutionDate: maintenancesForHistory[i].resolutionDate,
+      notificationDate: maintenancesForCreateHistory[i].notificationDate,
+      resolutionDate: maintenancesForCreateHistory[i].resolutionDate,
     };
   }
 
   const completedStatus = await sharedMaintenanceStatusServices.findByName({ name: 'completed' });
 
   let notificationDate = null;
-
-  for (let i = 0; i < maintenances.length; i++) {
+  for (let i = 0; i < updatedsMaintenances.length; i++) {
     const timeIntervalDelay = await timeIntervalServices.findById({
-      timeIntervalId: maintenances[i].delayTimeIntervalId,
+      timeIntervalId: updatedsMaintenances[i].delayTimeIntervalId,
     });
     const timeIntervalPeriod = await timeIntervalServices.findById({
-      timeIntervalId: maintenances[i].periodTimeIntervalId,
+      timeIntervalId: updatedsMaintenances[i].periodTimeIntervalId,
     });
     const timeIntervalFrequency = await timeIntervalServices.findById({
-      timeIntervalId: maintenances[i].frequencyTimeIntervalId,
+      timeIntervalId: updatedsMaintenances[i].frequencyTimeIntervalId,
     });
 
-    if (maintenances[i].resolutionDate === null) {
+    if (updatedsMaintenances[i].resolutionDate === null) {
       notificationDate = noWeekendTimeDate({
         date: addDays({
           date: buildingDeliveryDate,
           days:
-            maintenances[i].frequency * timeIntervalFrequency.unitTime +
-            maintenances[i].delay * timeIntervalDelay.unitTime,
+            updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime +
+            updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
         }),
-        interval: maintenances[i].delay * timeIntervalDelay.unitTime,
+        interval: updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
       });
 
       if (buildingDeliveryDate < today) {
@@ -193,26 +221,26 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
           date: addDays({
             date: today,
             days:
-              maintenances[i].frequency * timeIntervalFrequency.unitTime +
-              maintenances[i].delay * timeIntervalDelay.unitTime,
+              updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime +
+              updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
           }),
-          interval: maintenances[i].delay * timeIntervalDelay.unitTime,
+          interval: updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
         });
       }
 
-      if (maintenances[i].notificationDate !== null) {
-        notificationDate = maintenances[i].notificationDate;
+      if (updatedsMaintenances[i].notificationDate !== null) {
+        notificationDate = updatedsMaintenances[i].notificationDate;
       }
     } else {
       // #region Create History for maintenanceHistory
       const dataForCreateHistoryAndReport: ICreateMaintenanceHistoryAndReport = {
         buildingId,
-        maintenanceId: maintenances[i].id,
+        maintenanceId: updatedsMaintenances[i].id,
         ownerCompanyId: req.Company.id,
         maintenanceStatusId: completedStatus.id,
-        notificationDate: maintenances[i].resolutionDate,
-        resolutionDate: maintenances[i].resolutionDate,
-        dueDate: maintenances[i].resolutionDate,
+        notificationDate: updatedsMaintenances[i].resolutionDate,
+        resolutionDate: updatedsMaintenances[i].resolutionDate,
+        dueDate: updatedsMaintenances[i].resolutionDate,
         MaintenanceReport: {
           create: {
             cost: 0,
@@ -229,22 +257,22 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
       const resolutionDate = noWeekendTimeDate({
         date: addDays({
-          date: maintenances[i].resolutionDate,
+          date: updatedsMaintenances[i].resolutionDate,
           days:
-            maintenances[i].frequency * timeIntervalFrequency.unitTime +
-            maintenances[i].delay * timeIntervalDelay.unitTime,
+            updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime +
+            updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
         }),
-        interval: maintenances[i].delay * timeIntervalDelay.unitTime,
+        interval: updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
       });
 
       notificationDate = noWeekendTimeDate({
         date: addDays({
           date: resolutionDate,
           days:
-            maintenances[i].frequency * timeIntervalFrequency.unitTime +
-            maintenances[i].delay * timeIntervalDelay.unitTime,
+            updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime +
+            updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
         }),
-        interval: maintenances[i].delay * timeIntervalDelay.unitTime,
+        interval: updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
       });
 
       if (resolutionDate < today) {
@@ -252,29 +280,29 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
           date: addDays({
             date: today,
             days:
-              maintenances[i].frequency * timeIntervalFrequency.unitTime +
-              maintenances[i].delay * timeIntervalDelay.unitTime,
+              updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime +
+              updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
           }),
-          interval: maintenances[i].delay * timeIntervalDelay.unitTime,
+          interval: updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
         });
       }
 
-      if (maintenances[i].notificationDate !== null) {
-        notificationDate = maintenances[i].notificationDate;
+      if (updatedsMaintenances[i].notificationDate !== null) {
+        notificationDate = updatedsMaintenances[i].notificationDate;
       }
     }
 
     const dueDate = noWeekendTimeDate({
       date: addDays({
         date: notificationDate,
-        days: maintenances[i].period * timeIntervalPeriod.unitTime,
+        days: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
       }),
-      interval: maintenances[i].period * timeIntervalFrequency.unitTime,
+      interval: updatedsMaintenances[i].period * timeIntervalFrequency.unitTime,
     });
 
     DataForCreateHistory.push({
       buildingId,
-      maintenanceId: maintenances[i].id,
+      maintenanceId: updatedsMaintenances[i].id,
       ownerCompanyId: req.Company.id,
       maintenanceStatusId: maintenanceStatus.id,
       notificationDate,
@@ -282,9 +310,10 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
     });
   }
 
-  await sharedMaintenanceServices.createHistory({
-    data: DataForCreateHistory,
-  });
+  if (updatedsMaintenances.length)
+    await sharedMaintenanceServices.createHistory({
+      data: DataForCreateHistory,
+    });
 
   // #endregion
 

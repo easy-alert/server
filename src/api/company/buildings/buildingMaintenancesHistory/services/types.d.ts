@@ -9,5 +9,5 @@ export interface ICreateBuildingCategory {
 }
 
 export interface IDeletePendingMaintenancesHistory {
-  buildingId: string;
+  maintenancesIds: string[];
 }

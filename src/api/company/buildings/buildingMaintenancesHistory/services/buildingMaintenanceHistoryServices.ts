@@ -2,10 +2,13 @@ import { prisma } from '../../../../../../prisma';
 import { IDeletePendingMaintenancesHistory } from './types';
 
 export class BuildingMaintenanceHistoryServices {
-  async deletePendingMaintenancesHistory({ buildingId }: IDeletePendingMaintenancesHistory) {
+  async deletePendingMaintenancesHistory({ maintenancesIds }: IDeletePendingMaintenancesHistory) {
     await prisma.maintenanceHistory.deleteMany({
       where: {
-        buildingId,
+        maintenanceId: {
+          in: maintenancesIds,
+        },
+
         MaintenancesStatus: {
           name: 'pending',
         },

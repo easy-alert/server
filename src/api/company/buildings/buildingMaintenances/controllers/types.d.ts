@@ -53,3 +53,9 @@ interface IDateForCreateHistory {
     };
   };
 }
+
+export interface IMaintenancesForHistorySelected {
+  maintenanceId: string;
+  resolutionDate: Date | null;
+  notificationDate: Date | null;
+}
