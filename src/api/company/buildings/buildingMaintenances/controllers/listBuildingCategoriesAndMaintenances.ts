@@ -16,7 +16,6 @@ const categoryServices = new CategoryServices();
 export async function listBuildingCategoriesAndMaintenances(req: Request, res: Response) {
   const { buildingId, currentBuildingId } = req.body;
 
-  console.log(req.body);
   // #region VALIDATION
   validator.check([
     {
