@@ -68,10 +68,11 @@ export class BuildingServices {
     }
   }
 
-  async findByName({ name }: { name: string }) {
+  async findByName({ name, companyId }: { name: string; companyId: string }) {
     const building = await prisma.building.findFirst({
       where: {
         name,
+        companyId,
       },
     });
 

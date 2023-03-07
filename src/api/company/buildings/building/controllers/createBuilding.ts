@@ -91,8 +91,6 @@ export async function createBuilding(req: Request, res: Response) {
 
   await buildingTypeServices.findById({ buildingTypeId: data.buildingTypeId });
 
-  await buildingServices.findByName({ name: data.name });
-
   // #endregion
 
   const building = await buildingServices.create({ data });

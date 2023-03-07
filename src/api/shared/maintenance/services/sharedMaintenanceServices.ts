@@ -190,6 +190,16 @@ export class SharedMaintenanceServices {
     return maintenance!;
   }
 
+  async findManyHistory({ buildingId }: { buildingId: string }) {
+    const maintenances = await prisma.maintenanceHistory.groupBy({
+      by: ['maintenanceId'],
+
+      where: { buildingId },
+    });
+
+    return maintenances;
+  }
+
   async findMaintenancesPerPeriod({ companyId }: { companyId: string }) {
     return prisma.building.findMany({
       select: {

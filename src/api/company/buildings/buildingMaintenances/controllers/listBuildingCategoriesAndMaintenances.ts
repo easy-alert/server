@@ -14,7 +14,7 @@ const categoryServices = new CategoryServices();
 // #endregion
 
 export async function listBuildingCategoriesAndMaintenances(req: Request, res: Response) {
-  const { buildingId } = req.body;
+  const { buildingId, currentBuildingId } = req.body;
 
   // #region VALIDATION
   validator.check([
@@ -24,7 +24,12 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
       variable: buildingId,
     },
   ]);
+
   const building = await buildingServices.findById({
+    buildingId: currentBuildingId,
+  });
+
+  await buildingServices.findById({
     buildingId,
   });
   // #endregion
