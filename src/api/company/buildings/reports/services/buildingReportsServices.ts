@@ -1,5 +1,6 @@
 // #region IMPORTS
 import { prisma } from '../../../../../../prisma';
+import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
 // TYPES
 import { IFindBuildingMaintenancesHistory, IListForBuildingReportQuery } from './types';
@@ -14,31 +15,49 @@ import { IFindBuildingMaintenancesHistory, IListForBuildingReportQuery } from '.
 
 export class BuildingReportsServices {
   mountQueryFilter({ query }: IListForBuildingReportQuery) {
-    return {
-      maintenanceStatusId:
-        query.maintenanceStatusId !== ' ' ? String(query.maintenanceStatusId) : undefined,
-      responsibleSyndicId:
-        query.responsibleSyndicId !== ' ' ? String(query.responsibleSyndicId) : undefined,
-      buildingId: query.buildingId !== ' ' ? String(query.buildingId) : undefined,
-      categoryId: query.categoryId !== ' ' ? String(query.categoryId) : undefined,
-      dateFilter:
-        query.startDate !== ' ' && query.endDate !== ' '
-          ? [
-              {
-                notificationDate: {
-                  lte: new Date(new Date(String(query.endDate)).toISOString().split('T')[0]),
-                  gte: new Date(new Date(String(query.startDate)).toISOString().split('T')[0]),
-                },
-              },
-              // {
-              //   resolutionDate: {
-              //     lte: new Date(new Date(String(query.endDate)).toISOString().split('T')[0]),
-              //     gte: new Date(new Date(String(query.startDate)).toISOString().split('T')[0]),
-              //   },
-              // },
-            ]
-          : undefined,
+    if (query.startDate === '' || query.endDate === '') {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Você deve informar o intervalo de datas corretamente.',
+      });
+    }
+
+    const dates = {
+      startDate: new Date(new Date(String(query.startDate)).toISOString().split('T')[0]),
+      endDate: new Date(new Date(String(query.endDate)).toISOString().split('T')[0]),
     };
+
+    if (dates.endDate < dates.startDate) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'A data final deve ser maior que a data inicial.',
+      });
+    }
+
+    const filter = {
+      maintenanceStatusId:
+        query.maintenanceStatusId !== '' ? String(query.maintenanceStatusId) : undefined,
+      responsibleSyndicId:
+        query.responsibleSyndicId !== '' ? String(query.responsibleSyndicId) : undefined,
+      buildingId: query.buildingId !== '' ? String(query.buildingId) : undefined,
+      categoryId: query.categoryId !== '' ? String(query.categoryId) : undefined,
+      dateFilter: [
+        {
+          notificationDate: {
+            gte: dates.startDate,
+            lte: dates.endDate,
+          },
+        },
+        // {
+        //   resolutionDate: {
+        //     lte: new Date(new Date(String(query.endDate)).toISOString().split('T')[0]),
+        //     gte: new Date(new Date(String(query.startDate)).toISOString().split('T')[0]),
+        //   },
+        // },
+      ],
+    };
+
+    return filter;
   }
 
   async findForSelectFilterOptions({ companyId }: { companyId: string }) {
