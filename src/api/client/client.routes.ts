@@ -13,6 +13,8 @@ import { clientBuildingDetails } from './building/controllers/clientBuildingDeta
 import { clientSyndicBuildingDetails } from './building/controllers/clientSyndicBuildingDetails';
 import { findClientInformations } from './building/controllers/findClientInformations';
 import { findCompanyLogo } from './building/controllers/findCompanyLogo';
+import { findBuildingAnnex } from './building/controllers/findBuildingAnnex';
+import { findHomeInformations } from './building/controllers/findHomeInformations';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -33,6 +35,10 @@ clientRouter.get(
 clientRouter.get('/building/:buildingId', clientBuildingDetails);
 
 clientRouter.get('/building/informations/:buildingId', findClientInformations);
+
+clientRouter.get('/building/home/:buildingId', findHomeInformations);
+
+clientRouter.get('/building/annex/:buildingId', findBuildingAnnex);
 
 clientRouter.get('/building/logo/:buildingId', findCompanyLogo);
 
