@@ -331,8 +331,8 @@ model BuildingCategory {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Building     Building              @relation(fields: [buildingId], references: [id])
-  Category     Category              @relation(fields: [categoryId], references: [id])
+  Building     Building              @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  Category     Category              @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   Maintenances BuildingMaintenance[]
 
   @@map("buildingsCategories")
