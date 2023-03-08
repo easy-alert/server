@@ -26,9 +26,13 @@ export async function listBuildingDetailsMaintenances(req: Request, res: Respons
 
   // #endregion
 
-  const BuildingMaintenances = await buildingServices.listMaintenances({
+  let BuildingMaintenances = await buildingServices.listMaintenances({
     buildingId,
   });
+
+  BuildingMaintenances = BuildingMaintenances.filter(
+    (category: any) => category.Maintenances.length > 0,
+  );
 
   return res.status(200).json({ buildingName: building?.name, BuildingMaintenances });
 }
