@@ -145,7 +145,6 @@ export class CategoryServices {
 
     categories.sort((a, b) => (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase() ? 1 : -1));
 
-    console.log(`ff\n\n\n`);
     return categories;
   }
 }

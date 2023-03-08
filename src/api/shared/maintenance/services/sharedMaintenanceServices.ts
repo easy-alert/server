@@ -194,7 +194,12 @@ export class SharedMaintenanceServices {
     const maintenances = await prisma.maintenanceHistory.groupBy({
       by: ['maintenanceId'],
 
-      where: { buildingId },
+      where: {
+        buildingId,
+        MaintenancesStatus: {
+          name: 'pending',
+        },
+      },
     });
 
     return maintenances;

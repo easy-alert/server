@@ -206,6 +206,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
     });
 
     if (updatedsMaintenances[i].resolutionDate === null) {
+      console.log('if (resolutionDate === null)');
       notificationDate = noWeekendTimeDate({
         date: addDays({
           date: buildingDeliveryDate,
@@ -213,10 +214,11 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
             updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime +
             updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
         }),
-        interval: updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
+        interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
       });
 
       if (buildingDeliveryDate < today) {
+        console.log('if (buildingDeliveryDate < today)');
         notificationDate = noWeekendTimeDate({
           date: addDays({
             date: today,
@@ -224,14 +226,18 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
               updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime +
               updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
           }),
-          interval: updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
+          interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
         });
       }
 
       if (updatedsMaintenances[i].notificationDate !== null) {
+        console.log('if (notificationDate !== null)');
+
         notificationDate = updatedsMaintenances[i].notificationDate;
       }
     } else {
+      console.log('if (resolutionDate !== null)');
+
       // #region Create History for maintenanceHistory
       const dataForCreateHistoryAndReport: ICreateMaintenanceHistoryAndReport = {
         buildingId,
@@ -255,27 +261,23 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
       // #endregion
 
-      const resolutionDate = noWeekendTimeDate({
+      notificationDate = noWeekendTimeDate({
         date: addDays({
           date: updatedsMaintenances[i].resolutionDate,
           days:
             updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime +
             updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
         }),
-        interval: updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
+        interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
       });
 
-      notificationDate = noWeekendTimeDate({
-        date: addDays({
-          date: resolutionDate,
-          days:
-            updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime +
-            updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
-        }),
-        interval: updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
-      });
+      console.log(
+        'resolutionDate informada, caso seja o ultima linha vista, significa que nao atendeu as condicoes abaixo',
+      );
 
-      if (resolutionDate < today) {
+      if (notificationDate < today) {
+        console.log('if (resolutionDate < today)');
+
         notificationDate = noWeekendTimeDate({
           date: addDays({
             date: today,
@@ -283,7 +285,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
               updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime +
               updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
           }),
-          interval: updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
+          interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
         });
       }
 
@@ -297,7 +299,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         date: notificationDate,
         days: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
       }),
-      interval: updatedsMaintenances[i].period * timeIntervalFrequency.unitTime,
+      interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
     });
 
     DataForCreateHistory.push({
@@ -308,6 +310,8 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       notificationDate,
       dueDate,
     });
+
+    console.log(`index: [${i}]\n\n\n`);
   }
 
   if (updatedsMaintenances.length)
