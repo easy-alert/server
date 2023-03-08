@@ -59,6 +59,9 @@ export class CategoryServices {
               },
             },
           },
+          orderBy: {
+            element: 'asc',
+          },
         },
       },
       where: {
@@ -119,6 +122,9 @@ export class CategoryServices {
               },
             },
           },
+          orderBy: {
+            element: 'asc',
+          },
         },
       },
       where: {
@@ -135,6 +141,11 @@ export class CategoryServices {
       },
     });
 
-    return [...defaultCategories, ...companyCategories];
+    const categories = [...defaultCategories, ...companyCategories];
+
+    categories.sort((a, b) => (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase() ? 1 : -1));
+
+    console.log(`ff\n\n\n`);
+    return categories;
   }
 }
