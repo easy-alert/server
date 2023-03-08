@@ -11,7 +11,6 @@ import { TimeIntervalServices } from '../../../../shared/timeInterval/services/t
 import { BuildingServices } from '../../building/services/buildingServices';
 import { BuildingMaintenanceHistoryServices } from '../../buildingMaintenancesHistory/services/buildingMaintenanceHistoryServices';
 import { BuildingCategoryAndMaintenanceServices } from '../services/buildingCategoryAndMaintenanceServices';
-import { ICreateBuildingCategory } from '../services/types';
 import { IDateForCreateHistory, IMaintenancesForHistorySelected } from './types';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
@@ -101,8 +100,6 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
   // #region CREATING NEW DATA
 
-  let data: ICreateBuildingCategory;
-
   const DataForCreateHistory: IDateForCreateHistory[] = [];
 
   const maintenancesForHistorySelected: IMaintenancesForHistorySelected[] = [];
@@ -111,28 +108,29 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
   for (let i = 0; i < bodyData.length; i++) {
     const maintenancesForCreate = [];
-    if (bodyData[i].Maintenances?.some((maintenance: any) => maintenance.isSelected === true)) {
-      for (let j = 0; j < bodyData[i].Maintenances.length; j++) {
-        if (bodyData[i].Maintenances[j].isSelected) {
-          maintenancesForCreate.push({ maintenanceId: bodyData[i].Maintenances[j].id });
 
-          maintenancesForHistorySelected.push({
-            maintenanceId: bodyData[i].Maintenances[j].id,
-            resolutionDate: bodyData[i].Maintenances[j].resolutionDate
-              ? new Date(bodyData[i].Maintenances[j].resolutionDate)
-              : null,
-            notificationDate: bodyData[i].Maintenances[j].notificationDate
-              ? new Date(bodyData[i].Maintenances[j].notificationDate)
-              : null,
-          });
+    for (let j = 0; j < bodyData[i].Maintenances.length; j++) {
+      if (bodyData[i].Maintenances[j].isSelected) {
+        maintenancesForCreate.push({ maintenanceId: bodyData[i].Maintenances[j].id });
 
-          maintenancesForHistorySelectedIds.push(bodyData[i].Maintenances[j].id);
-        } else {
-          maintenancesForHistoryNotSelectedIds.push(bodyData[i].Maintenances[j].id);
-        }
+        maintenancesForHistorySelected.push({
+          maintenanceId: bodyData[i].Maintenances[j].id,
+          resolutionDate: bodyData[i].Maintenances[j].resolutionDate
+            ? new Date(bodyData[i].Maintenances[j].resolutionDate)
+            : null,
+          notificationDate: bodyData[i].Maintenances[j].notificationDate
+            ? new Date(bodyData[i].Maintenances[j].notificationDate)
+            : null,
+        });
+
+        maintenancesForHistorySelectedIds.push(bodyData[i].Maintenances[j].id);
+      } else {
+        maintenancesForHistoryNotSelectedIds.push(bodyData[i].Maintenances[j].id);
       }
+    }
 
-      data = {
+    if (maintenancesForCreate.length > 0) {
+      await buildingCategoryAndMaintenanceServices.createCategoriesAndMaintenances({
         buildingId,
         categoryId: bodyData[i].categoryId,
         Maintenances: {
@@ -140,8 +138,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
             data: maintenancesForCreate,
           },
         },
-      };
-      await buildingCategoryAndMaintenanceServices.createCategoriesAndMaintenances(data);
+      });
     }
   }
 
