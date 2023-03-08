@@ -229,7 +229,7 @@ export class BuildingServices {
 
   async listMaintenances({ buildingId }: IListMaintenances) {
     return prisma.buildingCategory.findMany({
-      select: {
+      include: {
         Building: {
           select: {
             name: true,
@@ -278,11 +278,6 @@ export class BuildingServices {
                     name: true,
                     pluralLabel: true,
                     singularLabel: true,
-                  },
-                },
-                MaintenancesHistory: {
-                  select: {
-                    id: true,
                   },
                 },
               },

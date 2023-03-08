@@ -94,8 +94,13 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
   // #endregion
 
   // #region DELETING OLD DATA
+  const existsMaintenances = await buildingCategoryAndMaintenanceServices.findByBuildingId({
+    buildingId,
+  });
 
-  await buildingCategoryAndMaintenanceServices.deleteCategoriesAndMaintenances({ buildingId });
+  if (existsMaintenances !== null) {
+    await buildingCategoryAndMaintenanceServices.deleteCategoriesAndMaintenances({ buildingId });
+  }
 
   // #endregion
 
@@ -104,45 +109,44 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
   let data: ICreateBuildingCategory;
 
   const DataForCreateHistory: IDateForCreateHistory[] = [];
+  const maintenancesForCreate = [];
 
   const maintenancesForHistorySelected: IMaintenancesForHistorySelected[] = [];
   const maintenancesForHistorySelectedIds = [];
+
   const maintenancesForHistoryNotSelectedIds = [];
 
   for (let i = 0; i < bodyData.length; i++) {
-    const maintenancesForCreate = [];
-    if (bodyData[i].Maintenances?.some((maintenance: any) => maintenance.isSelected === true)) {
-      for (let j = 0; j < bodyData[i].Maintenances.length; j++) {
-        if (bodyData[i].Maintenances[j].isSelected) {
-          maintenancesForCreate.push({ maintenanceId: bodyData[i].Maintenances[j].id });
+    for (let j = 0; j < bodyData[i].Maintenances.length; j++) {
+      if (bodyData[i].Maintenances[j].isSelected) {
+        maintenancesForCreate.push({ maintenanceId: bodyData[i].Maintenances[j].id });
+        maintenancesForHistorySelected.push({
+          maintenanceId: bodyData[i].Maintenances[j].id,
+          resolutionDate: bodyData[i].Maintenances[j].resolutionDate
+            ? new Date(bodyData[i].Maintenances[j].resolutionDate)
+            : null,
+          notificationDate: bodyData[i].Maintenances[j].notificationDate
+            ? new Date(bodyData[i].Maintenances[j].notificationDate)
+            : null,
+        });
 
-          maintenancesForHistorySelected.push({
-            maintenanceId: bodyData[i].Maintenances[j].id,
-            resolutionDate: bodyData[i].Maintenances[j].resolutionDate
-              ? new Date(bodyData[i].Maintenances[j].resolutionDate)
-              : null,
-            notificationDate: bodyData[i].Maintenances[j].notificationDate
-              ? new Date(bodyData[i].Maintenances[j].notificationDate)
-              : null,
-          });
-
-          maintenancesForHistorySelectedIds.push(bodyData[i].Maintenances[j].id);
-        } else {
-          maintenancesForHistoryNotSelectedIds.push(bodyData[i].Maintenances[j].id);
-        }
+        maintenancesForHistorySelectedIds.push(bodyData[i].Maintenances[j].id);
+      } else {
+        maintenancesForHistoryNotSelectedIds.push(bodyData[i].Maintenances[j].id);
       }
-
-      data = {
-        buildingId,
-        categoryId: bodyData[i].categoryId,
-        Maintenances: {
-          createMany: {
-            data: maintenancesForCreate,
-          },
-        },
-      };
-      await buildingCategoryAndMaintenanceServices.createCategoriesAndMaintenances(data);
     }
+
+    data = {
+      buildingId,
+      categoryId: bodyData[i].categoryId,
+      Maintenances: {
+        createMany: {
+          data: maintenancesForCreate,
+        },
+      },
+    };
+
+    await buildingCategoryAndMaintenanceServices.createCategoriesAndMaintenances(data);
   }
 
   // #endregion
@@ -202,6 +206,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
     });
 
     if (updatedsMaintenances[i].resolutionDate === null) {
+      console.log('if (resolutionDate === null)');
       notificationDate = noWeekendTimeDate({
         date: addDays({
           date: buildingDeliveryDate,
@@ -213,6 +218,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       });
 
       if (buildingDeliveryDate < today) {
+        console.log('if (buildingDeliveryDate < today)');
         notificationDate = noWeekendTimeDate({
           date: addDays({
             date: today,
@@ -225,9 +231,13 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       }
 
       if (updatedsMaintenances[i].notificationDate !== null) {
+        console.log('if (notificationDate !== null)');
+
         notificationDate = updatedsMaintenances[i].notificationDate;
       }
     } else {
+      console.log('if (resolutionDate !== null)');
+
       // #region Create History for maintenanceHistory
       const dataForCreateHistoryAndReport: ICreateMaintenanceHistoryAndReport = {
         buildingId,
@@ -261,7 +271,13 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
       });
 
+      console.log(
+        'resolutionDate informada, caso seja o ultima linha vista, significa que nao atendeu as condicoes abaixo',
+      );
+
       if (notificationDate < today) {
+        console.log('if (resolutionDate < today)');
+
         notificationDate = noWeekendTimeDate({
           date: addDays({
             date: today,
@@ -294,6 +310,8 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       notificationDate,
       dueDate,
     });
+
+    console.log(`index: [${i}]\n\n\n`);
   }
 
   if (updatedsMaintenances.length)

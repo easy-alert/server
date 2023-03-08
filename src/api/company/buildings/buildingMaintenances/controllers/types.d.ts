@@ -28,9 +28,6 @@ interface Maintenance {
     pluralLabel: string;
     singularLabel: string;
   };
-  MaintenancesHistory: {
-    id: string;
-  }[];
 }
 
 export interface IListBuildingCategoriesAndMaintenances {
