@@ -177,6 +177,7 @@ export class BuildingReportsServices {
           notificationDate: 'desc',
         },
         where: {
+          wasNotified: true,
           maintenanceStatusId: queryFilter.maintenanceStatusId,
           buildingId: queryFilter.buildingId,
           ownerCompanyId: companyId,

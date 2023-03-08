@@ -284,6 +284,9 @@ export class BuildingServices {
                   select: {
                     id: true,
                   },
+                  where: {
+                    buildingId,
+                  },
                 },
               },
             },
