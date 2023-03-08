@@ -155,6 +155,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
   await buildingMaintenancesHistoryServices.deletePendingMaintenancesHistory({
     maintenancesIds: maintenancesForHistoryNotSelectedIds,
+    buildingId,
   });
 
   const buildingDeliveryDate = Building!.deliveryDate;
