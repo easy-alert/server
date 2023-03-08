@@ -284,9 +284,6 @@ export class BuildingServices {
                   select: {
                     id: true,
                   },
-                  where: {
-                    buildingId,
-                  },
                 },
               },
             },
@@ -304,6 +301,17 @@ export class BuildingServices {
       },
       where: {
         buildingId,
+        Maintenances: {
+          every: {
+            Maintenance: {
+              MaintenancesHistory: {
+                every: {
+                  buildingId,
+                },
+              },
+            },
+          },
+        },
       },
     });
   }
