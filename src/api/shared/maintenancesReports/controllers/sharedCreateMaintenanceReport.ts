@@ -140,7 +140,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     maintenanceHistoryId,
     cost,
     observation,
-    responsibleSyndicId,
+    responsibleSyndicId: syndicData?.id,
     ReportImages: {
       createMany: {
         data: ReportImages,
