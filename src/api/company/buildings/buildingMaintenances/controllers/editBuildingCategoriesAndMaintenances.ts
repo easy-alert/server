@@ -11,7 +11,6 @@ import { TimeIntervalServices } from '../../../../shared/timeInterval/services/t
 import { BuildingServices } from '../../building/services/buildingServices';
 import { BuildingMaintenanceHistoryServices } from '../../buildingMaintenancesHistory/services/buildingMaintenanceHistoryServices';
 import { BuildingCategoryAndMaintenanceServices } from '../services/buildingCategoryAndMaintenanceServices';
-import { ICreateBuildingCategory } from '../services/types';
 import { IDateForCreateHistory, IMaintenancesForHistorySelected } from './types';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
@@ -106,10 +105,9 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
   // #region CREATING NEW DATA
 
-  let data: ICreateBuildingCategory;
+  // let data: ICreateBuildingCategory;
 
   const DataForCreateHistory: IDateForCreateHistory[] = [];
-  const maintenancesForCreate = [];
 
   const maintenancesForHistorySelected: IMaintenancesForHistorySelected[] = [];
   const maintenancesForHistorySelectedIds = [];
@@ -117,6 +115,8 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
   const maintenancesForHistoryNotSelectedIds = [];
 
   for (let i = 0; i < bodyData.length; i++) {
+    const maintenancesForCreate = [];
+
     for (let j = 0; j < bodyData[i].Maintenances.length; j++) {
       if (bodyData[i].Maintenances[j].isSelected) {
         maintenancesForCreate.push({ maintenanceId: bodyData[i].Maintenances[j].id });
@@ -136,7 +136,9 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       }
     }
 
-    data = {
+    if (maintenancesForCreate.length === 0) continue;
+
+    const data = {
       buildingId,
       categoryId: bodyData[i].categoryId,
       Maintenances: {
