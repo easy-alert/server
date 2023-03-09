@@ -1,6 +1,6 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
-import { addTimeDate, removeTimeDate } from '../../../../utils/dateTime';
+import { addTimeDate, dateFormatter, removeTimeDate } from '../../../../utils/dateTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
 import { EmailTransporterServices } from '../../../../utils/emailTransporter/emailTransporterServices';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
@@ -194,13 +194,22 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   // #endregion
 
   await emailTransporter.sendProofOfReport({
+    dueDate: dateFormatter(maintenanceHistory.dueDate),
+    notificationDate: dateFormatter(maintenanceHistory.notificationDate),
     buildingName: maintenanceHistory.Building.name,
     activity: maintenanceHistory.Maintenance.activity,
     categoryName: maintenanceHistory.Maintenance.Category.name,
     element: maintenanceHistory.Maintenance.element,
+    responsible: maintenanceHistory.Maintenance.responsible,
+    source: maintenanceHistory.Maintenance.source,
+    maintenanceObservation:
+      maintenanceHistory.Maintenance.observation &&
+      maintenanceHistory.Maintenance.observation !== ''
+        ? maintenanceHistory.Maintenance.observation
+        : '-',
     cost: maskeredCost,
-    observation: data.observation === null ? '-' : data.observation,
-    reportDate: formattedDate,
+    reportObservation: data.observation && data.observation !== '' ? data.observation : '-',
+    resolutionDate: formattedDate,
     subject: 'Comprovante de relato',
     syndicName: responsibleName,
     toEmail: emailToSend,

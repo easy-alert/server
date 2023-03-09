@@ -74,11 +74,7 @@ export async function editBuilding(req: Request, res: Response) {
       variable: data.area,
       isOptional: true,
     },
-    {
-      label: 'Data de entrega',
-      type: 'string',
-      variable: data.deliveryDate,
-    },
+
     {
       label: 'Término da garantia',
       type: 'string',

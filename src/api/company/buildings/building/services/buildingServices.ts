@@ -233,6 +233,12 @@ export class BuildingServices {
         Building: {
           select: {
             name: true,
+
+            MaintenancesHistory: {
+              select: {
+                id: true,
+              },
+            },
           },
         },
 
@@ -283,12 +289,29 @@ export class BuildingServices {
               },
             },
           },
+          orderBy: {
+            Maintenance: { element: 'asc' },
+          },
         },
       },
 
+      orderBy: {
+        Category: {
+          name: 'asc',
+        },
+      },
       where: {
         buildingId,
       },
+    });
+  }
+
+  async listMaintenancesHistoryByBuilding({ buildingId }: { buildingId: string }) {
+    return prisma.maintenanceHistory.findMany({
+      select: {
+        maintenanceId: true,
+      },
+      where: { buildingId },
     });
   }
 

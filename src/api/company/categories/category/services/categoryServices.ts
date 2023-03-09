@@ -58,6 +58,14 @@ export class CategoryServices {
                 singularLabel: true,
               },
             },
+            MaintenancesHistory: {
+              select: {
+                id: true,
+              },
+            },
+          },
+          orderBy: {
+            element: 'asc',
           },
         },
       },
@@ -119,6 +127,9 @@ export class CategoryServices {
               },
             },
           },
+          orderBy: {
+            element: 'asc',
+          },
         },
       },
       where: {
@@ -135,6 +146,10 @@ export class CategoryServices {
       },
     });
 
-    return [...defaultCategories, ...companyCategories];
+    const categories = [...defaultCategories, ...companyCategories];
+
+    categories.sort((a, b) => (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase() ? 1 : -1));
+
+    return categories;
   }
 }

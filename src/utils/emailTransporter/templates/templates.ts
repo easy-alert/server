@@ -118,13 +118,18 @@ export class EmailTemplates {
   proofOfReport({
     subject,
     buildingName,
-    reportDate,
+    resolutionDate,
     cost,
     element,
     categoryName,
     syndicName,
     activity,
-    observation,
+    reportObservation,
+    dueDate,
+    maintenanceObservation,
+    notificationDate,
+    responsible,
+    source,
   }: ISendProofOfReport) {
     return ` <div style="background-size: cover; background: #ededed; padding: 24px;">
   <div
@@ -144,7 +149,7 @@ export class EmailTemplates {
 
     <div style="width: 328px; margin: 0 auto;">
       <h3 style="color: #000000; margin: 40px 0 24px; text-align: center;">
-       ${subject}
+        ${subject}
       </h3>
 
       <p>
@@ -152,12 +157,11 @@ export class EmailTemplates {
         ${buildingName}
       </p>
 
-      <p>
-        <strong>Data do relato: </strong>
-        ${reportDate}
-      </p>
 
-      <p><strong>Categoria: </strong>${categoryName}</p>
+      <p>
+        <strong>Categoria: </strong>
+        ${categoryName}
+      </p>
 
       <p>
         <strong>Elemento: </strong>
@@ -171,6 +175,36 @@ export class EmailTemplates {
 
       <p>
         <strong>Responsável: </strong>
+        ${responsible}
+      </p>
+
+      <p>
+        <strong>Fonte: </strong>
+        ${source}
+      </p>
+
+      <p>
+        <strong>Observação da manutenção: </strong>
+        ${maintenanceObservation}
+      </p>
+
+      <p>
+        <strong>Data de notificação: </strong>
+        ${notificationDate}
+      </p>
+
+      <p>
+        <strong>Data de vencimento: </strong>
+        ${dueDate}
+      </p>
+
+      <p>
+        <strong>Data de conclusão: </strong>
+        ${resolutionDate}
+      </p>
+
+      <p>
+        <strong>Responsável de manutenção: </strong>
         ${syndicName}
       </p>
 
@@ -180,8 +214,8 @@ export class EmailTemplates {
       </p>
 
       <p>
-        <strong>Observações: </strong>
-        ${observation}
+        <strong>Observação do relato: </strong>
+        ${reportObservation}
       </p>
     </div>
   </div>

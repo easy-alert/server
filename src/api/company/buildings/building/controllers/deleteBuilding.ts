@@ -24,7 +24,7 @@ export async function deleteBuilding(req: Request, res: Response) {
 
   await buildingServices.findById({ buildingId });
 
-  await buildingServices.findMaintenancesPerBuilding({ buildingId });
+  // await buildingServices.findMaintenancesPerBuilding({ buildingId });
 
   // #endregion
 
