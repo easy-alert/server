@@ -233,6 +233,12 @@ export class BuildingServices {
         Building: {
           select: {
             name: true,
+
+            MaintenancesHistory: {
+              select: {
+                id: true,
+              },
+            },
           },
         },
 

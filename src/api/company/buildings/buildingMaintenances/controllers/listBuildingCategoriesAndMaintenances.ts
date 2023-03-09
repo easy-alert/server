@@ -5,7 +5,10 @@ import { CategoryServices } from '../../../categories/category/services/category
 
 // CLASS
 import { BuildingServices } from '../../building/services/buildingServices';
-import { IListBuildingCategoriesAndMaintenances } from './types';
+import {
+  IAllBuildingCategoriesAndMaintenances,
+  IListBuildingCategoriesAndMaintenances,
+} from './types';
 
 const buildingServices = new BuildingServices();
 const validator = new Validator();
@@ -34,65 +37,106 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
   });
   // #endregion
 
-  const CategoriesData = (await categoryServices.list({
+  const allCategoriesAndMaintenances = (await categoryServices.list({
     ownerCompanyId: req.Company.id,
     search: '',
   })) as IListBuildingCategoriesAndMaintenances[];
 
-  const BuildingCategories = await buildingServices.listMaintenances({
+  const buildingCategoriesAndMaintenances = await buildingServices.listMaintenances({
     buildingId,
   });
 
   // #region PROCESS DATA
 
-  for (let i = 0; i < CategoriesData.length; i++) {
-    for (let j = 0; j < CategoriesData[i].Maintenances.length; j++) {
-      CategoriesData[i].Maintenances[j] = {
-        ...CategoriesData[i].Maintenances[j],
+  for (let i = 0; i < allCategoriesAndMaintenances.length; i++) {
+    for (let j = 0; j < allCategoriesAndMaintenances[i].Maintenances.length; j++) {
+      allCategoriesAndMaintenances[i].Maintenances[j] = {
+        ...allCategoriesAndMaintenances[i].Maintenances[j],
         isSelected: false,
+        hasHistory: false,
       };
     }
   }
 
-  // all categories
-  for (
-    let categoriesDataIndex = 0;
-    categoriesDataIndex < CategoriesData.length;
-    categoriesDataIndex++
-  ) {
-    // categories building
-    for (
-      let buildingDataIndex = 0;
-      buildingDataIndex < BuildingCategories.length;
-      buildingDataIndex++
-    ) {
-      // all maintenances
-      for (
-        let categoriesDataMaintenanceIndex = 0;
-        categoriesDataMaintenanceIndex < CategoriesData[categoriesDataIndex].Maintenances.length;
-        categoriesDataMaintenanceIndex++
-      ) {
-        // maintenances building
-        for (
-          let buildingDataMaintenanceIndex = 0;
-          buildingDataMaintenanceIndex < BuildingCategories[buildingDataIndex].Maintenances.length;
-          buildingDataMaintenanceIndex++
-        ) {
-          if (
-            CategoriesData[categoriesDataIndex].Maintenances[categoriesDataMaintenanceIndex].id ===
-            BuildingCategories[buildingDataIndex].Maintenances[buildingDataMaintenanceIndex]
-              .Maintenance.id
-          ) {
-            CategoriesData[categoriesDataIndex].Maintenances[categoriesDataMaintenanceIndex] = {
-              ...CategoriesData[categoriesDataIndex].Maintenances[categoriesDataMaintenanceIndex],
-              isSelected: true,
-            };
-          }
-        }
-      }
-      // #endregion
+  const allBuildingCategoriesAndMaintenances: IAllBuildingCategoriesAndMaintenances[] = [];
+
+  buildingCategoriesAndMaintenances.forEach((category) =>
+    category.Maintenances.forEach((maintenance) => {
+      allBuildingCategoriesAndMaintenances.push({
+        id: maintenance.Maintenance.id,
+        hasHistory: category.Building.MaintenancesHistory.length > 0,
+      });
+    }),
+  );
+
+  for (let i = 0; i < allCategoriesAndMaintenances.length; i++) {
+    for (let j = 0; j < allCategoriesAndMaintenances[i].Maintenances.length; j++) {
+      const isEquals = allBuildingCategoriesAndMaintenances.filter(
+        (maintenance) => maintenance.id === allCategoriesAndMaintenances[i].Maintenances[j].id,
+      );
+
+      if (isEquals.length === 0) continue;
+
+      allCategoriesAndMaintenances[i].Maintenances[j] = {
+        ...allCategoriesAndMaintenances[i].Maintenances[j],
+        isSelected: true,
+        hasHistory: isEquals[0].hasHistory,
+      };
     }
   }
 
-  return res.status(200).json({ buildingName: building?.name, CategoriesData });
+  // BACKUP
+
+  // const CategoriesData = (await categoryServices.list({
+  //   ownerCompanyId: req.Company.id,
+  //   search: '',
+  // })) as IListBuildingCategoriesAndMaintenances[];
+
+  // const BuildingCategories = await buildingServices.listMaintenances({
+  //   buildingId,
+  // });
+
+  // // all categories
+  // for (
+  //   let categoriesDataIndex = 0;
+  //   categoriesDataIndex < CategoriesData.length;
+  //   categoriesDataIndex++
+  // ) {
+  //   // categories building
+  //   for (
+  //     let buildingDataIndex = 0;
+  //     buildingDataIndex < BuildingCategories.length;
+  //     buildingDataIndex++
+  //   ) {
+  //     // all maintenances
+  //     for (
+  //       let categoriesDataMaintenanceIndex = 0;
+  //       categoriesDataMaintenanceIndex < CategoriesData[categoriesDataIndex].Maintenances.length;
+  //       categoriesDataMaintenanceIndex++
+  //     ) {
+  //       // maintenances building
+  //       for (
+  //         let buildingDataMaintenanceIndex = 0;
+  //         buildingDataMaintenanceIndex < BuildingCategories[buildingDataIndex].Maintenances.length;
+  //         buildingDataMaintenanceIndex++
+  //       ) {
+  //         if (
+  //           CategoriesData[categoriesDataIndex].Maintenances[categoriesDataMaintenanceIndex].id ===
+  //           BuildingCategories[buildingDataIndex].Maintenances[buildingDataMaintenanceIndex]
+  //             .Maintenance.id
+  //         ) {
+  //           CategoriesData[categoriesDataIndex].Maintenances[categoriesDataMaintenanceIndex] = {
+  //             ...CategoriesData[categoriesDataIndex].Maintenances[categoriesDataMaintenanceIndex],
+  //             isSelected: true,
+  //           };
+  //         }
+  //       }
+  //     }
+  //     // #endregion
+  //   }
+  // }
+
+  return res
+    .status(200)
+    .json({ buildingName: building?.name, CategoriesData: allCategoriesAndMaintenances });
 }

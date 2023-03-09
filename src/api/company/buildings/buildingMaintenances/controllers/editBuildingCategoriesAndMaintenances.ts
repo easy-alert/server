@@ -209,7 +209,6 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
     });
 
     if (updatedsMaintenances[i].resolutionDate === null) {
-      console.log('if (resolutionDate === null)');
       notificationDate = noWeekendTimeDate({
         date: addDays({
           date: buildingDeliveryDate,
@@ -221,7 +220,6 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       });
 
       if (buildingDeliveryDate < today) {
-        console.log('if (buildingDeliveryDate < today)');
         notificationDate = noWeekendTimeDate({
           date: addDays({
             date: today,
@@ -234,13 +232,9 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       }
 
       if (updatedsMaintenances[i].notificationDate !== null) {
-        console.log('if (notificationDate !== null)');
-
         notificationDate = updatedsMaintenances[i].notificationDate;
       }
     } else {
-      console.log('if (resolutionDate !== null)');
-
       // #region Create History for maintenanceHistory
       const dataForCreateHistoryAndReport: ICreateMaintenanceHistoryAndReport = {
         buildingId,
@@ -274,13 +268,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
       });
 
-      console.log(
-        'resolutionDate informada, caso seja o ultima linha vista, significa que nao atendeu as condicoes abaixo',
-      );
-
       if (notificationDate < today) {
-        console.log('if (resolutionDate < today)');
-
         notificationDate = noWeekendTimeDate({
           date: addDays({
             date: today,
@@ -313,8 +301,6 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       notificationDate,
       dueDate,
     });
-
-    console.log(`index: [${i}]\n\n\n`);
   }
 
   if (updatedsMaintenances.length)
