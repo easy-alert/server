@@ -272,7 +272,9 @@ model BuildingType {
 }
 
 model Building {
-  id             String @id @unique @default(uuid())
+  id     String @id @unique @default(uuid())
+  nanoId String @unique @default(nanoid(12))
+
   buildingTypeId String
   companyId      String
 
@@ -303,7 +305,9 @@ model Building {
 }
 
 model BuildingNotificationConfiguration {
-  id         String @id @unique @default(uuid())
+  id     String @id @unique @default(uuid())
+  nanoId String @unique @default(nanoid(12))
+
   buildingId String
 
   name                     String

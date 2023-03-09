@@ -16,8 +16,7 @@ const validator = new Validator();
 // #endregion
 
 export async function clientBuildingDetails(req: Request, res: Response) {
-  const { buildingId } = req.params;
-
+  const { buildingNanoId } = req.params;
   const { year } = req.query;
 
   // #region VALIDATION
@@ -26,17 +25,17 @@ export async function clientBuildingDetails(req: Request, res: Response) {
     {
       label: 'Id da edificação',
       type: 'string',
-      variable: buildingId,
+      variable: buildingNanoId,
     },
   ]);
 
-  const building = await buildingServices.findById({ buildingId });
+  const building = await buildingServices.findByNanoId({ buildingNanoId });
 
   // #endregion
 
   const { MaintenancesHistory, MaintenancesPending } =
     await clientBuildingServices.findMaintenanceHistory({
-      buildingId,
+      buildingId: building.id,
       year: String(year),
     });
 
