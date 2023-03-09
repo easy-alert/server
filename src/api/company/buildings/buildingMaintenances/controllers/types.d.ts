@@ -1,5 +1,6 @@
 interface Maintenance {
   isSelected: boolean;
+  hasHistory?: boolean;
   id: string;
   element: string;
   activity: string;
@@ -58,4 +59,9 @@ export interface IMaintenancesForHistorySelected {
   maintenanceId: string;
   resolutionDate: Date | null;
   notificationDate: Date | null;
+}
+
+export interface IAllBuildingCategoriesAndMaintenances {
+  id: string;
+  hasHistory: boolean;
 }
