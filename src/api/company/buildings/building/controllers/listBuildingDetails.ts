@@ -136,6 +136,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
 
     BuildingDetails = {
       id: BuildingDetails.id,
+      nanoId: BuildingDetails.nanoId,
       area: BuildingDetails.area,
       cep: BuildingDetails.cep,
       name: BuildingDetails.name,

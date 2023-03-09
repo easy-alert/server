@@ -172,6 +172,7 @@ export class BuildingServices {
     const Building = await prisma.building.findFirst({
       select: {
         id: true,
+        nanoId: true,
         name: true,
         cep: true,
         city: true,
