@@ -129,6 +129,7 @@ export class SharedMaintenanceServices {
           select: {
             id: true,
             cost: true,
+            observation: true,
           },
         },
         Building: {
@@ -161,6 +162,8 @@ export class SharedMaintenanceServices {
             activity: true,
             observation: true,
             element: true,
+            responsible: true,
+            source: true,
 
             Category: {
               select: {
