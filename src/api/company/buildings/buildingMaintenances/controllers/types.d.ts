@@ -1,6 +1,6 @@
 interface Maintenance {
   isSelected: boolean;
-  hasHistory: boolean;
+  hasHistory?: boolean;
   id: string;
   element: string;
   activity: string;

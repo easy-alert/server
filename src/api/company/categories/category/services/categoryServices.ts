@@ -58,6 +58,11 @@ export class CategoryServices {
                 singularLabel: true,
               },
             },
+            MaintenancesHistory: {
+              select: {
+                id: true,
+              },
+            },
           },
           orderBy: {
             element: 'asc',

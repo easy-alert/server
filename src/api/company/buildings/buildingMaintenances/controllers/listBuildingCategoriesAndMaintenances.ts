@@ -46,17 +46,11 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
     buildingId,
   });
 
-  // #region PROCESS DATA
+  const buildingMaintenanceHistory = await buildingServices.listMaintenancesHistoryByBuilding({
+    buildingId,
+  });
 
-  for (let i = 0; i < allCategoriesAndMaintenances.length; i++) {
-    for (let j = 0; j < allCategoriesAndMaintenances[i].Maintenances.length; j++) {
-      allCategoriesAndMaintenances[i].Maintenances[j] = {
-        ...allCategoriesAndMaintenances[i].Maintenances[j],
-        isSelected: false,
-        hasHistory: false,
-      };
-    }
-  }
+  // #region PROCESS DATA
 
   const allBuildingCategoriesAndMaintenances: IAllBuildingCategoriesAndMaintenances[] = [];
 
@@ -71,16 +65,28 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
 
   for (let i = 0; i < allCategoriesAndMaintenances.length; i++) {
     for (let j = 0; j < allCategoriesAndMaintenances[i].Maintenances.length; j++) {
+      const hasHistory = buildingMaintenanceHistory.some(
+        (history) => history.maintenanceId === allCategoriesAndMaintenances[i].Maintenances[j].id,
+      );
+
+      allCategoriesAndMaintenances[i].Maintenances[j] = {
+        ...allCategoriesAndMaintenances[i].Maintenances[j],
+        isSelected: false,
+        hasHistory,
+      };
+    }
+  }
+
+  for (let i = 0; i < allCategoriesAndMaintenances.length; i++) {
+    for (let j = 0; j < allCategoriesAndMaintenances[i].Maintenances.length; j++) {
       const isEquals = allBuildingCategoriesAndMaintenances.filter(
         (maintenance) => maintenance.id === allCategoriesAndMaintenances[i].Maintenances[j].id,
       );
-
       if (isEquals.length === 0) continue;
 
       allCategoriesAndMaintenances[i].Maintenances[j] = {
         ...allCategoriesAndMaintenances[i].Maintenances[j],
         isSelected: true,
-        hasHistory: isEquals[0].hasHistory,
       };
     }
   }

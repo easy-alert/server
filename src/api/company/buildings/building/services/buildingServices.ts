@@ -306,6 +306,15 @@ export class BuildingServices {
     });
   }
 
+  async listMaintenancesHistoryByBuilding({ buildingId }: { buildingId: string }) {
+    return prisma.maintenanceHistory.findMany({
+      select: {
+        maintenanceId: true,
+      },
+      where: { buildingId },
+    });
+  }
+
   async listForSelect({ companyId, buildingId }: { companyId: string; buildingId: string }) {
     return prisma.building.findMany({
       select: {
