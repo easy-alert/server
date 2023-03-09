@@ -42,11 +42,10 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
     },
   ]);
 
-  const buildingNotificationConfig = await sharedBuildingNotificationConfigurationServices.findById(
-    {
+  const buildingNotificationConfig =
+    await sharedBuildingNotificationConfigurationServices.findByNanoId({
       syndicNanoId,
-    },
-  );
+    });
 
   // #endregion
 

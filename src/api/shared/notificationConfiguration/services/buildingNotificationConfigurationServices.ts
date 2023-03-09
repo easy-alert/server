@@ -68,7 +68,32 @@ export class SharedBuildingNotificationConfigurationServices {
 
   // #region FINDS
 
-  async findById({ syndicNanoId }: { syndicNanoId: string }) {
+  async findById({
+    buildingNotificationConfigurationId,
+  }: {
+    buildingNotificationConfigurationId: string;
+  }) {
+    const buildingConfigurationNotification =
+      await prisma.buildingNotificationConfiguration.findUnique({
+        include: {
+          Building: true,
+        },
+        where: {
+          id: buildingNotificationConfigurationId,
+        },
+      });
+
+    validator.needExist([
+      {
+        label: 'configuração de notificação',
+        variable: buildingConfigurationNotification,
+      },
+    ]);
+
+    return buildingConfigurationNotification!;
+  }
+
+  async findByNanoId({ syndicNanoId }: { syndicNanoId: string }) {
     const buildingConfigurationNotification =
       await prisma.buildingNotificationConfiguration.findUnique({
         include: {
