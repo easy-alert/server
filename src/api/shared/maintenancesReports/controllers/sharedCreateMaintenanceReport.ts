@@ -101,7 +101,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     ]);
   });
 
-  const maintenanceHistory = await sharedMaintenanceServices.findHistoryById({
+  const maintenanceHistory = await sharedMaintenanceServices.findHistoryByNanoId({
     maintenanceHistoryId,
   });
 
@@ -115,8 +115,8 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   let syndicData = null;
 
   if (responsibleSyndicId) {
-    syndicData = await sharedBuildingNotificationConfigurationServices.findById({
-      buildingNotificationConfigurationId: responsibleSyndicId,
+    syndicData = await sharedBuildingNotificationConfigurationServices.findByNanoId({
+      syndicNanoId: responsibleSyndicId,
     });
   }
   const today = new Date(new Date().toISOString().split('T')[0]);
@@ -140,7 +140,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     maintenanceHistoryId,
     cost,
     observation,
-    responsibleSyndicId,
+    responsibleSyndicId: syndicData?.id,
     ReportImages: {
       createMany: {
         data: ReportImages,

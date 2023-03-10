@@ -15,7 +15,7 @@ const validator = new Validator();
 // #endregion
 
 export async function clientSyndicBuildingDetails(req: Request, res: Response) {
-  const { syndicId } = req.params;
+  const { syndicNanoId } = req.params;
 
   const { year, month, status } = req.query;
 
@@ -38,15 +38,14 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
     {
       label: 'Id do síndico',
       type: 'string',
-      variable: syndicId,
+      variable: syndicNanoId,
     },
   ]);
 
-  const buildingNotificationConfig = await sharedBuildingNotificationConfigurationServices.findById(
-    {
-      buildingNotificationConfigurationId: syndicId,
-    },
-  );
+  const buildingNotificationConfig =
+    await sharedBuildingNotificationConfigurationServices.findByNanoId({
+      syndicNanoId,
+    });
 
   // #endregion
 
