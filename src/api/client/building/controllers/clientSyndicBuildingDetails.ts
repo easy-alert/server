@@ -128,7 +128,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
 
   for (let i = 0; i < kanban.length; i++) {
     for (let j = 0; j < kanban[i].maintenances.length; j++) {
-      kanban[i].maintenances.sort((a: any, b: any) => (a.date > b.date ? 1 : -1));
+      kanban[i].maintenances.sort((a: any, b: any) => (a.date < b.date ? 1 : -1));
     }
   }
   //
