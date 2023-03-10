@@ -4,7 +4,7 @@ export const DynamicFutureYears = ({ showFutureYears = false }: { showFutureYear
 
   const years = [];
 
-  const finalYear = actualYear + (showFutureYears ? 2 : 0);
+  const finalYear = actualYear + (showFutureYears ? 5 : 0);
 
   while (initialYear <= finalYear) {
     years.push(initialYear);

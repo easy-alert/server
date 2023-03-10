@@ -1,6 +1,5 @@
 // # region IMPORTS
 import { Request, Response } from 'express';
-import { addDays } from '../../../../utils/functions';
 
 // CLASS
 import { SharedCalendarServices } from '../../../shared/calendar/services/SharedCalendarServices';
@@ -10,18 +9,18 @@ const sharedCalendarServices = new SharedCalendarServices();
 // #endregion
 
 export async function listCalendarMaintenances(req: Request, res: Response) {
+  const YEARFORSUM = 5;
+
   const { year } = req.params;
   const filter = req.query;
-
   const buildingId = filter.buildingId ? String(filter.buildingId) : undefined;
 
   // #region GENERATE HISTORY MAINTENANCES
-
   const { Filter, Maintenances, MaintenancesPending } =
     await sharedCalendarServices.findMaintenancesHistoryService({
       companyId: req.Company.id,
       startDate: new Date(`01/01/${year}`),
-      endDate: new Date(`12/31/${year}`),
+      endDate: new Date(`12/31/${Number(year) + YEARFORSUM}`),
       buildingId,
     });
 
@@ -40,7 +39,7 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
   for (let i = 0; i < MaintenancesPending.length; i++) {
     const intervals = sharedCalendarServices.recurringDates({
       startDate: new Date(MaintenancesPending[i].notificationDate),
-      endDate: addDays({ date: new Date(`01/01/${year}`), days: 1095 }),
+      endDate: new Date(`01/01/${Number(year) + YEARFORSUM}`),
       interval:
         MaintenancesPending[i].Maintenance.frequency *
         MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
@@ -81,6 +80,8 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
   }
 
   // #endregion
+
+  console.log('DATE: ', DatesMonths);
 
   return res.status(200).json({
     Filter,

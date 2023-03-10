@@ -16,6 +16,8 @@ const validator = new Validator();
 // #endregion
 
 export async function clientBuildingDetails(req: Request, res: Response) {
+  const YEARFORSUM = 5;
+
   const { buildingNanoId } = req.params;
   const { year } = req.query;
 
@@ -112,7 +114,7 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   for (let i = 0; i < MaintenancesPending.length; i++) {
     const intervals = sharedCalendarServices.recurringDates({
       startDate: new Date(MaintenancesPending[i].notificationDate),
-      endDate: new Date(`12/31/${new Date().getFullYear() + 2}`),
+      endDate: new Date(`12/31/${new Date().getFullYear() + YEARFORSUM}`),
       interval:
         MaintenancesPending[i].Maintenance.frequency *
         MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
