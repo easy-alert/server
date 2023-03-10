@@ -81,8 +81,6 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
 
   // #endregion
 
-  console.log('DATE: ', DatesMonths);
-
   return res.status(200).json({
     Filter,
     Dates: {
