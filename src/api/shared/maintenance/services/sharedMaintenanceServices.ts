@@ -193,6 +193,79 @@ export class SharedMaintenanceServices {
     return maintenance!;
   }
 
+  async findHistoryByNanoId({ maintenanceHistoryId }: { maintenanceHistoryId: string }) {
+    const maintenance = await prisma.maintenanceHistory.findUnique({
+      select: {
+        notificationDate: true,
+        dueDate: true,
+        MaintenanceReport: {
+          select: {
+            id: true,
+            cost: true,
+            observation: true,
+          },
+        },
+        Building: {
+          select: {
+            id: true,
+            name: true,
+            warrantyExpiration: true,
+            keepNotificationAfterWarrantyEnds: true,
+          },
+        },
+        Company: {
+          select: {
+            id: true,
+            name: true,
+            UserCompanies: {
+              select: {
+                User: {
+                  select: {
+                    email: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        Maintenance: {
+          select: {
+            id: true,
+            frequency: true,
+            activity: true,
+            observation: true,
+            element: true,
+            responsible: true,
+            source: true,
+
+            Category: {
+              select: {
+                name: true,
+              },
+            },
+            FrequencyTimeInterval: {
+              select: {
+                unitTime: true,
+              },
+            },
+
+            period: true,
+            PeriodTimeInterval: {
+              select: {
+                unitTime: true,
+              },
+            },
+          },
+        },
+      },
+      where: { id: maintenanceHistoryId },
+    });
+
+    validator.needExist([{ label: 'ID do histórico da manutenção', variable: maintenance }]);
+
+    return maintenance!;
+  }
+
   async findManyHistory({ buildingId }: { buildingId: string }) {
     const maintenances = await prisma.maintenanceHistory.groupBy({
       by: ['maintenanceId'],
