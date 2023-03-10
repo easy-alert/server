@@ -148,7 +148,7 @@ export class CategoryServices {
 
     const categories = [...defaultCategories, ...companyCategories];
 
-    categories.sort((a, b) => (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase() ? 1 : -1));
+    categories.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
 
     return categories;
   }
