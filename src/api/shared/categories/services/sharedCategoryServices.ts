@@ -86,7 +86,8 @@ export class SharedCategoryServices {
 
     const categories = [...defaultCategories, ...companyCategories];
 
-    categories.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
+    // ordena alfabeticamente
+    categories.sort((a, b) => a.name.localeCompare(b.name));
 
     return categories;
   }
