@@ -44,6 +44,7 @@ companyRouter.use('/account', authMiddleware, isCompany, accountRouter);
 companyRouter.use('/categories', authMiddleware, isCompany, categoryRouter);
 
 companyRouter.use('/buildings', authMiddleware, isCompany, buildingRouter);
+
 companyRouter.use('/maintenances', authMiddleware, isCompany, maintenanceRouter);
 
 companyRouter.use('/calendars', authMiddleware, isCompany, calendarRouter);

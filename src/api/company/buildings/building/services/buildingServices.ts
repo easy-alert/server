@@ -51,6 +51,25 @@ export class BuildingServices {
     return building!;
   }
 
+  async findByOldId({ oldBuildingId }: { oldBuildingId: string }) {
+    const building = await prisma.oldBuildingIds.findFirst({
+      select: {
+        building: {
+          select: {
+            nanoId: true,
+          },
+        },
+      },
+      where: {
+        oldBuildingId,
+      },
+    });
+
+    validator.needExist([{ label: 'edificação', variable: building }]);
+
+    return building!.building.nanoId;
+  }
+
   async findByNanoId({ buildingNanoId }: { buildingNanoId: string }) {
     const building = await prisma.building.findUnique({
       include: {
