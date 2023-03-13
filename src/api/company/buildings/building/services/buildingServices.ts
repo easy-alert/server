@@ -57,6 +57,14 @@ export class BuildingServices {
         building: {
           select: {
             nanoId: true,
+            NotificationsConfigurations: {
+              select: {
+                nanoId: true,
+              },
+              where: {
+                isMain: true,
+              },
+            },
           },
         },
       },
@@ -67,7 +75,10 @@ export class BuildingServices {
 
     validator.needExist([{ label: 'edificação', variable: building }]);
 
-    return building!.building.nanoId;
+    return {
+      buildingNanoId: building!.building.nanoId,
+      syndicNanoId: building!.building.NotificationsConfigurations[0].nanoId,
+    };
   }
 
   async findByNanoId({ buildingNanoId }: { buildingNanoId: string }) {
