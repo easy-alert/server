@@ -218,10 +218,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
     });
 
-    console.log('notificationDate + Delay: ', notificationDateForOldBuildingDeliveries);
-
     while (notificationDateForOldBuildingDeliveries < today) {
-      console.log(notificationDateForOldBuildingDeliveries);
       notificationDateForOldBuildingDeliveries = noWeekendTimeDate({
         date: addDays({
           date: notificationDateForOldBuildingDeliveries,
@@ -230,12 +227,6 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
       });
     }
-
-    console.log(
-      'notificationDateForOldBuildingDeliveries: ',
-      notificationDateForOldBuildingDeliveries,
-    );
-    console.log('\n\n');
 
     // #endregion
 
