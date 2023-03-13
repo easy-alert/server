@@ -4,3 +4,4 @@ export * from './editBuilding';
 export * from './listBuilding';
 export * from './listBuildingDetails';
 export * from './listBuildingDetailsMaintenances';
+export * from './findOldBuilding';
