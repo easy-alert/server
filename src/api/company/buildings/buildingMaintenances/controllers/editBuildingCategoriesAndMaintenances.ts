@@ -208,6 +208,28 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       timeIntervalId: updatedsMaintenances[i].frequencyTimeIntervalId,
     });
 
+    // #region  NOTIFICATION DATE FOR OLDBUILDING DELIVERIES
+
+    let notificationDateForOldBuildingDeliveries = noWeekendTimeDate({
+      date: addDays({
+        date: buildingDeliveryDate,
+        days: updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
+      }),
+      interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+    });
+
+    while (notificationDateForOldBuildingDeliveries < today) {
+      notificationDateForOldBuildingDeliveries = noWeekendTimeDate({
+        date: addDays({
+          date: notificationDateForOldBuildingDeliveries,
+          days: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+        }),
+        interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+      });
+    }
+
+    // #endregion
+
     if (updatedsMaintenances[i].resolutionDate === null) {
       notificationDate = noWeekendTimeDate({
         date: addDays({
@@ -221,12 +243,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
       if (buildingDeliveryDate < today) {
         notificationDate = noWeekendTimeDate({
-          date: addDays({
-            date: today,
-            days:
-              updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime +
-              updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
-          }),
+          date: notificationDateForOldBuildingDeliveries,
           interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
         });
       }
@@ -270,12 +287,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
       if (notificationDate < today) {
         notificationDate = noWeekendTimeDate({
-          date: addDays({
-            date: today,
-            days:
-              updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime +
-              updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
-          }),
+          date: notificationDateForOldBuildingDeliveries,
           interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
         });
       }
