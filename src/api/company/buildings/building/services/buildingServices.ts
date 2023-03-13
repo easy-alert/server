@@ -67,6 +67,32 @@ export class BuildingServices {
       },
       where: {
         oldBuildingId,
+      },
+    });
+
+    validator.needExist([{ label: 'edificação', variable: building }]);
+
+    return {
+      buildingNanoId: building!.building.nanoId,
+    };
+  }
+
+  async findByOldIdForSyndic({ oldBuildingId }: { oldBuildingId: string }) {
+    const building = await prisma.oldBuildingIds.findFirst({
+      select: {
+        building: {
+          select: {
+            nanoId: true,
+            NotificationsConfigurations: {
+              select: {
+                nanoId: true,
+              },
+            },
+          },
+        },
+      },
+      where: {
+        oldBuildingId,
         building: {
           NotificationsConfigurations: {
             every: {
