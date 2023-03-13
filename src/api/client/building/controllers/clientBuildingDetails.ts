@@ -16,8 +16,9 @@ const validator = new Validator();
 // #endregion
 
 export async function clientBuildingDetails(req: Request, res: Response) {
-  const { buildingId } = req.params;
+  const YEARFORSUM = 5;
 
+  const { buildingNanoId } = req.params;
   const { year } = req.query;
 
   // #region VALIDATION
@@ -26,17 +27,17 @@ export async function clientBuildingDetails(req: Request, res: Response) {
     {
       label: 'Id da edificação',
       type: 'string',
-      variable: buildingId,
+      variable: buildingNanoId,
     },
   ]);
 
-  const building = await buildingServices.findById({ buildingId });
+  const building = await buildingServices.findByNanoId({ buildingNanoId });
 
   // #endregion
 
   const { MaintenancesHistory, MaintenancesPending } =
     await clientBuildingServices.findMaintenanceHistory({
-      buildingId,
+      buildingId: building.id,
       year: String(year),
     });
 
@@ -113,11 +114,14 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   for (let i = 0; i < MaintenancesPending.length; i++) {
     const intervals = sharedCalendarServices.recurringDates({
       startDate: new Date(MaintenancesPending[i].notificationDate),
-      endDate: new Date(`12/31/${new Date().getFullYear() + 2}`),
+      endDate: new Date(`12/31/${new Date().getFullYear() + YEARFORSUM}`),
       interval:
         MaintenancesPending[i].Maintenance.frequency *
         MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
       maintenanceData: MaintenancesPending[i],
+      periodDaysInterval:
+        MaintenancesPending[i].Maintenance.period *
+        MaintenancesPending[i].Maintenance.PeriodTimeInterval.unitTime,
     });
 
     maintenances.push(...intervals);

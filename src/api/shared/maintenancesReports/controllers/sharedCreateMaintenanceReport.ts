@@ -1,6 +1,6 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
-import { addTimeDate, removeTimeDate } from '../../../../utils/dateTime';
+import { addTimeDate, dateFormatter, removeTimeDate } from '../../../../utils/dateTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
 import { EmailTransporterServices } from '../../../../utils/emailTransporter/emailTransporterServices';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
@@ -101,7 +101,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     ]);
   });
 
-  const maintenanceHistory = await sharedMaintenanceServices.findHistoryById({
+  const maintenanceHistory = await sharedMaintenanceServices.findHistoryByNanoId({
     maintenanceHistoryId,
   });
 
@@ -115,8 +115,8 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   let syndicData = null;
 
   if (responsibleSyndicId) {
-    syndicData = await sharedBuildingNotificationConfigurationServices.findById({
-      buildingNotificationConfigurationId: responsibleSyndicId,
+    syndicData = await sharedBuildingNotificationConfigurationServices.findByNanoId({
+      syndicNanoId: responsibleSyndicId,
     });
   }
   const today = new Date(new Date().toISOString().split('T')[0]);
@@ -140,7 +140,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     maintenanceHistoryId,
     cost,
     observation,
-    responsibleSyndicId,
+    responsibleSyndicId: syndicData?.id,
     ReportImages: {
       createMany: {
         data: ReportImages,
@@ -194,13 +194,22 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   // #endregion
 
   await emailTransporter.sendProofOfReport({
+    dueDate: dateFormatter(maintenanceHistory.dueDate),
+    notificationDate: dateFormatter(maintenanceHistory.notificationDate),
     buildingName: maintenanceHistory.Building.name,
     activity: maintenanceHistory.Maintenance.activity,
     categoryName: maintenanceHistory.Maintenance.Category.name,
     element: maintenanceHistory.Maintenance.element,
+    responsible: maintenanceHistory.Maintenance.responsible,
+    source: maintenanceHistory.Maintenance.source,
+    maintenanceObservation:
+      maintenanceHistory.Maintenance.observation &&
+      maintenanceHistory.Maintenance.observation !== ''
+        ? maintenanceHistory.Maintenance.observation
+        : '-',
     cost: maskeredCost,
-    observation: data.observation === null ? '-' : data.observation,
-    reportDate: formattedDate,
+    reportObservation: data.observation && data.observation !== '' ? data.observation : '-',
+    resolutionDate: formattedDate,
     subject: 'Comprovante de relato',
     syndicName: responsibleName,
     toEmail: emailToSend,
@@ -218,11 +227,11 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       resolutionDate: today,
     });
   } else {
-    const overdueStatus = await sharedMaintenanceStatusServices.findByName({ name: 'completed' });
+    const completedStatus = await sharedMaintenanceStatusServices.findByName({ name: 'completed' });
 
     await sharedMaintenanceServices.changeMaintenanceHistoryStatus({
       maintenanceHistoryId,
-      maintenanceStatusId: overdueStatus.id,
+      maintenanceStatusId: completedStatus.id,
       resolutionDate: today,
     });
   }
@@ -284,7 +293,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
 
   return res.status(200).json({
     ServerMessage: {
-      statusCode: 201,
+      statusCode: 200,
       message: `Manutenção reportada com sucesso.`,
     },
   });

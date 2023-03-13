@@ -84,7 +84,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
-
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -95,6 +97,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -104,6 +109,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -113,6 +121,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -122,6 +133,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -131,6 +145,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -140,6 +157,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -149,6 +169,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -158,6 +181,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -167,6 +193,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -176,6 +205,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -185,6 +217,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            isFuture: maintenance.isFuture ?? false,
+            expectedNotificationDate: maintenance.expectedNotificationDate,
+            expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
           });
           break;
@@ -431,6 +466,15 @@ export class ClientBuildingServices {
                   pluralLabel: true,
                 },
               },
+
+              period: true,
+              PeriodTimeInterval: {
+                select: {
+                  unitTime: true,
+                  singularLabel: true,
+                  pluralLabel: true,
+                },
+              },
             },
           },
           MaintenancesStatus: {
@@ -577,14 +621,6 @@ export class ClientBuildingServices {
       select: {
         name: true,
 
-        Annexes: {
-          select: {
-            name: true,
-            url: true,
-            originalName: true,
-          },
-        },
-
         NotificationsConfigurations: {
           select: {
             name: true,
@@ -624,5 +660,54 @@ export class ClientBuildingServices {
     validator.needExist([{ label: 'Logo da empresa', variable: companyLogo }]);
 
     return companyLogo?.Company.image;
+  }
+
+  async findHomeInformation({ buildingId }: { buildingId: string }) {
+    const mainContact = await prisma.building.findFirst({
+      select: {
+        name: true,
+
+        Banners: {
+          select: {
+            id: true,
+            bannerName: true,
+            originalName: true,
+            redirectUrl: true,
+            url: true,
+            type: true,
+          },
+        },
+      },
+      where: {
+        id: buildingId,
+      },
+    });
+
+    validator.needExist([{ label: 'edificação', variable: mainContact }]);
+
+    return mainContact;
+  }
+
+  async findAnnexes({ buildingId }: { buildingId: string }) {
+    const Annexes = await prisma.building.findFirst({
+      select: {
+        name: true,
+
+        Annexes: {
+          select: {
+            name: true,
+            url: true,
+            originalName: true,
+          },
+        },
+      },
+      where: {
+        id: buildingId,
+      },
+    });
+
+    validator.needExist([{ label: 'Anexos', variable: Annexes }]);
+
+    return Annexes;
   }
 }

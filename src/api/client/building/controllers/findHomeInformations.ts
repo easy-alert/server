@@ -8,21 +8,16 @@ const buildingServices = new BuildingServices();
 
 const validator = new Validator();
 
-export async function findClientInformations(req: Request, res: Response) {
+export async function findHomeInformations(req: Request, res: Response) {
   const { buildingNanoId } = req.params;
 
   validator.check([{ label: 'Id da edificaçao', type: 'string', variable: buildingNanoId }]);
 
   const building = await buildingServices.findByNanoId({ buildingNanoId });
 
-  const mainContact = await clientBuildingServices.findMainContactInformation({
+  const homeInformations = await clientBuildingServices.findHomeInformation({
     buildingId: building.id,
   });
 
-  const formattedMainContact = {
-    buildingName: mainContact?.name,
-    mainContact: mainContact?.NotificationsConfigurations[0] ?? null,
-  };
-
-  return res.status(200).json(formattedMainContact);
+  return res.status(200).json(homeInformations);
 }

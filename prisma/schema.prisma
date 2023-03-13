@@ -272,7 +272,9 @@ model BuildingType {
 }
 
 model Building {
-  id             String @id @unique @default(uuid())
+  id     String @id @unique @default(uuid())
+  nanoId String @unique @default(nanoid(12))
+
   buildingTypeId String
   companyId      String
 
@@ -304,7 +306,9 @@ model Building {
 }
 
 model BuildingNotificationConfiguration {
-  id         String @id @unique @default(uuid())
+  id     String @id @unique @default(uuid())
+  nanoId String @unique @default(nanoid(12))
+
   buildingId String
 
   name                     String
@@ -332,8 +336,8 @@ model BuildingCategory {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Building     Building              @relation(fields: [buildingId], references: [id])
-  Category     Category              @relation(fields: [categoryId], references: [id])
+  Building     Building              @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  Category     Category              @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   Maintenances BuildingMaintenance[]
 
   @@map("buildingsCategories")

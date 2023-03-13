@@ -13,6 +13,8 @@ import { clientBuildingDetails } from './building/controllers/clientBuildingDeta
 import { clientSyndicBuildingDetails } from './building/controllers/clientSyndicBuildingDetails';
 import { findClientInformations } from './building/controllers/findClientInformations';
 import { findCompanyLogo } from './building/controllers/findCompanyLogo';
+import { findBuildingAnnex } from './building/controllers/findBuildingAnnex';
+import { findHomeInformations } from './building/controllers/findHomeInformations';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -24,16 +26,20 @@ clientRouter.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
 
 clientRouter.use('/upload', uploadRouter);
 
-clientRouter.get('/syndic/:syndicId', clientSyndicBuildingDetails);
+clientRouter.get('/syndic/:syndicNanoId', clientSyndicBuildingDetails);
 clientRouter.get(
   '/maintenances/list/details/:maintenanceHistoryId',
   sharedMaintenanceHistoryDetails,
 );
 
-clientRouter.get('/building/:buildingId', clientBuildingDetails);
+clientRouter.get('/building/:buildingNanoId', clientBuildingDetails);
 
-clientRouter.get('/building/informations/:buildingId', findClientInformations);
+clientRouter.get('/building/informations/:buildingNanoId', findClientInformations);
 
-clientRouter.get('/building/logo/:buildingId', findCompanyLogo);
+clientRouter.get('/building/home/:buildingNanoId', findHomeInformations);
+
+clientRouter.get('/building/annex/:buildingNanoId', findBuildingAnnex);
+
+clientRouter.get('/building/logo/:buildingNanoId', findCompanyLogo);
 
 clientRouter.post('/maintenances/create/report', sharedCreateMaintenanceReport);

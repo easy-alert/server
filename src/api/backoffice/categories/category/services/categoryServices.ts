@@ -48,6 +48,9 @@ export class CategoryServices {
           where: {
             ownerCompanyId: null,
           },
+          orderBy: {
+            element: 'asc',
+          },
         },
       },
       where: {

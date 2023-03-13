@@ -14,7 +14,7 @@ const validator = new Validator();
 
 export class BuildingServices {
   async create({ data }: ICreateBuilding) {
-    await prisma.building.create({
+    return prisma.building.create({
       data,
     });
   }
@@ -48,7 +48,22 @@ export class BuildingServices {
 
     validator.needExist([{ label: 'edificação', variable: building }]);
 
-    return building;
+    return building!;
+  }
+
+  async findByNanoId({ buildingNanoId }: { buildingNanoId: string }) {
+    const building = await prisma.building.findUnique({
+      include: {
+        Banners: true,
+      },
+      where: {
+        nanoId: buildingNanoId,
+      },
+    });
+
+    validator.needExist([{ label: 'edificação', variable: building }]);
+
+    return building!;
   }
 
   async findMaintenancesPerBuilding({ buildingId }: { buildingId: string }) {
@@ -68,10 +83,11 @@ export class BuildingServices {
     }
   }
 
-  async findByName({ name }: { name: string }) {
+  async findByName({ name, companyId }: { name: string; companyId: string }) {
     const building = await prisma.building.findFirst({
       where: {
         name,
+        companyId,
       },
     });
 
@@ -156,6 +172,7 @@ export class BuildingServices {
     const Building = await prisma.building.findFirst({
       select: {
         id: true,
+        nanoId: true,
         name: true,
         cep: true,
         city: true,
@@ -229,6 +246,18 @@ export class BuildingServices {
   async listMaintenances({ buildingId }: IListMaintenances) {
     return prisma.buildingCategory.findMany({
       include: {
+        Building: {
+          select: {
+            name: true,
+
+            MaintenancesHistory: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        },
+
         Category: {
           select: {
             id: true,
@@ -276,12 +305,29 @@ export class BuildingServices {
               },
             },
           },
+          orderBy: {
+            Maintenance: { element: 'asc' },
+          },
         },
       },
 
+      orderBy: {
+        Category: {
+          name: 'asc',
+        },
+      },
       where: {
         buildingId,
       },
+    });
+  }
+
+  async listMaintenancesHistoryByBuilding({ buildingId }: { buildingId: string }) {
+    return prisma.maintenanceHistory.findMany({
+      select: {
+        maintenanceId: true,
+      },
+      where: { buildingId },
     });
   }
 

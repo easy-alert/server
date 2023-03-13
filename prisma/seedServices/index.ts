@@ -82,8 +82,7 @@ export class SeedServices {
       contactNumber: '0000000000',
       CNPJ: '00000000000000',
       CPF: null,
-      image:
-        'https://media-exp1.licdn.com/dms/image/C4E0BAQF64xW4lNwbcg/company-logo_200_200/0/1635276982966?e=2147483647&v=beta&t=HKGD4nOWB9-zMFmm9U5MMvyxdXhQYnypageYeBPnIBE',
+      image: 'https://larguei.s3.us-west-2.amazonaws.com/1635276982966-1678106031894.jpg',
     });
 
     await companyServices.createUserCompany({

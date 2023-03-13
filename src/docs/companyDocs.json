@@ -379,6 +379,51 @@
       }
     },
 
+    "/categories/listforselect": {
+      "post": {
+        "tags": ["Categories"],
+        "summary": "Lista todas as categorias.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingId": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "description": "Retorna as categorias encontradas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {}
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
     "/maintenances/create": {
       "post": {
         "tags": ["Maintenance"],
@@ -1294,6 +1339,51 @@
       }
     },
 
+    "/buildings/categories/listforselect": {
+      "post": {
+        "tags": ["Building Categories"],
+        "summary": "Lista todas as edificações.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "buildingId": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "200": {
+            "description": "Retorna as edificações encontradas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {}
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
     "/buildings/maintenances/edit": {
       "put": {
         "tags": ["Building Maintenances"],
@@ -1729,7 +1819,7 @@
       }
     },
 
-    "/calendars/list/{year}": {
+    "/calendars/list": {
       "get": {
         "tags": ["Calendar"],
         "summary": "Lista todas as manutencoes.",
@@ -1760,6 +1850,128 @@
         "responses": {
           "200": {
             "description": "Lista todas as manutencoes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "name": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/reports/list": {
+      "get": {
+        "tags": ["Building Reports"],
+        "summary": "lista todas as informações para o relatório.",
+        "parameters": [
+          {
+            "name": "maintenanceStatusId",
+            "in": "query",
+            "default": " ",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "buildingId",
+            "in": "query",
+            "default": " ",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "in": "query",
+            "default": " ",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "responsibleSyndicId",
+            "in": "query",
+            "default": " ",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "default": " ",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "default": " ",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "lista todas as informações para o relatório.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "name": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/reports/listforselect": {
+      "get": {
+        "tags": ["Building Reports"],
+        "summary": "lista todas as opções para os selects do relatório.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "lista todas as opções para os selects do relatório.",
             "content": {
               "application/json": {
                 "schema": {

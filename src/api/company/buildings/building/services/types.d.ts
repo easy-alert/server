@@ -26,7 +26,6 @@ export interface IEditBuilding {
     neighborhood: string;
     streetName: string;
     area: string;
-    deliveryDate: Date;
     warrantyExpiration: Date;
     keepNotificationAfterWarrantyEnds: boolean;
   };

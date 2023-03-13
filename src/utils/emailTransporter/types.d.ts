@@ -14,10 +14,15 @@ export interface ISendProofOfReport {
   subject: string;
   element: string;
   buildingName: string;
-  reportDate: string;
+  resolutionDate: string;
   cost: number | string;
   categoryName: string;
+  responsible: string;
+  source: string;
+  maintenanceObservation: string;
+  notificationDate: string;
+  dueDate: string;
   syndicName: string;
   activity: string;
-  observation: string;
+  reportObservation: string;
 }

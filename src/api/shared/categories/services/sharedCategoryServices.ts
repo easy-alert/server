@@ -56,6 +56,60 @@ export class SharedCategoryServices {
     return category;
   }
 
+  async listForSelect({ ownerCompanyId }: { ownerCompanyId: string }) {
+    const companyCategories = await prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+      where: {
+        ownerCompanyId,
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+
+    const defaultCategories = await prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+
+      where: {
+        ownerCompanyId: null,
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+
+    const categories = [...defaultCategories, ...companyCategories];
+
+    // ordena alfabeticamente
+    categories.sort((a, b) => a.name.localeCompare(b.name));
+
+    return categories;
+  }
+
+  async listForSelectForBackoffice() {
+    const defaultCategories = await prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+
+      where: {
+        ownerCompanyId: null,
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+
+    return defaultCategories;
+  }
+
   async delete({ categoryId }: { categoryId: string }) {
     await this.findById({ categoryId });
 

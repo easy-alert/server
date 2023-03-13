@@ -22,13 +22,13 @@ export async function listBuildingDetailsMaintenances(req: Request, res: Respons
     },
   ]);
 
-  await buildingServices.findById({ buildingId });
+  const building = await buildingServices.findById({ buildingId });
 
   // #endregion
 
-  const BuldingMaintenances = await buildingServices.listMaintenances({
+  const BuildingMaintenances = await buildingServices.listMaintenances({
     buildingId,
   });
 
-  return res.status(200).json(BuldingMaintenances);
+  return res.status(200).json({ buildingName: building?.name, BuildingMaintenances });
 }
