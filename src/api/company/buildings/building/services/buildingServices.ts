@@ -103,7 +103,12 @@ export class BuildingServices {
       },
     });
 
-    validator.needExist([{ label: 'edificação', variable: building }]);
+    if (!building || !building?.building.NotificationsConfigurations.length) {
+      throw new ServerMessage({
+        statusCode: 404,
+        message: `A informação: edificação não existe na base de dados.`,
+      });
+    }
 
     return {
       buildingNanoId: building!.building.nanoId,
