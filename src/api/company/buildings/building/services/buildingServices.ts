@@ -61,15 +61,19 @@ export class BuildingServices {
               select: {
                 nanoId: true,
               },
-              where: {
-                isMain: true,
-              },
             },
           },
         },
       },
       where: {
         oldBuildingId,
+        building: {
+          NotificationsConfigurations: {
+            every: {
+              isMain: true,
+            },
+          },
+        },
       },
     });
 
