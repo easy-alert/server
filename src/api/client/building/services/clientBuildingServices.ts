@@ -1,5 +1,5 @@
 import { prisma } from '../../../../../prisma';
-import { removeTimeDate } from '../../../../utils/dateTime';
+import { removeDays } from '../../../../utils/dateTime';
 import { getDateInfos } from '../../../../utils/dateTime/getDateInfos';
 import { Validator } from '../../../../utils/validator/validator';
 
@@ -260,7 +260,7 @@ export class ClientBuildingServices {
           period =
             maintenance.Maintenance.period * maintenance.Maintenance.PeriodTimeInterval.unitTime;
 
-          canReportDate = removeTimeDate({
+          canReportDate = removeDays({
             date: maintenance.notificationDate,
             days: period,
           });

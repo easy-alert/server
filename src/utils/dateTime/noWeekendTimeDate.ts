@@ -1,12 +1,12 @@
-import { addTimeDate } from './addTimeDate';
-import { removeTimeDate } from './removeTimeDate';
+import { addDays } from './addDays';
+import { removeDays } from './removeTimeDate';
 
 export const noWeekendTimeDate = ({ date, interval }: { date: Date; interval: number }) => {
   let dateNoWeekend;
 
   switch (date.getUTCDay()) {
     case 0:
-      dateNoWeekend = addTimeDate({
+      dateNoWeekend = addDays({
         date,
         days: 1,
       });
@@ -14,13 +14,13 @@ export const noWeekendTimeDate = ({ date, interval }: { date: Date; interval: nu
       break;
     case 6:
       if (interval === 1) {
-        dateNoWeekend = addTimeDate({
+        dateNoWeekend = addDays({
           date,
           days: 2,
         });
         break;
       } else {
-        dateNoWeekend = removeTimeDate({
+        dateNoWeekend = removeDays({
           date,
           days: 1,
         });

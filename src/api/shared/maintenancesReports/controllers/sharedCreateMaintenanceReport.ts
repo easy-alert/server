@@ -1,6 +1,6 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
-import { addTimeDate, dateFormatter, removeTimeDate } from '../../../../utils/dateTime';
+import { addDays, dateFormatter, removeDays } from '../../../../utils/dateTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
 import { EmailTransporterServices } from '../../../../utils/emailTransporter/emailTransporterServices';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
@@ -125,7 +125,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     maintenanceHistory.Maintenance.period *
     maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime;
 
-  const canReportDate = removeTimeDate({ date: maintenanceHistory.notificationDate, days: period });
+  const canReportDate = removeDays({ date: maintenanceHistory.notificationDate, days: period });
 
   if (today < canReportDate) {
     throw new ServerMessage({
@@ -253,7 +253,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   }
 
   const notificationDate = noWeekendTimeDate({
-    date: addTimeDate({
+    date: addDays({
       date: today,
       days:
         maintenanceHistory.Maintenance.frequency *
@@ -265,7 +265,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   });
 
   const dueDate = noWeekendTimeDate({
-    date: addTimeDate({
+    date: addDays({
       date: notificationDate,
       days:
         maintenanceHistory.Maintenance.period *

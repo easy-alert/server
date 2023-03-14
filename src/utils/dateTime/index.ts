@@ -1,3 +1,3 @@
-export * from './addTimeDate';
+export * from './addDays';
 export * from './dateFormatter';
 export * from './removeTimeDate';

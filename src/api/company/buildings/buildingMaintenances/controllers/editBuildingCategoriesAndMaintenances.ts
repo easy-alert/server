@@ -1,7 +1,7 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
 import { noWeekendTimeDate } from '../../../../../utils/dateTime/noWeekendTimeDate';
-import { addDays } from '../../../../../utils/functions';
+
 import { Validator } from '../../../../../utils/validator/validator';
 import { SharedCategoryServices } from '../../../../shared/categories/services/sharedCategoryServices';
 import { SharedMaintenanceServices } from '../../../../shared/maintenance/services/sharedMaintenanceServices';
@@ -13,6 +13,7 @@ import { BuildingMaintenanceHistoryServices } from '../../buildingMaintenancesHi
 import { BuildingCategoryAndMaintenanceServices } from '../services/buildingCategoryAndMaintenanceServices';
 import { IDateForCreateHistory, IMaintenancesForHistorySelected } from './types';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+import { addDays } from '../../../../../utils/dateTime';
 
 // CLASS
 
