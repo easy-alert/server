@@ -81,6 +81,7 @@ export async function sendEmailConfirmationBuildingNotificationConfiguration(
 
   await buildingNotificationConfigurationServices.sendEmailConfirmForReceiveNotifications({
     buildingNotificationConfigurationId: notificationData.id,
+    companyLogo: req.Company.image,
     link: `${link}?token=${token}`,
     toEmail: notificationData.email,
   });

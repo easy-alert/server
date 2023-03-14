@@ -20,7 +20,8 @@
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
     "strictNullChecks": true,
-    "importsNotUsedAsValues": "remove"
+    "importsNotUsedAsValues": "remove",
+    "downlevelIteration": true
   },
   "include": ["src", "prisma/index.ts"]
 }

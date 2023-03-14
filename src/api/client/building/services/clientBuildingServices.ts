@@ -77,7 +77,7 @@ export class ClientBuildingServices {
       else maintenanceDate = maintenance.notificationDate;
 
       const dateInfos = getDateInfos(maintenanceDate);
-      switch (maintenanceDate.getMonth()) {
+      switch (maintenanceDate.getUTCMonth()) {
         case 0:
           months[0].dates.push({
             id: maintenance.id,
@@ -253,7 +253,7 @@ export class ClientBuildingServices {
       let auxiliaryData = null;
       let period = null;
       let canReportDate = null;
-      const today = new Date(new Date().toISOString().split('T')[0]);
+      const today = new Date(new Date().setHours(-3, 0, 0, 0));
 
       switch (maintenance.MaintenancesStatus.name) {
         case 'pending':
@@ -342,33 +342,36 @@ export class ClientBuildingServices {
     return kanban;
   }
 
+  async mountYearsFilters({ buildingId }: { buildingId: string }) {
+    const dates = await prisma.maintenanceHistory.groupBy({
+      by: ['notificationDate'],
+
+      where: {
+        buildingId,
+      },
+    });
+
+    let years: string[] = [];
+
+    dates.forEach((date) => {
+      years.push(String(new Date(date.notificationDate).getUTCFullYear()));
+    });
+
+    years = [...new Set(years)];
+
+    years = years.sort((a, b) => (a < b ? -1 : 1));
+
+    return years;
+  }
+
   async findMaintenanceHistory({ buildingId, year }: { buildingId: string; year: string }) {
-    const startDate = new Date(`${'01'}/01/${String(year)}`);
-    const endDate = new Date(`${'12'}/31/${String(year)}`);
+    // const startDate = new Date(`${'01'}/01/${String(year)}`);
+    // const endDate = new Date(`${'12'}/31/${String(year)}`);
 
     const startDatePending = new Date(`01/01/${String(year)}`);
     const endDatePending = new Date(`12/31/${String(year)}`);
 
-    const [Filters, MaintenancesHistory, MaintenancesPending] = await prisma.$transaction([
-      prisma.maintenanceHistory.findMany({
-        select: {
-          id: true,
-          notificationDate: true,
-          resolutionDate: true,
-
-          MaintenancesStatus: {
-            select: {
-              name: true,
-              pluralLabel: true,
-              singularLabel: true,
-            },
-          },
-        },
-        where: {
-          buildingId,
-        },
-      }),
-
+    const [MaintenancesHistory, MaintenancesPending] = await prisma.$transaction([
       prisma.maintenanceHistory.findMany({
         select: {
           id: true,
@@ -423,10 +426,10 @@ export class ClientBuildingServices {
             },
           },
 
-          OR: [
-            { notificationDate: { lte: endDate, gte: startDate } },
-            { resolutionDate: { lte: endDate, gte: startDate } },
-          ],
+          // OR: [
+          //   { notificationDate: { lte: endDate, gte: startDate } },
+          //   { resolutionDate: { lte: endDate, gte: startDate } },
+          // ],
         },
       }),
 
@@ -520,7 +523,7 @@ export class ClientBuildingServices {
       },
     ]);
 
-    return { Filters, MaintenancesHistory, MaintenancesPending };
+    return { MaintenancesHistory, MaintenancesPending };
   }
 
   async findSyndicMaintenanceHistory({

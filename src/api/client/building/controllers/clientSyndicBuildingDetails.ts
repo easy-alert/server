@@ -1,6 +1,5 @@
 // # region IMPORTS
 import { Request, Response } from 'express';
-import { DynamicFutureYears } from '../../../../utils/dateTime/dynamicFutureYears';
 import { Validator } from '../../../../utils/validator/validator';
 import { SharedBuildingNotificationConfigurationServices } from '../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { ClientBuildingServices } from '../services/clientBuildingServices';
@@ -24,12 +23,12 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
 
   const startDate =
     year === ''
-      ? new Date(`${monthFilter ?? '01'}/01/${String(Number(new Date().getFullYear()) - 2)}`)
+      ? new Date(`${monthFilter ?? '01'}/01/${String(Number(new Date().getUTCFullYear()) - 2)}`)
       : new Date(`${monthFilter ?? '01'}/01/${String(year)}`);
 
   const endDate =
     year === ''
-      ? new Date(`${monthFilter ?? '12'}/31/${String(Number(new Date().getFullYear()) + 2)}`)
+      ? new Date(`${monthFilter ?? '12'}/31/${String(Number(new Date().getUTCFullYear()) + 2)}`)
       : new Date(`${monthFilter ?? '12'}/31/${String(year)}`);
 
   // #region VALIDATION
@@ -58,10 +57,12 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
 
   // #region MOUNTING FILTERS
 
-  const filterYears = DynamicFutureYears({ showFutureYears: false });
+  const yearsFiltered = await clientBuildingServices.mountYearsFilters({
+    buildingId: buildingNotificationConfig?.Building.id,
+  });
 
   const Filters = {
-    years: filterYears,
+    years: yearsFiltered,
     months: [
       {
         monthNumber: '01',

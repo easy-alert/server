@@ -14,7 +14,7 @@ export const getDateInfos = (date: Date) => {
         dayNumber: addZeroInNumberFront(date.getUTCDate()),
         name: 'Domingo',
         smName: 'Dom',
-        year: date.getFullYear(),
+        year: date.getUTCFullYear(),
       };
       break;
 
@@ -23,7 +23,7 @@ export const getDateInfos = (date: Date) => {
         dayNumber: addZeroInNumberFront(date.getUTCDate()),
         name: 'Segunda',
         smName: 'Seg',
-        year: date.getFullYear(),
+        year: date.getUTCFullYear(),
       };
       break;
 
@@ -32,7 +32,7 @@ export const getDateInfos = (date: Date) => {
         dayNumber: addZeroInNumberFront(date.getUTCDate()),
         name: 'Terça',
         smName: 'Ter',
-        year: date.getFullYear(),
+        year: date.getUTCFullYear(),
       };
       break;
 
@@ -41,7 +41,7 @@ export const getDateInfos = (date: Date) => {
         dayNumber: addZeroInNumberFront(date.getUTCDate()),
         name: 'Quarta',
         smName: 'Qua',
-        year: date.getFullYear(),
+        year: date.getUTCFullYear(),
       };
       break;
 
@@ -50,7 +50,7 @@ export const getDateInfos = (date: Date) => {
         dayNumber: addZeroInNumberFront(date.getUTCDate()),
         name: 'Quinta',
         smName: 'Qui',
-        year: date.getFullYear(),
+        year: date.getUTCFullYear(),
       };
       break;
 
@@ -59,7 +59,7 @@ export const getDateInfos = (date: Date) => {
         dayNumber: addZeroInNumberFront(date.getUTCDate()),
         name: 'Sexta',
         smName: 'Sex',
-        year: date.getFullYear(),
+        year: date.getUTCFullYear(),
       };
       break;
 
@@ -68,7 +68,7 @@ export const getDateInfos = (date: Date) => {
         dayNumber: addZeroInNumberFront(date.getUTCDate()),
         name: 'Sabado',
         smName: 'Sab',
-        year: date.getFullYear(),
+        year: date.getUTCFullYear(),
       };
       break;
 

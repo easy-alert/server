@@ -119,7 +119,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       syndicNanoId: responsibleSyndicId,
     });
   }
-  const today = new Date(new Date().toISOString().split('T')[0]);
+  const today = new Date(new Date().setHours(-3, 0, 0, 0));
 
   const period =
     maintenanceHistory.Maintenance.period *
@@ -194,6 +194,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   // #endregion
 
   await emailTransporter.sendProofOfReport({
+    companyLogo: maintenanceHistory.Company.image,
     dueDate: dateFormatter(maintenanceHistory.dueDate),
     notificationDate: dateFormatter(maintenanceHistory.notificationDate),
     buildingName: maintenanceHistory.Building.name,

@@ -136,7 +136,7 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
     await buildingNotificationConfigurationServices.sendEmailConfirmForReceiveNotifications({
       buildingNotificationConfigurationId: buildingNotificationConfigurationData.id,
       link: `${linkEmail}?token=${token}`,
-
+      companyLogo: req.Company.image,
       toEmail: buildingNotificationConfigurationData.email,
     });
   }

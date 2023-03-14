@@ -32,7 +32,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
   const { buildingId } = req.body;
   const bodyData = req.body.data;
 
-  const today = new Date(new Date().toISOString().split('T')[0]);
+  const today = new Date(new Date().setHours(-3, 0, 0, 0));
 
   // #region VALIDATIONS
 
