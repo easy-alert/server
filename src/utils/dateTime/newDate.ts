@@ -1,5 +1,5 @@
 interface INewDate {
-  date: Date;
+  date?: string;
   time?: {
     h: number;
     m: number;
@@ -8,8 +8,8 @@ interface INewDate {
   };
 }
 
-export function newDate({ date, time }: INewDate) {
-  if (time) return new Date(date.setHours(time.h, time.m, time.s, time.ms));
+export function newDate({ date = Date(), time }: INewDate) {
+  if (time) return new Date(new Date(date).setHours(time.h, time.m, time.s, time.ms));
 
   return new Date();
 }

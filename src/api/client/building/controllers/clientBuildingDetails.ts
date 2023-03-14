@@ -1,5 +1,7 @@
 // # region IMPORTS
 import { Request, Response } from 'express';
+import { DynamicFutureYears } from '../../../../utils/dateTime/dynamicFutureYears';
+import { newDate } from '../../../../utils/dateTime/newDate';
 import { Validator } from '../../../../utils/validator/validator';
 import { BuildingServices } from '../../../company/buildings/building/services/buildingServices';
 import { SharedCalendarServices } from '../../../shared/calendar/services/SharedCalendarServices';
@@ -18,7 +20,7 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   const YEARFORSUM = 5;
 
   const { buildingNanoId } = req.params;
-  const { year } = req.query;
+  // const { year } = req.query;
 
   // #region VALIDATION
 
@@ -37,16 +39,8 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   const { MaintenancesHistory, MaintenancesPending } =
     await clientBuildingServices.findMaintenanceHistory({
       buildingId: building.id,
-      year: String(year),
+      // year: String(year),
     });
-
-  // const yearsFiltered = await clientBuildingServices.mountYearsFilters({
-  //   buildingId: building.id,
-  // });
-
-  // #region MOUNTING FILTERS
-
-  // #endregion
 
   // #region PROCESS DATA
 
@@ -71,13 +65,21 @@ export async function clientBuildingDetails(req: Request, res: Response) {
 
   const months = clientBuildingServices.separePerMonth({ data: maintenances });
 
+  // #region MOUNT FILTER
   let yearsFiltered: string[] = [];
 
   maintenances.forEach((date) => {
-    yearsFiltered.push(String(new Date(date.notificationDate).getUTCFullYear()));
+    if (new Date(date.notificationDate).getUTCFullYear() <= newDate({}).getUTCFullYear()) {
+      yearsFiltered.push(String(new Date(date.notificationDate).getUTCFullYear()));
+    }
   });
 
   yearsFiltered = [...new Set(yearsFiltered)];
+
+  yearsFiltered = [
+    ...yearsFiltered,
+    ...DynamicFutureYears({ initialYear: newDate({}).getUTCFullYear(), yearsForSum: 5 }),
+  ];
 
   yearsFiltered = yearsFiltered.sort((a, b) => (a < b ? -1 : 1));
 

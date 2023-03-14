@@ -364,12 +364,17 @@ export class ClientBuildingServices {
     return years;
   }
 
-  async findMaintenanceHistory({ buildingId, year }: { buildingId: string; year: string }) {
+  async findMaintenanceHistory({
+    buildingId,
+  }: {
+    buildingId: string;
+    // year: string
+  }) {
     // const startDate = new Date(`${'01'}/01/${String(year)}`);
     // const endDate = new Date(`${'12'}/31/${String(year)}`);
 
-    const startDatePending = new Date(`01/01/${String(year)}`);
-    const endDatePending = new Date(`12/31/${String(year)}`);
+    // const startDatePending = new Date(`01/01/${String(year)}`);
+    // const endDatePending = new Date(`12/31/${String(year)}`);
 
     const [MaintenancesHistory, MaintenancesPending] = await prisma.$transaction([
       prisma.maintenanceHistory.findMany({
@@ -504,10 +509,10 @@ export class ClientBuildingServices {
             ],
           },
 
-          OR: [
-            { notificationDate: { lte: endDatePending, gte: startDatePending } },
-            { resolutionDate: { lte: endDatePending, gte: startDatePending } },
-          ],
+          // OR: [
+          //   { notificationDate: { lte: endDatePending, gte: startDatePending } },
+          //   { resolutionDate: { lte: endDatePending, gte: startDatePending } },
+          // ],
         },
       }),
     ]);
