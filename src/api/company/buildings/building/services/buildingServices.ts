@@ -67,6 +67,32 @@ export class BuildingServices {
       },
       where: {
         oldBuildingId,
+      },
+    });
+
+    validator.needExist([{ label: 'edificação', variable: building }]);
+
+    return {
+      buildingNanoId: building!.building.nanoId,
+    };
+  }
+
+  async findByOldIdForSyndic({ oldBuildingId }: { oldBuildingId: string }) {
+    const building = await prisma.oldBuildingIds.findFirst({
+      select: {
+        building: {
+          select: {
+            nanoId: true,
+            NotificationsConfigurations: {
+              select: {
+                nanoId: true,
+              },
+            },
+          },
+        },
+      },
+      where: {
+        oldBuildingId,
         building: {
           NotificationsConfigurations: {
             every: {
@@ -77,7 +103,12 @@ export class BuildingServices {
       },
     });
 
-    validator.needExist([{ label: 'edificação', variable: building }]);
+    if (!building || !building?.building.NotificationsConfigurations.length) {
+      throw new ServerMessage({
+        statusCode: 404,
+        message: `A informação: edificação não existe na base de dados.`,
+      });
+    }
 
     return {
       buildingNanoId: building!.building.nanoId,

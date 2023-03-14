@@ -13,13 +13,16 @@ export async function findOldBuildingId(req: Request, res: Response) {
 
   const environment = process.env.CLIENT_URL;
 
-  const { buildingNanoId, syndicNanoId } = await buildingServices.findByOldId({ oldBuildingId });
-
   if (isSyndic) {
+    const { buildingNanoId, syndicNanoId } = await buildingServices.findByOldIdForSyndic({
+      oldBuildingId,
+    });
+
     return res
       .status(200)
       .json({ url: `${environment}/${buildingNanoId}?syndicNanoId=${syndicNanoId}` });
   }
 
+  const { buildingNanoId } = await buildingServices.findByOldId({ oldBuildingId });
   return res.status(200).json({ url: `${environment}/${buildingNanoId}` });
 }

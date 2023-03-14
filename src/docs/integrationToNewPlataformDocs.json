@@ -72,6 +72,14 @@
             },
             "required": true,
             "description": "ID antigo da edificação"
+          },
+          {
+            "in": "query",
+            "name": "isSyndic",
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID antigo da edificação"
           }
         ],
 
