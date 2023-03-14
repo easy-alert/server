@@ -14,6 +14,7 @@ import { BuildingCategoryAndMaintenanceServices } from '../services/buildingCate
 import { IDateForCreateHistory, IMaintenancesForHistorySelected } from './types';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 import { addDays } from '../../../../../utils/dateTime';
+import { changeTime } from '../../../../../utils/dateTime/changeTime';
 
 // CLASS
 
@@ -33,7 +34,15 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
   const { buildingId } = req.body;
   const bodyData = req.body.data;
 
-  const today = new Date(new Date().setHours(-3, 0, 0, 0));
+  const today = changeTime({
+    date: new Date(),
+    time: {
+      h: 0,
+      m: 0,
+      ms: 0,
+      s: 0,
+    },
+  });
 
   // #region VALIDATIONS
 

@@ -1,6 +1,7 @@
 import { prisma } from '../../../../../prisma';
 import { removeDays } from '../../../../utils/dateTime';
 import { getDateInfos } from '../../../../utils/dateTime/getDateInfos';
+import { changeTime } from '../../../../utils/dateTime/changeTime';
 import { Validator } from '../../../../utils/validator/validator';
 
 const validator = new Validator();
@@ -253,7 +254,15 @@ export class ClientBuildingServices {
       let auxiliaryData = null;
       let period = null;
       let canReportDate = null;
-      const today = new Date(new Date().setHours(-3, 0, 0, 0));
+      const today = changeTime({
+        date: new Date(),
+        time: {
+          h: 0,
+          m: 0,
+          ms: 0,
+          s: 0,
+        },
+      });
 
       switch (maintenance.MaintenancesStatus.name) {
         case 'pending':
@@ -542,7 +551,21 @@ export class ClientBuildingServices {
     endDate: Date | undefined;
     status: string | undefined;
   }) {
-    const [MaintenancesHistory] = await prisma.$transaction([
+    const [MaintenancesForFilter, MaintenancesHistory] = await prisma.$transaction([
+      prisma.maintenanceHistory.findMany({
+        select: {
+          notificationDate: true,
+        },
+        where: {
+          buildingId,
+          MaintenancesStatus: {
+            name: {
+              in: status,
+            },
+          },
+        },
+      }),
+
       prisma.maintenanceHistory.findMany({
         select: {
           id: true,
@@ -620,8 +643,14 @@ export class ClientBuildingServices {
         variable: MaintenancesHistory,
       },
     ]);
+    validator.needExist([
+      {
+        label: 'histórico de manutenção',
+        variable: MaintenancesForFilter,
+      },
+    ]);
 
-    return { MaintenancesHistory };
+    return { MaintenancesForFilter, MaintenancesHistory };
   }
 
   async findMainContactInformation({ buildingId }: { buildingId: string }) {

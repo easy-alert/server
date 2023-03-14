@@ -1,7 +1,6 @@
 // # region IMPORTS
 import { Request, Response } from 'express';
 import { DynamicFutureYears } from '../../../../utils/dateTime/dynamicFutureYears';
-import { newDate } from '../../../../utils/dateTime/newDate';
 import { Validator } from '../../../../utils/validator/validator';
 import { BuildingServices } from '../../../company/buildings/building/services/buildingServices';
 import { SharedCalendarServices } from '../../../shared/calendar/services/SharedCalendarServices';
@@ -69,7 +68,7 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   let yearsFiltered: string[] = [];
 
   maintenances.forEach((date) => {
-    if (new Date(date.notificationDate).getUTCFullYear() <= newDate({}).getUTCFullYear()) {
+    if (new Date(date.notificationDate).getUTCFullYear() <= new Date().getUTCFullYear()) {
       yearsFiltered.push(String(new Date(date.notificationDate).getUTCFullYear()));
     }
   });
@@ -78,7 +77,7 @@ export async function clientBuildingDetails(req: Request, res: Response) {
 
   yearsFiltered = [
     ...yearsFiltered,
-    ...DynamicFutureYears({ initialYear: newDate({}).getUTCFullYear(), yearsForSum: 5 }),
+    ...DynamicFutureYears({ initialYear: new Date().getUTCFullYear(), yearsForSum: 5 }),
   ];
 
   yearsFiltered = yearsFiltered.sort((a, b) => (a < b ? -1 : 1));

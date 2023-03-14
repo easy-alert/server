@@ -1,5 +1,6 @@
 // # region IMPORTS
 import { Request, Response } from 'express';
+import { changeTime } from '../../../../utils/dateTime/changeTime';
 import { Validator } from '../../../../utils/validator/validator';
 import { SharedBuildingNotificationConfigurationServices } from '../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { ClientBuildingServices } from '../services/clientBuildingServices';
@@ -23,13 +24,45 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
 
   const startDate =
     year === ''
-      ? new Date(`${monthFilter ?? '01'}/01/${String(Number(new Date().getUTCFullYear()) - 2)}`)
-      : new Date(`${monthFilter ?? '01'}/01/${String(year)}`);
+      ? changeTime({
+          date: new Date(`${monthFilter ?? '01'}/01/${String(new Date().getUTCFullYear() - 100)}`),
+          time: {
+            h: 0,
+            m: 0,
+            ms: 0,
+            s: 0,
+          },
+        })
+      : changeTime({
+          date: new Date(`${monthFilter ?? '01'}/01/${String(year)}`),
+          time: {
+            h: 0,
+            m: 0,
+            ms: 0,
+            s: 0,
+          },
+        });
 
   const endDate =
     year === ''
-      ? new Date(`${monthFilter ?? '12'}/31/${String(Number(new Date().getUTCFullYear()) + 2)}`)
-      : new Date(`${monthFilter ?? '12'}/31/${String(year)}`);
+      ? changeTime({
+          date: new Date(`${monthFilter ?? '12'}/31/${String(new Date().getUTCFullYear())}`),
+          time: {
+            h: 0,
+            m: 0,
+            ms: 0,
+            s: 0,
+          },
+        })
+      : changeTime({
+          date: new Date(`${monthFilter ?? '12'}/31/${String(year)}`),
+          time: {
+            h: 0,
+            m: 0,
+            ms: 0,
+            s: 0,
+          },
+        });
 
   // #region VALIDATION
 
@@ -48,18 +81,27 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
 
   // #endregion
 
-  const { MaintenancesHistory } = await clientBuildingServices.findSyndicMaintenanceHistory({
-    buildingId: buildingNotificationConfig?.Building.id,
-    status: statusFilter,
-    startDate,
-    endDate,
-  });
+  const { MaintenancesForFilter, MaintenancesHistory } =
+    await clientBuildingServices.findSyndicMaintenanceHistory({
+      buildingId: buildingNotificationConfig?.Building.id,
+      status: statusFilter,
+      startDate,
+      endDate,
+    });
 
   // #region MOUNTING FILTERS
 
-  const yearsFiltered = await clientBuildingServices.mountYearsFilters({
-    buildingId: buildingNotificationConfig?.Building.id,
+  let yearsFiltered: string[] = [];
+
+  MaintenancesForFilter.forEach((date) => {
+    if (new Date(date.notificationDate).getUTCFullYear() <= new Date().getUTCFullYear()) {
+      yearsFiltered.push(String(new Date(date.notificationDate).getUTCFullYear()));
+    }
   });
+
+  yearsFiltered = [...new Set(yearsFiltered)];
+
+  yearsFiltered = yearsFiltered.sort((a, b) => (a < b ? -1 : 1));
 
   const Filters = {
     years: yearsFiltered,

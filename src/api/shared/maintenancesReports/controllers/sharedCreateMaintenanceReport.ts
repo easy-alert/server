@@ -1,6 +1,7 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
 import { addDays, dateFormatter, removeDays } from '../../../../utils/dateTime';
+import { changeTime } from '../../../../utils/dateTime/changeTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
 import { EmailTransporterServices } from '../../../../utils/emailTransporter/emailTransporterServices';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
@@ -119,8 +120,15 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       syndicNanoId: responsibleSyndicId,
     });
   }
-  const today = new Date(new Date().setHours(-3, 0, 0, 0));
-
+  const today = changeTime({
+    date: new Date(),
+    time: {
+      h: 0,
+      m: 0,
+      ms: 0,
+      s: 0,
+    },
+  });
   const period =
     maintenanceHistory.Maintenance.period *
     maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime;
