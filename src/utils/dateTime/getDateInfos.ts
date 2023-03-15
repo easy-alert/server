@@ -66,8 +66,8 @@ export const getDateInfos = (date: Date) => {
     case 6:
       infos = {
         dayNumber: addZeroInNumberFront(date.getUTCDate()),
-        name: 'Sabado',
-        smName: 'Sab',
+        name: 'Sábado',
+        smName: 'Sáb',
         year: date.getUTCFullYear(),
       };
       break;
