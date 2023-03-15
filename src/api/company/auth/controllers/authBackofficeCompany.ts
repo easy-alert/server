@@ -15,14 +15,14 @@ const tokenServices = new TokenServices();
 const validator = new Validator();
 
 export const authBackofficeCompany = async (req: Request, res: Response) => {
-  const { userId, backOfficeToken } = req.body;
+  const { userId, backofficeToken } = req.body;
 
   validator.notNull([
     { label: 'id do usuário', variable: userId },
-    { label: 'id do usuário', variable: backOfficeToken },
+    { label: 'id do usuário', variable: backofficeToken },
   ]);
 
-  tokenServices.decode({ token: backOfficeToken });
+  tokenServices.decode({ token: backofficeToken });
 
   const user = await authServices.findById({ userId });
 
