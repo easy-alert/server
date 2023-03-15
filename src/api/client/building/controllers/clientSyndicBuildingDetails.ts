@@ -27,7 +27,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
       ? changeTime({
           date: new Date(`${monthFilter ?? '01'}/01/${String(new Date().getUTCFullYear() - 100)}`),
           time: {
-            h: 0,
+            h: 3,
             m: 0,
             ms: 0,
             s: 0,
@@ -36,7 +36,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
       : changeTime({
           date: new Date(`${monthFilter ?? '01'}/01/${String(year)}`),
           time: {
-            h: 0,
+            h: 3,
             m: 0,
             ms: 0,
             s: 0,
@@ -48,7 +48,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
       ? changeTime({
           date: new Date(`${monthFilter ?? '12'}/31/${String(new Date().getUTCFullYear())}`),
           time: {
-            h: 0,
+            h: 3,
             m: 0,
             ms: 0,
             s: 0,
@@ -57,7 +57,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
       : changeTime({
           date: new Date(`${monthFilter ?? '12'}/31/${String(year)}`),
           time: {
-            h: 0,
+            h: 3,
             m: 0,
             ms: 0,
             s: 0,

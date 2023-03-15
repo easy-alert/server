@@ -37,7 +37,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
   const today = changeTime({
     date: new Date(),
     time: {
-      h: 0,
+      h: 3,
       m: 0,
       ms: 0,
       s: 0,
