@@ -67,6 +67,17 @@ export class CategoryServices {
           orderBy: {
             element: 'asc',
           },
+
+          where: {
+            OR: [
+              {
+                ownerCompanyId,
+              },
+              {
+                ownerCompanyId: null,
+              },
+            ],
+          },
         },
       },
       where: {

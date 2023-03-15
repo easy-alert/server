@@ -1,6 +1,6 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
-import { addDays, dateFormatter, removeDays } from '../../../../utils/dateTime';
+import { addDays, removeDays } from '../../../../utils/dateTime';
 import { changeTime } from '../../../../utils/dateTime/changeTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
 import { EmailTransporterServices } from '../../../../utils/emailTransporter/emailTransporterServices';
@@ -187,8 +187,6 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
           currency: 'BRL',
         });
 
-  const formattedDate = `${new Date().toLocaleString('pt-BR')}`;
-
   let emailToSend = null;
   let responsibleName = null;
 
@@ -199,12 +197,11 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     emailToSend = maintenanceHistory.Company.UserCompanies[0].User.email;
     responsibleName = maintenanceHistory.Company.name;
   }
-  // #endregion
 
   await emailTransporter.sendProofOfReport({
     companyLogo: maintenanceHistory.Company.image,
-    dueDate: dateFormatter(maintenanceHistory.dueDate),
-    notificationDate: dateFormatter(maintenanceHistory.notificationDate),
+    dueDate: new Date(maintenanceHistory.dueDate).toLocaleDateString('pt-BR'),
+    notificationDate: new Date(maintenanceHistory.notificationDate).toLocaleDateString('pt-BR'),
     buildingName: maintenanceHistory.Building.name,
     activity: maintenanceHistory.Maintenance.activity,
     categoryName: maintenanceHistory.Maintenance.Category.name,
@@ -218,7 +215,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
         : '-',
     cost: maskeredCost,
     reportObservation: data.observation && data.observation !== '' ? data.observation : '-',
-    resolutionDate: formattedDate,
+    resolutionDate: new Date().toLocaleString('pt-BR'),
     subject: 'Comprovante de relato',
     syndicName: responsibleName,
     toEmail: emailToSend,
