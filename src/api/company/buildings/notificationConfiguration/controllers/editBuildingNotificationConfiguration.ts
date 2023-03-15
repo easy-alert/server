@@ -204,6 +204,7 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
 
       await buildingNotificationConfigurationServices.sendEmailConfirmForReceiveNotifications({
         buildingNotificationConfigurationId: buildingNotificationConfigurationEditedData.id,
+        companyLogo: req.Company.image,
         link: `${linkEmail}?token=${token}`,
         toEmail: buildingNotificationConfigurationEditedData.email,
       });

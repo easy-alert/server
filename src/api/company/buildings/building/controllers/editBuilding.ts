@@ -91,8 +91,6 @@ export async function editBuilding(req: Request, res: Response) {
 
   await buildingServices.findById({ buildingId });
 
-  await buildingServices.findByNameForEdit({ name: data.name, buildingId });
-
   // #endregion
 
   await buildingServices.edit({ data, buildingId });

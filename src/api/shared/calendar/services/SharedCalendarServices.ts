@@ -2,9 +2,8 @@
 // import { Validator } from '../../../../utils/validator/validator';
 // import { prisma } from '../../../../../prisma';
 import { prisma } from '../../../../../prisma';
-import { addTimeDate } from '../../../../utils/dateTime';
+import { addDays } from '../../../../utils/dateTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
-import { addDays } from '../../../../utils/functions';
 
 import { IRecurringDates } from './types';
 
@@ -39,7 +38,7 @@ export class SharedCalendarServices {
           interval: periodDaysInterval,
         }),
       });
-      date = noWeekendTimeDate({ date: addTimeDate({ date, days: interval }), interval });
+      date = noWeekendTimeDate({ date: addDays({ date, days: interval }), interval });
       isFuture = true;
     }
 

@@ -1,7 +1,7 @@
 import { ISendConfirmEmail, ISendProofOfReport } from '../types';
 
 export class EmailTemplates {
-  confirmEmail({ link, subject, text }: ISendConfirmEmail) {
+  confirmEmail({ link, subject, text, companyLogo }: ISendConfirmEmail) {
     return `<div
       style='
         background-size: cover;
@@ -20,12 +20,11 @@ export class EmailTemplates {
       >
 
         <img
-          src='https://larguei.s3.us-west-2.amazonaws.com/logoTextBlack-1669059871498.svg'
+          src="${companyLogo}"
           alt=''
           style='
               margin: 0 auto;
               display: block;
-              width: 388px;
               height: 87px;
           '
         />
@@ -116,6 +115,7 @@ export class EmailTemplates {
   }
 
   proofOfReport({
+    companyLogo,
     subject,
     buildingName,
     resolutionDate,
@@ -142,9 +142,9 @@ export class EmailTemplates {
     "
   >
     <img
-      src="https://larguei.s3.us-west-2.amazonaws.com/logoTextBlack-1669059871498.svg"
+      src="${companyLogo}"
       alt=""
-      style="margin: 0 auto; display: block; width: 388px; height: 87px;"
+      style="margin: 0 auto; display: block; height: 87px;"
     />
 
     <div style="width: 328px; margin: 0 auto;">

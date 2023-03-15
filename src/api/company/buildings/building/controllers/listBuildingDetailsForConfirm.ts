@@ -45,8 +45,7 @@ export async function listBuildingDetailsForConfirm(req: Request, res: Response)
   });
 
   return res.status(200).json({
-    BuildingDetails: {
-      name: BuildingDetails?.name,
-    },
+    name: BuildingDetails.name,
+    image: BuildingDetails.Company.image,
   });
 }

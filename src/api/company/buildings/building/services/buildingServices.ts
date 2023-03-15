@@ -248,6 +248,12 @@ export class BuildingServices {
         deliveryDate: true,
         warrantyExpiration: true,
         keepNotificationAfterWarrantyEnds: true,
+        Company: {
+          select: {
+            image: true,
+          },
+        },
+
         MaintenancesHistory: {
           select: {
             wasNotified: true,
@@ -305,7 +311,7 @@ export class BuildingServices {
 
     validator.needExist([{ label: 'Edificação', variable: Building }]);
 
-    return Building;
+    return Building!;
   }
 
   async listMaintenances({ buildingId }: IListMaintenances) {

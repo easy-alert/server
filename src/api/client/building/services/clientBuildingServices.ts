@@ -1,6 +1,7 @@
 import { prisma } from '../../../../../prisma';
-import { removeTimeDate } from '../../../../utils/dateTime';
+import { removeDays } from '../../../../utils/dateTime';
 import { getDateInfos } from '../../../../utils/dateTime/getDateInfos';
+import { changeTime } from '../../../../utils/dateTime/changeTime';
 import { Validator } from '../../../../utils/validator/validator';
 
 const validator = new Validator();
@@ -77,7 +78,7 @@ export class ClientBuildingServices {
       else maintenanceDate = maintenance.notificationDate;
 
       const dateInfos = getDateInfos(maintenanceDate);
-      switch (maintenanceDate.getMonth()) {
+      switch (maintenanceDate.getUTCMonth()) {
         case 0:
           months[0].dates.push({
             id: maintenance.id,
@@ -253,14 +254,22 @@ export class ClientBuildingServices {
       let auxiliaryData = null;
       let period = null;
       let canReportDate = null;
-      const today = new Date(new Date().toISOString().split('T')[0]);
+      const today = changeTime({
+        date: new Date(),
+        time: {
+          h: 3,
+          m: 0,
+          ms: 0,
+          s: 0,
+        },
+      });
 
       switch (maintenance.MaintenancesStatus.name) {
         case 'pending':
           period =
             maintenance.Maintenance.period * maintenance.Maintenance.PeriodTimeInterval.unitTime;
 
-          canReportDate = removeTimeDate({
+          canReportDate = removeDays({
             date: maintenance.notificationDate,
             days: period,
           });
@@ -342,33 +351,41 @@ export class ClientBuildingServices {
     return kanban;
   }
 
-  async findMaintenanceHistory({ buildingId, year }: { buildingId: string; year: string }) {
-    const startDate = new Date(`${'01'}/01/${String(year)}`);
-    const endDate = new Date(`${'12'}/31/${String(year)}`);
+  async mountYearsFilters({ buildingId }: { buildingId: string }) {
+    const dates = await prisma.maintenanceHistory.groupBy({
+      by: ['notificationDate'],
 
-    const startDatePending = new Date(`01/01/${String(year)}`);
-    const endDatePending = new Date(`12/31/${String(year)}`);
+      where: {
+        buildingId,
+      },
+    });
 
-    const [Filters, MaintenancesHistory, MaintenancesPending] = await prisma.$transaction([
-      prisma.maintenanceHistory.findMany({
-        select: {
-          id: true,
-          notificationDate: true,
-          resolutionDate: true,
+    let years: string[] = [];
 
-          MaintenancesStatus: {
-            select: {
-              name: true,
-              pluralLabel: true,
-              singularLabel: true,
-            },
-          },
-        },
-        where: {
-          buildingId,
-        },
-      }),
+    dates.forEach((date) => {
+      years.push(String(new Date(date.notificationDate).getUTCFullYear()));
+    });
 
+    years = [...new Set(years)];
+
+    years = years.sort((a, b) => (a < b ? -1 : 1));
+
+    return years;
+  }
+
+  async findMaintenanceHistory({
+    buildingId,
+  }: {
+    buildingId: string;
+    // year: string
+  }) {
+    // const startDate = new Date(`${'01'}/01/${String(year)}`);
+    // const endDate = new Date(`${'12'}/31/${String(year)}`);
+
+    // const startDatePending = new Date(`01/01/${String(year)}`);
+    // const endDatePending = new Date(`12/31/${String(year)}`);
+
+    const [MaintenancesHistory, MaintenancesPending] = await prisma.$transaction([
       prisma.maintenanceHistory.findMany({
         select: {
           id: true,
@@ -423,10 +440,10 @@ export class ClientBuildingServices {
             },
           },
 
-          OR: [
-            { notificationDate: { lte: endDate, gte: startDate } },
-            { resolutionDate: { lte: endDate, gte: startDate } },
-          ],
+          // OR: [
+          //   { notificationDate: { lte: endDate, gte: startDate } },
+          //   { resolutionDate: { lte: endDate, gte: startDate } },
+          // ],
         },
       }),
 
@@ -501,10 +518,10 @@ export class ClientBuildingServices {
             ],
           },
 
-          OR: [
-            { notificationDate: { lte: endDatePending, gte: startDatePending } },
-            { resolutionDate: { lte: endDatePending, gte: startDatePending } },
-          ],
+          // OR: [
+          //   { notificationDate: { lte: endDatePending, gte: startDatePending } },
+          //   { resolutionDate: { lte: endDatePending, gte: startDatePending } },
+          // ],
         },
       }),
     ]);
@@ -520,7 +537,7 @@ export class ClientBuildingServices {
       },
     ]);
 
-    return { Filters, MaintenancesHistory, MaintenancesPending };
+    return { MaintenancesHistory, MaintenancesPending };
   }
 
   async findSyndicMaintenanceHistory({
@@ -534,7 +551,21 @@ export class ClientBuildingServices {
     endDate: Date | undefined;
     status: string | undefined;
   }) {
-    const [MaintenancesHistory] = await prisma.$transaction([
+    const [MaintenancesForFilter, MaintenancesHistory] = await prisma.$transaction([
+      prisma.maintenanceHistory.findMany({
+        select: {
+          notificationDate: true,
+        },
+        where: {
+          buildingId,
+          MaintenancesStatus: {
+            name: {
+              in: status,
+            },
+          },
+        },
+      }),
+
       prisma.maintenanceHistory.findMany({
         select: {
           id: true,
@@ -612,8 +643,14 @@ export class ClientBuildingServices {
         variable: MaintenancesHistory,
       },
     ]);
+    validator.needExist([
+      {
+        label: 'histórico de manutenção',
+        variable: MaintenancesForFilter,
+      },
+    ]);
 
-    return { MaintenancesHistory };
+    return { MaintenancesForFilter, MaintenancesHistory };
   }
 
   async findMainContactInformation({ buildingId }: { buildingId: string }) {

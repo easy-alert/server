@@ -217,6 +217,7 @@ export class SharedMaintenanceServices {
           select: {
             id: true,
             name: true,
+            image: true,
             UserCompanies: {
               select: {
                 User: {

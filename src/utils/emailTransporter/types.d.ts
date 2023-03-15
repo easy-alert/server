@@ -1,5 +1,6 @@
 export interface ISendConfirmEmail {
   toEmail?: string;
+  companyLogo: string;
   link: string;
   subject: string;
   text: string;
@@ -11,6 +12,7 @@ export interface ISendProofOfReport {
     filename: string;
     path: string;
   }[];
+  companyLogo: string;
   subject: string;
   element: string;
   buildingName: string;
