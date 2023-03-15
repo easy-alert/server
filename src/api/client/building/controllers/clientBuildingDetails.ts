@@ -1,5 +1,6 @@
 // # region IMPORTS
 import { Request, Response } from 'express';
+import { changeTime } from '../../../../utils/dateTime/changeTime';
 import { DynamicFutureYears } from '../../../../utils/dateTime/dynamicFutureYears';
 import { Validator } from '../../../../utils/validator/validator';
 import { BuildingServices } from '../../../company/buildings/building/services/buildingServices';
@@ -48,8 +49,14 @@ export async function clientBuildingDetails(req: Request, res: Response) {
 
   for (let i = 0; i < MaintenancesPending.length; i++) {
     const intervals = sharedCalendarServices.recurringDates({
-      startDate: new Date(MaintenancesPending[i].notificationDate),
-      endDate: new Date(`12/31/${new Date().getUTCFullYear() + YEARFORSUM}`),
+      startDate: changeTime({
+        date: new Date(MaintenancesPending[i].notificationDate),
+        time: { h: 3, m: 0, ms: 0, s: 0 },
+      }),
+      endDate: changeTime({
+        date: new Date(`12/31/${new Date().getUTCFullYear() + YEARFORSUM}`),
+        time: { h: 3, m: 0, ms: 0, s: 0 },
+      }),
       interval:
         MaintenancesPending[i].Maintenance.frequency *
         MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
