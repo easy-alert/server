@@ -20,6 +20,8 @@ import { contactConfirmBuildingNotificationConfiguration } from './buildings/not
 import { buildingRouter } from './buildings/buiding.routes';
 import { listBuildingDetailsForConfirm } from './buildings/building/controllers/listBuildingDetailsForConfirm';
 import { calendarRouter } from './calendar/calendar.routes';
+import { sendEmailForRecoveryPassword } from '../shared/recoveryPassword/controllers/sendEmailForRecoveryPassord';
+import { changePassword } from '../shared/recoveryPassword/controllers/changePassword';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -48,3 +50,6 @@ companyRouter.use('/buildings', authMiddleware, isCompany, buildingRouter);
 companyRouter.use('/maintenances', authMiddleware, isCompany, maintenanceRouter);
 
 companyRouter.use('/calendars', authMiddleware, isCompany, calendarRouter);
+
+companyRouter.post('/passwordrecovery/sendemail', sendEmailForRecoveryPassword);
+companyRouter.put('/passwordrecovery/change', changePassword);

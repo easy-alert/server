@@ -6,6 +6,13 @@ export interface ISendConfirmEmail {
   text: string;
 }
 
+export interface ISendRecoveryPassword {
+  toEmail?: string;
+  link: string;
+  subject: string;
+  text: string;
+}
+
 export interface ISendProofOfReport {
   toEmail?: string;
   attachments?: {

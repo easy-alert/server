@@ -83,8 +83,9 @@ export class UserServices {
 
       where: { email: email.toLowerCase() },
     });
+    validator.needExist([{ label: 'usuário', variable: user }]);
 
-    return user;
+    return user!;
   }
 
   async findByEmailForEdit({ email, userId }: { email: string; userId: string }) {
