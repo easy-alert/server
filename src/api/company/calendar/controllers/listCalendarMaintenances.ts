@@ -73,6 +73,10 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
 
   const DatesMonths = [];
 
+  console.log('UTC', new Date().toLocaleString('pt-BR', { timeZone: 'UTC' }));
+
+  console.log('normal', new Date().toLocaleString('pt-BR'));
+
   for (let i = 0; i < arr.length; i += 1) {
     DatesMonths.push({
       id: arr[i][0].notificationDate,

@@ -160,7 +160,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       },
     },
   };
-  const report = await sharedMaintenanceReportsServices.create({ data });
+  await sharedMaintenanceReportsServices.create({ data });
 
   // #region PROCESS DATA FOR SEND EMAIL
   const attachments: IAttachments[] = [];
@@ -215,7 +215,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
         : '-',
     cost: maskeredCost,
     reportObservation: data.observation && data.observation !== '' ? data.observation : '-',
-    resolutionDate: new Date(report.createdAt).toLocaleString('pt-BR'),
+    resolutionDate: new Date().toLocaleString('pt-BR', { timeZone: 'UTC' }),
     subject: 'Comprovante de relato',
     syndicName: responsibleName,
     toEmail: emailToSend,
