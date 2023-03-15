@@ -117,6 +117,69 @@
       }
     },
 
+    "/passwordrecovery/sendemail": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Envia um email para o usuário recuperar a senha.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "default": "company@gmail.com"
+                  },
+                  "link": {
+                    "type": "string",
+                    "default": "http://localhost:3000"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+    "/passwordrecovery/change": {
+      "put": {
+        "tags": ["Auth"],
+        "summary": "Altera a senha do usuário.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
     "/account/edit": {
       "put": {
         "tags": ["Account"],
