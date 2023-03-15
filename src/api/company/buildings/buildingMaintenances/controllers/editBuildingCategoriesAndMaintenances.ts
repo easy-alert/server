@@ -133,10 +133,16 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         maintenancesForHistorySelected.push({
           maintenanceId: bodyData[i].Maintenances[j].id,
           resolutionDate: bodyData[i].Maintenances[j].resolutionDate
-            ? new Date(bodyData[i].Maintenances[j].resolutionDate)
+            ? changeTime({
+                date: new Date(bodyData[i].Maintenances[j].resolutionDate),
+                time: { h: 3, m: 0, ms: 0, s: 0 },
+              })
             : null,
           notificationDate: bodyData[i].Maintenances[j].notificationDate
-            ? new Date(bodyData[i].Maintenances[j].notificationDate)
+            ? changeTime({
+                date: new Date(bodyData[i].Maintenances[j].notificationDate),
+                time: { h: 3, m: 0, ms: 0, s: 0 },
+              })
             : null,
         });
 
@@ -232,9 +238,17 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       });
     }
 
-    notificationDateForOldBuildingDeliveries = noWeekendTimeDate({
-      date: notificationDateForOldBuildingDeliveries,
-      interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+    notificationDateForOldBuildingDeliveries = changeTime({
+      date: noWeekendTimeDate({
+        date: notificationDateForOldBuildingDeliveries,
+        interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+      }),
+      time: {
+        h: 3,
+        m: 0,
+        ms: 0,
+        s: 0,
+      },
     });
 
     // #endregion
