@@ -215,7 +215,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
         : '-',
     cost: maskeredCost,
     reportObservation: data.observation && data.observation !== '' ? data.observation : '-',
-    resolutionDate: new Date().toLocaleString('pt-BR', { timeZone: 'UTC' }),
+    resolutionDate: new Date().toLocaleString('pt-BR'),
     subject: 'Comprovante de relato',
     syndicName: responsibleName,
     toEmail: emailToSend,
