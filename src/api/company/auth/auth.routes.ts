@@ -14,6 +14,6 @@ export const authRouter = Router();
 
 authRouter.post('/login', authCompany);
 
-authRouter.post('/access/company', authBackofficeCompany);
+authRouter.post('/backofficeaccess', authBackofficeCompany);
 
 authRouter.get('/validate/token', authMiddleware, authValidateToken);
