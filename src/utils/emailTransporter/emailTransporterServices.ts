@@ -21,7 +21,7 @@ const transporter = createTransport({
 });
 
 export class EmailTransporterServices {
-  async sendConfirmEmail({ subject, toEmail, text, link }: ISendConfirmEmail) {
+  async sendConfirmEmail({ subject, toEmail, text, link, companyLogo }: ISendConfirmEmail) {
     const mail = {
       from: `${subject} <${process.env.EMAIL_USERNAME}>`,
       to: toEmail,
@@ -31,10 +31,11 @@ export class EmailTransporterServices {
         link,
         text,
         subject,
+        companyLogo,
       }),
     };
 
-    transporter.sendMail(mail).catch(() => {
+    await transporter.sendMail(mail).catch(() => {
       throw new ServerMessage({
         statusCode: 400,
         message: 'Oops! Encontramos um problema ao enviar a confirmação de email.',
@@ -59,6 +60,7 @@ export class EmailTransporterServices {
     notificationDate,
     responsible,
     source,
+    companyLogo,
   }: ISendProofOfReport) {
     const mail = {
       from: `${subject} <${process.env.EMAIL_USERNAME}>`,
@@ -66,6 +68,7 @@ export class EmailTransporterServices {
       subject: `Easy Alert - ${subject}`,
       attachments,
       html: emailTemplates.proofOfReport({
+        companyLogo,
         activity,
         buildingName,
         categoryName,

@@ -1,6 +1,7 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
-import { addTimeDate, dateFormatter, removeTimeDate } from '../../../../utils/dateTime';
+import { addDays, dateFormatter, removeDays } from '../../../../utils/dateTime';
+import { changeTime } from '../../../../utils/dateTime/changeTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
 import { EmailTransporterServices } from '../../../../utils/emailTransporter/emailTransporterServices';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
@@ -119,13 +120,20 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       syndicNanoId: responsibleSyndicId,
     });
   }
-  const today = new Date(new Date().toISOString().split('T')[0]);
-
+  const today = changeTime({
+    date: new Date(),
+    time: {
+      h: 3,
+      m: 0,
+      ms: 0,
+      s: 0,
+    },
+  });
   const period =
     maintenanceHistory.Maintenance.period *
     maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime;
 
-  const canReportDate = removeTimeDate({ date: maintenanceHistory.notificationDate, days: period });
+  const canReportDate = removeDays({ date: maintenanceHistory.notificationDate, days: period });
 
   if (today < canReportDate) {
     throw new ServerMessage({
@@ -194,6 +202,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   // #endregion
 
   await emailTransporter.sendProofOfReport({
+    companyLogo: maintenanceHistory.Company.image,
     dueDate: dateFormatter(maintenanceHistory.dueDate),
     notificationDate: dateFormatter(maintenanceHistory.notificationDate),
     buildingName: maintenanceHistory.Building.name,
@@ -252,7 +261,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   }
 
   const notificationDate = noWeekendTimeDate({
-    date: addTimeDate({
+    date: addDays({
       date: today,
       days:
         maintenanceHistory.Maintenance.frequency *
@@ -264,7 +273,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   });
 
   const dueDate = noWeekendTimeDate({
-    date: addTimeDate({
+    date: addDays({
       date: notificationDate,
       days:
         maintenanceHistory.Maintenance.period *

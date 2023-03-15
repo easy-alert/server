@@ -1,14 +1,19 @@
-export const DynamicFutureYears = ({ showFutureYears = false }: { showFutureYears: boolean }) => {
-  const actualYear = new Date().getFullYear();
-  let initialYear = 2020;
-
+export const DynamicFutureYears = ({
+  initialYear,
+  yearsForSum,
+}: {
+  initialYear: number;
+  yearsForSum: number;
+}) => {
   const years = [];
 
-  const finalYear = actualYear + (showFutureYears ? 5 : 0);
+  let year = initialYear;
 
-  while (initialYear <= finalYear) {
-    years.push(initialYear);
-    initialYear++;
+  const finalYear = initialYear + yearsForSum;
+
+  while (year <= finalYear) {
+    years.push(String(year));
+    year++;
   }
 
   return years;

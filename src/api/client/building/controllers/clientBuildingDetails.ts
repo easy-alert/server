@@ -19,7 +19,7 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   const YEARFORSUM = 5;
 
   const { buildingNanoId } = req.params;
-  const { year } = req.query;
+  // const { year } = req.query;
 
   // #region VALIDATION
 
@@ -38,14 +38,52 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   const { MaintenancesHistory, MaintenancesPending } =
     await clientBuildingServices.findMaintenanceHistory({
       buildingId: building.id,
-      year: String(year),
+      // year: String(year),
     });
 
-  const filterYears = DynamicFutureYears({ showFutureYears: true });
+  // #region PROCESS DATA
 
-  // #region MOUNTING FILTERS
+  const maintenances = [];
+  maintenances.push(...MaintenancesHistory);
+
+  for (let i = 0; i < MaintenancesPending.length; i++) {
+    const intervals = sharedCalendarServices.recurringDates({
+      startDate: new Date(MaintenancesPending[i].notificationDate),
+      endDate: new Date(`12/31/${new Date().getUTCFullYear() + YEARFORSUM}`),
+      interval:
+        MaintenancesPending[i].Maintenance.frequency *
+        MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
+      maintenanceData: MaintenancesPending[i],
+      periodDaysInterval:
+        MaintenancesPending[i].Maintenance.period *
+        MaintenancesPending[i].Maintenance.PeriodTimeInterval.unitTime,
+    });
+
+    maintenances.push(...intervals);
+  }
+
+  const months = clientBuildingServices.separePerMonth({ data: maintenances });
+
+  // #region MOUNT FILTER
+  let yearsFiltered: string[] = [];
+
+  maintenances.forEach((date) => {
+    if (new Date(date.notificationDate).getUTCFullYear() <= new Date().getUTCFullYear()) {
+      yearsFiltered.push(String(new Date(date.notificationDate).getUTCFullYear()));
+    }
+  });
+
+  yearsFiltered = [...new Set(yearsFiltered)];
+
+  yearsFiltered = [
+    ...yearsFiltered,
+    ...DynamicFutureYears({ initialYear: new Date().getUTCFullYear(), yearsForSum: 5 }),
+  ];
+
+  yearsFiltered = yearsFiltered.sort((a, b) => (a < b ? -1 : 1));
+
   const Filters = {
-    years: filterYears,
+    years: yearsFiltered,
     months: [
       {
         monthNumber: '01',
@@ -103,31 +141,6 @@ export async function clientBuildingDetails(req: Request, res: Response) {
       { name: 'overdue', label: 'feitas em atraso' },
     ],
   };
-
-  // #endregion
-
-  // #region PROCESS DATA
-
-  const maintenances = [];
-  maintenances.push(...MaintenancesHistory);
-
-  for (let i = 0; i < MaintenancesPending.length; i++) {
-    const intervals = sharedCalendarServices.recurringDates({
-      startDate: new Date(MaintenancesPending[i].notificationDate),
-      endDate: new Date(`12/31/${new Date().getFullYear() + YEARFORSUM}`),
-      interval:
-        MaintenancesPending[i].Maintenance.frequency *
-        MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
-      maintenanceData: MaintenancesPending[i],
-      periodDaysInterval:
-        MaintenancesPending[i].Maintenance.period *
-        MaintenancesPending[i].Maintenance.PeriodTimeInterval.unitTime,
-    });
-
-    maintenances.push(...intervals);
-  }
-
-  const months = clientBuildingServices.separePerMonth({ data: maintenances });
 
   // #endregion
 

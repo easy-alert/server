@@ -1,5 +1,6 @@
 // #region IMPORTS
 import { prisma } from '../../../../../../prisma';
+import { changeTime } from '../../../../../utils/dateTime/changeTime';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
 // TYPES
@@ -23,8 +24,24 @@ export class BuildingReportsServices {
     }
 
     const dates = {
-      startDate: new Date(new Date(String(query.startDate)).toISOString().split('T')[0]),
-      endDate: new Date(new Date(String(query.endDate)).toISOString().split('T')[0]),
+      startDate: changeTime({
+        date: new Date(String(query.startDate)),
+        time: {
+          h: 3,
+          m: 0,
+          s: 0,
+          ms: 0,
+        },
+      }),
+      endDate: changeTime({
+        date: new Date(String(query.endDate)),
+        time: {
+          h: 3,
+          m: 0,
+          s: 0,
+          ms: 0,
+        },
+      }),
     };
 
     if (dates.endDate < dates.startDate) {
