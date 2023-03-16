@@ -19,7 +19,7 @@ export const authBackofficeCompany = async (req: Request, res: Response) => {
 
   validator.notNull([
     { label: 'id do usuário', variable: userId },
-    { label: 'id do usuário', variable: backofficeToken },
+    { label: 'token', variable: backofficeToken },
   ]);
 
   tokenServices.decode({ token: backofficeToken });
