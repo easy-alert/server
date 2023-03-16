@@ -8,67 +8,67 @@ export const getDateInfos = (date: Date) => {
     year: 0,
   };
 
-  switch (date.getUTCDay()) {
+  switch (date.getDay()) {
     case 0:
       infos = {
-        dayNumber: addZeroInNumberFront(date.getUTCDate()),
+        dayNumber: addZeroInNumberFront(date.getDate()),
         name: 'Domingo',
         smName: 'Dom',
-        year: date.getUTCFullYear(),
+        year: date.getFullYear(),
       };
       break;
 
     case 1:
       infos = {
-        dayNumber: addZeroInNumberFront(date.getUTCDate()),
+        dayNumber: addZeroInNumberFront(date.getDate()),
         name: 'Segunda',
         smName: 'Seg',
-        year: date.getUTCFullYear(),
+        year: date.getFullYear(),
       };
       break;
 
     case 2:
       infos = {
-        dayNumber: addZeroInNumberFront(date.getUTCDate()),
+        dayNumber: addZeroInNumberFront(date.getDate()),
         name: 'Terça',
         smName: 'Ter',
-        year: date.getUTCFullYear(),
+        year: date.getFullYear(),
       };
       break;
 
     case 3:
       infos = {
-        dayNumber: addZeroInNumberFront(date.getUTCDate()),
+        dayNumber: addZeroInNumberFront(date.getDate()),
         name: 'Quarta',
         smName: 'Qua',
-        year: date.getUTCFullYear(),
+        year: date.getFullYear(),
       };
       break;
 
     case 4:
       infos = {
-        dayNumber: addZeroInNumberFront(date.getUTCDate()),
+        dayNumber: addZeroInNumberFront(date.getDate()),
         name: 'Quinta',
         smName: 'Qui',
-        year: date.getUTCFullYear(),
+        year: date.getFullYear(),
       };
       break;
 
     case 5:
       infos = {
-        dayNumber: addZeroInNumberFront(date.getUTCDate()),
+        dayNumber: addZeroInNumberFront(date.getDate()),
         name: 'Sexta',
         smName: 'Sex',
-        year: date.getUTCFullYear(),
+        year: date.getFullYear(),
       };
       break;
 
     case 6:
       infos = {
-        dayNumber: addZeroInNumberFront(date.getUTCDate()),
+        dayNumber: addZeroInNumberFront(date.getDate()),
         name: 'Sábado',
         smName: 'Sáb',
-        year: date.getUTCFullYear(),
+        year: date.getFullYear(),
       };
       break;
 

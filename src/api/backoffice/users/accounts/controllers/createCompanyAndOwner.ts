@@ -27,11 +27,12 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     { label: 'nome de usuário', variable: name },
     { label: 'e-mail', variable: email },
     { label: 'nome da empresa', variable: companyName },
-    { label: 'numero para contato', variable: contactNumber },
+    { label: 'número para contato', variable: contactNumber },
     { label: 'imagem', variable: image },
   ]);
 
-  const checkUser = await userServices.findByEmail({ email });
+  const checkUser = await userServices.findEmailForCreate({ email });
+
   validator.cannotExists([{ label: 'e-mail', variable: checkUser }]);
 
   if (!CNPJ && !CPF) {

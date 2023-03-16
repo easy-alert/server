@@ -12,8 +12,3 @@ export interface ITimeDate {
   days?: number;
   minutes?: number;
 }
-
-export interface IAddWorkingTimeDate {
-  date: Date;
-  days: number;
-}

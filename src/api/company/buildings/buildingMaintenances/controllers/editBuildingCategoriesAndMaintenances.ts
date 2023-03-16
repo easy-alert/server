@@ -37,7 +37,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
   const today = changeTime({
     date: new Date(),
     time: {
-      h: 3,
+      h: 0,
       m: 0,
       ms: 0,
       s: 0,
@@ -135,13 +135,13 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
           resolutionDate: bodyData[i].Maintenances[j].resolutionDate
             ? changeTime({
                 date: new Date(bodyData[i].Maintenances[j].resolutionDate),
-                time: { h: 3, m: 0, ms: 0, s: 0 },
+                time: { h: 0, m: 0, ms: 0, s: 0 },
               })
             : null,
           notificationDate: bodyData[i].Maintenances[j].notificationDate
             ? changeTime({
                 date: new Date(bodyData[i].Maintenances[j].notificationDate),
-                time: { h: 3, m: 0, ms: 0, s: 0 },
+                time: { h: 0, m: 0, ms: 0, s: 0 },
               })
             : null,
         });
@@ -244,7 +244,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
       }),
       time: {
-        h: 3,
+        h: 0,
         m: 0,
         ms: 0,
         s: 0,

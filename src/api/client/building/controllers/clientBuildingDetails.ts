@@ -51,11 +51,11 @@ export async function clientBuildingDetails(req: Request, res: Response) {
     const intervals = sharedCalendarServices.recurringDates({
       startDate: changeTime({
         date: new Date(MaintenancesPending[i].notificationDate),
-        time: { h: 3, m: 0, ms: 0, s: 0 },
+        time: { h: 0, m: 0, ms: 0, s: 0 },
       }),
       endDate: changeTime({
-        date: new Date(`12/31/${new Date().getUTCFullYear() + YEARFORSUM}`),
-        time: { h: 3, m: 0, ms: 0, s: 0 },
+        date: new Date(`12/31/${new Date().getFullYear() + YEARFORSUM}`),
+        time: { h: 0, m: 0, ms: 0, s: 0 },
       }),
       interval:
         MaintenancesPending[i].Maintenance.frequency *
@@ -75,8 +75,8 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   let yearsFiltered: string[] = [];
 
   maintenances.forEach((date) => {
-    if (new Date(date.notificationDate).getUTCFullYear() <= new Date().getUTCFullYear()) {
-      yearsFiltered.push(String(new Date(date.notificationDate).getUTCFullYear()));
+    if (new Date(date.notificationDate).getFullYear() <= new Date().getFullYear()) {
+      yearsFiltered.push(String(new Date(date.notificationDate).getFullYear()));
     }
   });
 
@@ -84,7 +84,7 @@ export async function clientBuildingDetails(req: Request, res: Response) {
 
   yearsFiltered = [
     ...yearsFiltered,
-    ...DynamicFutureYears({ initialYear: new Date().getUTCFullYear(), yearsForSum: 5 }),
+    ...DynamicFutureYears({ initialYear: new Date().getFullYear(), yearsForSum: 5 }),
   ];
 
   yearsFiltered = yearsFiltered.sort((a, b) => (a < b ? -1 : 1));

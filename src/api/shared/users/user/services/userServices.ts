@@ -88,6 +88,24 @@ export class UserServices {
     return user!;
   }
 
+  async findEmailForCreate({ email }: { email: string }) {
+    const user = await prisma.user.findUnique({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        isBlocked: true,
+        updatedAt: true,
+        createdAt: true,
+        Permissions: true,
+      },
+
+      where: { email: email.toLowerCase() },
+    });
+
+    return user;
+  }
+
   async findByEmailForEdit({ email, userId }: { email: string; userId: string }) {
     const user = await prisma.user.findFirst({
       select: {

@@ -1,6 +1,6 @@
 // #region IMPORTS
 import { prisma } from '../../../../../../prisma';
-import { changeTime } from '../../../../../utils/dateTime/changeTime';
+import { changeUTCTime } from '../../../../../utils/dateTime/changeTime';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
 // TYPES
@@ -23,8 +23,9 @@ export class BuildingReportsServices {
       });
     }
 
+    // AQUI É UTC PORQUE NÃO CONSEGUI MANDAR CERTO DO FRONT
     const dates = {
-      startDate: changeTime({
+      startDate: changeUTCTime({
         date: new Date(String(query.startDate)),
         time: {
           h: 3,
@@ -33,7 +34,7 @@ export class BuildingReportsServices {
           ms: 0,
         },
       }),
-      endDate: changeTime({
+      endDate: changeUTCTime({
         date: new Date(String(query.endDate)),
         time: {
           h: 3,
