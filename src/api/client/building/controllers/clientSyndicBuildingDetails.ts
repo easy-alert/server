@@ -93,6 +93,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
 
   let yearsFiltered: string[] = [];
 
+  // menor ou igual pra pegar o ano atual
   MaintenancesForFilter.forEach((date) => {
     if (new Date(date.notificationDate).getFullYear() <= new Date().getFullYear()) {
       yearsFiltered.push(String(new Date(date.notificationDate).getFullYear()));
