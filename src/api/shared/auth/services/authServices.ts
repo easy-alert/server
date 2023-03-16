@@ -78,6 +78,52 @@ export class AuthServices {
     return User;
   }
 
+  async findById({ userId }: { userId: string }) {
+    const User = (await prisma.user.findUnique({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+        lastAccess: true,
+        passwordHash: true,
+        updatedAt: true,
+        isBlocked: true,
+        Companies: {
+          select: {
+            Company: {
+              select: {
+                id: true,
+                name: true,
+                contactNumber: true,
+                CNPJ: true,
+                CPF: true,
+                createdAt: true,
+                image: true,
+                isBlocked: true,
+              },
+            },
+          },
+        },
+
+        Permissions: {
+          select: { Permission: { select: { name: true } } },
+        },
+      },
+
+      where: { id: userId },
+    })) as IUser;
+
+    if (!User) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'E-mail ou senha incorretos.',
+      });
+    }
+
+    return User;
+  }
+
   async validateToken({ userId }: { userId: string }) {
     const User = (await prisma.user.findUnique({
       select: {

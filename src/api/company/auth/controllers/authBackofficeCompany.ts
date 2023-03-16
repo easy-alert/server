@@ -5,35 +5,31 @@ import { Response, Request } from 'express';
 import { AuthServices } from '../../../shared/auth/services/authServices';
 import { TokenServices } from '../../../../utils/token/tokenServices';
 import { Validator } from '../../../../utils/validator/validator';
-import { UserServices } from '../../../shared/users/user/services/userServices';
 
 import { PermissionServices } from '../../../shared/permission/services/permissionServices';
 
 const permissionServices = new PermissionServices();
 const authServices = new AuthServices();
 const tokenServices = new TokenServices();
-const userServices = new UserServices();
 
 const validator = new Validator();
 
-export const authCompany = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+export const authBackofficeCompany = async (req: Request, res: Response) => {
+  const { userId, backofficeToken } = req.body;
 
   validator.notNull([
-    { label: 'email', variable: email },
-    { label: 'senha', variable: password },
+    { label: 'id do usuário', variable: userId },
+    { label: 'id do usuário', variable: backofficeToken },
   ]);
 
-  const user = await authServices.findByEmail({ email });
+  tokenServices.decode({ token: backofficeToken });
 
-  await authServices.canLogin({ user, password });
+  const user = await authServices.findById({ userId });
 
   await permissionServices.checkPermission({
     UserPermissions: user.Permissions,
     permission: 'Company',
   });
-
-  await userServices.updateLastAccess({ userId: user.id! });
 
   const token = tokenServices.generate({
     tokenData: {
