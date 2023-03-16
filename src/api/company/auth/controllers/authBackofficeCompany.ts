@@ -40,16 +40,18 @@ export const authBackofficeCompany = async (req: Request, res: Response) => {
   });
 
   return res.status(200).json({
-    User: {
-      id: user.id,
-      image: user.image,
-      name: user.name,
-      email: user.email,
-      lastAccess: user.lastAccess,
-      createdAt: user.createdAt,
-      Permissions: user.Permissions,
+    Account: {
+      User: {
+        id: user.id,
+        image: user.image,
+        name: user.name,
+        email: user.email,
+        lastAccess: user.lastAccess,
+        createdAt: user.createdAt,
+        Permissions: user.Permissions,
+      },
+      Company: user.Companies[0].Company,
     },
-    Company: user.Companies[0].Company,
     token,
   });
 };
