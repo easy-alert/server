@@ -74,8 +74,9 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   // #region MOUNT FILTER
   let yearsFiltered: string[] = [];
 
+  // só menor, porque o dynamic years adiciona o ano atual
   maintenances.forEach((date) => {
-    if (new Date(date.notificationDate).getFullYear() <= new Date().getFullYear()) {
+    if (new Date(date.notificationDate).getFullYear() < new Date().getFullYear()) {
       yearsFiltered.push(String(new Date(date.notificationDate).getFullYear()));
     }
   });
