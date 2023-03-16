@@ -25,9 +25,9 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   const startDate =
     year === ''
       ? changeTime({
-          date: new Date(`${monthFilter ?? '01'}/01/${String(new Date().getUTCFullYear() - 100)}`),
+          date: new Date(`${monthFilter ?? '01'}/01/${String(new Date().getFullYear() - 100)}`),
           time: {
-            h: 3,
+            h: 0,
             m: 0,
             ms: 0,
             s: 0,
@@ -36,7 +36,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
       : changeTime({
           date: new Date(`${monthFilter ?? '01'}/01/${String(year)}`),
           time: {
-            h: 3,
+            h: 0,
             m: 0,
             ms: 0,
             s: 0,
@@ -46,9 +46,9 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   const endDate =
     year === ''
       ? changeTime({
-          date: new Date(`${monthFilter ?? '12'}/31/${String(new Date().getUTCFullYear())}`),
+          date: new Date(`${monthFilter ?? '12'}/31/${String(new Date().getFullYear())}`),
           time: {
-            h: 3,
+            h: 0,
             m: 0,
             ms: 0,
             s: 0,
@@ -57,7 +57,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
       : changeTime({
           date: new Date(`${monthFilter ?? '12'}/31/${String(year)}`),
           time: {
-            h: 3,
+            h: 0,
             m: 0,
             ms: 0,
             s: 0,
@@ -94,8 +94,8 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   let yearsFiltered: string[] = [];
 
   MaintenancesForFilter.forEach((date) => {
-    if (new Date(date.notificationDate).getUTCFullYear() <= new Date().getUTCFullYear()) {
-      yearsFiltered.push(String(new Date(date.notificationDate).getUTCFullYear()));
+    if (new Date(date.notificationDate).getFullYear() <= new Date().getFullYear()) {
+      yearsFiltered.push(String(new Date(date.notificationDate).getFullYear()));
     }
   });
 

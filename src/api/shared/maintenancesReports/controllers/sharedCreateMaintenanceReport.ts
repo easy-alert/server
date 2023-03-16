@@ -123,7 +123,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   const today = changeTime({
     date: new Date(),
     time: {
-      h: 3,
+      h: 0,
       m: 0,
       ms: 0,
       s: 0,

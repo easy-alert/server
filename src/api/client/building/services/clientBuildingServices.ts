@@ -78,7 +78,7 @@ export class ClientBuildingServices {
       else maintenanceDate = maintenance.notificationDate;
 
       const dateInfos = getDateInfos(maintenanceDate);
-      switch (maintenanceDate.getUTCMonth()) {
+      switch (maintenanceDate.getMonth()) {
         case 0:
           months[0].dates.push({
             id: maintenance.id,
@@ -257,7 +257,7 @@ export class ClientBuildingServices {
       const today = changeTime({
         date: new Date(),
         time: {
-          h: 3,
+          h: 0,
           m: 0,
           ms: 0,
           s: 0,
@@ -363,7 +363,7 @@ export class ClientBuildingServices {
     let years: string[] = [];
 
     dates.forEach((date) => {
-      years.push(String(new Date(date.notificationDate).getUTCFullYear()));
+      years.push(String(new Date(date.notificationDate).getFullYear()));
     });
 
     years = [...new Set(years)];

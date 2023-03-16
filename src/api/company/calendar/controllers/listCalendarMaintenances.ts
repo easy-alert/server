@@ -41,11 +41,11 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
     const intervals = sharedCalendarServices.recurringDates({
       startDate: changeTime({
         date: new Date(MaintenancesPending[i].notificationDate),
-        time: { h: 3, m: 0, ms: 0, s: 0 },
+        time: { h: 0, m: 0, ms: 0, s: 0 },
       }),
       endDate: changeTime({
         date: new Date(`12/31/${Number(year) + YEARFORSUM}`),
-        time: { h: 3, m: 0, ms: 0, s: 0 },
+        time: { h: 0, m: 0, ms: 0, s: 0 },
       }),
       interval:
         MaintenancesPending[i].Maintenance.frequency *
