@@ -66,40 +66,44 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
       buildingNotificationConfigurationId,
     });
 
+  // #region CHECK EMAIL
+  await buildingNotificationConfigurationServices.findByEmailForEdit({
+    email: data.email,
+    buildingId,
+    buildingNotificationConfigurationId,
+  });
+
+  if (data.email !== buildingNotificationConfigurationData?.email) {
+    data = {
+      ...data,
+      emailIsConfirmed: false,
+    };
+  }
+
   if (data.email) {
     data = {
       ...data,
       email: data.email.toLowerCase(),
     };
-
-    await buildingNotificationConfigurationServices.findByEmailForEdit({
-      email: data.email,
-      buildingId,
-      buildingNotificationConfigurationId,
-    });
-
-    if (data.email !== buildingNotificationConfigurationData?.email) {
-      data = {
-        ...data,
-        emailIsConfirmed: false,
-      };
-    }
   }
 
-  if (data.contactNumber) {
-    await buildingNotificationConfigurationServices.findByContactNumberForEdit({
-      contactNumber: data.contactNumber,
-      buildingId,
-      buildingNotificationConfigurationId,
-    });
+  // #endregion
 
-    if (data.contactNumber !== buildingNotificationConfigurationData?.contactNumber) {
-      data = {
-        ...data,
-        contactNumberIsConfirmed: false,
-      };
-    }
+  // #region CHECK CONTACT NUMBER
+
+  await buildingNotificationConfigurationServices.findByContactNumberForEdit({
+    contactNumber: data.contactNumber,
+    buildingId,
+    buildingNotificationConfigurationId,
+  });
+
+  if (data.contactNumber !== buildingNotificationConfigurationData?.contactNumber) {
+    data = {
+      ...data,
+      contactNumberIsConfirmed: false,
+    };
   }
+  // #endregion
 
   const userMainForNotification =
     await buildingNotificationConfigurationServices.findNotificationConfigurationMainForEdit({
