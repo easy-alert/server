@@ -187,40 +187,57 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
           currency: 'BRL',
         });
 
-  let emailToSend = null;
-  let responsibleName = null;
-
-  if (syndicData !== null && syndicData !== undefined) {
-    emailToSend = syndicData.email!;
-    responsibleName = syndicData.name;
+  if (syndicData) {
+    if (syndicData.emailIsConfirmed) {
+      await emailTransporter.sendProofOfReport({
+        companyLogo: maintenanceHistory.Company.image,
+        dueDate: new Date(maintenanceHistory.dueDate).toLocaleDateString('pt-BR'),
+        notificationDate: new Date(maintenanceHistory.notificationDate).toLocaleDateString('pt-BR'),
+        buildingName: maintenanceHistory.Building.name,
+        activity: maintenanceHistory.Maintenance.activity,
+        categoryName: maintenanceHistory.Maintenance.Category.name,
+        element: maintenanceHistory.Maintenance.element,
+        responsible: maintenanceHistory.Maintenance.responsible,
+        source: maintenanceHistory.Maintenance.source,
+        maintenanceObservation:
+          maintenanceHistory.Maintenance.observation &&
+          maintenanceHistory.Maintenance.observation !== ''
+            ? maintenanceHistory.Maintenance.observation
+            : '-',
+        cost: maskeredCost,
+        reportObservation: data.observation && data.observation !== '' ? data.observation : '-',
+        resolutionDate: new Date().toLocaleString('pt-BR'),
+        subject: 'Comprovante de relato',
+        syndicName: syndicData.name,
+        toEmail: syndicData.email!,
+        attachments,
+      });
+    }
   } else {
-    emailToSend = maintenanceHistory.Company.UserCompanies[0].User.email;
-    responsibleName = maintenanceHistory.Company.name;
+    await emailTransporter.sendProofOfReport({
+      companyLogo: maintenanceHistory.Company.image,
+      dueDate: new Date(maintenanceHistory.dueDate).toLocaleDateString('pt-BR'),
+      notificationDate: new Date(maintenanceHistory.notificationDate).toLocaleDateString('pt-BR'),
+      buildingName: maintenanceHistory.Building.name,
+      activity: maintenanceHistory.Maintenance.activity,
+      categoryName: maintenanceHistory.Maintenance.Category.name,
+      element: maintenanceHistory.Maintenance.element,
+      responsible: maintenanceHistory.Maintenance.responsible,
+      source: maintenanceHistory.Maintenance.source,
+      maintenanceObservation:
+        maintenanceHistory.Maintenance.observation &&
+        maintenanceHistory.Maintenance.observation !== ''
+          ? maintenanceHistory.Maintenance.observation
+          : '-',
+      cost: maskeredCost,
+      reportObservation: data.observation && data.observation !== '' ? data.observation : '-',
+      resolutionDate: new Date().toLocaleString('pt-BR'),
+      subject: 'Comprovante de relato',
+      syndicName: maintenanceHistory.Company.name,
+      toEmail: maintenanceHistory.Company.UserCompanies[0].User.email,
+      attachments,
+    });
   }
-
-  await emailTransporter.sendProofOfReport({
-    companyLogo: maintenanceHistory.Company.image,
-    dueDate: new Date(maintenanceHistory.dueDate).toLocaleDateString('pt-BR'),
-    notificationDate: new Date(maintenanceHistory.notificationDate).toLocaleDateString('pt-BR'),
-    buildingName: maintenanceHistory.Building.name,
-    activity: maintenanceHistory.Maintenance.activity,
-    categoryName: maintenanceHistory.Maintenance.Category.name,
-    element: maintenanceHistory.Maintenance.element,
-    responsible: maintenanceHistory.Maintenance.responsible,
-    source: maintenanceHistory.Maintenance.source,
-    maintenanceObservation:
-      maintenanceHistory.Maintenance.observation &&
-      maintenanceHistory.Maintenance.observation !== ''
-        ? maintenanceHistory.Maintenance.observation
-        : '-',
-    cost: maskeredCost,
-    reportObservation: data.observation && data.observation !== '' ? data.observation : '-',
-    resolutionDate: new Date().toLocaleString('pt-BR'),
-    subject: 'Comprovante de relato',
-    syndicName: responsibleName,
-    toEmail: emailToSend,
-    attachments,
-  });
 
   // #region UPDATE MAINTENANCE HISTORY STATUS
 
