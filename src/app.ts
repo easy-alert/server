@@ -24,7 +24,7 @@ export class App {
   }
 
   middleware() {
-    this.server.use(express.json());
+    this.server.use(express.json({ limit: '50mb' }));
   }
 
   router() {
