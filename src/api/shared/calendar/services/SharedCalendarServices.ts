@@ -86,6 +86,9 @@ export class SharedCalendarServices {
         where: {
           companyId,
         },
+        orderBy: {
+          name: 'asc',
+        },
       }),
 
       prisma.maintenanceHistory.findMany({
