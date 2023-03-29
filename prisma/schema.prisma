@@ -352,7 +352,7 @@ model BuildingMaintenance {
   updatedAt DateTime @updatedAt
 
   BuildingCategory BuildingCategory @relation(fields: [buildingCategoryId], references: [id], onDelete: Cascade)
-  Maintenance      Maintenance      @relation(fields: [maintenanceId], references: [id])
+  Maintenance      Maintenance      @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
 
   @@map("buildingsMaintenances")
 }

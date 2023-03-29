@@ -303,7 +303,7 @@ export class ClientBuildingServices {
 
         case 'expired':
           auxiliaryData = Math.floor(
-            (new Date().getTime() - maintenance.dueDate.getTime()) / (1000 * 60 * 60 * 24),
+            (today.getTime() - maintenance.dueDate.getTime()) / (1000 * 60 * 60 * 24),
           );
 
           kanban[1].maintenances.push({
