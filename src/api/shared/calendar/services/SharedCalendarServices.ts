@@ -24,20 +24,43 @@ export class SharedCalendarServices {
     let isFuture = false;
 
     while (date < endDate) {
-      dates.push({
-        ...maintenanceData,
-        notificationDate: date,
-        isFuture,
-        periodDaysInterval,
-        expectedNotificationDate: date,
-        expectedDueDate: noWeekendTimeDate({
-          date: addDays({
-            date,
-            days: periodDaysInterval,
+      if (isFuture) {
+        dates.push({
+          ...maintenanceData,
+          notificationDate: date,
+          isFuture,
+          periodDaysInterval,
+          expectedNotificationDate: date,
+          expectedDueDate: noWeekendTimeDate({
+            date: addDays({
+              date,
+              days: periodDaysInterval,
+            }),
+            interval: periodDaysInterval,
           }),
-          interval: periodDaysInterval,
-        }),
-      });
+          MaintenancesStatus: {
+            name: 'pending',
+            pluralLabel: 'pendentes',
+            singularLabel: 'pendente',
+          },
+        });
+      } else {
+        dates.push({
+          ...maintenanceData,
+          notificationDate: date,
+          isFuture,
+          periodDaysInterval,
+          expectedNotificationDate: date,
+          expectedDueDate: noWeekendTimeDate({
+            date: addDays({
+              date,
+              days: periodDaysInterval,
+            }),
+            interval: periodDaysInterval,
+          }),
+        });
+      }
+
       date = noWeekendTimeDate({ date: addDays({ date, days: interval }), interval });
       isFuture = true;
     }
@@ -157,8 +180,11 @@ export class SharedCalendarServices {
         where: {
           ownerCompanyId: companyId,
           buildingId,
+
           MaintenancesStatus: {
-            name: 'pending',
+            name: {
+              in: ['pending', 'expired'],
+            },
           },
 
           OR: [{ notificationDate: { lte: endDate, gte: startDate } }],
