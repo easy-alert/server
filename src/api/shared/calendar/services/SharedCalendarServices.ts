@@ -47,6 +47,7 @@ export class SharedCalendarServices {
       } else {
         dates.push({
           ...maintenanceData,
+
           notificationDate: date,
           isFuture,
           periodDaysInterval,
