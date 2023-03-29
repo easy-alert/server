@@ -47,6 +47,7 @@ export class SharedCalendarServices {
       } else {
         dates.push({
           ...maintenanceData,
+
           notificationDate: date,
           isFuture,
           periodDaysInterval,
@@ -64,7 +65,6 @@ export class SharedCalendarServices {
       date = noWeekendTimeDate({ date: addDays({ date, days: interval }), interval });
       isFuture = true;
     }
-
     return dates;
   }
 
@@ -83,11 +83,11 @@ export class SharedCalendarServices {
     const [Filter, Maintenances, MaintenancesPending] = await prisma.$transaction([
       prisma.building.findMany({
         select: { id: true, name: true },
-        where: {
-          companyId,
-        },
         orderBy: {
           name: 'asc',
+        },
+        where: {
+          companyId,
         },
       }),
 
@@ -130,7 +130,7 @@ export class SharedCalendarServices {
           buildingId,
           MaintenancesStatus: {
             NOT: {
-              name: 'pending',
+              name: { in: ['pending', 'expired'] },
             },
           },
 
