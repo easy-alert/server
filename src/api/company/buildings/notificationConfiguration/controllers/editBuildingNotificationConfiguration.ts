@@ -59,6 +59,12 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
       variable: data.isMain,
       isOptional: true,
     },
+    {
+      label: 'Mostrar contato',
+      type: 'boolean',
+      variable: data.showContact,
+      isOptional: true,
+    },
   ]);
 
   const buildingNotificationConfigurationData =

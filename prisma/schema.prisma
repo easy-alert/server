@@ -318,6 +318,7 @@ model BuildingNotificationConfiguration {
   contactNumber            String?
   contactNumberIsConfirmed Boolean  @default(false)
   isMain                   Boolean  @default(false)
+  showContact              Boolean  @default(false)
   lastNotificationDate     DateTime @default(now())
 
   createdAt         DateTime            @default(now())
