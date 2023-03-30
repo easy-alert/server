@@ -168,15 +168,6 @@ export class BuildingReportsServices {
           Building: {
             select: {
               name: true,
-
-              NotificationsConfigurations: {
-                select: {
-                  name: true,
-                },
-                where: {
-                  isMain: true,
-                },
-              },
             },
           },
           Maintenance: {
@@ -188,6 +179,7 @@ export class BuildingReportsServices {
                   name: true,
                 },
               },
+              responsible: true,
             },
           },
         },

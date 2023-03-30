@@ -54,6 +54,12 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
       variable: data.isMain,
       isOptional: true,
     },
+    {
+      label: 'Mostrar contato',
+      type: 'boolean',
+      variable: data.showContact,
+      isOptional: true,
+    },
   ]);
 
   if (data.isMain) {
