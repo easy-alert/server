@@ -275,6 +275,8 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         notificationDate = updatedsMaintenances[i].notificationDate;
       }
     } else {
+      // #region Create History for maintenanceHistory
+
       const categoryToUpdate = bodyData.find(
         (data: any) => data.categoryId === updatedsMaintenances[i].categoryId,
       );
@@ -283,7 +285,6 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         (maintenance: any) => maintenance.id === updatedsMaintenances[i].id,
       );
 
-      // #region Create History for maintenanceHistory
       const dataForCreateHistoryAndReport: ICreateMaintenanceHistoryAndReport = {
         buildingId,
         maintenanceId: updatedsMaintenances[i].id,
