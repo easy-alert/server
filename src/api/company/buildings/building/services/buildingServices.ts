@@ -282,6 +282,7 @@ export class BuildingServices {
             contactNumberIsConfirmed: true,
             role: true,
             isMain: true,
+            showContact: true,
           },
 
           orderBy: [{ isMain: 'desc' }, { name: 'asc' }],

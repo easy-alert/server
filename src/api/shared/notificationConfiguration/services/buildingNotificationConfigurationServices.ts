@@ -165,9 +165,12 @@ export class SharedBuildingNotificationConfigurationServices {
       where: {
         email,
         buildingId,
-        NOT: {
-          id: buildingNotificationConfigurationId,
-        },
+        NOT: [
+          {
+            id: buildingNotificationConfigurationId,
+          },
+          { email: null },
+        ],
       },
     });
 
@@ -192,9 +195,12 @@ export class SharedBuildingNotificationConfigurationServices {
       where: {
         contactNumber,
         buildingId,
-        NOT: {
-          id: buildingNotificationConfigurationId,
-        },
+        NOT: [
+          {
+            id: buildingNotificationConfigurationId,
+          },
+          { contactNumber: null },
+        ],
       },
     });
 
