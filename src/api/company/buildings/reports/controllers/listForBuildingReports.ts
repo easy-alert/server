@@ -64,10 +64,7 @@ export async function listForBuildingReports(req: Request, res: Response) {
       categoryName: maintenance.Maintenance.Category.name,
       element: maintenance.Maintenance.element,
       activity: maintenance.Maintenance.activity,
-      responsible:
-        maintenance.Building.NotificationsConfigurations.length > 0
-          ? maintenance.Building.NotificationsConfigurations[0].name
-          : null,
+      responsible: maintenance.Maintenance.responsible,
       notificationDate: maintenance.notificationDate,
       resolutionDate: maintenance.resolutionDate,
       status: maintenance.MaintenancesStatus.name,
