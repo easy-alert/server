@@ -194,7 +194,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
     }
   }
 
-  const updatedsMaintenances = [];
+  const updatedsMaintenances: any[] = [];
 
   for (let i = 0; i < maintenancesForCreateHistory.length; i++) {
     // getting maintenances data
@@ -275,6 +275,14 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         notificationDate = updatedsMaintenances[i].notificationDate;
       }
     } else {
+      const categoryToUpdate = bodyData.find(
+        (data: any) => data.categoryId === updatedsMaintenances[i].categoryId,
+      );
+
+      const maintenanceToUpdate = categoryToUpdate.Maintenances.find(
+        (maintenance: any) => maintenance.id === updatedsMaintenances[i].id,
+      );
+
       // #region Create History for maintenanceHistory
       const dataForCreateHistoryAndReport: ICreateMaintenanceHistoryAndReport = {
         buildingId,
@@ -286,9 +294,21 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         dueDate: updatedsMaintenances[i].resolutionDate,
         MaintenanceReport: {
           create: {
-            cost: 0,
-            observation: '',
+            cost: Number(maintenanceToUpdate.maintenanceReport.cost.replace(/[^0-9]/g, '')),
+            observation: maintenanceToUpdate.maintenanceReport.observation
+              ? maintenanceToUpdate.maintenanceReport.observation
+              : null,
             responsibleSyndicId: null,
+            ReportAnnexes: {
+              createMany: {
+                data: maintenanceToUpdate.files,
+              },
+            },
+            ReportImages: {
+              createMany: {
+                data: maintenanceToUpdate.images,
+              },
+            },
           },
         },
       };
