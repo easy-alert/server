@@ -22,6 +22,7 @@ import { listBuildingDetailsForConfirm } from './buildings/building/controllers/
 import { calendarRouter } from './calendar/calendar.routes';
 import { sendEmailForRecoveryPassword } from '../shared/recoveryPassword/controllers/sendEmailForRecoveryPassord';
 import { changePassword } from '../shared/recoveryPassword/controllers/changePassword';
+import { companyUserRouter } from './companyUser/companyUser.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -39,6 +40,9 @@ companyRouter.post(
 companyRouter.post('/buildings/list/detailsforconfirm', listBuildingDetailsForConfirm);
 
 companyRouter.use('/auth', authRouter);
+
+companyRouter.use('/usercompany', companyUserRouter);
+
 companyRouter.get('/timeinterval/list', listTimeIntervals);
 companyRouter.use('/upload', authMiddleware, isCompany, uploadRouter);
 
