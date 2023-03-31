@@ -55,8 +55,6 @@ export class BuildingReportsServices {
     const filter = {
       maintenanceStatusId:
         query.maintenanceStatusId !== '' ? String(query.maintenanceStatusId) : undefined,
-      responsibleSyndicId:
-        query.responsibleSyndicId !== '' ? String(query.responsibleSyndicId) : undefined,
       buildingId: query.buildingId !== '' ? String(query.buildingId) : undefined,
       categoryId: query.categoryId !== '' ? String(query.categoryId) : undefined,
       dateFilter: [
@@ -79,61 +77,61 @@ export class BuildingReportsServices {
   }
 
   async findForSelectFilterOptions({ companyId }: { companyId: string }) {
-    const [buildings, companyCategories, defaultCategories, responsibles, status] =
-      await prisma.$transaction([
-        prisma.building.findMany({
-          select: {
-            id: true,
-            name: true,
-          },
-          where: {
-            companyId,
-          },
-        }),
-        prisma.category.findMany({
-          select: {
-            id: true,
-            name: true,
-          },
-          where: {
-            ownerCompanyId: companyId,
-          },
-        }),
-        prisma.category.findMany({
-          select: {
-            id: true,
-            name: true,
-          },
-          where: {
-            ownerCompanyId: null,
-          },
-        }),
-        prisma.buildingNotificationConfiguration.findMany({
-          select: {
-            id: true,
-            name: true,
-          },
-          where: {
-            isMain: true,
-            Building: {
-              companyId,
-            },
-          },
-        }),
-        prisma.maintenancesStatus.findMany({
-          select: {
-            id: true,
-            name: true,
-            pluralLabel: true,
-            singularLabel: true,
-          },
-        }),
-      ]);
+    const [buildings, companyCategories, defaultCategories, status] = await prisma.$transaction([
+      prisma.building.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+        where: {
+          companyId,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      }),
+
+      // sort nesse la em baixo
+      prisma.category.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+        where: {
+          ownerCompanyId: companyId,
+        },
+      }),
+      prisma.category.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+        where: {
+          ownerCompanyId: null,
+        },
+      }),
+      // sort nesse la em baixo
+
+      prisma.maintenancesStatus.findMany({
+        select: {
+          id: true,
+          name: true,
+          pluralLabel: true,
+          singularLabel: true,
+        },
+        orderBy: {
+          singularLabel: 'asc',
+        },
+      }),
+    ]);
+
+    const allCategories = [...companyCategories, ...defaultCategories];
+
+    const sortedCategories = allCategories.sort((a, b) => a.name.localeCompare(b.name));
 
     const filters = {
       buildings,
-      categories: [...companyCategories, ...defaultCategories],
-      responsibles,
+      categories: sortedCategories,
       status,
     };
 
@@ -154,9 +152,6 @@ export class BuildingReportsServices {
           MaintenanceReport: {
             select: {
               cost: true,
-            },
-            where: {
-              id: queryFilter.responsibleSyndicId,
             },
           },
           MaintenancesStatus: {

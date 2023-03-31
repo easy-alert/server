@@ -434,11 +434,18 @@ export class ClientBuildingServices {
         },
         where: {
           buildingId,
+
           MaintenancesStatus: {
             NOT: {
-              name: 'pending',
+              name: { in: ['pending', 'expired'] },
             },
           },
+
+          // MaintenancesStatus: {
+          //   NOT: {
+          //     name: 'pending',
+          //   },
+          // },
 
           // OR: [
           //   { notificationDate: { lte: endDate, gte: startDate } },
@@ -504,19 +511,26 @@ export class ClientBuildingServices {
         },
         where: {
           buildingId,
+
           MaintenancesStatus: {
-            NOT: [
-              {
-                name: 'expired',
-              },
-              {
-                name: 'completed',
-              },
-              {
-                name: 'overdue',
-              },
-            ],
+            name: {
+              in: ['pending', 'expired'],
+            },
           },
+
+          // MaintenancesStatus: {
+          //   NOT: [
+          //     {
+          //       name: 'expired',
+          //     },
+          //     {
+          //       name: 'completed',
+          //     },
+          //     {
+          //       name: 'overdue',
+          //     },
+          //   ],
+          // },
 
           // OR: [
           //   { notificationDate: { lte: endDatePending, gte: startDatePending } },

@@ -190,7 +190,8 @@ export class SharedCalendarServices {
             },
           },
 
-          OR: [{ notificationDate: { lte: endDate, gte: startDate } }],
+          // OR: [{ notificationDate: { lte: endDate, gte: startDate } }],
+          OR: [{ notificationDate: { lte: endDate } }],
         },
       }),
     ]);
