@@ -5,7 +5,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node-dev --respawn --exit-child --transpile-only --ignore-watch node_modules --inspect --clear src/server.ts",
+    "dev": "ts-node-dev --respawn --exit-child --transpile-only --ignore-watch node_modules --inspect src/server.ts",
     "start": "node dist/src/server.js",
     "build": "tsc",
     "postinstall": "husky install",

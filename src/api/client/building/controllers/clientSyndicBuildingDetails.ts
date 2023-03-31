@@ -6,7 +6,6 @@ import { SharedBuildingNotificationConfigurationServices } from '../../../shared
 import { ClientBuildingServices } from '../services/clientBuildingServices';
 
 // CLASS
-
 const clientBuildingServices = new ClientBuildingServices();
 const sharedBuildingNotificationConfigurationServices =
   new SharedBuildingNotificationConfigurationServices();
