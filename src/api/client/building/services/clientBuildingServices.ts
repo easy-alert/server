@@ -653,20 +653,24 @@ export class ClientBuildingServices {
     return { MaintenancesForFilter, MaintenancesHistory };
   }
 
-  async findMainContactInformation({ buildingId }: { buildingId: string }) {
+  async findContactInformation({ buildingId }: { buildingId: string }) {
     const mainContact = await prisma.building.findFirst({
       select: {
         name: true,
 
         NotificationsConfigurations: {
           select: {
+            id: true,
             name: true,
             email: true,
             contactNumber: true,
             role: true,
           },
           where: {
-            isMain: true,
+            showContact: true,
+          },
+          orderBy: {
+            name: 'asc',
           },
         },
       },
