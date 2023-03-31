@@ -13,7 +13,8 @@ import { UserPermissionServices } from '../../../shared/users/userPermission/ser
 
 import { CompanyUserServices } from '../services/companyServices';
 import { SharedCompanyServices } from '../../../shared/users/accounts/services/sharedCompanyServices';
-// import { TokenServices } from '../../../../utils/token/tokenServices';
+import { TokenServices } from '../../../../utils/token/tokenServices';
+import { AuthServices } from '../../../shared/auth/services/authServices';
 
 const validator = new Validator();
 const userServices = new UserServices();
@@ -21,7 +22,8 @@ const permissionServices = new PermissionServices();
 const userPermissionServices = new UserPermissionServices();
 const companyUserServices = new CompanyUserServices();
 const sharedCompanyServices = new SharedCompanyServices();
-// const tokenServices = new TokenServices();
+const tokenServices = new TokenServices();
+const authServices = new AuthServices();
 
 export async function createCompanyAndOwner(req: Request, res: Response) {
   const { name, email, password, companyName, CNPJ, CPF, contactNumber, image } = req.body;
@@ -82,42 +84,31 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
 
   await userServices.updateLastAccess({ userId: user.id! });
 
-  return res.status(200).json({
-    ServerMessage: {
-      statusCode: 201,
-      message: 'Cadastro de teste efetuado com sucesso.',
+  const createdUser = await authServices.findByEmail({ email });
+
+  await userServices.updateLastAccess({ userId: createdUser.id! });
+
+  const token = tokenServices.generate({
+    tokenData: {
+      userId: createdUser.id,
+      Permissions: createdUser.Permissions,
+      Company: createdUser.Companies[0].Company,
     },
   });
 
-  // const createdCompany = await sharedCompanyServices.findById({
-  //   companyId: company.id,
-  // });
-
-  // const token = tokenServices.generate({
-  //   tokenData: {
-  //     userId: createdCompany.id,
-  //     Permissions: createdCompany.Permissions,
-  //     Company: createdCompany.Companies[0],
-  //   },
-  // });
-
-  // return res.status(200).json({
-  //   ServerMessage: {
-  //     statusCode: 201,
-  //     message: 'Cadastro efetuado com sucesso.',
-  //   },
-  //   Account: {
-  //     User: {
-  //       id: createdCompany.id,
-  //       image: createdCompany.image,
-  //       name: createdCompany.name,
-  //       email: createdCompany.email,
-  //       lastAccess: createdCompany.lastAccess,
-  //       createdAt: createdCompany.createdAt,
-  //       Permissions: createdCompany.Permissions,
-  //     },
-  //     Company: createdCompany.Companies[0].Company,
-  //   },
-  //   token,
-  // });
+  return res.status(200).json({
+    Account: {
+      User: {
+        id: createdUser.id,
+        image: createdUser.image,
+        name: createdUser.name,
+        email: createdUser.email,
+        lastAccess: createdUser.lastAccess,
+        createdAt: createdUser.createdAt,
+        Permissions: createdUser.Permissions,
+      },
+      Company: createdUser.Companies[0].Company,
+    },
+    token,
+  });
 }

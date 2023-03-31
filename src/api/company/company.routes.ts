@@ -44,7 +44,8 @@ companyRouter.use('/auth', authRouter);
 companyRouter.use('/usercompany', companyUserRouter);
 
 companyRouter.get('/timeinterval/list', listTimeIntervals);
-companyRouter.use('/upload', authMiddleware, isCompany, uploadRouter);
+
+companyRouter.use('/upload', uploadRouter);
 
 companyRouter.use('/account', authMiddleware, isCompany, accountRouter);
 companyRouter.use('/categories', authMiddleware, isCompany, categoryRouter);
