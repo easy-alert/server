@@ -4,7 +4,6 @@ export interface IFindBuildingMaintenancesHistory {
     maintenanceStatusId: string | undefined;
     buildingId: string | undefined;
     categoryId: string | undefined;
-    responsibleSyndicId: string | undefined;
     dateFilter: any;
   };
 }
@@ -14,7 +13,6 @@ export interface IListForBuildingReportQuery {
     maintenanceStatusId: string | undefined;
     buildingId: string | undefined;
     categoryId: string | undefined;
-    responsibleSyndicId: string | undefined;
     startDate: string | undefined;
     endDate: string | undefined;
   };
