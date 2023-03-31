@@ -19,8 +19,8 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
 
   const { year, month, status } = req.query;
 
-  const statusFilter = status === '' ? undefined : String(status);
   const monthFilter = month === '' ? undefined : String(month);
+  const statusFilter = status === '' ? undefined : String(status);
 
   const startDate =
     year === ''

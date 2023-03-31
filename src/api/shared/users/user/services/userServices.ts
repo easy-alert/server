@@ -147,7 +147,7 @@ export class UserServices {
 
     validator.needExist([{ label: 'usuário', variable: user }]);
 
-    return user;
+    return user!;
   }
 
   async findOwner({ companyId }: { companyId: string }) {

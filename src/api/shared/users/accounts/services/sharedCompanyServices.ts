@@ -43,7 +43,7 @@ export class SharedCompanyServices {
 
     validator.needExist([{ label: 'empresa', variable: company }]);
 
-    return company;
+    return company!;
   }
   // #endregion
 }

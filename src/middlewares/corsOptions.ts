@@ -12,7 +12,7 @@ const allowedOrigins = [
   'http://localhost:3001',
   'http://localhost:3002',
   'http://client.easyalert.com.br',
-  'https://app.easyalert.com.br'
+  'https://app.easyalert.com.br',
 ];
 
 export const corsOptions: cors.CorsOptions = {

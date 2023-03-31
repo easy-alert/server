@@ -318,6 +318,7 @@ model BuildingNotificationConfiguration {
   contactNumber            String?
   contactNumberIsConfirmed Boolean  @default(false)
   isMain                   Boolean  @default(false)
+  showContact              Boolean  @default(false)
   lastNotificationDate     DateTime @default(now())
 
   createdAt         DateTime            @default(now())
@@ -352,7 +353,7 @@ model BuildingMaintenance {
   updatedAt DateTime @updatedAt
 
   BuildingCategory BuildingCategory @relation(fields: [buildingCategoryId], references: [id], onDelete: Cascade)
-  Maintenance      Maintenance      @relation(fields: [maintenanceId], references: [id])
+  Maintenance      Maintenance      @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
 
   @@map("buildingsMaintenances")
 }

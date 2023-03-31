@@ -303,7 +303,7 @@ export class ClientBuildingServices {
 
         case 'expired':
           auxiliaryData = Math.floor(
-            (new Date().getTime() - maintenance.dueDate.getTime()) / (1000 * 60 * 60 * 24),
+            (today.getTime() - maintenance.dueDate.getTime()) / (1000 * 60 * 60 * 24),
           );
 
           kanban[1].maintenances.push({
@@ -653,20 +653,24 @@ export class ClientBuildingServices {
     return { MaintenancesForFilter, MaintenancesHistory };
   }
 
-  async findMainContactInformation({ buildingId }: { buildingId: string }) {
+  async findContactInformation({ buildingId }: { buildingId: string }) {
     const mainContact = await prisma.building.findFirst({
       select: {
         name: true,
 
         NotificationsConfigurations: {
           select: {
+            id: true,
             name: true,
             email: true,
             contactNumber: true,
             role: true,
           },
           where: {
-            isMain: true,
+            showContact: true,
+          },
+          orderBy: {
+            name: 'asc',
           },
         },
       },
