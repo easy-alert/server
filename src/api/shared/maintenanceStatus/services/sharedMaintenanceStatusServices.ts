@@ -16,4 +16,3 @@ export class SharedMaintenanceStatusServices {
     return maintenance!;
   }
 }
-
