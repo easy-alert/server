@@ -15,6 +15,7 @@ import { CompanyUserServices } from '../services/companyServices';
 import { SharedCompanyServices } from '../../../shared/users/accounts/services/sharedCompanyServices';
 import { TokenServices } from '../../../../utils/token/tokenServices';
 import { AuthServices } from '../../../shared/auth/services/authServices';
+import { EmailTransporterServices } from '../../../../utils/emailTransporter/emailTransporterServices';
 
 const validator = new Validator();
 const userServices = new UserServices();
@@ -24,6 +25,7 @@ const companyUserServices = new CompanyUserServices();
 const sharedCompanyServices = new SharedCompanyServices();
 const tokenServices = new TokenServices();
 const authServices = new AuthServices();
+const emailTransporter = new EmailTransporterServices();
 
 export async function createCompanyAndOwner(req: Request, res: Response) {
   const { name, email, password, companyName, CNPJ, CPF, contactNumber, image } = req.body;
@@ -82,9 +84,15 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     owner: true,
   });
 
-  await userServices.updateLastAccess({ userId: user.id! });
-
   const createdUser = await authServices.findByEmail({ email });
+
+  if (process.env.DATABASE_URL?.includes('production')) {
+    await emailTransporter.sendNewCompanyCreated({
+      toEmail: 'contato@easyalert.com.br',
+      companyName: createdUser.Companies[0].Company.name,
+      subject: 'Nova empresa cadastrada',
+    });
+  }
 
   await userServices.updateLastAccess({ userId: createdUser.id! });
 

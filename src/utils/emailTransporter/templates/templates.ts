@@ -1,4 +1,9 @@
-import { ISendConfirmEmail, ISendProofOfReport, ISendRecoveryPassword } from '../types';
+import {
+  ISendConfirmEmail,
+  ISendProofOfReport,
+  ISendRecoveryPassword,
+  INewCompanyCreated,
+} from '../types';
 
 export class EmailTemplates {
   confirmEmail({ link, subject, text, companyLogo }: ISendConfirmEmail) {
@@ -333,5 +338,65 @@ export class EmailTemplates {
     </div>
   </div>
 </div>`;
+  }
+
+  newCompanyCreated({ companyName, subject }: INewCompanyCreated) {
+    return `<div
+    style='
+      background-size: cover;
+      background: #EDEDED;
+      padding: 24px;
+      '
+    >
+    <div
+      style='
+        width: 500px;
+          margin: auto;
+          background: white;
+          border-radius: 32px;
+          padding: 24px 0;
+      '
+    >
+
+    <img
+        src="https://larguei.s3.us-west-2.amazonaws.com/logoTextBlack-1669059871498.svg"
+        alt=''
+        style='
+            margin: 0 auto;
+            display: block;
+            height: 87px;
+        '
+      />
+
+      <div
+        style='
+            width: 328px;
+            margin: 0 auto;
+        '
+      >
+
+        <h3
+          style='
+              color:#000000;
+              margin: 40px 0 16px;
+              text-align: center;
+          '
+        >
+          ${subject}
+        </h3>
+
+        <p
+          style='
+              color:#000000;
+              text-align: center;
+          '
+        >
+          A empresa ${companyName} acabou de se registrar na plataforma.
+        </p>
+
+      </div>
+    </div>
+    </div>
+    `;
   }
 }
