@@ -13,6 +13,12 @@ export interface ISendRecoveryPassword {
   text: string;
 }
 
+export interface INewCompanyCreated {
+  toEmail?: string;
+  companyName: string;
+  subject: string;
+}
+
 export interface ISendProofOfReport {
   toEmail?: string;
   attachments?: {
