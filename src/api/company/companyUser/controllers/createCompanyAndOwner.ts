@@ -90,7 +90,6 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     process.env.DATABASE_URL?.includes('sandbox') ||
     process.env.DATABASE_URL?.includes('production')
   ) {
-    ('mandou');
     await emailTransporter.sendNewCompanyCreated({
       toEmail: 'contato@easyalert.com.br',
       companyName: createdUser.Companies[0].Company.name,
