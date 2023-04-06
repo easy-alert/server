@@ -86,10 +86,7 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
 
   const createdUser = await authServices.findByEmail({ email });
 
-  if (
-    process.env.DATABASE_URL?.includes('sandbox') ||
-    process.env.DATABASE_URL?.includes('production')
-  ) {
+  if (process.env.DATABASE_URL?.includes('production')) {
     await emailTransporter.sendNewCompanyCreated({
       toEmail: 'contato@easyalert.com.br',
       companyName: createdUser.Companies[0].Company.name,
