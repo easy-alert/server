@@ -23,6 +23,7 @@ export interface IMaintenancesData {
   buildingName: string;
   categoryName: string;
   element: string;
+  observation: string | null;
   activity: string;
   responsible: string | null;
   notificationDate: Date;

@@ -175,6 +175,7 @@ export class BuildingReportsServices {
                 },
               },
               responsible: true,
+              observation: true,
             },
           },
         },
