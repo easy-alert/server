@@ -19,6 +19,7 @@ import {
   deleteBuildingNotificationConfiguration,
   editBuildingNotificationConfiguration,
   sendWhatsappConfirmationBuildingNotificationConfiguration,
+  changeShowContactStatus,
 } from './notificationConfiguration/controllers';
 
 import {
@@ -54,6 +55,8 @@ buildingRouter.post(
   '/notifications/sendconfirm/phone',
   sendWhatsappConfirmationBuildingNotificationConfiguration,
 );
+
+buildingRouter.put('/notifications/change/showcontact', changeShowContactStatus);
 
 buildingRouter.post(
   '/notifications/sendconfirm/email',

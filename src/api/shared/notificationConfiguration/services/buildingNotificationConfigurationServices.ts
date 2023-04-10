@@ -312,5 +312,22 @@ export class SharedBuildingNotificationConfigurationServices {
     });
   }
 
+  async changeShowContactStatus({
+    buildingNotificationConfigurationId,
+    showContact,
+  }: {
+    buildingNotificationConfigurationId: string;
+    showContact: boolean;
+  }) {
+    await prisma.buildingNotificationConfiguration.update({
+      data: {
+        showContact,
+      },
+      where: {
+        id: buildingNotificationConfigurationId,
+      },
+    });
+  }
+
   // #endregion
 }
