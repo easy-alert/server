@@ -283,6 +283,7 @@ export class BuildingServices {
             role: true,
             isMain: true,
             showContact: true,
+            nanoId: true,
           },
 
           orderBy: [{ isMain: 'desc' }, { name: 'asc' }],
