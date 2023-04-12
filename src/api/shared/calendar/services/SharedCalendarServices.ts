@@ -24,47 +24,24 @@ export class SharedCalendarServices {
     let isFuture = false;
 
     while (date < endDate) {
-      if (isFuture) {
-        dates.push({
-          ...maintenanceData,
-          notificationDate: date,
-          isFuture,
-          periodDaysInterval,
-          expectedNotificationDate: date,
-          expectedDueDate: noWeekendTimeDate({
-            date: addDays({
-              date,
-              days: periodDaysInterval,
-            }),
-            interval: periodDaysInterval,
+      dates.push({
+        ...maintenanceData,
+        notificationDate: date,
+        isFuture,
+        periodDaysInterval,
+        expectedNotificationDate: date,
+        expectedDueDate: noWeekendTimeDate({
+          date: addDays({
+            date,
+            days: periodDaysInterval,
           }),
-          MaintenancesStatus: {
-            name: 'pending',
-            pluralLabel: 'pendentes',
-            singularLabel: 'pendente',
-          },
-        });
-      } else {
-        dates.push({
-          ...maintenanceData,
-
-          notificationDate: date,
-          isFuture,
-          periodDaysInterval,
-          expectedNotificationDate: date,
-          expectedDueDate: noWeekendTimeDate({
-            date: addDays({
-              date,
-              days: periodDaysInterval,
-            }),
-            interval: periodDaysInterval,
-          }),
-        });
-      }
-
+          interval: periodDaysInterval,
+        }),
+      });
       date = noWeekendTimeDate({ date: addDays({ date, days: interval }), interval });
       isFuture = true;
     }
+
     return dates;
   }
 
@@ -130,7 +107,7 @@ export class SharedCalendarServices {
           buildingId,
           MaintenancesStatus: {
             NOT: {
-              name: { in: ['pending', 'expired'] },
+              name: 'pending',
             },
           },
 
@@ -185,9 +162,7 @@ export class SharedCalendarServices {
           buildingId,
 
           MaintenancesStatus: {
-            name: {
-              in: ['pending', 'expired'],
-            },
+            name: 'pending',
           },
 
           // OR: [{ notificationDate: { lte: endDate, gte: startDate } }],
