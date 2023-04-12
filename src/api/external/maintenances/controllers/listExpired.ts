@@ -4,6 +4,7 @@
 import { Request, Response } from 'express';
 import { ExternalServices } from '../services/externalServices';
 import { Validator } from '../../../../utils/validator/validator';
+import { IOldExpiredList } from './types';
 
 // CLASS
 
@@ -19,5 +20,16 @@ export async function listExpired(req: Request, res: Response) {
     buildingId,
   });
 
-  return res.status(200).json(expiredList);
+  const oldExpiredList: IOldExpiredList[] = [];
+
+  expiredList.forEach((data) => {
+    oldExpiredList.push({
+      sistema: data.Maintenance.element,
+      atividade: data.Maintenance.activity,
+      data_aviso: data.notificationDate.toISOString().split('T')[0],
+      data_vencimento: data.dueDate.toISOString().split('T')[0],
+    });
+  });
+
+  return res.status(200).json(oldExpiredList);
 }

@@ -34,6 +34,9 @@ export class ExternalServices {
           buildingId,
         },
       },
+      orderBy: {
+        dueDate: 'asc',
+      },
     });
   }
 }

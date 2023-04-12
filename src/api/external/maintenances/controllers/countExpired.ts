@@ -15,9 +15,9 @@ export async function countExpired(req: Request, res: Response) {
 
   validator.notNull([{ label: 'ID da edificação', variable: buildingId }]);
 
-  const expiredCount = await externalServices.countExpired({
+  const quantidade = await externalServices.countExpired({
     buildingId,
   });
 
-  return res.status(200).json({ expiredCount });
+  return res.status(200).json({ quantidade });
 }
