@@ -1,0 +1,121 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Easy Alert",
+    "description": "API EasyAlert.",
+    "version": "1.0.0"
+  },
+
+  "servers": [
+    {
+      "url": "https://easyalert-production.herokuapp.com/api/external",
+      "description": "Production API"
+    }
+  ],
+
+  "components": {
+    "responses": {
+      "ServerMessage": {
+        "description": "Mensagem de erro padrão do backend.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ServerMessage": {
+                  "properties": {
+                    "statusCode": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "paths": {
+    "/maintenances/countexpired/{buildingId}": {
+      "get": {
+        "tags": ["Manutenções"],
+        "summary": "Retorna a quantidade de manutenções vencidas por obra.",
+        "parameters": [
+          {
+            "name": "buildingId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retorna o número de manutenções vencidas encontradas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "quantidade": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/maintenances/listexpired/{buildingId}": {
+      "get": {
+        "tags": ["Manutenções"],
+        "summary": "Retorna as manutenções vencidas por obra.",
+        "parameters": [
+          {
+            "name": "buildingId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retorna as manutenções vencidas encontradas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "sistema": { "type": "string" },
+                      "atividade": { "type": "string" },
+                      "data_aviso": { "type": "string" },
+                      "data_vencimento": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    }
+  }
+}

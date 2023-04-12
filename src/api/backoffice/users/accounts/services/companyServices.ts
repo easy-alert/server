@@ -12,7 +12,14 @@ const validator = new Validator();
 export class CompanyServices {
   // #region create
 
-  async create({ name, CNPJ = null, CPF = null, contactNumber, image }: ICreateCompany) {
+  async create({
+    name,
+    CNPJ = null,
+    CPF = null,
+    contactNumber,
+    image,
+    isNotifyingOnceAWeek,
+  }: ICreateCompany) {
     return prisma.company.create({
       data: {
         name,
@@ -20,6 +27,7 @@ export class CompanyServices {
         CPF,
         contactNumber,
         image,
+        isNotifyingOnceAWeek,
       },
     });
   }
