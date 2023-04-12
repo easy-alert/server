@@ -83,13 +83,14 @@ model Permission {
 //COMPANY
 
 model Company {
-  id            String  @id @unique @default(uuid())
-  name          String
-  CNPJ          String? @unique
-  CPF           String? @unique
-  contactNumber String
-  image         String
-  isBlocked     Boolean @default(false)
+  id                   String  @id @unique @default(uuid())
+  name                 String
+  CNPJ                 String? @unique
+  CPF                  String? @unique
+  contactNumber        String
+  image                String
+  isBlocked            Boolean @default(false)
+  isNotifyingOnceAWeek Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

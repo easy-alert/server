@@ -10,5 +10,6 @@ export interface IEditCompanyBody {
     contactNumber: string;
     companyName: string;
     password: string;
+    isNotifyingOnceAWeek: boolean;
   };
 }
