@@ -65,12 +65,10 @@
                 "type": "object",
                 "properties": {
                   "email": {
-                    "type": "string",
-                    "default": "backoffice@gmail.com"
+                    "type": "string"
                   },
                   "password": {
-                    "type": "string",
-                    "default": 123123123
+                    "type": "string"
                   }
                 }
               }

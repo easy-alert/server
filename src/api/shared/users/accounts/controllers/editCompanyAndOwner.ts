@@ -13,7 +13,17 @@ const validator = new Validator();
 const sharedCompanyServices = new SharedCompanyServices();
 
 export async function sharedEditCompanyAndOwner({
-  body: { name, email, image, CNPJ, CPF, contactNumber, companyName, password },
+  body: {
+    name,
+    email,
+    image,
+    CNPJ,
+    CPF,
+    contactNumber,
+    companyName,
+    password,
+    isNotifyingOnceAWeek,
+  },
   userId,
   companyId,
 }: IEditCompanyBody) {
@@ -25,6 +35,7 @@ export async function sharedEditCompanyAndOwner({
     { label: 'imagem', variable: image },
     { label: 'Número de contato', variable: contactNumber },
     { label: 'nome da empresa', variable: companyName },
+    // { label: 'frequência de notificações', variable: isNotifyingOnceAWeek },
   ]);
 
   if (!CNPJ && !CPF) {
@@ -52,6 +63,7 @@ export async function sharedEditCompanyAndOwner({
     CPF,
     image,
     name: companyName,
+    isNotifyingOnceAWeek,
   });
 
   if (password) {

@@ -5,4 +5,5 @@ export interface IEditCompany {
   CPF: string | null;
   contactNumber: string;
   image: string;
+  isNotifyingOnceAWeek: boolean;
 }

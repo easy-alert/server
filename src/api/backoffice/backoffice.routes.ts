@@ -19,6 +19,7 @@ import { listTimeIntervals } from '../shared/timeInterval/controllers/listTimeIn
 export const backofficeRouter: Router = Router();
 
 backofficeRouter.use('/upload', authMiddleware, isBackoffice, uploadRouter);
+
 backofficeRouter.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
   const html = swaggerUi.generateHTML(swaggerFile);
   res.send(html);

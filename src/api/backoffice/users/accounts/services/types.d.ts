@@ -4,6 +4,7 @@ export interface ICreateCompany {
   CPF: string | null;
   contactNumber: string;
   image: string;
+  isNotifyingOnceAWeek: boolean;
 }
 
 export interface IEditCompany extends ICreateCompany {
