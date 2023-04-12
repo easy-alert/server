@@ -8,7 +8,7 @@
 
   "servers": [
     {
-      "url": "https://easyalert-notifyapi-production.herokuapp.com/api/external",
+      "url": "http://localhost:8080/api/external",
       "description": "Production API"
     }
   ],
@@ -63,7 +63,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "expiredCount": {
+                    "quantidade": {
                       "type": "number"
                     }
                   }
@@ -98,10 +98,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "arrumar": {
-                      "type": "number"
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "sistema": { "type": "string" },
+                      "atividade": { "type": "string" },
+                      "data_aviso": { "type": "string" },
+                      "data_vencimento": { "type": "string" }
                     }
                   }
                 }
