@@ -13,4 +13,27 @@ export class ExternalServices {
       },
     });
   }
+
+  async listExpired({ buildingId }: { buildingId: string }) {
+    return prisma.maintenanceHistory.findMany({
+      select: {
+        Maintenance: {
+          select: {
+            element: true,
+            activity: true,
+          },
+        },
+        notificationDate: true,
+        dueDate: true,
+      },
+      where: {
+        AND: {
+          MaintenancesStatus: {
+            name: 'expired',
+          },
+          buildingId,
+        },
+      },
+    });
+  }
 }

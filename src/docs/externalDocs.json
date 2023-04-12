@@ -5,12 +5,13 @@
     "description": "API EasyAlert.",
     "version": "1.0.0"
   },
+
   "servers": [
     {
-      "description": "Local Development",
-      "url": "http://localhost:8080/api"
+      "url": "http://localhost:8080/api/external"
     }
   ],
+
   "components": {
     "responses": {
       "ServerMessage": {
@@ -39,7 +40,7 @@
   },
 
   "paths": {
-    "/external/maintenances/countexpired/{buildingId}": {
+    "/maintenances/countexpired/{buildingId}": {
       "get": {
         "tags": ["Manutenções"],
         "summary": "Retorna a quantidade de manutenções vencidas por obra.",
@@ -76,7 +77,7 @@
       }
     },
 
-    "/external/maintenances/listexpired/{buildingId}": {
+    "/maintenances/listexpired/{buildingId}": {
       "get": {
         "tags": ["Manutenções"],
         "summary": "Retorna as manutenções vencidas por obra.",

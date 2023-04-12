@@ -10,14 +10,14 @@ import { Validator } from '../../../../utils/validator/validator';
 const validator = new Validator();
 const externalServices = new ExternalServices();
 
-export async function countExpired(req: Request, res: Response) {
+export async function listExpired(req: Request, res: Response) {
   const { buildingId } = req.params;
 
   validator.notNull([{ label: 'ID da edificação', variable: buildingId }]);
 
-  const expiredCount = await externalServices.countExpired({
+  const expiredList = await externalServices.listExpired({
     buildingId,
   });
 
-  return res.status(200).json({ expiredCount });
+  return res.status(200).json(expiredList);
 }
