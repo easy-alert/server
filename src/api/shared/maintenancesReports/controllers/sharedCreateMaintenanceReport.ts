@@ -261,19 +261,6 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   // #endregion
 
   // #region CREATE MAINTENANCE HISTORY
-
-  if (
-    today > maintenanceHistory.Building.warrantyExpiration &&
-    !maintenanceHistory.Building.keepNotificationAfterWarrantyEnds
-  ) {
-    return res.status(200).json({
-      ServerMessage: {
-        statusCode: 201,
-        message: `Manutenção reportada com sucesso.`,
-      },
-    });
-  }
-
   if (maintenanceHistory.MaintenancesStatus.name === 'pending') {
     const notificationDate = noWeekendTimeDate({
       date: addDays({
