@@ -274,44 +274,47 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     });
   }
 
-  const notificationDate = noWeekendTimeDate({
-    date: addDays({
-      date: today,
-      days:
+  if (maintenanceHistory.MaintenancesStatus.name === 'pending') {
+    const notificationDate = noWeekendTimeDate({
+      date: addDays({
+        date: today,
+        days:
+          maintenanceHistory.Maintenance.frequency *
+          maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime,
+      }),
+      interval:
         maintenanceHistory.Maintenance.frequency *
         maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime,
-    }),
-    interval:
-      maintenanceHistory.Maintenance.frequency *
-      maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime,
-  });
+    });
 
-  const dueDate = noWeekendTimeDate({
-    date: addDays({
-      date: notificationDate,
-      days:
+    const dueDate = noWeekendTimeDate({
+      date: addDays({
+        date: notificationDate,
+        days:
+          maintenanceHistory.Maintenance.period *
+          maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
+      }),
+      interval:
         maintenanceHistory.Maintenance.period *
         maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
-    }),
-    interval:
-      maintenanceHistory.Maintenance.period *
-      maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
-  });
+    });
 
-  const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
+    const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
 
-  await sharedMaintenanceServices.createHistory({
-    data: [
-      {
-        ownerCompanyId: maintenanceHistory.Company.id,
-        maintenanceId: maintenanceHistory.Maintenance.id,
-        buildingId: maintenanceHistory.Building.id,
-        maintenanceStatusId: pendingStatus.id,
-        notificationDate,
-        dueDate,
-      },
-    ],
-  });
+    await sharedMaintenanceServices.createHistory({
+      data: [
+        {
+          ownerCompanyId: maintenanceHistory.Company.id,
+          maintenanceId: maintenanceHistory.Maintenance.id,
+          buildingId: maintenanceHistory.Building.id,
+          maintenanceStatusId: pendingStatus.id,
+          notificationDate,
+          dueDate,
+        },
+      ],
+    });
+  }
+
   // #endregion
 
   return res.status(200).json({
