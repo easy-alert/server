@@ -144,6 +144,30 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
 
   // #endregion
 
+  // #region CHECK CAN REPORT
+  const { Building } = await sharedMaintenanceServices.findHistoryById({
+    maintenanceHistoryId,
+  });
+
+  const history = await sharedMaintenanceServices.findHistoryByBuildingId({
+    buildingId: Building.id,
+    maintenanceId: maintenanceHistory.maintenanceId,
+  });
+  console.log(history);
+
+  if (
+    history[1]?.MaintenancesStatus.name === 'expired' &&
+    history[0]?.wasNotified &&
+    history[1]?.maintenanceId === maintenanceHistory.maintenanceId &&
+    maintenanceHistory.MaintenancesStatus.name === 'expired'
+  ) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: 'O prazo para o relato desta manutenção vencida expirou.',
+    });
+  }
+  // #endregion
+
   const data = {
     maintenanceHistoryId,
     cost,
@@ -239,32 +263,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     });
   }
 
-  // #region CHECK CAN REPORT
-  const { Building } = await sharedMaintenanceServices.findHistoryById({
-    maintenanceHistoryId,
-  });
-
-  const history = await sharedMaintenanceServices.findHistoryByBuildingId({
-    buildingId: Building.id,
-    maintenanceId: maintenanceHistory.maintenanceId,
-  });
-  console.log(history);
-
-  if (
-    history[1]?.MaintenancesStatus.name === 'expired' &&
-    history[0]?.wasNotified &&
-    history[1]?.maintenanceId === maintenanceHistory.maintenanceId &&
-    maintenanceHistory.MaintenancesStatus.name === 'expired'
-  ) {
-    throw new ServerMessage({
-      statusCode: 400,
-      message: 'O prazo para o relato desta manutenção vencida expirou.',
-    });
-  }
-
   if (today > maintenanceHistory.dueDate) {
-    // #endregion
-
     // #region UPDATE MAINTENANCE HISTORY STATUS
 
     const overdueStatus = await sharedMaintenanceStatusServices.findByName({ name: 'overdue' });
