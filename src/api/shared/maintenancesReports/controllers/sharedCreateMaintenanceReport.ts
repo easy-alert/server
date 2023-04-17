@@ -239,9 +239,34 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     });
   }
 
-  // #region UPDATE MAINTENANCE HISTORY STATUS
+  // #region CHECK CAN REPORT
+  const { Building } = await sharedMaintenanceServices.findHistoryById({
+    maintenanceHistoryId,
+  });
+
+  const history = await sharedMaintenanceServices.findHistoryByBuildingId({
+    buildingId: Building.id,
+    maintenanceId: maintenanceHistory.maintenanceId,
+  });
+  console.log(history);
+
+  if (
+    history[1]?.MaintenancesStatus.name === 'expired' &&
+    history[0]?.wasNotified &&
+    history[1]?.maintenanceId === maintenanceHistory.maintenanceId &&
+    maintenanceHistory.MaintenancesStatus.name === 'expired'
+  ) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: 'O prazo para o relato desta manutenção vencida expirou.',
+    });
+  }
 
   if (today > maintenanceHistory.dueDate) {
+    // #endregion
+
+    // #region UPDATE MAINTENANCE HISTORY STATUS
+
     const overdueStatus = await sharedMaintenanceStatusServices.findByName({ name: 'overdue' });
 
     await sharedMaintenanceServices.changeMaintenanceHistoryStatus({
@@ -250,7 +275,9 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       resolutionDate: today,
     });
   } else {
-    const completedStatus = await sharedMaintenanceStatusServices.findByName({ name: 'completed' });
+    const completedStatus = await sharedMaintenanceStatusServices.findByName({
+      name: 'completed',
+    });
 
     await sharedMaintenanceServices.changeMaintenanceHistoryStatus({
       maintenanceHistoryId,
