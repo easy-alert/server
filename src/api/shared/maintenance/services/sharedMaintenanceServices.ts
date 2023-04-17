@@ -196,8 +196,15 @@ export class SharedMaintenanceServices {
   async findHistoryByNanoId({ maintenanceHistoryId }: { maintenanceHistoryId: string }) {
     const maintenance = await prisma.maintenanceHistory.findUnique({
       select: {
+        id: true,
+        maintenanceId: true,
         notificationDate: true,
         dueDate: true,
+        MaintenancesStatus: {
+          select: {
+            name: true,
+          },
+        },
         MaintenanceReport: {
           select: {
             id: true,
@@ -332,6 +339,43 @@ export class SharedMaintenanceServices {
 
       where: {
         companyId,
+      },
+    });
+  }
+
+  async findHistoryByBuildingId({
+    buildingId,
+    maintenanceId,
+  }: {
+    buildingId: string;
+    maintenanceId: string;
+  }) {
+    return prisma.maintenanceHistory.findMany({
+      select: {
+        id: true,
+        notificationDate: true,
+        maintenanceId: true,
+        wasNotified: true,
+        Maintenance: {
+          select: {
+            period: true,
+            PeriodTimeInterval: true,
+          },
+        },
+
+        MaintenancesStatus: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+
+      where: {
+        buildingId,
+        maintenanceId,
       },
     });
   }
