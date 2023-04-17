@@ -352,8 +352,17 @@ export class SharedMaintenanceServices {
   }) {
     return prisma.maintenanceHistory.findMany({
       select: {
+        id: true,
+        notificationDate: true,
         maintenanceId: true,
         wasNotified: true,
+        Maintenance: {
+          select: {
+            period: true,
+            PeriodTimeInterval: true,
+          },
+        },
+
         MaintenancesStatus: {
           select: {
             name: true,
