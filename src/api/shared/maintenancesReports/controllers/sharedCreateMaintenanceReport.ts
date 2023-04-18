@@ -120,6 +120,19 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       syndicNanoId: responsibleSyndicId,
     });
   }
+  // #endregion
+
+  // #region CHECK CAN REPORT
+  const { Building } = await sharedMaintenanceServices.findHistoryById({
+    maintenanceHistoryId,
+  });
+
+  // ARRAY ORDENADO POR DATA DE CRIAÇÃO, LOGO SE TIVER UMA PENDENTE, ELA SERÁ A PRIMEIRA POSIÇÃO
+  const history = await sharedMaintenanceServices.findHistoryByBuildingId({
+    buildingId: Building.id,
+    maintenanceId: maintenanceHistory.maintenanceId,
+  });
+
   const today = changeTime({
     date: new Date(),
     time: {
@@ -129,19 +142,39 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       s: 0,
     },
   });
-  const period =
-    maintenanceHistory.Maintenance.period *
-    maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime;
 
-  const canReportDate = removeDays({ date: maintenanceHistory.notificationDate, days: period });
+  // VERIFICA SE A DATA DE NOTIFICAÇÃO DA PRIMEIRA POSIÇÃO QUE DEVE SER PENDENTE
+  const period = history[0].Maintenance.period * history[0].Maintenance.PeriodTimeInterval.unitTime;
 
-  if (today < canReportDate) {
-    throw new ServerMessage({
-      statusCode: 400,
-      message: 'Você não pode reportar uma manutenção antes do tempo de resposta.',
-    });
+  const canReport = today >= removeDays({ date: history[0].notificationDate, days: period });
+
+  // VERIFICA SE A MANUTENÇÃO QUE ESTÁ SENDO REPORTADA É VENCIDA
+  if (maintenanceHistory.MaintenancesStatus.name === 'expired') {
+    // NAO DEIXA FAZER UMA VENCIDA DURANTE O PRAZO DO TEMPO DE RESPOSTA DA PENDENTE
+    if (canReport) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'O prazo para o relato desta manutenção vencida expirou.',
+      });
+    }
+
+    // JÁ EXISTE UMA PENDENTE, ENTAO EU COMPARO O ID DA ULTIMA VENCIDA, COM O ID QUE ESTOU MANDANDO
+    // PARA NÃO DEIXAR REPORTAR UMA VENCIDA ANTERIOR A OUTRA VENCIDA
+    if (history[1].id !== maintenanceHistory.id) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'O prazo para o relato desta manutenção vencida expirou.',
+      });
+    }
   }
 
+  // NAO DEIXA FAZER UMA PENDENTE ANTES DO TEMPO PARA RESPOSTA
+  if (!canReport && maintenanceHistory.MaintenancesStatus.name === 'pending') {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: 'err Você não pode reportar uma manutenção antes do tempo de resposta.',
+    });
+  }
   // #endregion
 
   const data = {
@@ -239,9 +272,9 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     });
   }
 
-  // #region UPDATE MAINTENANCE HISTORY STATUS
-
   if (today > maintenanceHistory.dueDate) {
+    // #region UPDATE MAINTENANCE HISTORY STATUS
+
     const overdueStatus = await sharedMaintenanceStatusServices.findByName({ name: 'overdue' });
 
     await sharedMaintenanceServices.changeMaintenanceHistoryStatus({
@@ -250,7 +283,9 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       resolutionDate: today,
     });
   } else {
-    const completedStatus = await sharedMaintenanceStatusServices.findByName({ name: 'completed' });
+    const completedStatus = await sharedMaintenanceStatusServices.findByName({
+      name: 'completed',
+    });
 
     await sharedMaintenanceServices.changeMaintenanceHistoryStatus({
       maintenanceHistoryId,
@@ -261,57 +296,47 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   // #endregion
 
   // #region CREATE MAINTENANCE HISTORY
+  if (maintenanceHistory.MaintenancesStatus.name === 'pending') {
+    const notificationDate = noWeekendTimeDate({
+      date: addDays({
+        date: today,
+        days:
+          maintenanceHistory.Maintenance.frequency *
+          maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime,
+      }),
+      interval:
+        maintenanceHistory.Maintenance.frequency *
+        maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime,
+    });
 
-  if (
-    today > maintenanceHistory.Building.warrantyExpiration &&
-    !maintenanceHistory.Building.keepNotificationAfterWarrantyEnds
-  ) {
-    return res.status(200).json({
-      ServerMessage: {
-        statusCode: 201,
-        message: `Manutenção reportada com sucesso.`,
-      },
+    const dueDate = noWeekendTimeDate({
+      date: addDays({
+        date: notificationDate,
+        days:
+          maintenanceHistory.Maintenance.period *
+          maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
+      }),
+      interval:
+        maintenanceHistory.Maintenance.period *
+        maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
+    });
+
+    const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
+
+    await sharedMaintenanceServices.createHistory({
+      data: [
+        {
+          ownerCompanyId: maintenanceHistory.Company.id,
+          maintenanceId: maintenanceHistory.Maintenance.id,
+          buildingId: maintenanceHistory.Building.id,
+          maintenanceStatusId: pendingStatus.id,
+          notificationDate,
+          dueDate,
+        },
+      ],
     });
   }
 
-  const notificationDate = noWeekendTimeDate({
-    date: addDays({
-      date: today,
-      days:
-        maintenanceHistory.Maintenance.frequency *
-        maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime,
-    }),
-    interval:
-      maintenanceHistory.Maintenance.frequency *
-      maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime,
-  });
-
-  const dueDate = noWeekendTimeDate({
-    date: addDays({
-      date: notificationDate,
-      days:
-        maintenanceHistory.Maintenance.period *
-        maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
-    }),
-    interval:
-      maintenanceHistory.Maintenance.period *
-      maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
-  });
-
-  const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
-
-  await sharedMaintenanceServices.createHistory({
-    data: [
-      {
-        ownerCompanyId: maintenanceHistory.Company.id,
-        maintenanceId: maintenanceHistory.Maintenance.id,
-        buildingId: maintenanceHistory.Building.id,
-        maintenanceStatusId: pendingStatus.id,
-        notificationDate,
-        dueDate,
-      },
-    ],
-  });
   // #endregion
 
   return res.status(200).json({
