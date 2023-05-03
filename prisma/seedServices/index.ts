@@ -83,6 +83,7 @@ export class SeedServices {
       CNPJ: '00000000000000',
       CPF: null,
       image: 'https://larguei.s3.us-west-2.amazonaws.com/1635276982966-1678106031894.jpg',
+      isNotifyingOnceAWeek: false,
     });
 
     await companyServices.createUserCompany({
