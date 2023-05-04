@@ -241,7 +241,6 @@ export class ClientBuildingServices {
       },
       {
         status: 'Vencidas',
-        label: 'Vencidas',
         maintenances: [],
       },
       {
@@ -294,7 +293,9 @@ export class ClientBuildingServices {
               element: maintenance.Maintenance.element,
               activity: maintenance.Maintenance.activity,
               status: maintenance.MaintenancesStatus.name,
+              // para ordenação
               date: maintenance.notificationDate,
+              dueDate: maintenance.dueDate,
               label,
             });
           }
@@ -311,7 +312,10 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
-            date: maintenance.notificationDate,
+            // para ordenação
+            date: maintenance.dueDate,
+            dueDate: maintenance.dueDate,
+
             label: `Atrasada há ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
           });
           break;
@@ -322,7 +326,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            // para ordenação
             date: maintenance.resolutionDate,
+            dueDate: maintenance.dueDate,
             label: '',
           });
           break;
@@ -338,7 +344,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            // para ordenação
             date: maintenance.resolutionDate,
+            dueDate: maintenance.dueDate,
             label: `Feita com atraso de ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
           });
           break;
