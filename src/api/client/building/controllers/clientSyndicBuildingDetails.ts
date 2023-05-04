@@ -172,7 +172,6 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   kanban[0].maintenances.sort((a: any, b: any) => (a.dueDate > b.dueDate ? 1 : -1));
   kanban[1].maintenances.sort((a: any, b: any) => (a.date > b.date ? 1 : -1));
   kanban[2].maintenances.sort((a: any, b: any) => (a.date < b.date ? 1 : -1));
-  //
 
   // #endregion
 

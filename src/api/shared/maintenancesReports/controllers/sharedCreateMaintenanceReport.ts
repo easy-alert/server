@@ -122,7 +122,6 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   }
   // #endregion
 
-  // #region CHECK CAN REPORT
   const { Building } = await sharedMaintenanceServices.findHistoryById({
     maintenanceHistoryId,
   });
@@ -172,10 +171,9 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   if (!canReport && maintenanceHistory.MaintenancesStatus.name === 'pending') {
     throw new ServerMessage({
       statusCode: 400,
-      message: 'err Você não pode reportar uma manutenção antes do tempo de resposta.',
+      message: 'Você não pode reportar uma manutenção antes do tempo de resposta.',
     });
   }
-  // #endregion
 
   const data = {
     maintenanceHistoryId,
@@ -195,7 +193,6 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   };
   await sharedMaintenanceReportsServices.create({ data });
 
-  // #region PROCESS DATA FOR SEND EMAIL
   const attachments: IAttachments[] = [];
 
   ReportAnnexes.forEach((annex) => {
@@ -272,9 +269,8 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     });
   }
 
+  // #region UPDATE MAINTENANCE HISTORY STATUS
   if (today > maintenanceHistory.dueDate) {
-    // #region UPDATE MAINTENANCE HISTORY STATUS
-
     const overdueStatus = await sharedMaintenanceStatusServices.findByName({ name: 'overdue' });
 
     await sharedMaintenanceServices.changeMaintenanceHistoryStatus({
