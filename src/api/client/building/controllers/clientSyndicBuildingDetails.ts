@@ -165,15 +165,11 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
 
   // #endregion
 
-  // #region PROCESS DATA
-
   const kanban = clientBuildingServices.syndicSeparePerStatus({ data: MaintenancesHistory });
 
   kanban[0].maintenances.sort((a: any, b: any) => (a.dueDate > b.dueDate ? 1 : -1));
   kanban[1].maintenances.sort((a: any, b: any) => (a.date > b.date ? 1 : -1));
   kanban[2].maintenances.sort((a: any, b: any) => (a.date < b.date ? 1 : -1));
-
-  // #endregion
 
   return res.status(200).json({
     buildingName: buildingNotificationConfig.Building.name,

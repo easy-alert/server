@@ -315,7 +315,6 @@ export class ClientBuildingServices {
             // para ordenação
             date: maintenance.dueDate,
             dueDate: maintenance.dueDate,
-
             label: `Atrasada há ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
           });
           break;
