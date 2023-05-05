@@ -3,8 +3,10 @@ import { removeDays } from '../../../../utils/dateTime';
 import { getDateInfos } from '../../../../utils/dateTime/getDateInfos';
 import { changeTime } from '../../../../utils/dateTime/changeTime';
 import { Validator } from '../../../../utils/validator/validator';
+import { SharedMaintenanceServices } from '../../../shared/maintenance/services/sharedMaintenanceServices';
 
 const validator = new Validator();
+const sharedMaintenanceServices = new SharedMaintenanceServices();
 
 export class ClientBuildingServices {
   separePerMonth({ data }: { data: any }) {
@@ -233,7 +235,17 @@ export class ClientBuildingServices {
     return months;
   }
 
-  syndicSeparePerStatus({ data }: { data: any }) {
+  async syndicSeparePerStatus({ data }: { data: any }) {
+    const today = changeTime({
+      date: new Date(),
+      time: {
+        h: 0,
+        m: 0,
+        ms: 0,
+        s: 0,
+      },
+    });
+
     const kanban: any = [
       {
         status: 'Pendentes',
@@ -249,19 +261,21 @@ export class ClientBuildingServices {
       },
     ];
 
-    data.forEach((maintenance: any) => {
+    for (let i = 0; i < data.length; i++) {
+      const maintenance = data[i];
+
       let auxiliaryData = null;
       let period = null;
       let canReportDate = null;
-      const today = changeTime({
-        date: new Date(),
-        time: {
-          h: 0,
-          m: 0,
-          ms: 0,
-          s: 0,
-        },
+
+      // ARRAY ORDENADO POR DATA DE CRIAÇÃO, LOGO SE TIVER UMA PENDENTE, ELA SERÁ A PRIMEIRA POSIÇÃO
+      const history = await sharedMaintenanceServices.findHistoryByBuildingId({
+        buildingId: maintenance.Building.id,
+        maintenanceId: maintenance.Maintenance.id,
       });
+
+      const historyPeriod =
+        history[0].Maintenance.period * history[0].Maintenance.PeriodTimeInterval.unitTime;
 
       switch (maintenance.MaintenancesStatus.name) {
         case 'pending':
@@ -273,7 +287,10 @@ export class ClientBuildingServices {
             days: period,
           });
 
-          if (today >= canReportDate) {
+          if (
+            (today >= canReportDate && history[1]?.MaintenancesStatus?.name !== 'expired') ||
+            today >= history[0]?.notificationDate
+          ) {
             auxiliaryData = Math.floor(
               (maintenance.dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
             );
@@ -302,22 +319,35 @@ export class ClientBuildingServices {
 
           break;
 
-        case 'expired':
+        case 'expired': {
           auxiliaryData = Math.floor(
             (today.getTime() - maintenance.dueDate.getTime()) / (1000 * 60 * 60 * 24),
           );
+
+          const canReportHistoryPending =
+            today >=
+              removeDays({
+                date: history[0]?.notificationDate,
+                days: historyPeriod,
+              }) && history[1]?.MaintenancesStatus?.name !== 'expired';
 
           kanban[1].maintenances.push({
             id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            // não pode reportar a vencida, se a pendente já está liberada.
+            cantReportExpired:
+              canReportHistoryPending ||
+              history[1]?.id !== maintenance.id ||
+              today >= history[0]?.notificationDate,
             // para ordenação
             date: maintenance.dueDate,
             dueDate: maintenance.dueDate,
             label: `Atrasada há ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
           });
           break;
+        }
 
         case 'completed':
           kanban[2].maintenances.push({
@@ -353,7 +383,7 @@ export class ClientBuildingServices {
         default:
           break;
       }
-    });
+    }
 
     return kanban;
   }
