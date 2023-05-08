@@ -122,7 +122,6 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   }
   // #endregion
 
-  // #region CHECK CAN REPORT
   const { Building } = await sharedMaintenanceServices.findHistoryById({
     maintenanceHistoryId,
   });
@@ -146,21 +145,13 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   // VERIFICA SE A DATA DE NOTIFICAÇÃO DA PRIMEIRA POSIÇÃO QUE DEVE SER PENDENTE
   const period = history[0].Maintenance.period * history[0].Maintenance.PeriodTimeInterval.unitTime;
 
-  const canReport = today >= removeDays({ date: history[0].notificationDate, days: period });
+  const canReport = today >= removeDays({ date: history[0]?.notificationDate, days: period });
 
   // VERIFICA SE A MANUTENÇÃO QUE ESTÁ SENDO REPORTADA É VENCIDA
   if (maintenanceHistory.MaintenancesStatus.name === 'expired') {
-    // NAO DEIXA FAZER UMA VENCIDA DURANTE O PRAZO DO TEMPO DE RESPOSTA DA PENDENTE
-    if (canReport) {
-      throw new ServerMessage({
-        statusCode: 400,
-        message: 'O prazo para o relato desta manutenção vencida expirou.',
-      });
-    }
-
     // JÁ EXISTE UMA PENDENTE, ENTAO EU COMPARO O ID DA ULTIMA VENCIDA, COM O ID QUE ESTOU MANDANDO
     // PARA NÃO DEIXAR REPORTAR UMA VENCIDA ANTERIOR A OUTRA VENCIDA
-    if (history[1].id !== maintenanceHistory.id) {
+    if (history[1]?.id !== maintenanceHistory?.id || today >= history[0]?.notificationDate) {
       throw new ServerMessage({
         statusCode: 400,
         message: 'O prazo para o relato desta manutenção vencida expirou.',
@@ -172,10 +163,20 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   if (!canReport && maintenanceHistory.MaintenancesStatus.name === 'pending') {
     throw new ServerMessage({
       statusCode: 400,
-      message: 'err Você não pode reportar uma manutenção antes do tempo de resposta.',
+      message: 'Você não pode reportar uma manutenção antes do tempo de resposta.',
     });
   }
-  // #endregion
+
+  if (
+    maintenanceHistory.MaintenancesStatus.name === 'pending' &&
+    history[1]?.MaintenancesStatus?.name === 'expired' &&
+    today < history[0]?.notificationDate
+  ) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: 'Você não pode antecipar um relato com uma manutenção vencida em andamento.',
+    });
+  }
 
   const data = {
     maintenanceHistoryId,
@@ -195,7 +196,6 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   };
   await sharedMaintenanceReportsServices.create({ data });
 
-  // #region PROCESS DATA FOR SEND EMAIL
   const attachments: IAttachments[] = [];
 
   ReportAnnexes.forEach((annex) => {
@@ -272,9 +272,8 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     });
   }
 
+  // #region UPDATE MAINTENANCE HISTORY STATUS
   if (today > maintenanceHistory.dueDate) {
-    // #region UPDATE MAINTENANCE HISTORY STATUS
-
     const overdueStatus = await sharedMaintenanceStatusServices.findByName({ name: 'overdue' });
 
     await sharedMaintenanceServices.changeMaintenanceHistoryStatus({
