@@ -62,11 +62,11 @@ export async function sharedEditMaintenance({
     },
   ]);
 
-  const maintenace = await sharedMaintenanceServices.findById({
+  const maintenanceCheck = await sharedMaintenanceServices.findById({
     maintenanceId,
   });
 
-  if (maintenace?.ownerCompanyId !== ownerCompanyId) {
+  if (maintenanceCheck?.ownerCompanyId !== ownerCompanyId) {
     throw new ServerMessage({
       statusCode: 400,
       message: `Você não possui permissão para executar esta ação, pois essa manutenção pertence a outra empresa.`,

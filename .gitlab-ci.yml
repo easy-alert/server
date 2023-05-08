@@ -33,14 +33,14 @@ production_migrate:
     - master
 
 build:
-    stage: build
-    script:
-      - yarn add typescript
-      - yarn build
-      - ls
-    only:
-      - develop
-      - master
+  stage: build
+  script:
+    - yarn add typescript
+    - yarn build
+    - ls
+  only:
+    - develop
+    - master
 
 staging_deploy:
   environment: review/develop

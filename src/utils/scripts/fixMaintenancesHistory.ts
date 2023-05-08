@@ -225,6 +225,7 @@ async function processBuildings(buildings: IBuildings[]) {
 }
 
 async function processMaintenancesHistory(processedBuildings: IProcessedBuilding[]) {
+  // caso for utilizar novamente, verificar a hora, esta criando como 00:00 e nao 03:00
   const today = changeTime({
     date: new Date(),
     time: {
@@ -260,7 +261,10 @@ async function processMaintenancesHistory(processedBuildings: IProcessedBuilding
             buildingId: building.id,
             maintenanceId: maintenance.id,
             ownerCompanyId: building.companyId,
-            notificationDate,
+            notificationDate: noWeekendTimeDate({
+              date: notificationDate,
+              interval: maintenance.frequency * maintenance.FrequencyTimeInterval.unitTime,
+            }),
             dueDate,
             maintenanceStatusId: pendingStatus.id,
           });
@@ -284,7 +288,10 @@ async function processMaintenancesHistory(processedBuildings: IProcessedBuilding
           buildingId: building.id,
           maintenanceId: maintenance.id,
           ownerCompanyId: building.companyId,
-          notificationDate,
+          notificationDate: noWeekendTimeDate({
+            date: notificationDate,
+            interval: maintenance.frequency * maintenance.FrequencyTimeInterval.unitTime,
+          }),
           dueDate,
           maintenanceStatusId: pendingStatus.id,
         });
