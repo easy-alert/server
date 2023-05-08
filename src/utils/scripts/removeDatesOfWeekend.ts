@@ -38,7 +38,7 @@ async function updateNotificationDate(maintenanceHistoryId: string, notification
   });
 }
 
-export async function removeDatesOfWeekend(req: Request, res: Response) {
+export async function removeDatesOfWeekend(_req: Request, res: Response) {
   const maintenanceHistory = await findManyMaintenanceHistory();
 
   for (let i = 0; i < maintenanceHistory.length; i++) {
