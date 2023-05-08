@@ -47,7 +47,7 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
   });
 
   const buildingMaintenanceHistory = await buildingServices.listMaintenancesHistoryByBuilding({
-    buildingId,
+    buildingId: currentBuildingId,
   });
 
   // #region PROCESS DATA
