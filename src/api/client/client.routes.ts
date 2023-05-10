@@ -15,7 +15,8 @@ import { findClientInformations } from './building/controllers/findClientInforma
 import { findCompanyLogo } from './building/controllers/findCompanyLogo';
 import { findBuildingAnnex } from './building/controllers/findBuildingAnnex';
 import { findHomeInformations } from './building/controllers/findHomeInformations';
-import { fixMaintenancesHistory } from '../../utils/scripts/fixMaintenancesHistory';
+// import { fixMaintenancesHistory } from '../../utils/scripts/fixMaintenancesHistory';
+// import { removeDatesOfWeekend } from '../../utils/scripts/removeDatesOfWeekend';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -45,4 +46,6 @@ clientRouter.get('/building/logo/:buildingNanoId', findCompanyLogo);
 
 clientRouter.post('/maintenances/create/report', sharedCreateMaintenanceReport);
 
-clientRouter.get('/fix/shits', fixMaintenancesHistory);
+// clientRouter.post('/fixmigration', fixMaintenancesHistory);
+
+// clientRouter.post('/fixweekenddates', removeDatesOfWeekend);
