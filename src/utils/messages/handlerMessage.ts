@@ -12,7 +12,7 @@ import { ServerMessage } from './serverMessage';
 
 export const handlerMessage = async (
   err: Error,
-  _req: Request,
+  req: Request,
   res: Response,
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   _next: NextFunction,
@@ -27,11 +27,15 @@ export const handlerMessage = async (
     process.env.DATABASE_URL?.includes('sandbox') ||
     process.env.DATABASE_URL?.includes('production')
   ) {
-    axios.post('https://ada-logs.herokuapp.com/api/logs/create', {
+    axios.post('https://ada-logs.herokuapp.com/api/errors/create', {
       projectName: 'Easy Alert',
       environment: process.env.DATABASE_URL?.includes('sandbox') ? 'Sandbox' : 'Production',
       side: 'Server',
       errorStack: err.stack,
+      extraInfo: {
+        company: req.Company?.name ?? req.body.email,
+        routeURL: req.originalUrl,
+      },
     });
   }
   // eslint-disable-next-line no-console
