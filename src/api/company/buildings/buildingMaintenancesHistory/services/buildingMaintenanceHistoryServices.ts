@@ -15,6 +15,7 @@ export class BuildingMaintenanceHistoryServices {
         MaintenancesStatus: {
           name: 'pending',
         },
+        wasNotified: false,
       },
     });
   }
