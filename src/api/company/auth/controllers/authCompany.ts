@@ -45,6 +45,7 @@ export const authCompany = async (req: Request, res: Response) => {
 
   return res.status(200).json({
     Account: {
+      origin: 'Company',
       User: {
         id: user.id,
         image: user.image,

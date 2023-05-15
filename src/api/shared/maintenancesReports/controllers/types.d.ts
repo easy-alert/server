@@ -1,4 +1,6 @@
 export interface ICreateMaintenanceReportsBody {
+  origin: 'Backoffice' | 'Company' | 'Client';
+
   maintenanceHistoryId: string;
   cost: number;
   observation: string;

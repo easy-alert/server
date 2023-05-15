@@ -27,6 +27,7 @@ const sharedBuildingNotificationConfigurationServices =
 
 export async function sharedCreateMaintenanceReport(req: Request, res: Response) {
   const {
+    origin,
     cost,
     maintenanceHistoryId,
     responsibleSyndicId,
@@ -179,6 +180,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   }
 
   const data = {
+    origin,
     maintenanceHistoryId,
     cost,
     observation,
@@ -194,7 +196,28 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       },
     },
   };
-  await sharedMaintenanceReportsServices.create({ data });
+
+  const maintenaceReport = await sharedMaintenanceReportsServices.create({ data });
+
+  await sharedMaintenanceReportsServices.createHistory({
+    data: {
+      origin,
+      maintenanceReportId: maintenaceReport.id,
+      maintenanceHistoryId,
+      cost,
+      observation,
+      ReportImages: {
+        createMany: {
+          data: ReportImages,
+        },
+      },
+      ReportAnnexes: {
+        createMany: {
+          data: ReportAnnexes,
+        },
+      },
+    },
+  });
 
   const attachments: IAttachments[] = [];
 

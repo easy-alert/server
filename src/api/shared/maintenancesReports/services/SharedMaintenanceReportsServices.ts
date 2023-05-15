@@ -1,12 +1,18 @@
 import { prisma } from '../../../../../prisma';
 import { Validator } from '../../../../utils/validator/validator';
-import { ICreateMaintenanceReports } from './types';
+import { ICreateMaintenanceReports, ICreateMaintenanceReportsHistory } from './types';
 
 const validator = new Validator();
 
 export class SharedMaintenanceReportsServices {
   async create({ data }: ICreateMaintenanceReports) {
     return prisma.maintenanceReport.create({
+      data,
+    });
+  }
+
+  async createHistory({ data }: ICreateMaintenanceReportsHistory) {
+    return prisma.maintenanceReportHistory.create({
       data,
     });
   }

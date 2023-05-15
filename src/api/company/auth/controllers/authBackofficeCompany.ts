@@ -41,6 +41,7 @@ export const authBackofficeCompany = async (req: Request, res: Response) => {
 
   return res.status(200).json({
     Account: {
+      origin: 'Backoffice',
       User: {
         id: user.id,
         image: user.image,
