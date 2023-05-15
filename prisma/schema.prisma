@@ -189,6 +189,7 @@ model MaintenanceReport {
   observation          String?
   cost                 Float?
   responsibleSyndicId  String?
+  version              Float   @default(1.00)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

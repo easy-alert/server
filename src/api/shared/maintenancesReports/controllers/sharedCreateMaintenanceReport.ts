@@ -10,7 +10,7 @@ import { SharedMaintenanceServices } from '../../maintenance/services/sharedMain
 import { SharedMaintenanceStatusServices } from '../../maintenanceStatus/services/sharedMaintenanceStatusServices';
 import { SharedBuildingNotificationConfigurationServices } from '../../notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { SharedMaintenanceReportsServices } from '../services/SharedMaintenanceReportsServices';
-import { IAttachments, ICreateMaintenanceReportsBody } from './types';
+import { IAttachments, ICreateAndEditMaintenanceReportsBody } from './types';
 
 // CLASS
 
@@ -34,7 +34,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     observation,
     ReportAnnexes,
     ReportImages,
-  }: ICreateMaintenanceReportsBody = req.body;
+  }: ICreateAndEditMaintenanceReportsBody = req.body;
 
   // #region VALIDATIONS
   validator.check([
@@ -44,13 +44,13 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       variable: maintenanceHistoryId,
     },
     {
-      label: 'custo da manutenção',
+      label: 'Custo da manutenção',
       type: 'number',
       variable: cost,
       isOptional: true,
     },
     {
-      label: 'observação da manutenção',
+      label: 'Observação da manutenção',
       type: 'string',
       variable: observation,
       isOptional: true,
@@ -197,12 +197,12 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     },
   };
 
-  const maintenaceReport = await sharedMaintenanceReportsServices.create({ data });
+  const maintenanceReport = await sharedMaintenanceReportsServices.create({ data });
 
   await sharedMaintenanceReportsServices.createHistory({
     data: {
       origin,
-      maintenanceReportId: maintenaceReport.id,
+      maintenanceReportId: maintenanceReport.id,
       maintenanceHistoryId,
       cost,
       observation,

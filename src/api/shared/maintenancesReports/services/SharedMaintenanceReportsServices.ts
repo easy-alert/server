@@ -1,6 +1,10 @@
 import { prisma } from '../../../../../prisma';
 import { Validator } from '../../../../utils/validator/validator';
-import { ICreateMaintenanceReports, ICreateMaintenanceReportsHistory } from './types';
+import {
+  ICreateMaintenanceReports,
+  ICreateMaintenanceReportsHistory,
+  IEditMaintenanceReports,
+} from './types';
 
 const validator = new Validator();
 
@@ -8,6 +12,35 @@ export class SharedMaintenanceReportsServices {
   async create({ data }: ICreateMaintenanceReports) {
     return prisma.maintenanceReport.create({
       data,
+    });
+  }
+
+  async edit({ data, maintenanceReportId }: IEditMaintenanceReports) {
+    return prisma.maintenanceReport.update({
+      data,
+      where: { id: maintenanceReportId },
+    });
+  }
+
+  async getReportVersion({ maintenanceReportId }: { maintenanceReportId: string }) {
+    return prisma.maintenanceReport.findFirst({
+      select: {
+        version: true,
+      },
+      where: { id: maintenanceReportId },
+    });
+  }
+
+  async deleteAnnexAndImages({ maintenanceReportId }: { maintenanceReportId: string }) {
+    await prisma.maintenanceReportAnnexes.deleteMany({
+      where: {
+        maintenanceReportId,
+      },
+    });
+    await prisma.maintenanceReportImages.deleteMany({
+      where: {
+        maintenanceReportId,
+      },
     });
   }
 
