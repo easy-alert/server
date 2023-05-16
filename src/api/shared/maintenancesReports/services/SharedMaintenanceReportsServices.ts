@@ -124,6 +124,7 @@ export class SharedMaintenanceReportsServices {
         Building: {
           select: {
             name: true,
+            id: true,
           },
         },
 
@@ -134,11 +135,18 @@ export class SharedMaintenanceReportsServices {
                 name: true,
               },
             },
+            id: true,
             element: true,
             activity: true,
             responsible: true,
             source: true,
             observation: true,
+            period: true,
+            PeriodTimeInterval: {
+              select: {
+                unitTime: true,
+              },
+            },
           },
         },
       },
