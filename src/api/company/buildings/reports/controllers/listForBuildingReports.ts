@@ -59,6 +59,7 @@ export async function listForBuildingReports(req: Request, res: Response) {
     }
 
     maintenances.push({
+      id: maintenance.id,
       observation: maintenance.Maintenance.observation,
       maintenanceHistoryId: maintenance.id,
       buildingName: maintenance.Building.name,
