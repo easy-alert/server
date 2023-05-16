@@ -31,6 +31,39 @@ export class SharedMaintenanceReportsServices {
     });
   }
 
+  async getAllReportVersions({ maintenanceHistoryId }: { maintenanceHistoryId: string }) {
+    return prisma.maintenanceReportHistory.findMany({
+      select: {
+        origin: true,
+        version: true,
+        createdAt: true,
+        cost: true,
+        id: true,
+        observation: true,
+        ReportAnnexes: {
+          select: {
+            name: true,
+            originalName: true,
+            url: true,
+            id: true,
+          },
+        },
+        ReportImages: {
+          select: {
+            name: true,
+            originalName: true,
+            url: true,
+            id: true,
+          },
+        },
+      },
+      where: { maintenanceHistoryId },
+      orderBy: {
+        version: 'desc',
+      },
+    });
+  }
+
   async deleteAnnexAndImages({ maintenanceReportId }: { maintenanceReportId: string }) {
     await prisma.maintenanceReportAnnexes.deleteMany({
       where: {

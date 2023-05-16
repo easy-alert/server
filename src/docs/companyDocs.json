@@ -668,6 +668,38 @@
       }
     },
 
+    "/maintenances/list/report/versions/{maintenanceHistoryId}": {
+      "get": {
+        "tags": ["Maintenance"],
+        "summary": "Histórico de edições de relatos",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "maintenanceHistoryId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID do histórico da manutenção"
+          }
+        ],
+
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
     "/maintenances/edit": {
       "put": {
         "tags": ["Maintenance"],
