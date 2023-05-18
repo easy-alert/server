@@ -243,7 +243,6 @@ model MaintenanceReportHistory {
   maintenanceHistoryId String
   observation          String?
   cost                 Float?
-  responsibleSyndicId  String?
 
   version Float @default(1.00)
 
@@ -253,8 +252,6 @@ model MaintenanceReportHistory {
 
   ReportAnnexes MaintenanceReportAnnexesHistory[]
   ReportImages  MaintenanceReportImagesHistory[]
-
-  ResponsibleSyndic BuildingNotificationConfiguration? @relation(fields: [responsibleSyndicId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -389,11 +386,10 @@ model BuildingNotificationConfiguration {
   showContact              Boolean  @default(false)
   lastNotificationDate     DateTime @default(now())
 
-  createdAt                DateTime                   @default(now())
-  updatedAt                DateTime                   @updatedAt
-  Building                 Building                   @relation(fields: [buildingId], references: [id], onDelete: Cascade)
-  MaintenanceReport        MaintenanceReport[]
-  MaintenanceReportHistory MaintenanceReportHistory[]
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  Building          Building            @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  MaintenanceReport MaintenanceReport[]
 
   @@map("buildingsNotificationsConfigurations")
 }

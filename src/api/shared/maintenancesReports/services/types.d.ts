@@ -57,7 +57,6 @@ export interface ICreateMaintenanceReportsHistory {
 export interface IEditMaintenanceReports {
   maintenanceReportId: string;
   data: {
-    origin: 'Backoffice' | 'Company' | 'Client';
     cost: number;
     observation: string;
     ReportImages: {

@@ -15,6 +15,21 @@ export class SharedMaintenanceReportsServices {
     });
   }
 
+  async getReportByMaintenanceHistoryId({
+    maintenanceHistoryId,
+  }: {
+    maintenanceHistoryId: string;
+  }) {
+    return prisma.maintenanceReport.findFirst({
+      select: {
+        id: true,
+      },
+      where: {
+        maintenanceHistoryId,
+      },
+    });
+  }
+
   async edit({ data, maintenanceReportId }: IEditMaintenanceReports) {
     return prisma.maintenanceReport.update({
       data,

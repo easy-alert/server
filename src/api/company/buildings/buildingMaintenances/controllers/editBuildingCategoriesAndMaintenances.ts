@@ -15,6 +15,7 @@ import { IDateForCreateHistory, IMaintenancesForHistorySelected } from './types'
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 import { addDays } from '../../../../../utils/dateTime';
 import { changeTime } from '../../../../../utils/dateTime/changeTime';
+import { SharedMaintenanceReportsServices } from '../../../../shared/maintenancesReports/services/SharedMaintenanceReportsServices';
 
 // CLASS
 
@@ -27,11 +28,12 @@ const timeIntervalServices = new TimeIntervalServices();
 const maintenancesStatusServices = new SharedMaintenanceStatusServices();
 const buildingMaintenancesHistoryServices = new BuildingMaintenanceHistoryServices();
 const sharedMaintenanceStatusServices = new SharedMaintenanceStatusServices();
+const sharedMaintenanceReportsServices = new SharedMaintenanceReportsServices();
 
 // #endregion
 
 export async function editBuildingCategoriesAndMaintenances(req: Request, res: Response) {
-  const { buildingId } = req.body;
+  const { buildingId, origin } = req.body;
   const bodyData = req.body.data;
 
   const today = changeTime({
@@ -285,6 +287,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         (maintenance: any) => maintenance.id === updatedsMaintenances[i].id,
       );
 
+      // faltou o responsiblesyndicid e mandar a qo origin
       const dataForCreateHistoryAndReport: ICreateMaintenanceHistoryAndReport = {
         buildingId,
         maintenanceId: updatedsMaintenances[i].id,
@@ -295,6 +298,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         dueDate: updatedsMaintenances[i].resolutionDate,
         MaintenanceReport: {
           create: {
+            origin,
             cost: Number(maintenanceToUpdate.maintenanceReport.cost.replace(/[^0-9]/g, '')),
             observation: maintenanceToUpdate.maintenanceReport.observation
               ? maintenanceToUpdate.maintenanceReport.observation
@@ -313,9 +317,38 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
           },
         },
       };
-      await sharedMaintenanceServices.createHistoryAndReport({
+
+      const createdMaintenanceHistory = await sharedMaintenanceServices.createHistoryAndReport({
         data: dataForCreateHistoryAndReport,
       });
+
+      const createdReport = await sharedMaintenanceReportsServices.getReportByMaintenanceHistoryId({
+        maintenanceHistoryId: createdMaintenanceHistory.id,
+      });
+
+      if (createdReport?.id) {
+        await sharedMaintenanceReportsServices.createHistory({
+          data: {
+            origin,
+            maintenanceReportId: createdReport.id,
+            maintenanceHistoryId: createdMaintenanceHistory.id,
+            cost: Number(maintenanceToUpdate.maintenanceReport.cost.replace(/[^0-9]/g, '')),
+            observation: maintenanceToUpdate.maintenanceReport.observation
+              ? maintenanceToUpdate.maintenanceReport.observation
+              : null,
+            ReportImages: {
+              createMany: {
+                data: maintenanceToUpdate.files,
+              },
+            },
+            ReportAnnexes: {
+              createMany: {
+                data: maintenanceToUpdate.images,
+              },
+            },
+          },
+        });
+      }
 
       // #endregion
 
