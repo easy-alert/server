@@ -338,12 +338,12 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
               : null,
             ReportImages: {
               createMany: {
-                data: maintenanceToUpdate.files,
+                data: maintenanceToUpdate.images,
               },
             },
             ReportAnnexes: {
               createMany: {
-                data: maintenanceToUpdate.images,
+                data: maintenanceToUpdate.files,
               },
             },
           },
