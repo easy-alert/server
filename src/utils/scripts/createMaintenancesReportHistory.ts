@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '../../../prisma';
 
 export async function createMaintenancesReportHistory(_req: Request, res: Response) {
-  const reportIds = ['9bd5056d-4293-431f-8632-594895f05a97'];
+  const reportIds = [''];
 
   let allReports = await prisma.maintenanceReport.findMany({
     include: {

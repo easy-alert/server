@@ -299,7 +299,9 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         MaintenanceReport: {
           create: {
             origin,
-            cost: Number(maintenanceToUpdate.maintenanceReport.cost.replace(/[^0-9]/g, '')),
+            cost: maintenanceToUpdate.maintenanceReport.cost
+              ? Number(maintenanceToUpdate.maintenanceReport.cost.replace(/[^0-9]/g, ''))
+              : 0,
             observation: maintenanceToUpdate.maintenanceReport.observation
               ? maintenanceToUpdate.maintenanceReport.observation
               : null,
@@ -332,7 +334,9 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
             origin,
             maintenanceReportId: createdReport.id,
             maintenanceHistoryId: createdMaintenanceHistory.id,
-            cost: Number(maintenanceToUpdate.maintenanceReport.cost.replace(/[^0-9]/g, '')),
+            cost: maintenanceToUpdate.maintenanceReport.cost
+              ? Number(maintenanceToUpdate.maintenanceReport.cost.replace(/[^0-9]/g, ''))
+              : 0,
             observation: maintenanceToUpdate.maintenanceReport.observation
               ? maintenanceToUpdate.maintenanceReport.observation
               : null,
@@ -359,7 +363,10 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         days: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
       });
 
-      if (notificationDateForSelectedLastResolutionDate < today) {
+      if (
+        notificationDateForSelectedLastResolutionDate < today &&
+        !updatedsMaintenances[i].notificationDate
+      ) {
         throw new ServerMessage({
           statusCode: 400,
           message: `Você deve informar uma data de primeira notificação na manutenção ${updatedsMaintenances[i].element}`,
