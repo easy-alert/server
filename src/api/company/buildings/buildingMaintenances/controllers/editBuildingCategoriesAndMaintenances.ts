@@ -319,22 +319,37 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
       // #endregion
 
-      notificationDate = noWeekendTimeDate({
-        date: addDays({
-          date: updatedsMaintenances[i].resolutionDate,
-          days:
-            updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime +
-            updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
-        }),
-        interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+      let notificationDateForSelectedLastResolutionDate = updatedsMaintenances[i].resolutionDate;
+
+      notificationDateForSelectedLastResolutionDate = addDays({
+        date: notificationDateForSelectedLastResolutionDate,
+        days: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
       });
 
-      if (notificationDate < today) {
-        notificationDate = noWeekendTimeDate({
-          date: notificationDateForOldBuildingDeliveries,
-          interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+      if (notificationDateForSelectedLastResolutionDate < today) {
+        throw new ServerMessage({
+          statusCode: 400,
+          message: `Você deve informar uma data de primeira notificação na manutenção ${updatedsMaintenances[i].element}`,
         });
       }
+
+      notificationDateForSelectedLastResolutionDate = changeTime({
+        date: noWeekendTimeDate({
+          date: notificationDateForSelectedLastResolutionDate,
+          interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+        }),
+        time: {
+          h: 0,
+          m: 0,
+          ms: 0,
+          s: 0,
+        },
+      });
+
+      notificationDate = noWeekendTimeDate({
+        date: notificationDateForSelectedLastResolutionDate,
+        interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+      });
 
       if (updatedsMaintenances[i].notificationDate !== null) {
         notificationDate = updatedsMaintenances[i].notificationDate;
