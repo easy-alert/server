@@ -19,6 +19,7 @@ export interface IListForBuildingReportQuery {
 }
 
 export interface IMaintenancesData {
+  id: string;
   maintenanceHistoryId: string;
   buildingName: string;
   categoryName: string;

@@ -1,4 +1,7 @@
-export interface ICreateMaintenanceReportsBody {
+export interface ICreateAndEditMaintenanceReportsBody {
+  origin: 'Backoffice' | 'Company' | 'Client';
+
+  maintenanceReportId: string;
   maintenanceHistoryId: string;
   cost: number;
   observation: string;

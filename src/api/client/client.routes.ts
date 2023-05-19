@@ -17,6 +17,7 @@ import { findBuildingAnnex } from './building/controllers/findBuildingAnnex';
 import { findHomeInformations } from './building/controllers/findHomeInformations';
 // import { fixMaintenancesHistory } from '../../utils/scripts/fixMaintenancesHistory';
 // import { removeDatesOfWeekend } from '../../utils/scripts/removeDatesOfWeekend';
+import { createMaintenancesReportHistory } from '../../utils/scripts/createMaintenancesReportHistory';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -49,3 +50,5 @@ clientRouter.post('/maintenances/create/report', sharedCreateMaintenanceReport);
 // clientRouter.post('/fixmigration', fixMaintenancesHistory);
 
 // clientRouter.post('/fixweekenddates', removeDatesOfWeekend);
+
+clientRouter.post('/fixmaintenancesreporthistory', createMaintenancesReportHistory);

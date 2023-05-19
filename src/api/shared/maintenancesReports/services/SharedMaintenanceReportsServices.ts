@@ -1,12 +1,99 @@
 import { prisma } from '../../../../../prisma';
 import { Validator } from '../../../../utils/validator/validator';
-import { ICreateMaintenanceReports } from './types';
+import {
+  ICreateMaintenanceReports,
+  ICreateMaintenanceReportsHistory,
+  IEditMaintenanceReports,
+} from './types';
 
 const validator = new Validator();
 
 export class SharedMaintenanceReportsServices {
   async create({ data }: ICreateMaintenanceReports) {
     return prisma.maintenanceReport.create({
+      data,
+    });
+  }
+
+  async getReportByMaintenanceHistoryId({
+    maintenanceHistoryId,
+  }: {
+    maintenanceHistoryId: string;
+  }) {
+    return prisma.maintenanceReport.findFirst({
+      select: {
+        id: true,
+      },
+      where: {
+        maintenanceHistoryId,
+      },
+    });
+  }
+
+  async edit({ data, maintenanceReportId }: IEditMaintenanceReports) {
+    return prisma.maintenanceReport.update({
+      data,
+      where: { id: maintenanceReportId },
+    });
+  }
+
+  async getReportVersion({ maintenanceReportId }: { maintenanceReportId: string }) {
+    return prisma.maintenanceReport.findFirst({
+      select: {
+        version: true,
+      },
+      where: { id: maintenanceReportId },
+    });
+  }
+
+  async getAllReportVersions({ maintenanceHistoryId }: { maintenanceHistoryId: string }) {
+    return prisma.maintenanceReportHistory.findMany({
+      select: {
+        origin: true,
+        version: true,
+        createdAt: true,
+        cost: true,
+        id: true,
+        observation: true,
+        ReportAnnexes: {
+          select: {
+            name: true,
+            originalName: true,
+            url: true,
+            id: true,
+          },
+        },
+        ReportImages: {
+          select: {
+            name: true,
+            originalName: true,
+            url: true,
+            id: true,
+          },
+        },
+      },
+      where: { maintenanceHistoryId },
+      orderBy: {
+        version: 'desc',
+      },
+    });
+  }
+
+  async deleteAnnexAndImages({ maintenanceReportId }: { maintenanceReportId: string }) {
+    await prisma.maintenanceReportAnnexes.deleteMany({
+      where: {
+        maintenanceReportId,
+      },
+    });
+    await prisma.maintenanceReportImages.deleteMany({
+      where: {
+        maintenanceReportId,
+      },
+    });
+  }
+
+  async createHistory({ data }: ICreateMaintenanceReportsHistory) {
+    return prisma.maintenanceReportHistory.create({
       data,
     });
   }
@@ -52,6 +139,7 @@ export class SharedMaintenanceReportsServices {
         Building: {
           select: {
             name: true,
+            id: true,
           },
         },
 
@@ -62,11 +150,18 @@ export class SharedMaintenanceReportsServices {
                 name: true,
               },
             },
+            id: true,
             element: true,
             activity: true,
             responsible: true,
             source: true,
             observation: true,
+            period: true,
+            PeriodTimeInterval: {
+              select: {
+                unitTime: true,
+              },
+            },
           },
         },
       },

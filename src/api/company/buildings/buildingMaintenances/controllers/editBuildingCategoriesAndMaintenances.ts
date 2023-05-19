@@ -15,6 +15,7 @@ import { IDateForCreateHistory, IMaintenancesForHistorySelected } from './types'
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 import { addDays } from '../../../../../utils/dateTime';
 import { changeTime } from '../../../../../utils/dateTime/changeTime';
+import { SharedMaintenanceReportsServices } from '../../../../shared/maintenancesReports/services/SharedMaintenanceReportsServices';
 
 // CLASS
 
@@ -27,11 +28,12 @@ const timeIntervalServices = new TimeIntervalServices();
 const maintenancesStatusServices = new SharedMaintenanceStatusServices();
 const buildingMaintenancesHistoryServices = new BuildingMaintenanceHistoryServices();
 const sharedMaintenanceStatusServices = new SharedMaintenanceStatusServices();
+const sharedMaintenanceReportsServices = new SharedMaintenanceReportsServices();
 
 // #endregion
 
 export async function editBuildingCategoriesAndMaintenances(req: Request, res: Response) {
-  const { buildingId } = req.body;
+  const { buildingId, origin } = req.body;
   const bodyData = req.body.data;
 
   const today = changeTime({
@@ -285,6 +287,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         (maintenance: any) => maintenance.id === updatedsMaintenances[i].id,
       );
 
+      // faltou o responsiblesyndicid e mandar a qo origin
       const dataForCreateHistoryAndReport: ICreateMaintenanceHistoryAndReport = {
         buildingId,
         maintenanceId: updatedsMaintenances[i].id,
@@ -295,7 +298,10 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         dueDate: updatedsMaintenances[i].resolutionDate,
         MaintenanceReport: {
           create: {
-            cost: Number(maintenanceToUpdate.maintenanceReport.cost.replace(/[^0-9]/g, '')),
+            origin,
+            cost: maintenanceToUpdate.maintenanceReport?.cost
+              ? Number(maintenanceToUpdate.maintenanceReport.cost.replace(/[^0-9]/g, ''))
+              : 0,
             observation: maintenanceToUpdate.maintenanceReport.observation
               ? maintenanceToUpdate.maintenanceReport.observation
               : null,
@@ -313,28 +319,77 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
           },
         },
       };
-      await sharedMaintenanceServices.createHistoryAndReport({
+
+      const createdMaintenanceHistory = await sharedMaintenanceServices.createHistoryAndReport({
         data: dataForCreateHistoryAndReport,
       });
 
-      // #endregion
-
-      notificationDate = noWeekendTimeDate({
-        date: addDays({
-          date: updatedsMaintenances[i].resolutionDate,
-          days:
-            updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime +
-            updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
-        }),
-        interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+      const createdReport = await sharedMaintenanceReportsServices.getReportByMaintenanceHistoryId({
+        maintenanceHistoryId: createdMaintenanceHistory.id,
       });
 
-      if (notificationDate < today) {
-        notificationDate = noWeekendTimeDate({
-          date: notificationDateForOldBuildingDeliveries,
-          interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+      if (createdReport?.id) {
+        await sharedMaintenanceReportsServices.createHistory({
+          data: {
+            origin,
+            maintenanceReportId: createdReport.id,
+            maintenanceHistoryId: createdMaintenanceHistory.id,
+            cost: maintenanceToUpdate.maintenanceReport?.cost
+              ? Number(maintenanceToUpdate.maintenanceReport.cost.replace(/[^0-9]/g, ''))
+              : 0,
+            observation: maintenanceToUpdate.maintenanceReport.observation
+              ? maintenanceToUpdate.maintenanceReport.observation
+              : null,
+            ReportImages: {
+              createMany: {
+                data: maintenanceToUpdate.images,
+              },
+            },
+            ReportAnnexes: {
+              createMany: {
+                data: maintenanceToUpdate.files,
+              },
+            },
+          },
         });
       }
+
+      // #endregion
+
+      let notificationDateForSelectedLastResolutionDate = updatedsMaintenances[i].resolutionDate;
+
+      notificationDateForSelectedLastResolutionDate = addDays({
+        date: notificationDateForSelectedLastResolutionDate,
+        days: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+      });
+
+      if (
+        notificationDateForSelectedLastResolutionDate < today &&
+        !updatedsMaintenances[i].notificationDate
+      ) {
+        throw new ServerMessage({
+          statusCode: 400,
+          message: `Você deve informar uma data de primeira notificação na manutenção ${updatedsMaintenances[i].element}`,
+        });
+      }
+
+      notificationDateForSelectedLastResolutionDate = changeTime({
+        date: noWeekendTimeDate({
+          date: notificationDateForSelectedLastResolutionDate,
+          interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+        }),
+        time: {
+          h: 0,
+          m: 0,
+          ms: 0,
+          s: 0,
+        },
+      });
+
+      notificationDate = noWeekendTimeDate({
+        date: notificationDateForSelectedLastResolutionDate,
+        interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+      });
 
       if (updatedsMaintenances[i].notificationDate !== null) {
         notificationDate = updatedsMaintenances[i].notificationDate;

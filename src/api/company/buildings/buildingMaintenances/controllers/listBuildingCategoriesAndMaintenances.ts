@@ -91,8 +91,7 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
     }
   }
 
-  // BACKUP
-
+  // #region BACKUP
   // const CategoriesData = (await categoryServices.list({
   //   ownerCompanyId: req.Company.id,
   //   search: '',
@@ -141,6 +140,7 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
   //     // #endregion
   //   }
   // }
+  // #endregion
 
   return res
     .status(200)

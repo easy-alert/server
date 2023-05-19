@@ -40,6 +40,7 @@ export class CategoryServices {
                 name: true,
                 pluralLabel: true,
                 singularLabel: true,
+                unitTime: true,
               },
             },
             DelayTimeInterval: {
@@ -48,6 +49,7 @@ export class CategoryServices {
                 name: true,
                 pluralLabel: true,
                 singularLabel: true,
+                unitTime: true,
               },
             },
             PeriodTimeInterval: {
@@ -56,6 +58,7 @@ export class CategoryServices {
                 name: true,
                 pluralLabel: true,
                 singularLabel: true,
+                unitTime: true,
               },
             },
             MaintenancesHistory: {
@@ -119,6 +122,7 @@ export class CategoryServices {
                 name: true,
                 pluralLabel: true,
                 singularLabel: true,
+                unitTime: true,
               },
             },
             DelayTimeInterval: {
@@ -127,6 +131,7 @@ export class CategoryServices {
                 name: true,
                 pluralLabel: true,
                 singularLabel: true,
+                unitTime: true,
               },
             },
             PeriodTimeInterval: {
@@ -135,6 +140,7 @@ export class CategoryServices {
                 name: true,
                 pluralLabel: true,
                 singularLabel: true,
+                unitTime: true,
               },
             },
           },

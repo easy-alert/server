@@ -16,18 +16,21 @@ interface Maintenance {
     name: string;
     pluralLabel: string;
     singularLabel: string;
+    unitTime: number;
   };
   DelayTimeInterval: {
     id: string;
     name: string;
     pluralLabel: string;
     singularLabel: string;
+    unitTime: number;
   };
   PeriodTimeInterval: {
     id: string;
     name: string;
     pluralLabel: string;
     singularLabel: string;
+    unitTime: number;
   };
 }
 

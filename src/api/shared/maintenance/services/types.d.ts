@@ -45,7 +45,7 @@ export interface ICreateMaintenanceHistoryAndReport {
       cost: number;
       observation: string;
       responsibleSyndicId: string | null;
-
+      origin: string;
       ReportAnnexes: {
         createMany: {
           data: {

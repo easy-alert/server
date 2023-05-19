@@ -2,11 +2,15 @@
 import { Request, Response } from 'express';
 import { Validator } from '../../../../utils/validator/validator';
 import { SharedMaintenanceReportsServices } from '../services/SharedMaintenanceReportsServices';
+import { SharedMaintenanceServices } from '../../maintenance/services/sharedMaintenanceServices';
+import { changeTime } from '../../../../utils/dateTime/changeTime';
+import { removeDays } from '../../../../utils/dateTime';
 
 // CLASS
 
 const validator = new Validator();
 const sharedMaintenanceReportsServices = new SharedMaintenanceReportsServices();
+const sharedMaintenanceServices = new SharedMaintenanceServices();
 
 // #endregion
 
@@ -28,5 +32,50 @@ export async function sharedMaintenanceHistoryDetails(req: Request, res: Respons
     maintenanceHistoryId,
   });
 
-  return res.status(200).json(maintenance);
+  const history = await sharedMaintenanceServices.findHistoryByBuildingId({
+    buildingId: maintenance.Building.id,
+    maintenanceId: maintenance.Maintenance.id,
+  });
+
+  const today = changeTime({
+    date: new Date(),
+    time: {
+      h: 0,
+      m: 0,
+      ms: 0,
+      s: 0,
+    },
+  });
+
+  const period = history[0].Maintenance.period * history[0].Maintenance.PeriodTimeInterval.unitTime;
+
+  const canReportPending =
+    today >= removeDays({ date: history[0]?.notificationDate, days: period });
+
+  let allowReport = true;
+
+  if (maintenance.MaintenancesStatus.name === 'expired') {
+    if (history[1]?.id !== maintenance?.id || today >= history[0]?.notificationDate) {
+      allowReport = false;
+    }
+  }
+
+  if (!canReportPending && maintenance.MaintenancesStatus.name === 'pending') {
+    allowReport = false;
+  }
+
+  if (
+    maintenance.MaintenancesStatus.name === 'pending' &&
+    history[1]?.MaintenancesStatus?.name === 'expired' &&
+    today < history[0]?.notificationDate
+  ) {
+    allowReport = false;
+  }
+
+  const maintenanceWithCanReport = {
+    ...maintenance,
+    canReport: allowReport,
+  };
+
+  return res.status(200).json(maintenanceWithCanReport);
 }
