@@ -299,7 +299,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         MaintenanceReport: {
           create: {
             origin,
-            cost: maintenanceToUpdate.maintenanceReport.cost
+            cost: maintenanceToUpdate.maintenanceReport?.cost
               ? Number(maintenanceToUpdate.maintenanceReport.cost.replace(/[^0-9]/g, ''))
               : 0,
             observation: maintenanceToUpdate.maintenanceReport.observation
@@ -334,7 +334,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
             origin,
             maintenanceReportId: createdReport.id,
             maintenanceHistoryId: createdMaintenanceHistory.id,
-            cost: maintenanceToUpdate.maintenanceReport.cost
+            cost: maintenanceToUpdate.maintenanceReport?.cost
               ? Number(maintenanceToUpdate.maintenanceReport.cost.replace(/[^0-9]/g, ''))
               : 0,
             observation: maintenanceToUpdate.maintenanceReport.observation
