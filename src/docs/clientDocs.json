@@ -254,20 +254,6 @@
           }
         }
       }
-    },
-    "/fixmaintenancesreporthistory": {
-      "post": {
-        "tags": ["Maintenance"],
-        "summary": "teste",
-        "responses": {
-          "201": {
-            "$ref": "#/components/responses/ServerMessage"
-          },
-          "400": {
-            "$ref": "#/components/responses/ServerMessage"
-          }
-        }
-      }
     }
   }
 }
