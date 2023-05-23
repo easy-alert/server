@@ -16,11 +16,11 @@
     },
     {
       "description": "Sandbox",
-      "url": "https://easyalert-notifyapi-sandbox.herokuapp.com/api/scripts/"
+      "url": "https://easyalert-sandbox.herokuapp.com/api/scripts/"
     },
     {
       "description": "Production",
-      "url": "https://easyalert-notifyapi-production.herokuapp.com/api/scripts/"
+      "url": "https://easyalert-production.herokuapp.com/api/scripts/"
     }
   ],
   "components": {
