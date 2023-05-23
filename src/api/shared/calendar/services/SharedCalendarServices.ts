@@ -48,12 +48,12 @@ export class SharedCalendarServices {
   async findMaintenancesHistoryService({
     companyId,
     buildingId,
-    // startDate,
+    startDate,
     endDate,
   }: {
     companyId: string;
     buildingId: string | undefined;
-    // startDate: Date;
+    startDate: Date;
     endDate: Date;
   }) {
     const [Filter, Maintenances, MaintenancesPending] = await prisma.$transaction([
@@ -110,8 +110,10 @@ export class SharedCalendarServices {
             },
           },
 
-          // OR: [{ notificationDate: { lte: endDate, gte: startDate } }],
-          OR: [{ notificationDate: { lte: endDate } }],
+          OR: [
+            { notificationDate: { lte: endDate, gte: startDate } },
+            { resolutionDate: { gte: startDate } },
+          ],
         },
       }),
 
