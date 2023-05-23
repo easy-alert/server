@@ -33,6 +33,7 @@ import { buildingAnnexeRouter } from './annexes/annexe.routes';
 import { buildingChangeBanner } from './buildingBanners/controllers/buildingChangeBanner';
 import { listForBuildingReports } from './reports/controllers/listForBuildingReports';
 import { listForSelectBuildingReports } from './reports/controllers/listForSelectBuildingReports';
+import { listBuildingsAndTemplatesForSelect } from './building/controllers/listBuildingsAndTemplatesForSelect';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -42,6 +43,7 @@ buildingRouter.post('/create', createBuilding);
 buildingRouter.put('/edit', editBuilding);
 buildingRouter.get('/list', listBuilding);
 buildingRouter.get('/listforselect/:buildingId', listBuildingForSelect);
+buildingRouter.get('/listforselectwithtemplates/:buildingId', listBuildingsAndTemplatesForSelect);
 
 buildingRouter.get('/list/details/:buildingId', listBuildingDetails);
 buildingRouter.delete('/delete', deleteBuilding);

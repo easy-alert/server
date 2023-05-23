@@ -13,10 +13,6 @@
     {
       "description": "Local Development",
       "url": "http://localhost:8080/api/company/"
-    },
-    {
-      "description": "//CHANGE HERE",
-      "url": "//CHANGE HERE"
     }
   ],
   "components": {
