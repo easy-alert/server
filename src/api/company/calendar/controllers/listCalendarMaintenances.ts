@@ -20,7 +20,7 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
   const { Filter, Maintenances, MaintenancesPending } =
     await sharedCalendarServices.findMaintenancesHistoryService({
       companyId: req.Company.id,
-      // startDate: new Date(`01/01/${year}`),
+      startDate: new Date(`01/01/${year}`),
       endDate: new Date(`12/31/${Number(year) + YEARFORSUM}`),
       buildingId,
     });
