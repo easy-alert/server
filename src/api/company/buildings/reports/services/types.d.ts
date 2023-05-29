@@ -1,18 +1,18 @@
 export interface IFindBuildingMaintenancesHistory {
   companyId: string;
   queryFilter: {
-    maintenanceStatusId: string | undefined;
-    buildingId: string | undefined;
-    categoryId: string | undefined;
+    maintenanceStatusIds: string[] | undefined;
+    buildingIds: string[] | undefined;
+    categoryIds: string[] | undefined;
     dateFilter: any;
   };
 }
 
 export interface IListForBuildingReportQuery {
   query: {
-    maintenanceStatusId: string | undefined;
-    buildingId: string | undefined;
-    categoryId: string | undefined;
+    maintenanceStatusIds: string | undefined;
+    buildingIds: string | undefined;
+    categoryIds: string | undefined;
     startDate: string | undefined;
     endDate: string | undefined;
   };

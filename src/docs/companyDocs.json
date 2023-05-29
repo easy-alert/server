@@ -1967,7 +1967,7 @@
         "summary": "lista todas as informações para o relatório.",
         "parameters": [
           {
-            "name": "maintenanceStatusId",
+            "name": "maintenanceStatusIds",
             "in": "query",
             "default": " ",
             "schema": {
@@ -1975,7 +1975,7 @@
             }
           },
           {
-            "name": "buildingId",
+            "name": "buildingIds",
             "in": "query",
             "default": " ",
             "schema": {
@@ -1983,21 +1983,14 @@
             }
           },
           {
-            "name": "categoryId",
+            "name": "categoryIds",
             "in": "query",
             "default": " ",
             "schema": {
               "type": "string"
             }
           },
-          {
-            "name": "responsibleSyndicId",
-            "in": "query",
-            "default": " ",
-            "schema": {
-              "type": "string"
-            }
-          },
+
           {
             "name": "startDate",
             "in": "query",
