@@ -53,10 +53,14 @@ export class BuildingReportsServices {
     }
 
     const filter = {
-      maintenanceStatusId:
-        query.maintenanceStatusId !== '' ? String(query.maintenanceStatusId) : undefined,
-      buildingId: query.buildingId !== '' ? String(query.buildingId) : undefined,
-      categoryId: query.categoryId !== '' ? String(query.categoryId) : undefined,
+      maintenanceStatusIds:
+        query.maintenanceStatusIds?.split(',')[0] !== ''
+          ? query.maintenanceStatusIds?.split(',')
+          : undefined,
+      buildingIds:
+        query.buildingIds?.split(',')[0] !== '' ? query.buildingIds?.split(',') : undefined,
+      categoryIds:
+        query.categoryIds?.split(',')[0] !== '' ? query.categoryIds?.split(',') : undefined,
       dateFilter: [
         {
           notificationDate: {
@@ -179,17 +183,27 @@ export class BuildingReportsServices {
             },
           },
         },
-        orderBy: {
-          notificationDate: 'desc',
-        },
+        orderBy: [
+          {
+            Building: {
+              name: 'asc',
+            },
+          },
+          { notificationDate: 'desc' },
+        ],
         where: {
-          maintenanceStatusId: queryFilter.maintenanceStatusId,
-          buildingId: queryFilter.buildingId,
+          maintenanceStatusId: {
+            in: queryFilter.maintenanceStatusIds,
+          },
+          buildingId: {
+            in: queryFilter.buildingIds,
+          },
           ownerCompanyId: companyId,
           Maintenance: {
-            categoryId: queryFilter.categoryId,
+            categoryId: {
+              in: queryFilter.categoryIds,
+            },
           },
-
           OR: queryFilter.dateFilter,
         },
       }),

@@ -8,6 +8,7 @@ new App().server.listen(process.env.PORT || 8080, () =>
     '📝 http://localhost:8080/api/company/docs\n',
     '📝 http://localhost:8080/api/client/docs \n',
     '📝 http://localhost:8080/api/integration/docs \n',
-    '📝 http://localhost:8080/api/external/docs \n\n',
+    '📝 http://localhost:8080/api/external/docs \n',
+    '📝 http://localhost:8080/api/scripts/docs \n\n',
   ),
 );

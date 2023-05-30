@@ -115,9 +115,10 @@ model Category {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  OwnerCompany Company?           @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
-  Maintenances Maintenance[]
-  Buildings    BuildingCategory[]
+  OwnerCompany            Company?                  @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
+  Maintenances            Maintenance[]
+  Buildings               BuildingCategory[]
+  DefaultTemplateCategory DefaultTemplateCategory[]
 
   @@map("categories")
 }
@@ -151,7 +152,8 @@ model Maintenance {
   PeriodTimeInterval    TimeInterval @relation(name: "MaintenancePeriod", fields: [periodTimeIntervalId], references: [id])
   DelayTimeInterval     TimeInterval @relation(name: "MaintenanceDelay", fields: [delayTimeIntervalId], references: [id])
 
-  MaintenancesHistory MaintenanceHistory[]
+  MaintenancesHistory        MaintenanceHistory[]
+  DefaultTemplateMaintenance DefaultTemplateMaintenance[]
 
   @@map("maintenances")
 }
@@ -468,4 +470,47 @@ model oldBuildingIds {
   building Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
 
   @@map("oldBuildingIds")
+}
+
+// DEFAULT TEMPLATE MAINTENANCES
+
+model DefaultMaintenanceTemplate {
+  id   String @id @unique @default(uuid())
+  name String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  DefaultTemplateCategories DefaultTemplateCategory[]
+
+  @@map("defaultMaintenanceTemplates")
+}
+
+model DefaultTemplateCategory {
+  id                           String @id @unique @default(uuid())
+  defaultMaintenanceTemplateId String
+  categoryId                   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  DefaultTemplateMaintenances DefaultTemplateMaintenance[]
+  DefaultMaintenanceTemplate  DefaultMaintenanceTemplate   @relation(fields: [defaultMaintenanceTemplateId], references: [id], onDelete: Cascade)
+  Category                    Category                     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@map("defaultTemplateCategories")
+}
+
+model DefaultTemplateMaintenance {
+  id                        String @id @unique @default(uuid())
+  defaultTemplateCategoryId String
+  maintenanceId             String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  DefaultTemplateCategory DefaultTemplateCategory @relation(fields: [defaultTemplateCategoryId], references: [id], onDelete: Cascade)
+  Maintenance             Maintenance             @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+
+  @@map("defaultTemplateMaintenances")
 }

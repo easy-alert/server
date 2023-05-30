@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Easy Alert - Client",
-    "description": "Api do modulo de empresas.",
+    "description": "Api do modulo de clientes.",
     "version": "1.0.0",
     "contact": {
       "email": "produto@adalovelace.com.br",
@@ -13,10 +13,6 @@
     {
       "description": "Local Development",
       "url": "http://localhost:8080/api/client/"
-    },
-    {
-      "description": "//CHANGE HERE",
-      "url": "//CHANGE HERE"
     }
   ],
   "components": {
