@@ -6,4 +6,5 @@ export interface IEditCompany {
   contactNumber: string;
   image: string;
   isNotifyingOnceAWeek: boolean;
+  supportLink: string;
 }
