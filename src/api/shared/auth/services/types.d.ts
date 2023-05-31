@@ -10,6 +10,7 @@ interface ICompany {
     createdAt: Date;
     image: string;
     isBlocked: boolean;
+    supportLink: string;
   };
 }
 

@@ -23,6 +23,7 @@ export async function sharedEditCompanyAndOwner({
     companyName,
     password,
     isNotifyingOnceAWeek,
+    supportLink,
   },
   userId,
   companyId,
@@ -64,6 +65,7 @@ export async function sharedEditCompanyAndOwner({
     image,
     name: companyName,
     isNotifyingOnceAWeek,
+    supportLink,
   });
 
   if (password) {

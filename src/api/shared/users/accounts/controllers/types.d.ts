@@ -11,5 +11,6 @@ export interface IEditCompanyBody {
     companyName: string;
     password: string;
     isNotifyingOnceAWeek: boolean;
+    supportLink: string;
   };
 }

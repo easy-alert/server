@@ -14,6 +14,7 @@ export class SharedCompanyServices {
     image,
     companyId,
     isNotifyingOnceAWeek,
+    supportLink,
   }: IEditCompany) {
     await this.findById({ companyId });
 
@@ -25,6 +26,7 @@ export class SharedCompanyServices {
         contactNumber,
         image,
         isNotifyingOnceAWeek,
+        supportLink,
       },
       where: { id: companyId },
     });
