@@ -3,8 +3,8 @@ import { Validator } from '../../../../utils/validator/validator';
 import { BuildingServices } from '../../../company/buildings/building/services/buildingServices';
 import { ClientBuildingServices } from '../services/clientBuildingServices';
 
-const buildingServices = new BuildingServices();
 const clientBuildingServices = new ClientBuildingServices();
+const buildingServices = new BuildingServices();
 
 const validator = new Validator();
 
