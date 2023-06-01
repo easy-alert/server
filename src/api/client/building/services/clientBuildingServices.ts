@@ -757,6 +757,12 @@ export class ClientBuildingServices {
             type: true,
           },
         },
+
+        Company: {
+          select: {
+            supportLink: true,
+          },
+        },
       },
       where: {
         id: buildingId,
