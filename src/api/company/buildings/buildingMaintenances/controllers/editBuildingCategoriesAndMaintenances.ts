@@ -302,7 +302,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
             cost: maintenanceToUpdate.maintenanceReport?.cost
               ? Number(maintenanceToUpdate.maintenanceReport.cost.replace(/[^0-9]/g, ''))
               : 0,
-            observation: maintenanceToUpdate.maintenanceReport.observation
+            observation: maintenanceToUpdate.maintenanceReport?.observation
               ? maintenanceToUpdate.maintenanceReport.observation
               : null,
             responsibleSyndicId: null,
@@ -337,7 +337,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
             cost: maintenanceToUpdate.maintenanceReport?.cost
               ? Number(maintenanceToUpdate.maintenanceReport.cost.replace(/[^0-9]/g, ''))
               : 0,
-            observation: maintenanceToUpdate.maintenanceReport.observation
+            observation: maintenanceToUpdate.maintenanceReport?.observation
               ? maintenanceToUpdate.maintenanceReport.observation
               : null,
             ReportImages: {
