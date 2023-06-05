@@ -65,16 +65,17 @@ export async function isTemplate({
       for (let k = 0; k < templateMaintenances?.DefaultTemplateCategories.length; k++) {
         const isEquals = templateMaintenances?.DefaultTemplateCategories[
           k
-        ].Category.Maintenances.filter(
-          (maintenance) => maintenance.id === allCategoriesAndMaintenances[i].Maintenances[j].id,
+        ].DefaultTemplateMaintenances.filter(
+          (maintenance) =>
+            maintenance.maintenanceId === allCategoriesAndMaintenances[i].Maintenances[j].id,
         );
 
-        if (isEquals.length === 0) continue;
-
-        allCategoriesAndMaintenances[i].Maintenances[j] = {
-          ...allCategoriesAndMaintenances[i].Maintenances[j],
-          isSelected: true,
-        };
+        if (isEquals.length > 0) {
+          allCategoriesAndMaintenances[i].Maintenances[j] = {
+            ...allCategoriesAndMaintenances[i].Maintenances[j],
+            isSelected: true,
+          };
+        }
       }
     }
   }
@@ -167,6 +168,8 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
       variable: buildingId,
     },
   ]);
+
+  console.log('FASKJFKLAKF');
 
   const template = await defaultMaintenanceTemplateServices.findTemplateById({
     templateId: buildingId,

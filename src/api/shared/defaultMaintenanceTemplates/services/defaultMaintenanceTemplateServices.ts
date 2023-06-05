@@ -7,17 +7,12 @@ class DefaultMaintenanceTemplateServices {
       select: {
         id: true,
         name: true,
+
         DefaultTemplateCategories: {
           select: {
-            Category: {
+            DefaultTemplateMaintenances: {
               select: {
-                id: true,
-                name: true,
-                Maintenances: {
-                  select: {
-                    id: true,
-                  },
-                },
+                maintenanceId: true,
               },
             },
           },
