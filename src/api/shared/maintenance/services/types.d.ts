@@ -11,14 +11,41 @@ interface IMaintenance {
   delay: number;
   delayTimeIntervalId: string;
   observation: string | null;
+  maintenanceTypeId: string;
 }
 
-export interface IEditMaintenance extends IMaintenance {
+export interface IEditMaintenance {
   maintenanceId: string;
+  ownerCompanyId: string | null;
+  element: string;
+  activity: string;
+  frequency: number;
+  frequencyTimeIntervalId: string;
+  responsible: string;
+  source: string;
+  period: number;
+  periodTimeIntervalId: string;
+  delay: number;
+  delayTimeIntervalId: string;
+  observation: string | null;
 }
 
-export interface ICreateMaintenance extends IMaintenance {
+export interface ICreateMaintenance {
   categoryId: string;
+
+  ownerCompanyId: string | null;
+  element: string;
+  activity: string;
+  frequency: number;
+  frequencyTimeIntervalId: string;
+  responsible: string;
+  source: string;
+  period: number;
+  periodTimeIntervalId: string;
+  delay: number;
+  delayTimeIntervalId: string;
+  observation: string | null;
+  maintenanceTypeId: string;
 }
 
 export interface IMaintenanceHistory {

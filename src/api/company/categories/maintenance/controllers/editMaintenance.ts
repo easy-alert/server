@@ -5,6 +5,7 @@ export async function editMaintenance(req: Request, res: Response) {
   const maintenance = await sharedEditMaintenance({
     ownerCompanyId: req.Company.id,
     body: req.body,
+    verifyPeriod: true,
   });
 
   return res.status(200).json({

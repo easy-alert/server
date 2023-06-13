@@ -9,11 +9,12 @@ import { ICreateCategory } from './types';
 const validator = new Validator();
 
 export class SharedCategoryServices {
-  async create({ name, ownerCompanyId }: ICreateCategory) {
+  async create({ name, ownerCompanyId, categoryTypeId }: ICreateCategory) {
     return prisma.category.create({
       data: {
         name,
         ownerCompanyId,
+        categoryTypeId,
       },
     });
   }
@@ -56,6 +57,17 @@ export class SharedCategoryServices {
     return category;
   }
 
+  async findOccasionalByName({ categoryName }: { categoryName: string }) {
+    return prisma.category.findFirst({
+      where: {
+        name: categoryName,
+        CategoryType: {
+          name: 'occasional',
+        },
+      },
+    });
+  }
+
   async listForSelect({ ownerCompanyId }: { ownerCompanyId: string }) {
     const companyCategories = await prisma.category.findMany({
       select: {
@@ -78,6 +90,11 @@ export class SharedCategoryServices {
 
       where: {
         ownerCompanyId: null,
+        NOT: {
+          CategoryType: {
+            name: 'occasional',
+          },
+        },
       },
       orderBy: {
         name: 'asc',
@@ -101,6 +118,11 @@ export class SharedCategoryServices {
 
       where: {
         ownerCompanyId: null,
+        NOT: {
+          CategoryType: {
+            name: 'occasional',
+          },
+        },
       },
       orderBy: {
         name: 'asc',

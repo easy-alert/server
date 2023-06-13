@@ -35,6 +35,8 @@ import { listForBuildingReports } from './reports/controllers/listForBuildingRep
 import { listForSelectBuildingReports } from './reports/controllers/listForSelectBuildingReports';
 import { listBuildingsAndTemplatesForSelect } from './building/controllers/listBuildingsAndTemplatesForSelect';
 
+import { sharedCreateOccasionalMaintenanceReport } from '../../shared/occasionalReports/sharedCreateOccasionalMaintenanceReport';
+
 // ROUTES
 export const buildingRouter = Router();
 
@@ -84,3 +86,6 @@ buildingRouter.post('/banners/change', buildingChangeBanner);
 buildingRouter.get('/reports/listforselect', listForSelectBuildingReports);
 
 buildingRouter.get('/reports/list', listForBuildingReports);
+
+buildingRouter.get('/reports/create', listForBuildingReports);
+buildingRouter.post('/reports/occasional/create', sharedCreateOccasionalMaintenanceReport);

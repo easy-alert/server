@@ -193,4 +193,21 @@ export class SeedServices {
       ],
     });
   }
+
+  async createCategoryAndMaintenanceTypes() {
+    await prisma.categoryAndMaintenanceTypes.createMany({
+      data: [
+        {
+          name: 'occasional',
+          singularLabel: 'avulsa',
+          pluralLabel: 'avulsas',
+        },
+        {
+          name: 'common',
+          singularLabel: 'comum',
+          pluralLabel: 'comuns',
+        },
+      ],
+    });
+  }
 }

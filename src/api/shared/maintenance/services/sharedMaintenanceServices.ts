@@ -26,6 +26,7 @@ export class SharedMaintenanceServices {
     period,
     delayTimeIntervalId,
     observation,
+    maintenanceTypeId,
   }: ICreateMaintenance) {
     return prisma.maintenance.create({
       data: {
@@ -42,6 +43,7 @@ export class SharedMaintenanceServices {
         delay,
         delayTimeIntervalId,
         observation,
+        maintenanceTypeId,
       },
     });
   }
@@ -118,6 +120,18 @@ export class SharedMaintenanceServices {
     validator.needExist([{ label: 'ID da manutenção', variable: maintenance }]);
 
     return maintenance!;
+  }
+
+  async findOccasionalByName({ maintenanceName }: { maintenanceName: string }) {
+    return prisma.maintenance.findFirst({
+      where: {
+        element: maintenanceName,
+
+        MaintenanceType: {
+          name: 'occasional',
+        },
+      },
+    });
   }
 
   async findHistoryById({ maintenanceHistoryId }: { maintenanceHistoryId: string }) {

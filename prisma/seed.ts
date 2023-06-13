@@ -19,6 +19,8 @@ async function main() {
   await seedServices.createBuildingsTypes();
 
   await seedServices.createMaintenancesStatus();
+
+  await seedServices.createCategoryAndMaintenanceTypes();
 }
 
 main()
