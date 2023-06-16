@@ -65,7 +65,7 @@ export interface ICreateMaintenanceHistoryAndReport {
   maintenanceId: string;
   maintenanceStatusId: string;
   notificationDate: Date;
-  wasNotified: boolean;
+  wasNotified?: boolean;
   resolutionDate?: Date;
   dueDate: Date;
 
