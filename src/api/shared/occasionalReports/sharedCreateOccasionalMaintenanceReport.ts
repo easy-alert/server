@@ -10,19 +10,34 @@ import { ServerMessage } from '../../../utils/messages/serverMessage';
 import { TimeIntervalServices } from '../timeInterval/services/timeIntervalServices';
 import { sharedEditMaintenance } from '../maintenance/controllers/sharedEditMaintenance';
 import { SharedMaintenanceServices } from '../maintenance/services/sharedMaintenanceServices';
+import { SharedMaintenanceStatusServices } from '../maintenanceStatus/services/sharedMaintenanceStatusServices';
+import { addDays } from '../../../utils/dateTime';
+import { SharedMaintenanceReportsServices } from '../maintenancesReports/services/SharedMaintenanceReportsServices';
+import { noWeekendTimeDate } from '../../../utils/dateTime/noWeekendTimeDate';
 
 // CLASS
 const sharedCategoryServices = new SharedCategoryServices();
 const validator = new Validator();
 const timeIntervalServices = new TimeIntervalServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
+const sharedMaintenanceStatusServices = new SharedMaintenanceStatusServices();
+const sharedMaintenanceReportsServices = new SharedMaintenanceReportsServices();
 
 // #endregion
 
 export async function sharedCreateOccasionalMaintenanceReport(req: Request, res: Response) {
-  const { categoryData, maintenanceData }: ICreateOccassionalMaintenanceReport = req.body;
+  const {
+    buildingId,
+    responsibleSyndicId,
+    origin,
+    executionDate,
+    categoryData,
+    maintenanceData,
+    reportData,
+  }: ICreateOccassionalMaintenanceReport = req.body;
 
   // #region VALIDATIONS
+
   if (!categoryData) {
     throw new ServerMessage({
       statusCode: 400,
@@ -38,11 +53,14 @@ export async function sharedCreateOccasionalMaintenanceReport(req: Request, res:
   }
 
   validator.check([
+    { label: 'Edificação', variable: buildingId, type: 'string' },
     { label: 'Nome da categoria', variable: categoryData.name, type: 'string' },
 
     { label: 'Nome da manutenção', variable: maintenanceData.element, type: 'string' },
     { label: 'Atividade da manutenção', variable: maintenanceData.activity, type: 'string' },
     { label: 'Reponsável da manutenção', variable: maintenanceData.responsible, type: 'string' },
+    { label: 'Data', variable: executionDate, type: 'string' },
+    { label: 'Origem', variable: origin, type: 'string' },
   ]);
 
   // #endregion
@@ -141,9 +159,91 @@ export async function sharedCreateOccasionalMaintenanceReport(req: Request, res:
 
   // #endregion
 
-  console.log(category);
-  console.log('\n\n');
-  console.log(maintenance);
+  // #region REPORT
+
+  if (new Date(executionDate) > new Date()) {
+    const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
+    // criar historico do report
+    await sharedMaintenanceServices.createHistory({
+      data: [
+        {
+          ownerCompanyId: req.Company.id,
+          buildingId,
+          maintenanceId: maintenance.id,
+          maintenanceStatusId: pendingStatus.id,
+          notificationDate: new Date(executionDate),
+          dueDate: noWeekendTimeDate({
+            date: addDays({ date: new Date(executionDate), days: 5 }),
+            interval: 2,
+          }),
+        },
+      ],
+    });
+  } else {
+    const completedStatus = await sharedMaintenanceStatusServices.findByName({ name: 'completed' });
+    // criar historico do report
+    const maintenanceHistory = await sharedMaintenanceServices.createHistoryAndReport({
+      data: {
+        ownerCompanyId: req.Company.id,
+        buildingId,
+        maintenanceId: maintenance.id,
+        maintenanceStatusId: completedStatus.id,
+        wasNotified: true,
+        resolutionDate: new Date(executionDate),
+        notificationDate: new Date(executionDate),
+        dueDate: noWeekendTimeDate({
+          date: addDays({ date: new Date(executionDate), days: 5 }),
+          interval: 2,
+        }),
+        MaintenanceReport: {
+          create: {
+            cost: Number(reportData.cost),
+            observation: reportData.observation,
+            origin,
+            responsibleSyndicId,
+            ReportImages: {
+              createMany: {
+                data: reportData.images,
+              },
+            },
+            ReportAnnexes: {
+              createMany: {
+                data: reportData.files,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const maintenanceReport = await sharedMaintenanceServices.findHistoryById({
+      maintenanceHistoryId: maintenanceHistory.id,
+    });
+
+    if (maintenanceReport?.MaintenanceReport?.length) {
+      await sharedMaintenanceReportsServices.createHistory({
+        data: {
+          version: 1,
+          origin,
+          maintenanceReportId: maintenanceReport.MaintenanceReport[0].id,
+          maintenanceHistoryId: maintenanceHistory.id,
+          cost: Number(reportData.cost),
+          observation: reportData.observation,
+          ReportImages: {
+            createMany: {
+              data: reportData.images,
+            },
+          },
+          ReportAnnexes: {
+            createMany: {
+              data: reportData.files,
+            },
+          },
+        },
+      });
+    }
+  }
+  // #endregion
 
   return res.status(200).json({
     ServerMessage: {

@@ -53,6 +53,7 @@ export interface IMaintenanceHistory {
   ownerCompanyId: string;
   maintenanceId: string;
   maintenanceStatusId: string;
+  ownerCompanyId: string;
   notificationDate: Date;
   resolutionDate?: Date;
   dueDate: Date;
@@ -64,6 +65,7 @@ export interface ICreateMaintenanceHistoryAndReport {
   maintenanceId: string;
   maintenanceStatusId: string;
   notificationDate: Date;
+  wasNotified: boolean;
   resolutionDate?: Date;
   dueDate: Date;
 
@@ -72,7 +74,7 @@ export interface ICreateMaintenanceHistoryAndReport {
       cost: number;
       observation: string;
       responsibleSyndicId: string | null;
-      origin: string;
+      origin: 'Company' | 'Client' | 'Backoffice';
       ReportAnnexes: {
         createMany: {
           data: {

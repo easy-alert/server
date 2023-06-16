@@ -2093,18 +2093,20 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "category": {
+                  "categoryData": {
                     "type": "object",
                     "properties": {
                       "id": { "type": "string" },
                       "name": { "type": "string" }
                     }
                   },
-                  "maintenance": {
+                  "maintenanceData": {
                     "type": "object",
                     "properties": {
                       "id": { "type": "string" },
-                      "name": { "type": "string" }
+                      "element": { "type": "string" },
+                      "activity": { "type": "string" },
+                      "responsible": { "type": "string" }
                     }
                   }
                 }
@@ -2112,6 +2114,27 @@
             }
           }
         },
+
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/maintenances/occasional/list": {
+      "get": {
+        "tags": ["Occasional Reports"],
+        "summary": "Lista todas categorias e manutencoes avulsas.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
 
         "responses": {
           "201": {

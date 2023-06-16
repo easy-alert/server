@@ -132,11 +132,40 @@ export class SharedCategoryServices {
     return defaultCategories;
   }
 
+  async listOccasionalForSelect({ ownerCompanyId }: { ownerCompanyId: string }) {
+    const categories = await prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+
+        Maintenances: {
+          select: {
+            id: true,
+            element: true,
+            activity: true,
+            responsible: true,
+          },
+        },
+      },
+      where: {
+        ownerCompanyId,
+        CategoryType: {
+          name: 'occasional',
+        },
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+
+    return categories;
+  }
+
   async delete({ categoryId }: { categoryId: string }) {
     await this.findById({ categoryId });
 
     await prisma.category.delete({
       where: { id: categoryId },
     });
-  } // criar logica de nao excluir caso alguem use
+  }
 }
