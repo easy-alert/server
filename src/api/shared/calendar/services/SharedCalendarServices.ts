@@ -91,6 +91,11 @@ export class SharedCalendarServices {
                   pluralLabel: true,
                 },
               },
+              MaintenanceType: {
+                select: {
+                  name: true,
+                },
+              },
             },
           },
           MaintenancesStatus: {
@@ -147,6 +152,12 @@ export class SharedCalendarServices {
                   unitTime: true,
                   singularLabel: true,
                   pluralLabel: true,
+                },
+              },
+
+              MaintenanceType: {
+                select: {
+                  name: true,
                 },
               },
             },

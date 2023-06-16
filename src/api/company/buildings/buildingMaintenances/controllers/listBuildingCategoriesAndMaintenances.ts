@@ -169,8 +169,6 @@ export async function listBuildingCategoriesAndMaintenances(req: Request, res: R
     },
   ]);
 
-  console.log('FASKJFKLAKF');
-
   const template = await defaultMaintenanceTemplateServices.findTemplateById({
     templateId: buildingId,
   });

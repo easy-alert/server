@@ -5,6 +5,7 @@ export async function createCategory(req: Request, res: Response) {
   const category = await sharedCreateCategory({
     ownerCompanyId: req.Company.id,
     body: req.body,
+    categoryTypeName: 'occasional',
   });
 
   return res.status(200).json({

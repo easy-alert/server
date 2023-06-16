@@ -11,6 +11,7 @@ const timeIntervalServices = new TimeIntervalServices();
 
 export async function sharedEditMaintenance({
   ownerCompanyId,
+  verifyPeriod,
   body: {
     maintenanceId,
     element,
@@ -28,6 +29,7 @@ export async function sharedEditMaintenance({
 }: {
   ownerCompanyId: string | null;
   body: IEditMaintenance;
+  verifyPeriod?: boolean;
 }) {
   validator.check([
     { label: 'ID da manutenção', variable: maintenanceId, type: 'string' },
@@ -83,7 +85,7 @@ export async function sharedEditMaintenance({
     timeIntervalId: delayTimeIntervalId,
   });
 
-  if (period * periodData.unitTime >= frequency * frequencyData.unitTime) {
+  if (verifyPeriod && period * periodData.unitTime >= frequency * frequencyData.unitTime) {
     throw new ServerMessage({
       statusCode: 400,
       message: 'O prazo para execução não pode ser maior ou igual a periodicidade.',
@@ -101,6 +103,7 @@ export async function sharedEditMaintenance({
     source,
     period,
     periodTimeIntervalId,
+
     delay,
     delayTimeIntervalId,
     observation,

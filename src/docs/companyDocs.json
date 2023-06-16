@@ -143,6 +143,7 @@
         }
       }
     },
+
     "/passwordrecovery/change": {
       "put": {
         "tags": ["Auth"],
@@ -403,7 +404,7 @@
     "/categories/delete": {
       "delete": {
         "tags": ["Categories"],
-        "summary": "Exclui uma categoria. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
+        "summary": "Exclui uma categoria.",
         "security": [
           {
             "bearerAuth": []
@@ -775,7 +776,7 @@
     "/maintenances/delete": {
       "delete": {
         "tags": ["Maintenance"],
-        "summary": "Exclui uma manutenção. (Caso esteja em uso apenas a marca como excluída FALTA FAZER).",
+        "summary": "Exclui uma manutenção.",
         "security": [
           {
             "bearerAuth": []
@@ -2068,6 +2069,76 @@
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/reports/occasional/create": {
+      "post": {
+        "tags": ["Occasional Reports"],
+        "summary": "Cria uma nova categoria avulsa.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "categoryData": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "name": { "type": "string" }
+                    }
+                  },
+                  "maintenanceData": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "element": { "type": "string" },
+                      "activity": { "type": "string" },
+                      "responsible": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
+      }
+    },
+
+    "/buildings/maintenances/occasional/list": {
+      "get": {
+        "tags": ["Occasional Reports"],
+        "summary": "Lista todas categorias e manutencoes avulsas.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ServerMessage"
           },
           "400": {
             "$ref": "#/components/responses/ServerMessage"

@@ -104,6 +104,7 @@ export async function sharedEditMaintenanceReport(req: Request, res: Response) {
 
   const data = {
     version: report && report.version + 0.1,
+    origin,
     maintenanceHistoryId,
     cost,
     observation,

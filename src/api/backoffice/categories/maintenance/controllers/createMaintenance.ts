@@ -5,6 +5,8 @@ export async function createMaintenance(req: Request, res: Response) {
   const maintenance = await sharedCreateMaintenance({
     ownerCompanyId: null,
     body: req.body,
+    maintenanceTypeName: 'common',
+    verifyPeriod: true,
   });
 
   return res.status(200).json({

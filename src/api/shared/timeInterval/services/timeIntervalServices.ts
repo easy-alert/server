@@ -23,7 +23,7 @@ export class TimeIntervalServices {
   }
 
   async findByName({ name }: { name: string }) {
-    return prisma.timeInterval.findUnique({
+    const timeIntreval = await prisma.timeInterval.findUnique({
       select: {
         id: true,
         name: true,
@@ -33,6 +33,10 @@ export class TimeIntervalServices {
       },
       where: { name },
     });
+
+    validator.needExist([{ label: 'Unidade de tempo', variable: timeIntreval }]);
+
+    return timeIntreval!;
   }
 
   async findById({ timeIntervalId }: { timeIntervalId: string }) {
