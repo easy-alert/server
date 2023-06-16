@@ -1,6 +1,7 @@
 // CLASS
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { Validator } from '../../../../utils/validator/validator';
+import { sharedCategoryAndMaintenanceServices } from '../../categoryAndMaintenanceTypes/services/sharedCategoryAndMaintenanceServices,';
 import { TimeIntervalServices } from '../../timeInterval/services/timeIntervalServices';
 import { SharedMaintenanceServices } from '../services/sharedMaintenanceServices';
 import { ICreateMaintenanceBody } from './types';
@@ -11,6 +12,8 @@ const timeIntervalServices = new TimeIntervalServices();
 
 export async function sharedCreateMaintenance({
   ownerCompanyId,
+  maintenanceTypeName,
+  verifyPeriod = false,
   body: {
     categoryId,
     element,
@@ -27,6 +30,8 @@ export async function sharedCreateMaintenance({
   },
 }: {
   ownerCompanyId: string | null;
+  maintenanceTypeName: string;
+  verifyPeriod?: boolean;
   body: ICreateMaintenanceBody;
 }) {
   // #region validation
@@ -74,12 +79,16 @@ export async function sharedCreateMaintenance({
     timeIntervalId: delayTimeIntervalId,
   });
 
-  if (period * periodData.unitTime >= frequency * frequencyData.unitTime) {
+  if (verifyPeriod && period * periodData.unitTime >= frequency * frequencyData.unitTime) {
     throw new ServerMessage({
       statusCode: 400,
       message: 'O prazo para execução não pode ser maior ou igual a periodicidade.',
     });
   }
+
+  const maintenanceType = await sharedCategoryAndMaintenanceServices.findByName({
+    name: maintenanceTypeName,
+  });
 
   // #endregion
 
@@ -97,6 +106,7 @@ export async function sharedCreateMaintenance({
     delay,
     delayTimeIntervalId,
     observation,
+    maintenanceTypeId: maintenanceType.id,
   });
 
   return {

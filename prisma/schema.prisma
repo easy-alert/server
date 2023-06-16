@@ -106,11 +106,28 @@ model Company {
   @@map("companies")
 }
 
+//CATEGORIES AND MAINTENANCES TYPES
+model CategoryAndMaintenanceTypes {
+  id            String @id @unique @default(uuid())
+  name          String @unique
+  singularLabel String @unique
+  pluralLabel   String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Categories   Category[]
+  Maintenances Maintenance[]
+
+  @@map("categoryAndMaintenanceTypes")
+}
+
 //CATEGORIES
 
 model Category {
   id             String  @id @unique @default(uuid())
   ownerCompanyId String?
+  categoryTypeId String?
 
   name      String
   createdAt DateTime @default(now())
@@ -121,14 +138,17 @@ model Category {
   Buildings               BuildingCategory[]
   DefaultTemplateCategory DefaultTemplateCategory[]
 
+  CategoryType CategoryAndMaintenanceTypes? @relation(fields: [categoryTypeId], references: [id])
+
   @@map("categories")
 }
 
 // MAINTENANCES
 model Maintenance {
-  id             String  @id @unique @default(uuid())
-  categoryId     String
-  ownerCompanyId String?
+  id                String  @id @unique @default(uuid())
+  categoryId        String
+  ownerCompanyId    String?
+  maintenanceTypeId String?
 
   element                 String
   activity                String
@@ -155,6 +175,8 @@ model Maintenance {
 
   MaintenancesHistory        MaintenanceHistory[]
   DefaultTemplateMaintenance DefaultTemplateMaintenance[]
+
+  MaintenanceType CategoryAndMaintenanceTypes? @relation(fields: [maintenanceTypeId], references: [id])
 
   @@map("maintenances")
 }

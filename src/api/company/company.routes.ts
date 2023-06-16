@@ -58,4 +58,5 @@ companyRouter.use('/maintenances', authMiddleware, isCompany, maintenanceRouter)
 companyRouter.use('/calendars', authMiddleware, isCompany, calendarRouter);
 
 companyRouter.post('/passwordrecovery/sendemail', sendEmailForRecoveryPassword);
+
 companyRouter.put('/passwordrecovery/change', changePassword);

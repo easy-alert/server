@@ -11,14 +11,41 @@ interface IMaintenance {
   delay: number;
   delayTimeIntervalId: string;
   observation: string | null;
+  maintenanceTypeId: string;
 }
 
-export interface IEditMaintenance extends IMaintenance {
+export interface IEditMaintenance {
   maintenanceId: string;
+  ownerCompanyId: string | null;
+  element: string;
+  activity: string;
+  frequency: number;
+  frequencyTimeIntervalId: string;
+  responsible: string;
+  source: string;
+  period: number;
+  periodTimeIntervalId: string;
+  delay: number;
+  delayTimeIntervalId: string;
+  observation: string | null;
 }
 
-export interface ICreateMaintenance extends IMaintenance {
+export interface ICreateMaintenance {
   categoryId: string;
+
+  ownerCompanyId: string | null;
+  element: string;
+  activity: string;
+  frequency: number;
+  frequencyTimeIntervalId: string;
+  responsible: string;
+  source: string;
+  period: number;
+  periodTimeIntervalId: string;
+  delay: number;
+  delayTimeIntervalId: string;
+  observation: string | null;
+  maintenanceTypeId: string;
 }
 
 export interface IMaintenanceHistory {
@@ -26,6 +53,7 @@ export interface IMaintenanceHistory {
   ownerCompanyId: string;
   maintenanceId: string;
   maintenanceStatusId: string;
+  ownerCompanyId: string;
   notificationDate: Date;
   resolutionDate?: Date;
   dueDate: Date;
@@ -37,6 +65,7 @@ export interface ICreateMaintenanceHistoryAndReport {
   maintenanceId: string;
   maintenanceStatusId: string;
   notificationDate: Date;
+  wasNotified: boolean;
   resolutionDate?: Date;
   dueDate: Date;
 
@@ -45,7 +74,7 @@ export interface ICreateMaintenanceHistoryAndReport {
       cost: number;
       observation: string;
       responsibleSyndicId: string | null;
-      origin: string;
+      origin: 'Company' | 'Client' | 'Backoffice';
       ReportAnnexes: {
         createMany: {
           data: {

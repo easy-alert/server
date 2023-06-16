@@ -84,6 +84,12 @@ export class CategoryServices {
         },
       },
       where: {
+        NOT: {
+          CategoryType: {
+            name: 'occasional',
+          },
+        },
+
         AND: {
           name: {
             contains: search,
@@ -150,6 +156,12 @@ export class CategoryServices {
         },
       },
       where: {
+        NOT: {
+          CategoryType: {
+            name: 'occasional',
+          },
+        },
+
         AND: {
           name: {
             contains: search,
