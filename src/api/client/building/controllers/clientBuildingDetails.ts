@@ -48,25 +48,29 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   maintenances.push(...MaintenancesHistory);
 
   for (let i = 0; i < MaintenancesPending.length; i++) {
-    const intervals = sharedCalendarServices.recurringDates({
-      startDate: changeTime({
-        date: new Date(MaintenancesPending[i].notificationDate),
-        time: { h: 0, m: 0, ms: 0, s: 0 },
-      }),
-      endDate: changeTime({
-        date: new Date(`12/31/${new Date().getFullYear() + YEARFORSUM}`),
-        time: { h: 0, m: 0, ms: 0, s: 0 },
-      }),
-      interval:
-        MaintenancesPending[i].Maintenance.frequency *
-        MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
-      maintenanceData: MaintenancesPending[i],
-      periodDaysInterval:
-        MaintenancesPending[i].Maintenance.period *
-        MaintenancesPending[i].Maintenance.PeriodTimeInterval.unitTime,
-    });
+    if (MaintenancesPending[i].Maintenance?.MaintenanceType?.name === 'occasional') {
+      maintenances.push({ ...MaintenancesPending[i], type: 'occasional' });
+    } else {
+      const intervals = sharedCalendarServices.recurringDates({
+        startDate: changeTime({
+          date: new Date(MaintenancesPending[i].notificationDate),
+          time: { h: 0, m: 0, ms: 0, s: 0 },
+        }),
+        endDate: changeTime({
+          date: new Date(`12/31/${new Date().getFullYear() + YEARFORSUM}`),
+          time: { h: 0, m: 0, ms: 0, s: 0 },
+        }),
+        interval:
+          MaintenancesPending[i].Maintenance.frequency *
+          MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
+        maintenanceData: MaintenancesPending[i],
+        periodDaysInterval:
+          MaintenancesPending[i].Maintenance.period *
+          MaintenancesPending[i].Maintenance.PeriodTimeInterval.unitTime,
+      });
 
-    maintenances.push(...intervals);
+      maintenances.push(...intervals);
+    }
   }
 
   const months = clientBuildingServices.separePerMonth({ data: maintenances });

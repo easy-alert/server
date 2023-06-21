@@ -71,6 +71,7 @@ export async function listForBuildingReports(req: Request, res: Response) {
       resolutionDate: maintenance.resolutionDate,
       status: maintenance.MaintenancesStatus.name,
       cost: maintenance.MaintenanceReport.length > 0 ? maintenance.MaintenanceReport[0].cost : null,
+      type: maintenance.Maintenance.MaintenanceType?.name ?? null,
     });
   });
 

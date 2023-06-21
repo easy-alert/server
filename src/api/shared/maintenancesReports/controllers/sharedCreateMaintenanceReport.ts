@@ -345,18 +345,20 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
 
     const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
 
-    await sharedMaintenanceServices.createHistory({
-      data: [
-        {
-          ownerCompanyId: maintenanceHistory.Company.id,
-          maintenanceId: maintenanceHistory.Maintenance.id,
-          buildingId: maintenanceHistory.Building.id,
-          maintenanceStatusId: pendingStatus.id,
-          notificationDate,
-          dueDate,
-        },
-      ],
-    });
+    if (maintenanceHistory.Maintenance.MaintenanceType?.name !== 'occasional') {
+      await sharedMaintenanceServices.createHistory({
+        data: [
+          {
+            ownerCompanyId: maintenanceHistory.Company.id,
+            maintenanceId: maintenanceHistory.Maintenance.id,
+            buildingId: maintenanceHistory.Building.id,
+            maintenanceStatusId: pendingStatus.id,
+            notificationDate,
+            dueDate,
+          },
+        ],
+      });
+    }
   }
 
   // #endregion
