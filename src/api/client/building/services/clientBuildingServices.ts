@@ -91,6 +91,7 @@ export class ClientBuildingServices {
             expectedNotificationDate: maintenance.expectedNotificationDate,
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
+            type: maintenance.type ?? null,
           });
           break;
 
@@ -104,6 +105,7 @@ export class ClientBuildingServices {
             expectedNotificationDate: maintenance.expectedNotificationDate,
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
+            type: maintenance.type ?? null,
           });
           break;
         case 2:
@@ -116,6 +118,7 @@ export class ClientBuildingServices {
             expectedNotificationDate: maintenance.expectedNotificationDate,
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
+            type: maintenance.type ?? null,
           });
           break;
         case 3:
@@ -128,6 +131,7 @@ export class ClientBuildingServices {
             expectedNotificationDate: maintenance.expectedNotificationDate,
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
+            type: maintenance.type ?? null,
           });
           break;
         case 4:
@@ -140,6 +144,7 @@ export class ClientBuildingServices {
             expectedNotificationDate: maintenance.expectedNotificationDate,
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
+            type: maintenance.type ?? null,
           });
           break;
         case 5:
@@ -152,6 +157,7 @@ export class ClientBuildingServices {
             expectedNotificationDate: maintenance.expectedNotificationDate,
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
+            type: maintenance.type ?? null,
           });
           break;
         case 6:
@@ -164,6 +170,7 @@ export class ClientBuildingServices {
             expectedNotificationDate: maintenance.expectedNotificationDate,
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
+            type: maintenance.type ?? null,
           });
           break;
         case 7:
@@ -176,6 +183,7 @@ export class ClientBuildingServices {
             expectedNotificationDate: maintenance.expectedNotificationDate,
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
+            type: maintenance.type ?? null,
           });
           break;
         case 8:
@@ -188,6 +196,7 @@ export class ClientBuildingServices {
             expectedNotificationDate: maintenance.expectedNotificationDate,
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
+            type: maintenance.type ?? null,
           });
           break;
         case 9:
@@ -200,6 +209,7 @@ export class ClientBuildingServices {
             expectedNotificationDate: maintenance.expectedNotificationDate,
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
+            type: maintenance.type ?? null,
           });
           break;
         case 10:
@@ -212,6 +222,7 @@ export class ClientBuildingServices {
             expectedNotificationDate: maintenance.expectedNotificationDate,
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
+            type: maintenance.type ?? null,
           });
           break;
         case 11:
@@ -224,6 +235,7 @@ export class ClientBuildingServices {
             expectedNotificationDate: maintenance.expectedNotificationDate,
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
+            type: maintenance.type ?? null,
           });
           break;
 
@@ -287,6 +299,8 @@ export class ClientBuildingServices {
             days: period,
           });
 
+          // type: maintenance.type ?? null,
+
           if (
             (today >= canReportDate && history[1]?.MaintenancesStatus?.name !== 'expired') ||
             today >= history[0]?.notificationDate
@@ -314,6 +328,7 @@ export class ClientBuildingServices {
               date: maintenance.notificationDate,
               dueDate: maintenance.dueDate,
               label,
+              type: maintenance.Maintenance.MaintenanceType.name,
             });
           }
 
@@ -345,6 +360,7 @@ export class ClientBuildingServices {
             date: maintenance.dueDate,
             dueDate: maintenance.dueDate,
             label: `Atrasada há ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
+            type: maintenance.Maintenance.MaintenanceType.name,
           });
           break;
         }
@@ -359,6 +375,7 @@ export class ClientBuildingServices {
             date: maintenance.resolutionDate,
             dueDate: maintenance.dueDate,
             label: '',
+            type: maintenance.Maintenance.MaintenanceType.name,
           });
           break;
 
@@ -377,6 +394,7 @@ export class ClientBuildingServices {
             date: maintenance.resolutionDate,
             dueDate: maintenance.dueDate,
             label: `Feita com atraso de ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
+            type: maintenance.Maintenance.MaintenanceType.name,
           });
           break;
 
@@ -459,6 +477,12 @@ export class ClientBuildingServices {
                   pluralLabel: true,
                 },
               },
+              MaintenanceType: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
             },
           },
           MaintenancesStatus: {
@@ -528,6 +552,13 @@ export class ClientBuildingServices {
                   unitTime: true,
                   singularLabel: true,
                   pluralLabel: true,
+                },
+              },
+
+              MaintenanceType: {
+                select: {
+                  id: true,
+                  name: true,
                 },
               },
             },
@@ -648,6 +679,12 @@ export class ClientBuildingServices {
                   unitTime: true,
                   singularLabel: true,
                   pluralLabel: true,
+                },
+              },
+              MaintenanceType: {
+                select: {
+                  id: true,
+                  name: true,
                 },
               },
             },

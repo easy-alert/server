@@ -162,6 +162,11 @@ export class SharedMaintenanceReportsServices {
                 unitTime: true,
               },
             },
+            MaintenanceType: {
+              select: {
+                name: true,
+              },
+            },
           },
         },
       },
