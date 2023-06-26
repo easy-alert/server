@@ -22,7 +22,6 @@ export class SharedCalendarServices {
     let date = startDate;
     const dates = [];
     let isFuture = false;
-
     while (date < endDate) {
       dates.push({
         ...maintenanceData,
@@ -37,6 +36,7 @@ export class SharedCalendarServices {
           }),
           interval: periodDaysInterval,
         }),
+        type: maintenanceData.Maintenance.MaintenanceType?.name || null,
       });
       date = noWeekendTimeDate({ date: addDays({ date, days: interval }), interval });
       isFuture = true;

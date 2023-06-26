@@ -1,5 +1,4 @@
 // #region IMPORTS
-import { Request, Response } from 'express';
 import { sharedCreateCategory } from '../categories/controllers/sharedCreateCategory';
 import { SharedCategoryServices } from '../categories/services/sharedCategoryServices';
 import { Validator } from '../../../utils/validator/validator';
@@ -25,7 +24,13 @@ const sharedMaintenanceReportsServices = new SharedMaintenanceReportsServices();
 
 // #endregion
 
-export async function sharedCreateOccasionalMaintenanceReport(req: Request, res: Response) {
+export async function sharedCreateOccasionalMaintenanceReport({
+  companyId,
+  body,
+}: {
+  companyId: string;
+  body: ICreateOccassionalMaintenanceReport;
+}) {
   const {
     buildingId,
     responsibleSyndicId,
@@ -34,7 +39,7 @@ export async function sharedCreateOccasionalMaintenanceReport(req: Request, res:
     categoryData,
     maintenanceData,
     reportData,
-  }: ICreateOccassionalMaintenanceReport = req.body;
+  }: ICreateOccassionalMaintenanceReport = body;
 
   // #region VALIDATIONS
 
@@ -70,7 +75,7 @@ export async function sharedCreateOccasionalMaintenanceReport(req: Request, res:
 
   if (categoryData.id) {
     category = await sharedEditCategory({
-      ownerCompanyId: req.Company.id,
+      ownerCompanyId: companyId,
       body: {
         categoryId: categoryData.id,
         name: categoryData.name,
@@ -88,7 +93,7 @@ export async function sharedCreateOccasionalMaintenanceReport(req: Request, res:
     ]);
 
     category = await sharedCreateCategory({
-      ownerCompanyId: req.Company.id,
+      ownerCompanyId: companyId,
       body: {
         name: categoryData.name,
       },
@@ -105,9 +110,9 @@ export async function sharedCreateOccasionalMaintenanceReport(req: Request, res:
 
   if (maintenanceData.id) {
     maintenance = await sharedEditMaintenance({
-      ownerCompanyId: req.Company.id,
+      ownerCompanyId: companyId,
       body: {
-        ownerCompanyId: req.Company.id,
+        ownerCompanyId: companyId,
         maintenanceId: maintenanceData.id,
         element: maintenanceData.element,
         activity: maintenanceData.activity,
@@ -138,7 +143,7 @@ export async function sharedCreateOccasionalMaintenanceReport(req: Request, res:
     ]);
 
     maintenance = await sharedCreateMaintenance({
-      ownerCompanyId: req.Company.id,
+      ownerCompanyId: companyId,
       maintenanceTypeName: 'occasional',
       body: {
         categoryId: category.id,
@@ -167,7 +172,7 @@ export async function sharedCreateOccasionalMaintenanceReport(req: Request, res:
     await sharedMaintenanceServices.createHistory({
       data: [
         {
-          ownerCompanyId: req.Company.id,
+          ownerCompanyId: companyId,
           buildingId,
           maintenanceId: maintenance.id,
           maintenanceStatusId: pendingStatus.id,
@@ -184,7 +189,7 @@ export async function sharedCreateOccasionalMaintenanceReport(req: Request, res:
     // criar historico do report
     const maintenanceHistory = await sharedMaintenanceServices.createHistoryAndReport({
       data: {
-        ownerCompanyId: req.Company.id,
+        ownerCompanyId: companyId,
         buildingId,
         maintenanceId: maintenance.id,
         maintenanceStatusId: completedStatus.id,
@@ -244,11 +249,4 @@ export async function sharedCreateOccasionalMaintenanceReport(req: Request, res:
     }
   }
   // #endregion
-
-  return res.status(200).json({
-    ServerMessage: {
-      statusCode: 200,
-      message: `Manutenção reportada com sucesso.`,
-    },
-  });
 }

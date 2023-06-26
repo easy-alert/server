@@ -180,6 +180,11 @@ export class BuildingReportsServices {
               },
               responsible: true,
               observation: true,
+              MaintenanceType: {
+                select: {
+                  name: true,
+                },
+              },
             },
           },
         },

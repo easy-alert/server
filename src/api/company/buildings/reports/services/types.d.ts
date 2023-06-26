@@ -31,4 +31,5 @@ export interface IMaintenancesData {
   resolutionDate: Date | null;
   status: string;
   cost: number | null;
+  type: string | null;
 }

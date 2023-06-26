@@ -35,8 +35,8 @@ import { listForBuildingReports } from './reports/controllers/listForBuildingRep
 import { listForSelectBuildingReports } from './reports/controllers/listForSelectBuildingReports';
 import { listBuildingsAndTemplatesForSelect } from './building/controllers/listBuildingsAndTemplatesForSelect';
 
-import { sharedCreateOccasionalMaintenanceReport } from '../../shared/occasionalReports/sharedCreateOccasionalMaintenanceReport';
 import { listAuxiliaryDataForOccasionalCategoriesAndMaintenances } from './occasionalBuildingMaintenances/controllers/listAuxiliaryDataForOccasionalCategoriesAndMaintenances';
+import { createOccasionalReport } from './reports/controllers/createOcassionalReport';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -89,10 +89,11 @@ buildingRouter.get('/reports/listforselect', listForSelectBuildingReports);
 buildingRouter.get('/reports/list', listForBuildingReports);
 
 // OCCAISIONAL REPORTS AND MAINTENANCES
+
 buildingRouter.get('/reports/create', listForBuildingReports);
 
 buildingRouter.get(
   '/maintenances/occasional/auxiliarydata',
   listAuxiliaryDataForOccasionalCategoriesAndMaintenances,
 );
-buildingRouter.post('/reports/occasional/create', sharedCreateOccasionalMaintenanceReport);
+buildingRouter.post('/reports/occasional/create', createOccasionalReport);

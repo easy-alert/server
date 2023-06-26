@@ -179,8 +179,15 @@ export class SharedMaintenanceServices {
             responsible: true,
             source: true,
 
+            MaintenanceType: {
+              select: {
+                name: true,
+              },
+            },
+
             Category: {
               select: {
+                id: true,
                 name: true,
               },
             },
@@ -205,6 +212,20 @@ export class SharedMaintenanceServices {
     validator.needExist([{ label: 'ID do histórico da manutenção', variable: maintenance }]);
 
     return maintenance!;
+  }
+
+  async findHistoryByCategoryId({ categoryId }: { categoryId: string }) {
+    return prisma.maintenanceHistory.findMany({
+      select: {
+        id: true,
+        notificationDate: true,
+      },
+      where: {
+        Maintenance: {
+          categoryId,
+        },
+      },
+    });
   }
 
   async findHistoryByNanoId({ maintenanceHistoryId }: { maintenanceHistoryId: string }) {
@@ -259,6 +280,12 @@ export class SharedMaintenanceServices {
             element: true,
             responsible: true,
             source: true,
+
+            MaintenanceType: {
+              select: {
+                name: true,
+              },
+            },
 
             Category: {
               select: {
@@ -432,6 +459,14 @@ export class SharedMaintenanceServices {
 
     await prisma.maintenance.delete({
       where: { id: maintenanceId },
+    });
+  }
+
+  async deleteHistory({ maintenanceHistoryId }: { maintenanceHistoryId: string }) {
+    await this.findHistoryById({ maintenanceHistoryId });
+
+    await prisma.maintenanceHistory.delete({
+      where: { id: maintenanceHistoryId },
     });
   }
 }
