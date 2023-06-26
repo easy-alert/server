@@ -45,7 +45,13 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   // #region PROCESS DATA
 
   const maintenances = [];
-  maintenances.push(...MaintenancesHistory);
+
+  const maintenancesHistoryWithType = MaintenancesHistory.map((maintenance) => ({
+    ...maintenance,
+    type: maintenance.Maintenance.MaintenanceType?.name || null,
+  }));
+
+  maintenances.push(...maintenancesHistoryWithType);
 
   for (let i = 0; i < MaintenancesPending.length; i++) {
     if (MaintenancesPending[i].Maintenance?.MaintenanceType?.name === 'occasional') {
