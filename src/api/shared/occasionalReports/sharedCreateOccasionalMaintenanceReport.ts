@@ -1,13 +1,10 @@
 // #region IMPORTS
 import { sharedCreateCategory } from '../categories/controllers/sharedCreateCategory';
-import { SharedCategoryServices } from '../categories/services/sharedCategoryServices';
 import { Validator } from '../../../utils/validator/validator';
-import { sharedEditCategory } from '../categories/controllers/sharedEditCategory';
 import { sharedCreateMaintenance } from '../maintenance/controllers/sharedCreateMaintenance';
 import { ICreateOccassionalMaintenanceReport } from './types';
 import { ServerMessage } from '../../../utils/messages/serverMessage';
 import { TimeIntervalServices } from '../timeInterval/services/timeIntervalServices';
-import { sharedEditMaintenance } from '../maintenance/controllers/sharedEditMaintenance';
 import { SharedMaintenanceServices } from '../maintenance/services/sharedMaintenanceServices';
 import { SharedMaintenanceStatusServices } from '../maintenanceStatus/services/sharedMaintenanceStatusServices';
 import { addDays } from '../../../utils/dateTime';
@@ -15,7 +12,6 @@ import { SharedMaintenanceReportsServices } from '../maintenancesReports/service
 import { noWeekendTimeDate } from '../../../utils/dateTime/noWeekendTimeDate';
 
 // CLASS
-const sharedCategoryServices = new SharedCategoryServices();
 const validator = new Validator();
 const timeIntervalServices = new TimeIntervalServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
@@ -71,96 +67,39 @@ export async function sharedCreateOccasionalMaintenanceReport({
   // #endregion
 
   // #region CATEGORY
-  let category = null;
 
-  if (categoryData.id) {
-    category = await sharedEditCategory({
-      ownerCompanyId: companyId,
-      body: {
-        categoryId: categoryData.id,
-        name: categoryData.name,
-      },
-    });
-  } else {
-    const categoryFounded = await sharedCategoryServices.findOccasionalByName({
-      categoryName: categoryData.name,
-    });
-    validator.cannotExists([
-      {
-        label: 'Categoria',
-        variable: categoryFounded,
-      },
-    ]);
+  const category = await sharedCreateCategory({
+    ownerCompanyId: companyId,
+    body: {
+      name: categoryData.name,
+    },
+    categoryTypeName: 'occasional',
+  });
 
-    category = await sharedCreateCategory({
-      ownerCompanyId: companyId,
-      body: {
-        name: categoryData.name,
-      },
-      categoryTypeName: 'occasional',
-    });
-  }
   // #endregion
 
   // #region MAINTENANCE
 
   const timeInterval = await timeIntervalServices.findByName({ name: 'Day' });
 
-  let maintenance = null;
-
-  if (maintenanceData.id) {
-    maintenance = await sharedEditMaintenance({
-      ownerCompanyId: companyId,
-      body: {
-        ownerCompanyId: companyId,
-        maintenanceId: maintenanceData.id,
-        element: maintenanceData.element,
-        activity: maintenanceData.activity,
-        delay: 0,
-        delayTimeIntervalId: timeInterval.id,
-        frequency: 0,
-        frequencyTimeIntervalId: timeInterval.id,
-        observation: 'manutenção ocasional',
-        periodTimeIntervalId: timeInterval.id,
-        period: 5,
-        responsible: maintenanceData.responsible,
-        source: 'manutenção ocasional',
-      },
-    });
-  } else {
-    const maintenanceFounded = await sharedMaintenanceServices.findOccasionalByName({
-      maintenanceName: maintenanceData.element,
-    });
-
-    if (maintenanceFounded && !categoryData.id)
-      await sharedCategoryServices.delete({ categoryId: category.id });
-
-    validator.cannotExists([
-      {
-        label: 'Manutenção',
-        variable: maintenanceFounded,
-      },
-    ]);
-
-    maintenance = await sharedCreateMaintenance({
-      ownerCompanyId: companyId,
-      maintenanceTypeName: 'occasional',
-      body: {
-        categoryId: category.id,
-        element: maintenanceData.element,
-        activity: maintenanceData.activity,
-        delay: 0,
-        delayTimeIntervalId: timeInterval.id,
-        frequency: 0,
-        frequencyTimeIntervalId: timeInterval.id,
-        observation: 'manutenção ocasional',
-        periodTimeIntervalId: timeInterval.id,
-        period: 5,
-        responsible: maintenanceData.responsible,
-        source: 'manutenção ocasional',
-      },
-    });
-  }
+  const maintenance = await sharedCreateMaintenance({
+    ownerCompanyId: companyId,
+    maintenanceTypeName: 'occasional',
+    body: {
+      categoryId: category.id,
+      element: maintenanceData.element,
+      activity: maintenanceData.activity,
+      delay: 0,
+      delayTimeIntervalId: timeInterval.id,
+      frequency: 0,
+      frequencyTimeIntervalId: timeInterval.id,
+      observation: 'manutenção avulsa',
+      periodTimeIntervalId: timeInterval.id,
+      period: 5,
+      responsible: maintenanceData.responsible,
+      source: 'manutenção avulsa',
+    },
+  });
 
   // #endregion
 
@@ -168,7 +107,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
 
   if (new Date(executionDate) > new Date()) {
     const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
-    // criar historico do report
+    // cria historico do report
     await sharedMaintenanceServices.createHistory({
       data: [
         {
@@ -186,7 +125,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
     });
   } else {
     const completedStatus = await sharedMaintenanceStatusServices.findByName({ name: 'completed' });
-    // criar historico do report
+    // cria historico do report
     const maintenanceHistory = await sharedMaintenanceServices.createHistoryAndReport({
       data: {
         ownerCompanyId: companyId,

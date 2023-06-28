@@ -59,8 +59,8 @@ export class BuildingReportsServices {
           : undefined,
       buildingIds:
         query.buildingIds?.split(',')[0] !== '' ? query.buildingIds?.split(',') : undefined,
-      categoryIds:
-        query.categoryIds?.split(',')[0] !== '' ? query.categoryIds?.split(',') : undefined,
+      categoryNames:
+        query.categoryNames?.split(',')[0] !== '' ? query.categoryNames?.split(',') : undefined,
       dateFilter: [
         {
           notificationDate: {
@@ -105,6 +105,7 @@ export class BuildingReportsServices {
           ownerCompanyId: companyId,
         },
       }),
+
       prisma.category.findMany({
         select: {
           id: true,
@@ -200,13 +201,16 @@ export class BuildingReportsServices {
           maintenanceStatusId: {
             in: queryFilter.maintenanceStatusIds,
           },
+
           buildingId: {
             in: queryFilter.buildingIds,
           },
+
           ownerCompanyId: companyId,
+
           Maintenance: {
-            categoryId: {
-              in: queryFilter.categoryIds,
+            Category: {
+              name: { in: queryFilter.categoryNames },
             },
           },
           OR: queryFilter.dateFilter,
