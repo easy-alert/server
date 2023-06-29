@@ -426,12 +426,24 @@ export class SharedMaintenanceServices {
       prisma.maintenance.count({
         where: {
           ownerCompanyId: companyId,
+
+          NOT: {
+            MaintenanceType: {
+              name: 'occasional',
+            },
+          },
         },
       }),
 
       prisma.maintenance.count({
         where: {
           ownerCompanyId: null,
+
+          NOT: {
+            MaintenanceType: {
+              name: 'occasional',
+            },
+          },
         },
       }),
     ]);
