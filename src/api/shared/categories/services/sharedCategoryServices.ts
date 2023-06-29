@@ -148,10 +148,14 @@ export class SharedCategoryServices {
         },
       },
       where: {
-        ownerCompanyId,
-        CategoryType: {
-          name: 'occasional',
-        },
+        OR: [
+          {
+            ownerCompanyId,
+          },
+          {
+            ownerCompanyId: null,
+          },
+        ],
       },
       orderBy: {
         name: 'asc',
