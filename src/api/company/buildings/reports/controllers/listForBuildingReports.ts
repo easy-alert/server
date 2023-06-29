@@ -4,10 +4,6 @@ import { BuildingReportsServices } from '../services/buildingReportsServices';
 import { IMaintenancesData } from '../services/types';
 
 // CLASS
-// import { Validator } from '../../../../../utils/validator/validator';
-
-// const validator = new Validator();
-
 const buildingReportsServices = new BuildingReportsServices();
 
 // #endregion
@@ -60,7 +56,9 @@ export async function listForBuildingReports(req: Request, res: Response) {
 
     maintenances.push({
       id: maintenance.id,
-      observation: maintenance.Maintenance.observation,
+      observation: maintenance.MaintenanceReport.length
+        ? maintenance.MaintenanceReport[0].observation
+        : '-',
       maintenanceHistoryId: maintenance.id,
       buildingName: maintenance.Building.name,
       categoryName: maintenance.Maintenance.Category.name,

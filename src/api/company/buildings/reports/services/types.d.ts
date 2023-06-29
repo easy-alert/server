@@ -3,7 +3,7 @@ export interface IFindBuildingMaintenancesHistory {
   queryFilter: {
     maintenanceStatusIds: string[] | undefined;
     buildingIds: string[] | undefined;
-    categoryIds: string[] | undefined;
+    categoryNames: string[] | undefined;
     dateFilter: any;
   };
 }
@@ -12,7 +12,7 @@ export interface IListForBuildingReportQuery {
   query: {
     maintenanceStatusIds: string | undefined;
     buildingIds: string | undefined;
-    categoryIds: string | undefined;
+    categoryNames: string | undefined;
     startDate: string | undefined;
     endDate: string | undefined;
   };
