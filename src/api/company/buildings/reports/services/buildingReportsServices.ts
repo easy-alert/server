@@ -156,6 +156,7 @@ export class BuildingReportsServices {
 
           MaintenanceReport: {
             select: {
+              observation: true,
               cost: true,
             },
           },

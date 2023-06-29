@@ -32,7 +32,7 @@ export async function listAuxiliaryDataForOccasionalCategoriesAndMaintenances(
     ownerCompanyId: building.companyId,
   });
 
-  const Categories: { id: string; name: string }[] = [];
+  const Categories: typeof CategoryData = [];
 
   CategoryData.forEach((categoryData) => {
     const categoryFound = Categories.find((category) => category.name === categoryData.name);
@@ -41,6 +41,7 @@ export async function listAuxiliaryDataForOccasionalCategoriesAndMaintenances(
       Categories.push({
         id: categoryData.id,
         name: categoryData.name,
+        Maintenances: categoryData.Maintenances,
       });
     }
   });
