@@ -157,6 +157,13 @@ export class SharedMaintenanceReportsServices {
             source: true,
             observation: true,
             period: true,
+            frequency: true,
+            FrequencyTimeInterval: {
+              select: {
+                pluralLabel: true,
+                singularLabel: true,
+              },
+            },
             PeriodTimeInterval: {
               select: {
                 unitTime: true,
