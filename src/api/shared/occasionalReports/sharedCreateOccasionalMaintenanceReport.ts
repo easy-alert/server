@@ -10,6 +10,7 @@ import { SharedMaintenanceStatusServices } from '../maintenanceStatus/services/s
 import { addDays } from '../../../utils/dateTime';
 import { SharedMaintenanceReportsServices } from '../maintenancesReports/services/SharedMaintenanceReportsServices';
 import { noWeekendTimeDate } from '../../../utils/dateTime/noWeekendTimeDate';
+import { SharedBuildingNotificationConfigurationServices } from '../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
 
 // CLASS
 const validator = new Validator();
@@ -17,6 +18,8 @@ const timeIntervalServices = new TimeIntervalServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 const sharedMaintenanceStatusServices = new SharedMaintenanceStatusServices();
 const sharedMaintenanceReportsServices = new SharedMaintenanceReportsServices();
+const sharedBuildingNotificationConfigurationServices =
+  new SharedBuildingNotificationConfigurationServices();
 
 // #endregion
 
@@ -56,13 +59,19 @@ export async function sharedCreateOccasionalMaintenanceReport({
   validator.check([
     { label: 'Edificação', variable: buildingId, type: 'string' },
     { label: 'Nome da categoria', variable: categoryData.name, type: 'string' },
-
     { label: 'Nome da manutenção', variable: maintenanceData.element, type: 'string' },
     { label: 'Atividade da manutenção', variable: maintenanceData.activity, type: 'string' },
     { label: 'Reponsável da manutenção', variable: maintenanceData.responsible, type: 'string' },
     { label: 'Data', variable: executionDate, type: 'string' },
     { label: 'Origem', variable: origin, type: 'string' },
   ]);
+
+  let syndicData = null;
+  if (responsibleSyndicId) {
+    syndicData = await sharedBuildingNotificationConfigurationServices.findByNanoId({
+      syndicNanoId: responsibleSyndicId,
+    });
+  }
 
   // #endregion
 
@@ -144,7 +153,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
             cost: Number(reportData.cost),
             observation: reportData.observation,
             origin,
-            responsibleSyndicId,
+            responsibleSyndicId: syndicData?.id || null,
             ReportImages: {
               createMany: {
                 data: reportData.images,
