@@ -63,11 +63,7 @@ export class DashboardServices {
           resolutionDate: filter.period,
 
           Building: {
-            NotificationsConfigurations: {
-              some: {
-                name: filter.responsibles,
-              },
-            },
+            NotificationsConfigurations: filter.responsibles,
 
             name: filter.buildings,
           },
@@ -103,11 +99,7 @@ export class DashboardServices {
         where: {
           dueDate: filter.period,
           Building: {
-            NotificationsConfigurations: {
-              some: {
-                name: filter.responsibles,
-              },
-            },
+            NotificationsConfigurations: filter.responsibles,
             name: filter.buildings,
           },
           ownerCompanyId: filter.companyId,
@@ -132,11 +124,7 @@ export class DashboardServices {
           MaintenanceHistory: {
             resolutionDate: filter.period,
             Building: {
-              NotificationsConfigurations: {
-                some: {
-                  name: filter.responsibles,
-                },
-              },
+              NotificationsConfigurations: filter.responsibles,
               name: filter.buildings,
             },
             ownerCompanyId: filter.companyId,
@@ -159,11 +147,7 @@ export class DashboardServices {
         where: {
           resolutionDate: filter.period,
           Building: {
-            NotificationsConfigurations: {
-              some: {
-                name: filter.responsibles,
-              },
-            },
+            NotificationsConfigurations: filter.responsibles,
             name: filter.buildings,
           },
           ownerCompanyId: filter.companyId,
@@ -191,11 +175,7 @@ export class DashboardServices {
         where: {
           dueDate: filter.period,
           Building: {
-            NotificationsConfigurations: {
-              some: {
-                name: filter.responsibles,
-              },
-            },
+            NotificationsConfigurations: filter.responsibles,
             name: filter.buildings,
           },
           ownerCompanyId: filter.companyId,
@@ -216,11 +196,7 @@ export class DashboardServices {
         where: {
           notificationDate: filter.period,
           Building: {
-            NotificationsConfigurations: {
-              some: {
-                name: filter.responsibles,
-              },
-            },
+            NotificationsConfigurations: filter.responsibles,
             name: filter.buildings,
           },
           ownerCompanyId: filter.companyId,
@@ -277,11 +253,7 @@ export class DashboardServices {
         where: {
           notificationDate: filter.period,
           Building: {
-            NotificationsConfigurations: {
-              some: {
-                name: filter.responsibles,
-              },
-            },
+            NotificationsConfigurations: filter.responsibles,
             name: filter.buildings,
           },
           ownerCompanyId: filter.companyId,
@@ -316,11 +288,7 @@ export class DashboardServices {
         where: {
           dueDate: filter.period,
           Building: {
-            NotificationsConfigurations: {
-              some: {
-                name: filter.responsibles,
-              },
-            },
+            NotificationsConfigurations: filter.responsibles,
             name: filter.buildings,
           },
           Maintenance: {
@@ -375,11 +343,7 @@ export class DashboardServices {
           },
           where: {
             Building: {
-              NotificationsConfigurations: {
-                some: {
-                  name: filter.responsibles,
-                },
-              },
+              NotificationsConfigurations: filter.responsibles,
               name: filter.buildings,
             },
             Maintenance: {
@@ -430,11 +394,7 @@ export class DashboardServices {
         },
         where: {
           Building: {
-            NotificationsConfigurations: {
-              some: {
-                name: filter.responsibles,
-              },
-            },
+            NotificationsConfigurations: filter.responsibles,
             name: filter.buildings,
           },
           Maintenance: {

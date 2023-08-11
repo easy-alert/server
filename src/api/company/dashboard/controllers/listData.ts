@@ -5,10 +5,16 @@ import { removeDays } from '../../../../utils/dateTime/removeDays';
 import { dashboardServices } from '../services/dashboardServices';
 import { mask } from '../../../../utils/masks';
 
+interface IResponsible {
+  some: {
+    name: { in: string[] };
+  };
+}
+
 export interface IDashboardFilter {
   buildings: { in: string[] } | undefined;
   categories: { in: string[] } | undefined;
-  responsibles: { in: string[] } | undefined;
+  responsibles: IResponsible | undefined;
   period: { gte: Date; lte: Date };
   companyId: string;
 }
@@ -52,7 +58,9 @@ export async function listData(req: Request, res: Response) {
     responsibles:
       responsibles && JSON.parse(String(responsibles))?.length > 0
         ? {
-            in: JSON.parse(String(responsibles)),
+            some: {
+              name: { in: JSON.parse(String(responsibles)) },
+            },
           }
         : undefined,
     companyId: req.Company.id,
