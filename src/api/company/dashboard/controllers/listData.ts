@@ -5,7 +5,7 @@ import { removeDays } from '../../../../utils/dateTime/removeDays';
 import { dashboardServices } from '../services/dashboardServices';
 import { mask } from '../../../../utils/masks';
 
-export interface ITimeLine {
+export interface IDashboardFilter {
   buildings: { in: string[] } | undefined;
   categories: { in: string[] } | undefined;
   responsibles: { in: string[] } | undefined;
@@ -57,7 +57,7 @@ export async function listData(req: Request, res: Response) {
         : undefined,
     companyId: req.Company.id,
   };
-  // console.log(filter);
+
   const {
     timeLineCompleted,
     timeLineExpired,
@@ -85,7 +85,6 @@ export async function listData(req: Request, res: Response) {
       })),
     },
   ];
-
   const investments = mask({ type: 'BRL', value: String(investmentsData._sum.cost) });
 
   const score = {
@@ -97,7 +96,13 @@ export async function listData(req: Request, res: Response) {
     labels: ['Concluídas', 'Vencidas', 'Pendentes'],
   };
 
+  const { maintenancesData } = await dashboardServices.getMostCompletedAndExpiredMaintenances({
+    filter,
+    quantityToReturn: 2,
+  });
+
   return res.status(200).json({
+    maintenancesData,
     score,
     investments,
     timeLine,
