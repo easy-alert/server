@@ -23,6 +23,7 @@ import { calendarRouter } from './calendar/calendar.routes';
 import { sendEmailForRecoveryPassword } from '../shared/recoveryPassword/controllers/sendEmailForRecoveryPassord';
 import { changePassword } from '../shared/recoveryPassword/controllers/changePassword';
 import { companyUserRouter } from './companyUser/companyUser.routes';
+import { dashboardRouter } from './dashboard/dashboard.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -60,3 +61,5 @@ companyRouter.use('/calendars', authMiddleware, isCompany, calendarRouter);
 companyRouter.post('/passwordrecovery/sendemail', sendEmailForRecoveryPassword);
 
 companyRouter.put('/passwordrecovery/change', changePassword);
+
+companyRouter.use('/dashboard', authMiddleware, isCompany, dashboardRouter);
