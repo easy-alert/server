@@ -37,6 +37,7 @@ import { listBuildingsAndTemplatesForSelect } from './building/controllers/listB
 
 import { listAuxiliaryDataForOccasionalCategoriesAndMaintenances } from './occasionalBuildingMaintenances/controllers/listAuxiliaryDataForOccasionalCategoriesAndMaintenances';
 import { createOccasionalReport } from './reports/controllers/createOcassionalReport';
+import { foldersRouter } from './folders/folders.routes';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -97,3 +98,6 @@ buildingRouter.get(
   listAuxiliaryDataForOccasionalCategoriesAndMaintenances,
 );
 buildingRouter.post('/reports/occasional/create', createOccasionalReport);
+
+// BUILDING FOLDERS
+buildingRouter.use('/folders', foldersRouter);

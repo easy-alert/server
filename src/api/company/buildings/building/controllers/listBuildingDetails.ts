@@ -147,12 +147,15 @@ export async function listBuildingDetails(req: Request, res: Response) {
       keepNotificationAfterWarrantyEnds: BuildingDetails.keepNotificationAfterWarrantyEnds,
       streetName: BuildingDetails.streetName,
       warrantyExpiration: BuildingDetails.warrantyExpiration,
-
       Annexes: BuildingDetails.Annexes,
       BuildingType: BuildingDetails.BuildingType,
       NotificationsConfigurations: BuildingDetails.NotificationsConfigurations,
       Banners: BuildingDetails.Banners,
       // @ts-ignore
+      Folders:
+        BuildingDetails.BuildingFolders?.length > 0
+          ? BuildingDetails.BuildingFolders[0].BuildingFolder
+          : null,
       MaintenancesCount,
     };
   }
