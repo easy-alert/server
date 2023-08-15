@@ -1,10 +1,10 @@
 // # region IMPORTS
 import { Request, Response } from 'express';
+import { Validator } from '../../../../utils/validator/validator';
+import { BuildingServices } from '../../../company/buildings/building/services/buildingServices';
+import { SharedCategoryServices } from '../../../shared/categories/services/sharedCategoryServices';
 
 // CLASS
-import { SharedCategoryServices } from '../../../../shared/categories/services/sharedCategoryServices';
-import { BuildingServices } from '../../../../company/buildings/building/services/buildingServices';
-import { Validator } from '../../../../../utils/validator/validator';
 
 const sharedCategoryServices = new SharedCategoryServices();
 const buildingServices = new BuildingServices();

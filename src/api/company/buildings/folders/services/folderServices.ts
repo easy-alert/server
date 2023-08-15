@@ -39,6 +39,7 @@ export class FolderServices {
           select: {
             id: true,
             name: true,
+            url: true,
           },
         },
       },

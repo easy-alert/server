@@ -31,9 +31,9 @@ export async function createFolderController(req: Request, res: Response) {
   if (parentId) {
     const folder = await folderServices.findById(parentId);
 
-    const folderFound = folder?.Folders.some((folderData) => folderData.name === name);
+    const folderFound = folder?.Folders.some((folderData) => folderData.name === name.trim());
 
-    if (folderFound || (!folder?.Parent?.id && folder?.name === name)) {
+    if (folderFound || (!folder?.Parent?.id && folder?.name === name.trim())) {
       throw new ServerMessage({
         statusCode: 400,
         message: 'Este nível já possui uma pasta com esse nome.',

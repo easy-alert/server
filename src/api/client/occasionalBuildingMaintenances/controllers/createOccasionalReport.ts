@@ -1,8 +1,8 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
-import { sharedCreateOccasionalMaintenanceReport } from '../../../../shared/occasionalReports/sharedCreateOccasionalMaintenanceReport';
-import { ICreateOccassionalMaintenanceReport } from '../../../../shared/occasionalReports/types';
-import { BuildingServices } from '../../../../company/buildings/building/services/buildingServices';
+import { BuildingServices } from '../../../company/buildings/building/services/buildingServices';
+import { ICreateOccassionalMaintenanceReport } from '../../../shared/occasionalReports/types';
+import { sharedCreateOccasionalMaintenanceReport } from '../../../shared/occasionalReports/sharedCreateOccasionalMaintenanceReport';
 
 const buildingServices = new BuildingServices();
 
