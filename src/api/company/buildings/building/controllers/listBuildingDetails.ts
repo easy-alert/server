@@ -7,6 +7,7 @@ import { CategoryServices } from '../../../categories/category/services/category
 // CLASS
 import { BuildingServices } from '../services/buildingServices';
 import { IListBuildingCategoriesAndMaintenances } from './types';
+import { changeTime } from '../../../../../utils/dateTime/changeTime';
 
 const buildingServices = new BuildingServices();
 const categoryServices = new CategoryServices();
@@ -121,7 +122,19 @@ export async function listBuildingDetails(req: Request, res: Response) {
           break;
 
         case 'pending':
-          if (!maintenance.wasNotified) break;
+          if (
+            maintenance.notificationDate >
+            changeTime({
+              date: new Date(),
+              time: {
+                h: 0,
+                m: 0,
+                s: 0,
+                ms: 0,
+              },
+            })
+          )
+            break;
 
           MaintenancesCount[1] = {
             ...MaintenancesCount[1],

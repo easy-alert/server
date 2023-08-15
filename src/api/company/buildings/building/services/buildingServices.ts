@@ -194,6 +194,9 @@ export class BuildingServices {
           MaintenancesHistory: {
             select: {
               wasNotified: true,
+
+              notificationDate: true,
+
               MaintenancesStatus: {
                 select: {
                   name: true,
@@ -257,6 +260,7 @@ export class BuildingServices {
         MaintenancesHistory: {
           select: {
             wasNotified: true,
+            notificationDate: true,
             MaintenancesStatus: {
               select: {
                 name: true,
