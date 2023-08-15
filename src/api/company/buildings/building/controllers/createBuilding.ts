@@ -16,6 +16,15 @@ export async function createBuilding(req: Request, res: Response) {
   const data = {
     ...req.body,
     companyId: req.Company.id,
+    BuildingFolders: {
+      create: {
+        BuildingFolder: {
+          create: {
+            name: 'Início',
+          },
+        },
+      },
+    },
   };
 
   // #region VALIDATIONS

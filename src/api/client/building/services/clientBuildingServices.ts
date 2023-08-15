@@ -816,11 +816,34 @@ export class ClientBuildingServices {
       select: {
         name: true,
 
-        Annexes: {
+        BuildingFolders: {
           select: {
-            name: true,
-            url: true,
-            originalName: true,
+            BuildingFolder: {
+              select: {
+                id: true,
+                name: true,
+                Parent: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                Folders: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+
+                Files: true,
+              },
+            },
+          },
+
+          where: {
+            BuildingFolder: {
+              parentId: null,
+            },
           },
         },
       },

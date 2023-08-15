@@ -46,7 +46,7 @@ export class BuildingServices {
       },
     });
 
-    validator.needExist([{ label: 'edificação', variable: building }]);
+    validator.needExist([{ label: 'Edificação', variable: building }]);
 
     return building!;
   }
@@ -305,6 +305,37 @@ export class BuildingServices {
             url: true,
           },
         },
+
+        BuildingFolders: {
+          select: {
+            BuildingFolder: {
+              select: {
+                id: true,
+                name: true,
+                Parent: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                Folders: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+
+                Files: true,
+              },
+            },
+          },
+
+          where: {
+            BuildingFolder: {
+              parentId: null,
+            },
+          },
+        },
       },
       where: {
         id: buildingId,
@@ -425,3 +456,5 @@ export class BuildingServices {
     });
   }
 }
+
+export const buildingServices = new BuildingServices();
