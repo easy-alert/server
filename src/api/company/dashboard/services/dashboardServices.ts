@@ -42,6 +42,7 @@ interface IMaintenanceData {
 export class DashboardServices {
   async getDashboardData(filter: IDashboardFilter) {
     const [
+      timeLinePending,
       timeLineCompleted,
       timeLineExpired,
       investmentsData,
@@ -50,6 +51,38 @@ export class DashboardServices {
       pendingMaintenancesScore,
     ] = await prisma.$transaction([
       // #region timeLine
+
+      prisma.maintenanceHistory.groupBy({
+        by: ['notificationDate'],
+        _count: {
+          notificationDate: true,
+        },
+
+        orderBy: {
+          notificationDate: 'desc',
+        },
+        where: {
+          notificationDate: filter.period,
+
+          Building: {
+            NotificationsConfigurations: filter.responsibles,
+
+            name: filter.buildings,
+          },
+          ownerCompanyId: filter.companyId,
+
+          Maintenance: {
+            Category: {
+              name: filter.categories,
+            },
+          },
+
+          MaintenancesStatus: {
+            name: 'pending',
+          },
+        },
+      }),
+
       prisma.maintenanceHistory.groupBy({
         by: ['resolutionDate'],
         _count: {
@@ -216,6 +249,7 @@ export class DashboardServices {
     ]);
 
     return {
+      timeLinePending,
       timeLineCompleted,
       timeLineExpired,
       investmentsData,
@@ -314,6 +348,7 @@ export class DashboardServices {
         data: null,
       }),
     );
+
     maintenancesExpiredCount.forEach((maintenance) =>
       maintenancesBaseData.expired.push({
         id: maintenance.maintenanceId,
@@ -324,6 +359,7 @@ export class DashboardServices {
         data: null,
       }),
     );
+
     // #endregion
 
     // #region getAllMaintenancesCount

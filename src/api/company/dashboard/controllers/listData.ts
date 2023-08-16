@@ -67,6 +67,7 @@ export async function listData(req: Request, res: Response) {
   };
 
   const {
+    timeLinePending,
     timeLineCompleted,
     timeLineExpired,
     investmentsData,
@@ -90,6 +91,14 @@ export async function listData(req: Request, res: Response) {
         x: data.dueDate,
         // @ts-ignore
         y: data?._count?.dueDate || 0,
+      })),
+    },
+    {
+      name: 'Pendentes',
+      data: timeLinePending.map((data) => ({
+        x: data.notificationDate,
+        // @ts-ignore
+        y: data?._count?.notificationDate || 0,
       })),
     },
   ];
