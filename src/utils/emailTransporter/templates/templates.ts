@@ -452,7 +452,9 @@ export class EmailTemplates {
               text-align: center;
           '
         >
-          A empresa ${companyName} acabou de cadastrar a edificação ${buildingName}.
+          A empresa ${companyName} cadastrou a edificação ${buildingName} em  ${new Date().toLocaleDateString()}, às ${new Date()
+      .toTimeString()
+      .substring(0, 5)}.
         </p>
 
       </div>
