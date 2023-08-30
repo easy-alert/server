@@ -16,6 +16,13 @@ export class BuildingServices {
   async create({ data }: ICreateBuilding) {
     return prisma.building.create({
       data,
+      include: {
+        Company: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
   }
 

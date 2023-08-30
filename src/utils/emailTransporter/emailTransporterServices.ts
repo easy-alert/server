@@ -3,6 +3,7 @@ import { createTransport } from 'nodemailer';
 import { ServerMessage } from '../messages/serverMessage';
 import { EmailTemplates } from './templates/templates';
 import {
+  INewBuildingCreated,
   INewCompanyCreated,
   ISendConfirmEmail,
   ISendProofOfReport,
@@ -77,6 +78,31 @@ export class EmailTransporterServices {
       html: emailTemplates.newCompanyCreated({
         companyName,
         subject,
+      }),
+    };
+
+    await transporter.sendMail(mail).catch(() => {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Oops! Encontramos um problema ao enviar a confirmação de email.',
+      });
+    });
+  }
+
+  async sendNewBuildingCreated({
+    companyName,
+    subject,
+    toEmail,
+    buildingName,
+  }: INewBuildingCreated) {
+    const mail = {
+      from: `${subject} <${process.env.EMAIL_USERNAME}>`,
+      to: toEmail,
+      subject: `Easy Alert - ${subject}`,
+      html: emailTemplates.newBuildingCreated({
+        companyName,
+        subject,
+        buildingName,
       }),
     };
 

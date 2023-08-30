@@ -19,6 +19,13 @@ export interface INewCompanyCreated {
   subject: string;
 }
 
+export interface INewBuildingCreated {
+  toEmail?: string;
+  companyName: string;
+  buildingName: string;
+  subject: string;
+}
+
 export interface ISendProofOfReport {
   toEmail?: string;
   attachments?: {
