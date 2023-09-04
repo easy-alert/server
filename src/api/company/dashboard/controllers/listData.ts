@@ -114,7 +114,7 @@ export async function listData(req: Request, res: Response) {
 
   const series: ISeries[] = [
     {
-      name: 'Pendentes',
+      name: 'Concluídas',
       data: [],
     },
     {
@@ -122,7 +122,7 @@ export async function listData(req: Request, res: Response) {
       data: [],
     },
     {
-      name: 'Concluídas',
+      name: 'Pendentes',
       data: [],
     },
   ];
@@ -173,9 +173,9 @@ export async function listData(req: Request, res: Response) {
     });
     // #endregion
 
-    series[0].data.push(pendingAmount);
+    series[0].data.push(completedAmount);
     series[1].data.push(expiredAmount);
-    series[2].data.push(completedAmount);
+    series[2].data.push(pendingAmount);
 
     pendingAmount = 0;
     expiredAmount = 0;
