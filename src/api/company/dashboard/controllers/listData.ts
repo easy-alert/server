@@ -24,6 +24,27 @@ export interface IDashboardFilter {
   companyId: string;
 }
 
+function getMonthLabel(label: string) {
+  const months = [
+    'Jan',
+    'Fev',
+    'Mar',
+    'Abr',
+    'Mai',
+    'Jun',
+    'Jul',
+    'Ago',
+    'Set',
+    'Out',
+    'Nov',
+    'Dez',
+  ];
+
+  const [month, year] = label.split('/');
+
+  return `${months[Number(month) - 1]}/${year}`;
+}
+
 function getPeriod(period: number | string = 30) {
   const endDate = changeTime({
     date: new Date(),
@@ -132,8 +153,12 @@ export async function listData(req: Request, res: Response) {
     ...timeLineExpired.map((data) => data.dueDate),
     ...timeLineCompleted.map((data) => data.resolutionDate),
   ];
-  // @ts-ignore
-  const labels = [...new Set(dates.map((date) => `${date.getMonth() + 1}/${date.getFullYear()}`))];
+  dates.sort((a, b) => (a && b && a < b ? -1 : 1));
+
+  let labels: string[] = [];
+
+  if (dates.length > 0)
+    labels = [...new Set(dates.map((date) => `${date!.getMonth() + 1}/${date!.getFullYear()}`))];
 
   labels.forEach((label) => {
     let pendingAmount = 0;
@@ -182,31 +207,12 @@ export async function listData(req: Request, res: Response) {
     completedAmount = 0;
   });
 
-  console.log(series);
-
   const timeLine = {
-    categories: labels,
+    categories: labels.map((label) => getMonthLabel(label)),
     series,
   };
 
-  // estrutura desejada
-  // const timeLine = {
-  //   categories: ['Jan/2023', 'Jan/2023', 'Jan/2023', 'Jan/2023'],
-  //   series: [
-  //     {
-  //       name: 'Concluídas',
-  //       data: [1, 0, 0, 1],
-  //     },
-  //     {
-  //       name: 'Vencidas',
-  //       data: [2, 2, 2, 2],
-  //     },
-  //     {
-  //       name: 'Pendentes',
-  //       data: [3, 1, 3, 5],
-  //     },
-  //   ],
-  // };
+  // #endregion
 
   const investments = mask({ type: 'BRL', value: String(investmentsData._sum.cost) });
 
