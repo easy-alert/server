@@ -11,6 +11,11 @@ interface IResponsible {
   };
 }
 
+interface ISeries {
+  name: string;
+  data: number[];
+}
+
 export interface IDashboardFilter {
   buildings: { in: string[] } | undefined;
   categories: { in: string[] } | undefined;
@@ -76,24 +81,132 @@ export async function listData(req: Request, res: Response) {
     pendingMaintenancesScore,
   } = await dashboardServices.getDashboardData(filter);
 
-  // estrutura desejada
+  // #rengion TimeLine
+
+  /*
+  const timeLine = [  //versao antiga
+    {
+      name: 'Concluídas',
+      data: timeLineCompleted.map((data) => ({
+        x: data.resolutionDate,
+        // @ts-ignore
+        y: data?._count?.resolutionDate || 0,
+      })),
+    },
+    {
+      name: 'Vencidas',
+      data: timeLineExpired.map((data) => ({
+        x: data.dueDate,
+        // @ts-ignore
+        y: data?._count?.dueDate || 0,
+      })),
+    },
+    {
+      name: 'Pendentes',
+      data: timeLinePending.map((data) => ({
+        x: data.notificationDate,
+        // @ts-ignore
+        y: data?._count?.notificationDate || 0,
+      })),
+    },
+  ];
+*/
+
+  const series: ISeries[] = [
+    {
+      name: 'Pendentes',
+      data: [],
+    },
+    {
+      name: 'Vencidas',
+      data: [],
+    },
+    {
+      name: 'Concluídas',
+      data: [],
+    },
+  ];
+
+  const dates = [
+    ...timeLinePending.map((data) => data.notificationDate),
+    ...timeLineExpired.map((data) => data.dueDate),
+    ...timeLineCompleted.map((data) => data.resolutionDate),
+  ];
+  // @ts-ignore
+  const labels = [...new Set(dates.map((date) => `${date.getMonth() + 1}/${date.getFullYear()}`))];
+
+  labels.forEach((label) => {
+    let pendingAmount = 0;
+    let expiredAmount = 0;
+    let completedAmount = 0;
+
+    // #region pending
+    timeLinePending.forEach((data) => {
+      const dataPeriod = `${
+        data.notificationDate.getMonth() + 1
+      }/${data.notificationDate.getFullYear()}`;
+
+      // @ts-ignore
+      if (dataPeriod === label) pendingAmount += data._count.notificationDate;
+    });
+    // #endregion
+
+    // #region expired
+
+    timeLineExpired.forEach((data) => {
+      const dataPeriod = `${data.dueDate.getMonth() + 1}/${data.dueDate.getFullYear()}`;
+
+      // @ts-ignore
+      if (dataPeriod === label) expiredAmount += data._count.dueDate;
+    });
+    // #endregion
+
+    // #region compelted
+
+    timeLineCompleted.forEach((data) => {
+      const dataPeriod = `${
+        data.resolutionDate!.getMonth() + 1
+      }/${data.resolutionDate?.getFullYear()}`;
+
+      // @ts-ignore
+      if (dataPeriod === label) completedAmount += data._count.resolutionDate;
+    });
+    // #endregion
+
+    series[0].data.push(pendingAmount);
+    series[1].data.push(expiredAmount);
+    series[2].data.push(completedAmount);
+
+    pendingAmount = 0;
+    expiredAmount = 0;
+    completedAmount = 0;
+  });
+
+  console.log(series);
+
   const timeLine = {
-    categories: ['Jan/2023'],
-    series: [
-      {
-        name: 'Concluídas',
-        data: [1, 0, 0, 1],
-      },
-      {
-        name: 'Vencidas',
-        data: [2, 2, 2, 2],
-      },
-      {
-        name: 'Pendentes',
-        data: [3, 1, 3, 5],
-      },
-    ],
+    categories: labels,
+    series,
   };
+
+  // estrutura desejada
+  // const timeLine = {
+  //   categories: ['Jan/2023', 'Jan/2023', 'Jan/2023', 'Jan/2023'],
+  //   series: [
+  //     {
+  //       name: 'Concluídas',
+  //       data: [1, 0, 0, 1],
+  //     },
+  //     {
+  //       name: 'Vencidas',
+  //       data: [2, 2, 2, 2],
+  //     },
+  //     {
+  //       name: 'Pendentes',
+  //       data: [3, 1, 3, 5],
+  //     },
+  //   ],
+  // };
 
   const investments = mask({ type: 'BRL', value: String(investmentsData._sum.cost) });
 
