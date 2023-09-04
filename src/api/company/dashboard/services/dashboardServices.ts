@@ -82,7 +82,6 @@ export class DashboardServices {
           },
         },
       }),
-
       prisma.maintenanceHistory.groupBy({
         by: ['resolutionDate'],
         _count: {
