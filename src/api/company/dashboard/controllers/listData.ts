@@ -76,32 +76,25 @@ export async function listData(req: Request, res: Response) {
     pendingMaintenancesScore,
   } = await dashboardServices.getDashboardData(filter);
 
-  const timeLine = [
-    {
-      name: 'Concluídas',
-      data: timeLineCompleted.map((data) => ({
-        x: data.resolutionDate,
-        // @ts-ignore
-        y: data?._count?.resolutionDate || 0,
-      })),
-    },
-    {
-      name: 'Vencidas',
-      data: timeLineExpired.map((data) => ({
-        x: data.dueDate,
-        // @ts-ignore
-        y: data?._count?.dueDate || 0,
-      })),
-    },
-    {
-      name: 'Pendentes',
-      data: timeLinePending.map((data) => ({
-        x: data.notificationDate,
-        // @ts-ignore
-        y: data?._count?.notificationDate || 0,
-      })),
-    },
-  ];
+  // estrutura desejada
+  const timeLine = {
+    categories: ['Jan/2023'],
+    series: [
+      {
+        name: 'Concluídas',
+        data: [1, 0, 0, 1],
+      },
+      {
+        name: 'Vencidas',
+        data: [2, 2, 2, 2],
+      },
+      {
+        name: 'Pendentes',
+        data: [3, 1, 3, 5],
+      },
+    ],
+  };
+
   const investments = mask({ type: 'BRL', value: String(investmentsData._sum.cost) });
 
   const score = {
