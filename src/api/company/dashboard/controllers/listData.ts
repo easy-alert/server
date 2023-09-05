@@ -45,7 +45,8 @@ function getMonthLabel(label: string) {
   return `${months[Number(month) - 1]}/${year}`;
 }
 
-function getPeriod(period: number | string = 30) {
+// inicia com 1 ano
+function getPeriod(period: number | string = 365) {
   const endDate = changeTime({
     date: new Date(),
     time: {
