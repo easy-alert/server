@@ -334,9 +334,21 @@ export class BuildingServices {
                     id: true,
                     name: true,
                   },
+                  orderBy: {
+                    name: 'asc',
+                  },
                 },
 
-                Files: true,
+                Files: {
+                  select: {
+                    id: true,
+                    name: true,
+                    url: true,
+                  },
+                  orderBy: {
+                    name: 'asc',
+                  },
+                },
               },
             },
           },
