@@ -28,6 +28,9 @@ export class FolderServices {
             id: true,
             name: true,
           },
+          orderBy: {
+            name: 'asc',
+          },
         },
         Parent: {
           select: {
@@ -41,10 +44,16 @@ export class FolderServices {
             name: true,
             url: true,
           },
+          orderBy: {
+            name: 'asc',
+          },
         },
       },
       where: {
         id,
+      },
+      orderBy: {
+        name: 'asc',
       },
     });
 
