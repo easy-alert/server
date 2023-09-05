@@ -16,6 +16,13 @@ export class BuildingServices {
   async create({ data }: ICreateBuilding) {
     return prisma.building.create({
       data,
+      include: {
+        Company: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
   }
 
@@ -46,7 +53,7 @@ export class BuildingServices {
       },
     });
 
-    validator.needExist([{ label: 'edificação', variable: building }]);
+    validator.needExist([{ label: 'Edificação', variable: building }]);
 
     return building!;
   }
@@ -194,6 +201,9 @@ export class BuildingServices {
           MaintenancesHistory: {
             select: {
               wasNotified: true,
+
+              notificationDate: true,
+
               MaintenancesStatus: {
                 select: {
                   name: true,
@@ -257,6 +267,7 @@ export class BuildingServices {
         MaintenancesHistory: {
           select: {
             wasNotified: true,
+            notificationDate: true,
             MaintenancesStatus: {
               select: {
                 name: true,
@@ -303,6 +314,37 @@ export class BuildingServices {
             redirectUrl: true,
             type: true,
             url: true,
+          },
+        },
+
+        BuildingFolders: {
+          select: {
+            BuildingFolder: {
+              select: {
+                id: true,
+                name: true,
+                Parent: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                Folders: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+
+                Files: true,
+              },
+            },
+          },
+
+          where: {
+            BuildingFolder: {
+              parentId: null,
+            },
           },
         },
       },
@@ -425,3 +467,5 @@ export class BuildingServices {
     });
   }
 }
+
+export const buildingServices = new BuildingServices();

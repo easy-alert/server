@@ -16,5 +16,7 @@ export async function findBuildingAnnex(req: Request, res: Response) {
 
   const annex = await clientBuildingServices.findAnnexes({ buildingId: building.id });
 
-  return res.status(200).json(annex);
+  return res
+    .status(200)
+    .json({ name: annex?.name, Folders: annex?.BuildingFolders[0]?.BuildingFolder });
 }

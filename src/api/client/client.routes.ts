@@ -16,8 +16,9 @@ import { findCompanyLogo } from './building/controllers/findCompanyLogo';
 import { findBuildingAnnex } from './building/controllers/findBuildingAnnex';
 import { findHomeInformations } from './building/controllers/findHomeInformations';
 import { createDefaultTemplates } from '../../utils/scripts/createDefaultTemplates';
-import { listAuxiliaryDataForOccasionalCategoriesAndMaintenances } from './building/occasionalBuildingMaintenances/controllers/listAuxiliaryDataForOccasionalCategoriesAndMaintenances';
-import { createOccasionalReport } from './building/occasionalBuildingMaintenances/controllers/createOccasionalReport';
+import { listAuxiliaryDataForOccasionalCategoriesAndMaintenances } from './occasionalBuildingMaintenances/controllers/listAuxiliaryDataForOccasionalCategoriesAndMaintenances';
+import { createOccasionalReport } from './occasionalBuildingMaintenances/controllers/createOccasionalReport';
+import { listFolderController } from './building/controllers/listFolder';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -55,3 +56,5 @@ clientRouter.get('/building/logo/:buildingNanoId', findCompanyLogo);
 clientRouter.post('/maintenances/create/report', sharedCreateMaintenanceReport);
 
 clientRouter.get('/templates/create', createDefaultTemplates);
+
+clientRouter.get('/building/folders/list/:folderId', listFolderController);

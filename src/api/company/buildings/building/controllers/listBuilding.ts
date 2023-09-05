@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 
 // CLASS
 import { BuildingServices } from '../services/buildingServices';
+import { changeTime } from '../../../../../utils/dateTime/changeTime';
 
 const buildingServices = new BuildingServices();
 // #endregion
@@ -64,7 +65,19 @@ export async function listBuilding(req: Request, res: Response) {
           break;
 
         case 'pending':
-          if (!maintenance.wasNotified) break;
+          if (
+            maintenance.notificationDate >
+            changeTime({
+              date: new Date(),
+              time: {
+                h: 0,
+                m: 0,
+                s: 0,
+                ms: 0,
+              },
+            })
+          )
+            break;
 
           MaintenancesCount[1] = {
             ...MaintenancesCount[1],

@@ -392,6 +392,8 @@ model Building {
   MaintenancesHistory MaintenanceHistory[]
   oldBuildingIds      oldBuildingIds[]
 
+  BuildingFolders BuildingFolders[]
+
   @@map("buildings")
 }
 
@@ -493,6 +495,51 @@ model oldBuildingIds {
   building Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
 
   @@map("oldBuildingIds")
+}
+
+model BuildingFolders {
+  id         String @id @unique @default(uuid())
+  buildingId String
+  folderId   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Building       Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  BuildingFolder Folders  @relation(fields: [folderId], references: [id], onDelete: Cascade)
+
+  @@map("buildingFolders")
+}
+
+model Folders {
+  id       String  @id @unique @default(uuid())
+  parentId String?
+  name     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Parent  Folders?      @relation("folderToFolder", fields: [parentId], references: [id], onDelete: Cascade)
+  Folders Folders[]     @relation("folderToFolder")
+  Files   FolderFiles[]
+
+  BuildingFolders BuildingFolders[]
+
+  @@map("folders")
+}
+
+model FolderFiles {
+  id       String  @id @unique @default(uuid())
+  folderId String?
+  name     String
+  url      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Folders Folders? @relation(fields: [folderId], references: [id], onDelete: Cascade)
+
+  @@map("folderFiles")
 }
 
 // DEFAULT TEMPLATE MAINTENANCES

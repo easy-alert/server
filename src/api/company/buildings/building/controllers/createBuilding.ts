@@ -5,10 +5,12 @@ import { Request, Response } from 'express';
 import { Validator } from '../../../../../utils/validator/validator';
 import { BuildingTypeServices } from '../../buildingsTypes/services/buildingTypeServices';
 import { BuildingServices } from '../services/buildingServices';
+import { EmailTransporterServices } from '../../../../../utils/emailTransporter/emailTransporterServices';
 
 const validator = new Validator();
 const buildingServices = new BuildingServices();
 const buildingTypeServices = new BuildingTypeServices();
+const emailTransporter = new EmailTransporterServices();
 
 // #endregion
 
@@ -16,6 +18,15 @@ export async function createBuilding(req: Request, res: Response) {
   const data = {
     ...req.body,
     companyId: req.Company.id,
+    BuildingFolders: {
+      create: {
+        BuildingFolder: {
+          create: {
+            name: 'Início',
+          },
+        },
+      },
+    },
   };
 
   // #region VALIDATIONS
@@ -94,6 +105,15 @@ export async function createBuilding(req: Request, res: Response) {
   // #endregion
 
   const building = await buildingServices.create({ data });
+
+  if (process.env.DATABASE_URL?.includes('production')) {
+    await emailTransporter.sendNewBuildingCreated({
+      toEmail: 'contato@easyalert.com.br',
+      companyName: building.Company.name,
+      buildingName: building.name,
+      subject: 'Nova edificação cadastrada',
+    });
+  }
 
   return res.status(200).json({
     building,
