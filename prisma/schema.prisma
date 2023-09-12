@@ -388,11 +388,10 @@ model Building {
   Categories                  BuildingCategory[]
   Annexes                     BuildingAnnexe[]
   Banners                     BuildingBanners[]
-
-  MaintenancesHistory MaintenanceHistory[]
-  oldBuildingIds      oldBuildingIds[]
-
-  BuildingFolders BuildingFolders[]
+  MaintenancesHistory         MaintenanceHistory[]
+  oldBuildingIds              oldBuildingIds[]
+  BuildingFolders             BuildingFolders[]
+  BuildingsAccessHistory      BuildingAccessHistory[]
 
   @@map("buildings")
 }
@@ -540,6 +539,19 @@ model FolderFiles {
   Folders Folders? @relation(fields: [folderId], references: [id], onDelete: Cascade)
 
   @@map("folderFiles")
+}
+
+model BuildingAccessHistory {
+  id         String @id @unique @default(uuid())
+  buildingId String
+  key        String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Building Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+
+  @@map("buildingsAccessHistory")
 }
 
 // DEFAULT TEMPLATE MAINTENANCES

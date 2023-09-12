@@ -19,6 +19,7 @@ import { createDefaultTemplates } from '../../utils/scripts/createDefaultTemplat
 import { listAuxiliaryDataForOccasionalCategoriesAndMaintenances } from './occasionalBuildingMaintenances/controllers/listAuxiliaryDataForOccasionalCategoriesAndMaintenances';
 import { createOccasionalReport } from './occasionalBuildingMaintenances/controllers/createOccasionalReport';
 import { listFolderController } from './building/controllers/listFolder';
+import { clientCreateBuildingAccessHistory } from './building/controllers/clientCreateBuildingAccessHistory';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -58,3 +59,5 @@ clientRouter.post('/maintenances/create/report', sharedCreateMaintenanceReport);
 clientRouter.get('/templates/create', createDefaultTemplates);
 
 clientRouter.get('/building/folders/list/:folderId', listFolderController);
+
+clientRouter.post('/building/create-access-history', clientCreateBuildingAccessHistory);
