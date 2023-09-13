@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '../../../../../prisma';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { Validator } from '../../../../utils/validator/validator';
@@ -108,6 +109,23 @@ export class SharedMaintenanceServices {
       },
       where: {
         id: maintenanceId,
+      },
+    });
+  }
+
+  async updateMaintenanceHistory({
+    maintenanceHistoryId,
+    data,
+  }: {
+    maintenanceHistoryId: string;
+    data: Prisma.MaintenanceHistoryUncheckedUpdateInput;
+  }) {
+    await this.findHistoryById({ maintenanceHistoryId });
+
+    return prisma.maintenanceHistory.update({
+      data,
+      where: {
+        id: maintenanceHistoryId,
       },
     });
   }
