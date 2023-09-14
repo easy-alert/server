@@ -148,15 +148,18 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
 
   const canReport = today >= removeDays({ date: history[0]?.notificationDate, days: period });
 
-  // VERIFICA SE A MANUTENÇÃO QUE ESTÁ SENDO REPORTADA É VENCIDA
-  if (maintenanceHistory.MaintenancesStatus.name === 'expired') {
-    // JÁ EXISTE UMA PENDENTE, ENTAO EU COMPARO O ID DA ULTIMA VENCIDA, COM O ID QUE ESTOU MANDANDO
-    // PARA NÃO DEIXAR REPORTAR UMA VENCIDA ANTERIOR A OUTRA VENCIDA
-    if (history[1]?.id !== maintenanceHistory?.id || today >= history[0]?.notificationDate) {
-      throw new ServerMessage({
-        statusCode: 400,
-        message: 'O prazo para o relato desta manutenção vencida expirou.',
-      });
+  // só verifica tudo isso se for manutenção comum
+  if (maintenanceHistory.Maintenance.MaintenanceType?.name !== 'occasional') {
+    // VERIFICA SE A MANUTENÇÃO QUE ESTÁ SENDO REPORTADA É VENCIDA
+    if (maintenanceHistory.MaintenancesStatus.name === 'expired') {
+      // JÁ EXISTE UMA PENDENTE, ENTAO EU COMPARO O ID DA ULTIMA VENCIDA, COM O ID QUE ESTOU MANDANDO
+      // PARA NÃO DEIXAR REPORTAR UMA VENCIDA ANTERIOR A OUTRA VENCIDA
+      if (history[1]?.id !== maintenanceHistory?.id || today >= history[0]?.notificationDate) {
+        throw new ServerMessage({
+          statusCode: 400,
+          message: 'O prazo para o relato desta manutenção vencida expirou.',
+        });
+      }
     }
   }
 
