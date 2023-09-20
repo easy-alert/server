@@ -159,3 +159,5 @@ export class CompanyServices {
     return Company!;
   }
 }
+
+export const companyServices = new CompanyServices();
