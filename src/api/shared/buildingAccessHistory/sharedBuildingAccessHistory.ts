@@ -38,6 +38,9 @@ class SharedBuildingAccessHistoryService {
               },
             },
           },
+          orderBy: {
+            name: 'asc',
+          },
         },
       },
       where: {
