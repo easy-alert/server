@@ -94,7 +94,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       ) {
         throw new ServerMessage({
           statusCode: 400,
-          message: 'A data da primeira notificação deve ser maior que hoje',
+          message: 'A data da próxima notificação deve ser maior que hoje',
         });
       }
 
@@ -369,7 +369,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       ) {
         throw new ServerMessage({
           statusCode: 400,
-          message: `Você deve informar uma data de primeira notificação na manutenção ${updatedsMaintenances[i].element}`,
+          message: `Você deve informar uma data de próxima notificação na manutenção ${updatedsMaintenances[i].element}`,
         });
       }
 
