@@ -84,7 +84,7 @@ export async function createBuilding(req: Request, res: Response) {
       isOptional: true,
     },
     {
-      label: 'Data de entrega',
+      label: 'Data de início',
       type: 'string',
       variable: data.deliveryDate,
     },
