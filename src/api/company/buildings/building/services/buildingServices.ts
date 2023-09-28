@@ -475,6 +475,66 @@ export class BuildingServices {
     return prisma.maintenanceHistory.findMany({
       select: {
         maintenanceId: true,
+        Maintenance: {
+          select: {
+            MaintenancesHistory: {
+              select: {
+                wasNotified: true,
+                notificationDate: true,
+                resolutionDate: true,
+                MaintenancesStatus: {
+                  select: {
+                    name: true,
+                    singularLabel: true,
+                  },
+                },
+              },
+              where: {
+                buildingId,
+              },
+              orderBy: {
+                createdAt: 'desc',
+              },
+            },
+            id: true,
+            element: true,
+            activity: true,
+            frequency: true,
+            delay: true,
+            period: true,
+            responsible: true,
+            source: true,
+            observation: true,
+            ownerCompanyId: true,
+            FrequencyTimeInterval: {
+              select: {
+                id: true,
+                name: true,
+                pluralLabel: true,
+                singularLabel: true,
+                unitTime: true,
+              },
+            },
+            DelayTimeInterval: {
+              select: {
+                id: true,
+                name: true,
+                pluralLabel: true,
+                singularLabel: true,
+                unitTime: true,
+              },
+            },
+            PeriodTimeInterval: {
+              select: {
+                id: true,
+                name: true,
+                pluralLabel: true,
+                singularLabel: true,
+                unitTime: true,
+              },
+            },
+          },
+        },
       },
       where: { buildingId },
     });

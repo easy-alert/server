@@ -11,6 +11,7 @@ import {
 } from './types';
 import { defaultMaintenanceTemplateServices } from '../../../../shared/defaultMaintenanceTemplates/services/defaultMaintenanceTemplateServices';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+import { handleMaintenanceRecentDates } from '../../../../shared/buildingMaintenances/controllers/handleMaintenanceRecentDates';
 
 const buildingServices = new BuildingServices();
 const validator = new Validator();
@@ -44,6 +45,17 @@ export async function isTemplate({
     buildingId: currentBuildingId,
   });
 
+  // podia ter feito isso lá depois de tudo, mas com any é difícil
+  const currentBuildingCategoriesAndMaintenancesWithRecentDates = buildingMaintenanceHistory.map(
+    (maintenance) => {
+      const recentDates = handleMaintenanceRecentDates(maintenance);
+      return {
+        maintenanceId: maintenance.maintenanceId,
+        recentDates,
+      };
+    },
+  );
+
   // #region PROCESS DATA
 
   for (let i = 0; i < allCategoriesAndMaintenances.length; i++) {
@@ -52,10 +64,15 @@ export async function isTemplate({
         (history) => history.maintenanceId === allCategoriesAndMaintenances[i].Maintenances[j].id,
       );
 
+      const foundMaintenance = currentBuildingCategoriesAndMaintenancesWithRecentDates.find(
+        (e) => e.maintenanceId === allCategoriesAndMaintenances[i].Maintenances[j].id,
+      );
+
       allCategoriesAndMaintenances[i].Maintenances[j] = {
         ...allCategoriesAndMaintenances[i].Maintenances[j],
         isSelected: false,
         hasHistory,
+        ...foundMaintenance?.recentDates,
       };
     }
   }
@@ -111,6 +128,17 @@ export async function isBuilding({
     buildingId: currentBuildingId,
   });
 
+  // podia ter feito isso lá depois de tudo, mas com any é difícil
+  const currentBuildingCategoriesAndMaintenancesWithRecentDates = buildingMaintenanceHistory.map(
+    (maintenance) => {
+      const recentDates = handleMaintenanceRecentDates(maintenance);
+      return {
+        maintenanceId: maintenance.maintenanceId,
+        recentDates,
+      };
+    },
+  );
+
   // #region PROCESS DATA
 
   const allBuildingCategoriesAndMaintenances: IAllBuildingCategoriesAndMaintenances[] = [];
@@ -130,20 +158,26 @@ export async function isBuilding({
         (history) => history.maintenanceId === allCategoriesAndMaintenances[i].Maintenances[j].id,
       );
 
+      const foundMaintenance = currentBuildingCategoriesAndMaintenancesWithRecentDates.find(
+        (e) => e.maintenanceId === allCategoriesAndMaintenances[i].Maintenances[j].id,
+      );
+
       allCategoriesAndMaintenances[i].Maintenances[j] = {
         ...allCategoriesAndMaintenances[i].Maintenances[j],
         isSelected: false,
         hasHistory,
+        ...foundMaintenance?.recentDates,
       };
     }
   }
 
   for (let i = 0; i < allCategoriesAndMaintenances.length; i++) {
     for (let j = 0; j < allCategoriesAndMaintenances[i].Maintenances.length; j++) {
-      const isEquals = allBuildingCategoriesAndMaintenances.filter(
+      const foundMaintenance = allBuildingCategoriesAndMaintenances.find(
         (maintenance) => maintenance.id === allCategoriesAndMaintenances[i].Maintenances[j].id,
       );
-      if (isEquals.length === 0) continue;
+
+      if (!foundMaintenance) continue;
 
       allCategoriesAndMaintenances[i].Maintenances[j] = {
         ...allCategoriesAndMaintenances[i].Maintenances[j],
@@ -153,7 +187,6 @@ export async function isBuilding({
   }
 
   // #endregion
-
   return allCategoriesAndMaintenances;
 }
 
