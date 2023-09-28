@@ -395,6 +395,25 @@ export class BuildingServices {
           select: {
             Maintenance: {
               select: {
+                MaintenancesHistory: {
+                  select: {
+                    wasNotified: true,
+                    notificationDate: true,
+                    resolutionDate: true,
+                    MaintenancesStatus: {
+                      select: {
+                        name: true,
+                        singularLabel: true,
+                      },
+                    },
+                  },
+                  where: {
+                    buildingId,
+                  },
+                  orderBy: {
+                    createdAt: 'desc',
+                  },
+                },
                 id: true,
                 element: true,
                 activity: true,
@@ -411,6 +430,7 @@ export class BuildingServices {
                     name: true,
                     pluralLabel: true,
                     singularLabel: true,
+                    unitTime: true,
                   },
                 },
                 DelayTimeInterval: {
@@ -419,6 +439,7 @@ export class BuildingServices {
                     name: true,
                     pluralLabel: true,
                     singularLabel: true,
+                    unitTime: true,
                   },
                 },
                 PeriodTimeInterval: {
@@ -427,6 +448,7 @@ export class BuildingServices {
                     name: true,
                     pluralLabel: true,
                     singularLabel: true,
+                    unitTime: true,
                   },
                 },
               },
