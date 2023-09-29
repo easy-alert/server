@@ -470,7 +470,7 @@ export class SharedMaintenanceServices {
   }
 
   async checkMaintenanceIsUsed({ maintenanceId }: { maintenanceId: string }) {
-    const maintenance = await prisma.buildingMaintenance.findFirst({
+    const maintenance = await prisma.maintenanceHistory.findFirst({
       where: {
         maintenanceId,
       },
