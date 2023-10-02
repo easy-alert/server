@@ -287,7 +287,6 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         (maintenance: any) => maintenance.id === updatedsMaintenances[i].id,
       );
 
-      // faltou o responsiblesyndicid e mandar a qo origin
       const dataForCreateHistoryAndReport: ICreateMaintenanceHistoryAndReport = {
         buildingId,
         maintenanceId: updatedsMaintenances[i].id,
@@ -308,12 +307,12 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
             responsibleSyndicId: null,
             ReportAnnexes: {
               createMany: {
-                data: maintenanceToUpdate.files,
+                data: Array.isArray(maintenanceToUpdate.files) ? maintenanceToUpdate.files : [],
               },
             },
             ReportImages: {
               createMany: {
-                data: maintenanceToUpdate.images,
+                data: Array.isArray(maintenanceToUpdate.images) ? maintenanceToUpdate.images : [],
               },
             },
           },
