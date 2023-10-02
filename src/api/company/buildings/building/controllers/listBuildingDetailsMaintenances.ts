@@ -4,6 +4,7 @@ import { Validator } from '../../../../../utils/validator/validator';
 
 // CLASS
 import { BuildingServices } from '../services/buildingServices';
+import { handleMaintenanceRecentDates } from '../../../../shared/buildingMaintenances/controllers/handleMaintenanceRecentDates';
 
 const buildingServices = new BuildingServices();
 const validator = new Validator();
@@ -30,5 +31,21 @@ export async function listBuildingDetailsMaintenances(req: Request, res: Respons
     buildingId,
   });
 
-  return res.status(200).json({ buildingName: building?.name, BuildingMaintenances });
+  const BuildingMaintenancesFormatted = BuildingMaintenances.map((category) => ({
+    ...category,
+    Maintenances: category.Maintenances.map((maintenance) => {
+      const recentDates = handleMaintenanceRecentDates(maintenance);
+      return {
+        ...maintenance,
+        Maintenance: {
+          ...maintenance.Maintenance,
+          ...recentDates,
+        },
+      };
+    }),
+  }));
+
+  return res
+    .status(200)
+    .json({ buildingName: building?.name, BuildingMaintenances: BuildingMaintenancesFormatted });
 }
