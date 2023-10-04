@@ -32,10 +32,10 @@ interface Maintenance {
     singularLabel: string;
     unitTime: number;
   };
-  nextNotificationDate: Date | null | undefined;
+  nextNotificationDate: string | null | undefined;
   lastNotificationDate: string | null;
   lastNotificationStatus: string | undefined;
-  lastResolutionDate: Date | null | undefined;
+  lastResolutionDate: string | null | undefined;
 }
 
 export interface IListBuildingCategoriesAndMaintenances {
