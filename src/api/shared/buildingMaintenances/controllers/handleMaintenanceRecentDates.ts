@@ -1,4 +1,4 @@
-import { addDays, dateFormatter } from '../../../../utils/dateTime';
+import { addDays } from '../../../../utils/dateTime';
 import { changeTime } from '../../../../utils/dateTime/changeTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
 
@@ -90,25 +90,29 @@ export function handleMaintenanceRecentDates(maintenance: Maintenance) {
 
   let lastNotificationDate = null;
 
+  const dateToString = (date: Date) => date.toLocaleDateString('pt-BR');
+
   if (wasAnticipated) {
     lastNotificationDate = 'Realizada antes da notificação';
   } else if (lastNotification?.notificationDate) {
-    // botei o dateFormatter só no que pode mudar pra string, o resto tá no front
-    lastNotificationDate = dateFormatter(lastNotification.notificationDate);
+    lastNotificationDate = dateToString(lastNotification.notificationDate);
   }
 
   const dates = {
     nextNotificationDate: showFutureNotificationDate
-      ? futureNotificationDate
-      : nextNotificationDate,
+      ? futureNotificationDate && dateToString(futureNotificationDate)
+      : nextNotificationDate && dateToString(nextNotificationDate),
 
-    lastNotificationDate,
+    // convertido ali em cima
+    lastNotificationDate: lastNotificationDate || null,
 
     lastNotificationStatus: wasAnticipated
       ? lastResolution?.MaintenancesStatus.singularLabel
       : lastNotification?.MaintenancesStatus.singularLabel,
 
-    lastResolutionDate: lastResolution?.resolutionDate,
+    lastResolutionDate: lastResolution?.resolutionDate
+      ? dateToString(lastResolution?.resolutionDate)
+      : null,
   };
 
   return dates;
