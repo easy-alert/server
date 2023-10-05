@@ -268,6 +268,10 @@ export class ClientBuildingServices {
         maintenances: [],
       },
       {
+        status: 'Em execução',
+        maintenances: [],
+      },
+      {
         status: 'Concluídas',
         maintenances: [],
       },
@@ -330,6 +334,21 @@ export class ClientBuildingServices {
               label,
               type: maintenance.Maintenance.MaintenanceType.name,
             });
+            // fazer ternário pra definir a posição do array
+            // notifier botar o em andamento falso da vencida anterior ao gerar uma nova vencida
+            // ver o q acontece quando tem só a vencida normal e ta em andamento
+            // TESTE
+            // kanban[2].maintenances.push({
+            //   id: maintenance.id,
+            //   element: maintenance.Maintenance.element,
+            //   activity: maintenance.Maintenance.activity,
+            //   status: maintenance.MaintenancesStatus.name,
+            //   // para ordenação
+            //   date: maintenance.notificationDate,
+            //   dueDate: maintenance.dueDate,
+            //   label,
+            //   type: maintenance.Maintenance.MaintenanceType.name,
+            // });
           }
 
           break;
@@ -366,7 +385,7 @@ export class ClientBuildingServices {
         }
 
         case 'completed':
-          kanban[2].maintenances.push({
+          kanban[3].maintenances.push({
             id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
@@ -385,7 +404,7 @@ export class ClientBuildingServices {
               (1000 * 60 * 60 * 24),
           );
 
-          kanban[2].maintenances.push({
+          kanban[3].maintenances.push({
             id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
