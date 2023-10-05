@@ -70,6 +70,8 @@ export class SharedMaintenanceServices {
       data: {
         maintenanceStatusId,
         resolutionDate,
+        // Forçando ficar falso quando tá concluída
+        inProgress: false,
       },
       where: {
         id: maintenanceHistoryId,
