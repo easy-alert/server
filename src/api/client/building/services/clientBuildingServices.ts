@@ -345,9 +345,6 @@ export class ClientBuildingServices {
               type: maintenance.Maintenance.MaintenanceType.name,
               inProgress: maintenance.inProgress,
             });
-
-            // notifier botar o em execução falso da vencida anterior ao gerar uma nova vencida
-            // ver o q acontece quando tem só a vencida normal e ta em execução
           }
 
           break;
