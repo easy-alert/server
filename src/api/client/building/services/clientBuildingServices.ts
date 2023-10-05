@@ -92,6 +92,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
 
@@ -106,6 +107,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 2:
@@ -119,6 +121,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 3:
@@ -132,6 +135,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 4:
@@ -145,6 +149,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 5:
@@ -158,6 +163,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 6:
@@ -171,6 +177,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 7:
@@ -184,6 +191,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 8:
@@ -197,6 +205,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 9:
@@ -210,6 +219,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 10:
@@ -223,6 +233,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 11:
@@ -236,6 +247,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
 
@@ -466,6 +478,7 @@ export class ClientBuildingServices {
           id: true,
           notificationDate: true,
           resolutionDate: true,
+          inProgress: true,
 
           Building: {
             select: {
@@ -534,6 +547,7 @@ export class ClientBuildingServices {
           id: true,
           notificationDate: true,
           resolutionDate: true,
+          inProgress: true,
 
           Building: {
             select: {
