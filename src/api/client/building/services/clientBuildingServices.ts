@@ -334,6 +334,7 @@ export class ClientBuildingServices {
               label,
               type: maintenance.Maintenance.MaintenanceType.name,
             });
+            // colocar inprogress false quando enviar relato
             // fazer ternário pra definir a posição do array
             // notifier botar o em andamento falso da vencida anterior ao gerar uma nova vencida
             // ver o q acontece quando tem só a vencida normal e ta em andamento
