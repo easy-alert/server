@@ -315,8 +315,6 @@ export class ClientBuildingServices {
             days: period,
           });
 
-          // type: maintenance.type ?? null,
-
           if (
             (today >= canReportDate && history[1]?.MaintenancesStatus?.name !== 'expired') ||
             today >= history[0]?.notificationDate
@@ -345,6 +343,7 @@ export class ClientBuildingServices {
               dueDate: maintenance.dueDate,
               label,
               type: maintenance.Maintenance.MaintenanceType.name,
+              inProgress: maintenance.inProgress,
             });
             // colocar inprogress false quando enviar relato
             // fazer ternário pra definir a posição do array
@@ -393,6 +392,7 @@ export class ClientBuildingServices {
             dueDate: maintenance.dueDate,
             label: `Atrasada há ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
             type: maintenance.Maintenance.MaintenanceType.name,
+            inProgress: maintenance.inProgress,
           });
           break;
         }
@@ -408,6 +408,7 @@ export class ClientBuildingServices {
             dueDate: maintenance.dueDate,
             label: '',
             type: maintenance.Maintenance.MaintenanceType.name,
+            inProgress: maintenance.inProgress,
           });
           break;
 
@@ -427,6 +428,7 @@ export class ClientBuildingServices {
             dueDate: maintenance.dueDate,
             label: `Feita com atraso de ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
             type: maintenance.Maintenance.MaintenanceType.name,
+            inProgress: maintenance.inProgress,
           });
           break;
 
@@ -676,6 +678,7 @@ export class ClientBuildingServices {
           notificationDate: true,
           resolutionDate: true,
           dueDate: true,
+          inProgress: true,
 
           Building: {
             select: {
