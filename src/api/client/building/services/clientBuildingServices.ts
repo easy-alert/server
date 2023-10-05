@@ -345,22 +345,9 @@ export class ClientBuildingServices {
               type: maintenance.Maintenance.MaintenanceType.name,
               inProgress: maintenance.inProgress,
             });
-            // colocar inprogress false quando enviar relato
-            // fazer ternário pra definir a posição do array
+
             // notifier botar o em execução falso da vencida anterior ao gerar uma nova vencida
             // ver o q acontece quando tem só a vencida normal e ta em execução
-            // TESTE
-            // kanban[2].maintenances.push({
-            //   id: maintenance.id,
-            //   element: maintenance.Maintenance.element,
-            //   activity: maintenance.Maintenance.activity,
-            //   status: maintenance.MaintenancesStatus.name,
-            //   // para ordenação
-            //   date: maintenance.notificationDate,
-            //   dueDate: maintenance.dueDate,
-            //   label,
-            //   type: maintenance.Maintenance.MaintenanceType.name,
-            // });
           }
 
           break;
