@@ -159,6 +159,11 @@ export class SharedMaintenanceServices {
       select: {
         notificationDate: true,
         dueDate: true,
+        MaintenancesStatus: {
+          select: {
+            name: true,
+          },
+        },
         MaintenanceReport: {
           select: {
             id: true,
