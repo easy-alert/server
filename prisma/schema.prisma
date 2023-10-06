@@ -192,6 +192,8 @@ model MaintenanceHistory {
   dueDate          DateTime
   resolutionDate   DateTime?
   wasNotified      Boolean   @default(false)
+  inProgress       Boolean   @default(false)
+  daysInAdvance    Int       @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

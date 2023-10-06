@@ -20,6 +20,7 @@ import { listAuxiliaryDataForOccasionalCategoriesAndMaintenances } from './occas
 import { createOccasionalReport } from './occasionalBuildingMaintenances/controllers/createOccasionalReport';
 import { listFolderController } from './building/controllers/listFolder';
 import { clientCreateBuildingAccessHistory } from './building/controllers/clientCreateBuildingAccessHistory';
+import { sharedUpdateInProgressMaintenanceHistory } from '../shared/maintenance/controllers/sharedUpdateInProgressMaintenanceHistory';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -55,6 +56,8 @@ clientRouter.get('/building/annex/:buildingNanoId', findBuildingAnnex);
 clientRouter.get('/building/logo/:buildingNanoId', findCompanyLogo);
 
 clientRouter.post('/maintenances/create/report', sharedCreateMaintenanceReport);
+
+clientRouter.post('/maintenances/set/in-progress', sharedUpdateInProgressMaintenanceHistory);
 
 clientRouter.get('/templates/create', createDefaultTemplates);
 

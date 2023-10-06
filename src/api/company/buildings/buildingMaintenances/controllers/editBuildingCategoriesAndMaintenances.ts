@@ -339,14 +339,16 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
             observation: maintenanceToUpdate.maintenanceReport?.observation
               ? maintenanceToUpdate.maintenanceReport.observation
               : null,
+
             ReportImages: {
               createMany: {
-                data: maintenanceToUpdate.images,
+                data: Array.isArray(maintenanceToUpdate.images) ? maintenanceToUpdate.images : [],
               },
             },
+
             ReportAnnexes: {
               createMany: {
-                data: maintenanceToUpdate.files,
+                data: Array.isArray(maintenanceToUpdate.files) ? maintenanceToUpdate.files : [],
               },
             },
           },

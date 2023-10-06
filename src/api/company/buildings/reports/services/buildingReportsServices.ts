@@ -153,6 +153,7 @@ export class BuildingReportsServices {
           id: true,
           notificationDate: true,
           resolutionDate: true,
+          inProgress: true,
 
           MaintenanceReport: {
             select: {

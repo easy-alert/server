@@ -30,6 +30,7 @@ export interface IMaintenancesData {
   notificationDate: Date;
   resolutionDate: Date | null;
   status: string;
+  inProgress: boolean;
   cost: number | null;
   type: string | null;
 }

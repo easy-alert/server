@@ -78,10 +78,10 @@ export function handleMaintenanceRecentDates(maintenance: Maintenance) {
     (e) => e.MaintenancesStatus.name === 'completed' || e.MaintenancesStatus.name === 'overdue',
   );
 
-  let wasAnticipated = false;
+  let completedInAdvance = false;
 
   if (lastResolution?.resolutionDate) {
-    wasAnticipated = lastResolution.resolutionDate < lastResolution.notificationDate;
+    completedInAdvance = lastResolution.resolutionDate < lastResolution.notificationDate;
   }
 
   const lastNotification = maintenance.Maintenance.MaintenancesHistory.find(
@@ -92,7 +92,7 @@ export function handleMaintenanceRecentDates(maintenance: Maintenance) {
 
   const dateToString = (date: Date) => date.toLocaleDateString('pt-BR');
 
-  if (wasAnticipated) {
+  if (completedInAdvance) {
     lastNotificationDate = 'Realizada antes da notificação';
   } else if (lastNotification?.notificationDate) {
     lastNotificationDate = dateToString(lastNotification.notificationDate);
@@ -106,7 +106,7 @@ export function handleMaintenanceRecentDates(maintenance: Maintenance) {
     // convertido ali em cima
     lastNotificationDate: lastNotificationDate || null,
 
-    lastNotificationStatus: wasAnticipated
+    lastNotificationStatus: completedInAdvance
       ? lastResolution?.MaintenancesStatus.singularLabel
       : lastNotification?.MaintenancesStatus.singularLabel,
 

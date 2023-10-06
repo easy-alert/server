@@ -12,6 +12,7 @@ import { createMaintenance } from './controllers/createMaintenance';
 import { deleteMaintenance } from './controllers/deleteMaintenance';
 import { editMaintenance } from './controllers/editMaintenance';
 import { deleteOccasionalMaintenanceHistory } from './controllers/deleteOccasionalMaintenanceReport';
+import { sharedUpdateInProgressMaintenanceHistory } from '../../../shared/maintenance/controllers/sharedUpdateInProgressMaintenanceHistory';
 
 export const maintenanceRouter = Router();
 
@@ -24,6 +25,8 @@ maintenanceRouter.delete(
   '/occasional/delete/:maintenanceHistoryId',
   deleteOccasionalMaintenanceHistory,
 );
+
+maintenanceRouter.post('/set/in-progress', sharedUpdateInProgressMaintenanceHistory);
 
 maintenanceRouter.post('/create/report', sharedCreateMaintenanceReport);
 maintenanceRouter.post('/edit/report', sharedEditMaintenanceReport);
