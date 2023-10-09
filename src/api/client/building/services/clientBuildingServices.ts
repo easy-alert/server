@@ -92,6 +92,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
 
@@ -106,6 +107,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 2:
@@ -119,6 +121,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 3:
@@ -132,6 +135,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 4:
@@ -145,6 +149,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 5:
@@ -158,6 +163,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 6:
@@ -171,6 +177,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 7:
@@ -184,6 +191,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 8:
@@ -197,6 +205,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 9:
@@ -210,6 +219,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 10:
@@ -223,6 +233,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
         case 11:
@@ -236,6 +247,7 @@ export class ClientBuildingServices {
             expectedDueDate: maintenance.expectedDueDate,
             dateInfos,
             type: maintenance.type ?? null,
+            inProgress: maintenance.inProgress,
           });
           break;
 
@@ -265,6 +277,10 @@ export class ClientBuildingServices {
       },
       {
         status: 'Vencidas',
+        maintenances: [],
+      },
+      {
+        status: 'Em execução',
         maintenances: [],
       },
       {
@@ -299,8 +315,6 @@ export class ClientBuildingServices {
             days: period,
           });
 
-          // type: maintenance.type ?? null,
-
           if (
             (today >= canReportDate && history[1]?.MaintenancesStatus?.name !== 'expired') ||
             today >= history[0]?.notificationDate
@@ -319,7 +333,7 @@ export class ClientBuildingServices {
               label = `Vence em ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`;
             }
 
-            kanban[0].maintenances.push({
+            kanban[maintenance.inProgress ? 2 : 0].maintenances.push({
               id: maintenance.id,
               element: maintenance.Maintenance.element,
               activity: maintenance.Maintenance.activity,
@@ -329,6 +343,7 @@ export class ClientBuildingServices {
               dueDate: maintenance.dueDate,
               label,
               type: maintenance.Maintenance.MaintenanceType.name,
+              inProgress: maintenance.inProgress,
             });
           }
 
@@ -346,7 +361,7 @@ export class ClientBuildingServices {
                 days: historyPeriod,
               }) && history[1]?.MaintenancesStatus?.name !== 'expired';
 
-          kanban[1].maintenances.push({
+          kanban[maintenance.inProgress ? 2 : 1].maintenances.push({
             id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
@@ -361,12 +376,13 @@ export class ClientBuildingServices {
             dueDate: maintenance.dueDate,
             label: `Atrasada há ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
             type: maintenance.Maintenance.MaintenanceType.name,
+            inProgress: maintenance.inProgress,
           });
           break;
         }
 
         case 'completed':
-          kanban[2].maintenances.push({
+          kanban[3].maintenances.push({
             id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
@@ -376,6 +392,7 @@ export class ClientBuildingServices {
             dueDate: maintenance.dueDate,
             label: '',
             type: maintenance.Maintenance.MaintenanceType.name,
+            inProgress: maintenance.inProgress,
           });
           break;
 
@@ -385,7 +402,7 @@ export class ClientBuildingServices {
               (1000 * 60 * 60 * 24),
           );
 
-          kanban[2].maintenances.push({
+          kanban[3].maintenances.push({
             id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
@@ -395,6 +412,7 @@ export class ClientBuildingServices {
             dueDate: maintenance.dueDate,
             label: `Feita com atraso de ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
             type: maintenance.Maintenance.MaintenanceType.name,
+            inProgress: maintenance.inProgress,
           });
           break;
 
@@ -446,6 +464,7 @@ export class ClientBuildingServices {
           id: true,
           notificationDate: true,
           resolutionDate: true,
+          inProgress: true,
 
           Building: {
             select: {
@@ -514,6 +533,7 @@ export class ClientBuildingServices {
           id: true,
           notificationDate: true,
           resolutionDate: true,
+          inProgress: true,
 
           Building: {
             select: {
@@ -642,6 +662,7 @@ export class ClientBuildingServices {
           notificationDate: true,
           resolutionDate: true,
           dueDate: true,
+          inProgress: true,
 
           Building: {
             select: {
