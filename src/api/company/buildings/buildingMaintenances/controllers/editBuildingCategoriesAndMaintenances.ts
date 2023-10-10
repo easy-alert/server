@@ -131,7 +131,10 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
     for (let j = 0; j < bodyData[i].Maintenances.length; j++) {
       if (bodyData[i].Maintenances[j].isSelected) {
-        maintenancesForCreate.push({ maintenanceId: bodyData[i].Maintenances[j].id });
+        maintenancesForCreate.push({
+          maintenanceId: bodyData[i].Maintenances[j].id,
+          daysToAnticipate: bodyData[i].Maintenances[j].daysToAnticipate,
+        });
         maintenancesForHistorySelected.push({
           maintenanceId: bodyData[i].Maintenances[j].id,
           resolutionDate: bodyData[i].Maintenances[j].resolutionDate
