@@ -393,6 +393,7 @@ export class BuildingServices {
         },
         Maintenances: {
           select: {
+            daysToAnticipate: true,
             Maintenance: {
               select: {
                 MaintenancesHistory: {
