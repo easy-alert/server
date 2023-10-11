@@ -144,6 +144,24 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     },
   });
 
+  const foundBuildingMaintenance = await buildingServices.findBuildingMaintenanceDaysToAnticipate({
+    buildingId: maintenanceHistory.Building.id,
+    maintenanceId: maintenanceHistory.Maintenance.id,
+  });
+
+  // se ela foi criada com antecipação, respeitar
+  if (maintenanceHistory?.daysInAdvance) {
+    const canReportAnticipatedMaintenance = today >= maintenanceHistory.notificationDate;
+
+    if (!canReportAnticipatedMaintenance) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message:
+          'Você não pode reportar uma manutenção com antecipação antes do dia da notificação.',
+      });
+    }
+  }
+
   // VERIFICA SE A DATA DE NOTIFICAÇÃO DA PRIMEIRA POSIÇÃO QUE DEVE SER PENDENTE
   const period = history[0].Maintenance.period * history[0].Maintenance.PeriodTimeInterval.unitTime;
 
@@ -329,11 +347,6 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       },
     });
   }
-
-  const foundBuildingMaintenance = await buildingServices.findBuildingMaintenanceDaysToAnticipate({
-    buildingId: maintenanceHistory.Building.id,
-    maintenanceId: maintenanceHistory.Maintenance.id,
-  });
 
   // #region CREATE MAINTENANCE HISTORY
   const notificationDate = noWeekendTimeDate({

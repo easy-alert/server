@@ -261,6 +261,7 @@ export class SharedMaintenanceServices {
         maintenanceId: true,
         notificationDate: true,
         dueDate: true,
+        daysInAdvance: true,
         MaintenancesStatus: {
           select: {
             name: true,
