@@ -4,6 +4,7 @@ import { changeTime } from '../../../../utils/dateTime/changeTime';
 
 // CLASS
 import { SharedCalendarServices } from '../../../shared/calendar/services/SharedCalendarServices';
+import { buildingServices } from '../../buildings/building/services/buildingServices';
 
 const sharedCalendarServices = new SharedCalendarServices();
 
@@ -41,6 +42,12 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
     if (MaintenancesPending[i].Maintenance?.MaintenanceType?.name === 'occasional') {
       Dates.push({ ...MaintenancesPending[i] });
     } else {
+      const foundBuildingMaintenance =
+        await buildingServices.findBuildingMaintenanceDaysToAnticipate({
+          buildingId: MaintenancesPending[i].Building.id,
+          maintenanceId: MaintenancesPending[i].Maintenance.id,
+        });
+
       const intervals = sharedCalendarServices.recurringDates({
         startDate: changeTime({
           date: new Date(MaintenancesPending[i].notificationDate),
@@ -52,11 +59,13 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
         }),
         interval:
           MaintenancesPending[i].Maintenance.frequency *
-          MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
+            MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime -
+          (foundBuildingMaintenance?.daysToAnticipate ?? 0),
         maintenanceData: MaintenancesPending[i],
         periodDaysInterval:
           MaintenancesPending[i].Maintenance.period *
-          MaintenancesPending[i].Maintenance.PeriodTimeInterval.unitTime,
+            MaintenancesPending[i].Maintenance.PeriodTimeInterval.unitTime +
+          (foundBuildingMaintenance?.daysToAnticipate ?? 0),
       });
 
       Dates.push(...intervals);
