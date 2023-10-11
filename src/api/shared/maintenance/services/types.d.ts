@@ -57,7 +57,7 @@ export interface IMaintenanceHistory {
   notificationDate: Date;
   resolutionDate?: Date;
   dueDate: Date;
-  daysInAdvance: number;
+  daysInAdvance?: number;
 }
 
 export interface ICreateMaintenanceHistoryAndReport {
