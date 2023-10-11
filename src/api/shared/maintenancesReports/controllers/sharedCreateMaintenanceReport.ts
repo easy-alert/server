@@ -11,6 +11,7 @@ import { SharedMaintenanceStatusServices } from '../../maintenanceStatus/service
 import { SharedBuildingNotificationConfigurationServices } from '../../notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { SharedMaintenanceReportsServices } from '../services/SharedMaintenanceReportsServices';
 import { IAttachments, ICreateAndEditMaintenanceReportsBody } from './types';
+import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
 
 // CLASS
 
@@ -329,13 +330,19 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     });
   }
 
+  const foundBuildingMaintenance = await buildingServices.findBuildingMaintenanceDaysToAnticipate({
+    buildingId: maintenanceHistory.Building.id,
+    maintenanceId: maintenanceHistory.Maintenance.id,
+  });
+
   // #region CREATE MAINTENANCE HISTORY
   const notificationDate = noWeekendTimeDate({
     date: addDays({
       date: today,
       days:
         maintenanceHistory.Maintenance.frequency *
-        maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime,
+          maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime -
+        (foundBuildingMaintenance?.daysToAnticipate ?? 0),
     }),
     interval:
       maintenanceHistory.Maintenance.frequency *
@@ -347,7 +354,8 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       date: notificationDate,
       days:
         maintenanceHistory.Maintenance.period *
-        maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
+          maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime +
+        (foundBuildingMaintenance?.daysToAnticipate ?? 0),
     }),
     interval:
       maintenanceHistory.Maintenance.period *
@@ -365,6 +373,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
           maintenanceStatusId: pendingStatus.id,
           notificationDate,
           dueDate,
+          daysInAdvance: foundBuildingMaintenance?.daysToAnticipate ?? 0,
         },
       ],
     });

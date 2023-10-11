@@ -155,6 +155,26 @@ export class BuildingServices {
     }
   }
 
+  async findBuildingMaintenanceDaysToAnticipate({
+    buildingId,
+    maintenanceId,
+  }: {
+    buildingId: string;
+    maintenanceId: string;
+  }) {
+    return prisma.buildingMaintenance.findFirst({
+      select: {
+        daysToAnticipate: true,
+      },
+      where: {
+        BuildingCategory: {
+          buildingId,
+        },
+        maintenanceId,
+      },
+    });
+  }
+
   async findByName({ name, companyId }: { name: string; companyId: string }) {
     const building = await prisma.building.findFirst({
       where: {

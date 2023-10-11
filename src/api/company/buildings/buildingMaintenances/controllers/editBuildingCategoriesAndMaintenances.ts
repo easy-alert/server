@@ -289,6 +289,8 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
     const canAnticipate = frequency >= sixMonthsInDays;
     const maxDaysToAnticipate = frequency / 2;
 
+    let firstMaintenanceWasAntecipated = false;
+
     if (updatedsMaintenances[i].resolutionDate === null) {
       // console.log('aqui é a notificação quando não manda data de resolução');
 
@@ -330,9 +332,11 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
           date: removeDays({ date: notificationDate, days: daysToAnticipate }),
           interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
         });
+        firstMaintenanceWasAntecipated = true;
       }
 
       if (updatedsMaintenances[i].notificationDate !== null) {
+        firstMaintenanceWasAntecipated = false;
         notificationDate = updatedsMaintenances[i].notificationDate;
         // console.log('entra quando tem a notificação');
       }
@@ -466,9 +470,11 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
           date: removeDays({ date: notificationDate, days: daysToAnticipate }),
           interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
         });
+        firstMaintenanceWasAntecipated = true;
       }
 
       if (updatedsMaintenances[i].notificationDate !== null) {
+        firstMaintenanceWasAntecipated = false;
         notificationDate = updatedsMaintenances[i].notificationDate;
         // console.log('entra aqui quando tem os dois');
       }
@@ -492,7 +498,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       maintenanceStatusId: maintenanceStatus.id,
       notificationDate,
       dueDate,
-      daysInAdvance: daysToAnticipate,
+      daysInAdvance: firstMaintenanceWasAntecipated ? daysToAnticipate : 0,
     });
   }
 
