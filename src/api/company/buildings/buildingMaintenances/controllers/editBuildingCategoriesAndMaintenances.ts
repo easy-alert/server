@@ -483,10 +483,14 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
     // SOMANDO OS DIAS ANTECIPADOS NOVAMENTE NA DATA DE RESOLUÇÃO,
     // se nao ela ia descontar o que foi antecipado
     // se não existir é zero entao ok.
+
     const dueDate = noWeekendTimeDate({
       date: addDays({
         date: notificationDate,
-        days: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime + daysToAnticipate,
+        days:
+          updatedsMaintenances[i].period * timeIntervalPeriod.unitTime +
+          // só soma os dias se não tiver primeira data de notificação
+          (firstMaintenanceWasAntecipated ? daysToAnticipate : 0),
       }),
       interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
     });
