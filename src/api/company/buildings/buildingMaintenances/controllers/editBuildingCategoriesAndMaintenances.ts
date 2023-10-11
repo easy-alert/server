@@ -492,6 +492,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       maintenanceStatusId: maintenanceStatus.id,
       notificationDate,
       dueDate,
+      daysInAdvance: daysToAnticipate,
     });
   }
 

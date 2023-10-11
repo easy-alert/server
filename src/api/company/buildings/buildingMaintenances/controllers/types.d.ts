@@ -54,6 +54,7 @@ interface IDateForCreateHistory {
   notificationDate: Date;
   resolutionDate?: Date;
   dueDate: Date;
+  daysInAdvance: number;
   MaintenanceReport?: {
     create: {
       cost: number;
