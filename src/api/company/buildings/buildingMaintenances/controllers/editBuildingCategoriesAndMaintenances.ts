@@ -13,7 +13,7 @@ import { BuildingMaintenanceHistoryServices } from '../../buildingMaintenancesHi
 import { BuildingCategoryAndMaintenanceServices } from '../services/buildingCategoryAndMaintenanceServices';
 import { IDateForCreateHistory, IMaintenancesForHistorySelected } from './types';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
-import { addDays } from '../../../../../utils/dateTime';
+import { addDays, removeDays } from '../../../../../utils/dateTime';
 import { changeTime } from '../../../../../utils/dateTime/changeTime';
 import { SharedMaintenanceReportsServices } from '../../../../shared/maintenancesReports/services/SharedMaintenanceReportsServices';
 
@@ -31,6 +31,22 @@ const sharedMaintenanceStatusServices = new SharedMaintenanceStatusServices();
 const sharedMaintenanceReportsServices = new SharedMaintenanceReportsServices();
 
 // #endregion
+
+// quando não manda nenhuma data cai no:
+// *aqui é a notificação quando não manda data de resolução
+// *aqui é a notificação quando não manda data de resolução 2
+
+// quando manda a data de resolução:
+// *essa é a data que gera automatico quando não manda nada
+
+// quando manda a data de notificação cai no:
+// *aqui é a notificação quando não manda data de resolução
+// *aqui é a notificação quando não manda data de resolução 2
+// *entra quando tem a notificação
+
+// quando mandar as duas:
+// *essa é a data que gera automatico quando não manda nada
+// *entra aqui quando tem os dois
 
 export async function editBuildingCategoriesAndMaintenances(req: Request, res: Response) {
   const { buildingId, origin } = req.body;
@@ -258,7 +274,25 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
     // #endregion
 
+    const categoryToUpdate = bodyData.find(
+      (data: any) => data.categoryId === updatedsMaintenances[i].categoryId,
+    );
+
+    const maintenanceToUpdate = categoryToUpdate.Maintenances.find(
+      (maintenance: any) => maintenance.id === updatedsMaintenances[i].id,
+    );
+
+    // periodicidade mínima de 6 meses pra antecipar
+    const sixMonthsInDays = 30 * 6;
+    const daysToAnticipate = maintenanceToUpdate.daysToAnticipate || 0;
+    const frequency = updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime;
+    const canAnticipate = frequency >= sixMonthsInDays;
+    const maxDaysToAnticipate = frequency / 2;
+
     if (updatedsMaintenances[i].resolutionDate === null) {
+      // console.log('aqui é a notificação quando não manda data de resolução');
+
+      // delay vai ser desconsiderado, por isso nao usei
       notificationDate = noWeekendTimeDate({
         date: addDays({
           date: buildingDeliveryDate,
@@ -276,19 +310,34 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         });
       }
 
+      // antecipar aqui
+      if (daysToAnticipate) {
+        if (!canAnticipate) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: `A manutenção ${updatedsMaintenances[i].element} não pode ser antecipada, pois ela precisa ter uma periodicidade mínima de 6 meses.`,
+          });
+        }
+
+        if (daysToAnticipate > maxDaysToAnticipate) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: `O limite de antecipação da manutenção ${updatedsMaintenances[i].element} é de ${maxDaysToAnticipate} dias.`,
+          });
+        }
+
+        notificationDate = noWeekendTimeDate({
+          date: removeDays({ date: notificationDate, days: daysToAnticipate }),
+          interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+        });
+      }
+
       if (updatedsMaintenances[i].notificationDate !== null) {
         notificationDate = updatedsMaintenances[i].notificationDate;
+        // console.log('entra quando tem a notificação');
       }
     } else {
       // #region Create History for maintenanceHistory
-
-      const categoryToUpdate = bodyData.find(
-        (data: any) => data.categoryId === updatedsMaintenances[i].categoryId,
-      );
-
-      const maintenanceToUpdate = categoryToUpdate.Maintenances.find(
-        (maintenance: any) => maintenance.id === updatedsMaintenances[i].id,
-      );
 
       const dataForCreateHistoryAndReport: ICreateMaintenanceHistoryAndReport = {
         buildingId,
@@ -366,6 +415,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         date: notificationDateForSelectedLastResolutionDate,
         days: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
       });
+      // console.log('essa é a data que gera automatico quando não manda nada');
 
       if (
         notificationDateForSelectedLastResolutionDate < today &&
@@ -376,6 +426,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
           message: `Você deve informar uma data de próxima notificação na manutenção ${updatedsMaintenances[i].element}`,
         });
       }
+      // é essa
 
       notificationDateForSelectedLastResolutionDate = changeTime({
         date: noWeekendTimeDate({
@@ -395,15 +446,41 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
       });
 
+      // antecipar aqui
+      if (daysToAnticipate) {
+        if (!canAnticipate) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: `A manutenção ${updatedsMaintenances[i].element} não pode ser antecipada, pois ela precisa ter uma periodicidade mínima de 6 meses.`,
+          });
+        }
+
+        if (daysToAnticipate > maxDaysToAnticipate) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: `O limite de antecipação da manutenção ${updatedsMaintenances[i].element} é de ${maxDaysToAnticipate} dias.`,
+          });
+        }
+
+        notificationDate = noWeekendTimeDate({
+          date: removeDays({ date: notificationDate, days: daysToAnticipate }),
+          interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+        });
+      }
+
       if (updatedsMaintenances[i].notificationDate !== null) {
         notificationDate = updatedsMaintenances[i].notificationDate;
+        // console.log('entra aqui quando tem os dois');
       }
     }
 
+    // SOMANDO OS DIAS ANTECIPADOS NOVAMENTE NA DATA DE RESOLUÇÃO,
+    // se nao ela ia descontar o que foi antecipado
+    // se não existir é zero entao ok.
     const dueDate = noWeekendTimeDate({
       date: addDays({
         date: notificationDate,
-        days: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
+        days: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime + daysToAnticipate,
       }),
       interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
     });
