@@ -6,8 +6,6 @@ import { SharedMaintenanceServices } from '../../maintenance/services/sharedMain
 import { changeTime } from '../../../../utils/dateTime/changeTime';
 import { removeDays } from '../../../../utils/dateTime';
 
-// CLASS
-
 const validator = new Validator();
 const sharedMaintenanceReportsServices = new SharedMaintenanceReportsServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
@@ -27,7 +25,6 @@ export async function sharedMaintenanceHistoryDetails(req: Request, res: Respons
   ]);
 
   // #endregion
-
   const maintenance = await sharedMaintenanceReportsServices.listMaintenanceById({
     maintenanceHistoryId,
   });
@@ -49,6 +46,7 @@ export async function sharedMaintenanceHistoryDetails(req: Request, res: Respons
 
   const period = history[0].Maintenance.period * history[0].Maintenance.PeriodTimeInterval.unitTime;
 
+  // s eaplica só
   const canReportPending =
     today >= removeDays({ date: history[0]?.notificationDate, days: period });
 
@@ -60,7 +58,19 @@ export async function sharedMaintenanceHistoryDetails(req: Request, res: Respons
     }
   }
 
-  if (!canReportPending && maintenance.MaintenancesStatus.name === 'pending') {
+  // se ela foi criada com antecipação, respeitar
+  // se foi criada com antecipação e ainda nao é o dia, não pode fazer
+  const canReportAnticipatedMaintenance = today >= maintenance.notificationDate;
+  if (maintenance?.daysInAdvance && !canReportAnticipatedMaintenance) {
+    allowReport = false;
+  }
+
+  // se não tiver antecipação
+  if (
+    !maintenance?.daysInAdvance &&
+    !canReportPending &&
+    maintenance.MaintenancesStatus.name === 'pending'
+  ) {
     allowReport = false;
   }
 

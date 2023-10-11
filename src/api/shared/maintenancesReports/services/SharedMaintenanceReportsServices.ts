@@ -106,6 +106,7 @@ export class SharedMaintenanceReportsServices {
         dueDate: true,
         resolutionDate: true,
         inProgress: true,
+        daysInAdvance: true,
 
         MaintenanceReport: {
           select: {
