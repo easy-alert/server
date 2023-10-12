@@ -1,9 +1,9 @@
 /* eslint-disable no-underscore-dangle */
 import { Request, Response } from 'express';
 import { changeTime } from '../../../../utils/dateTime/changeTime';
-import { removeDays } from '../../../../utils/dateTime/removeDays';
 import { dashboardServices } from '../services/dashboardServices';
 import { mask } from '../../../../utils/masks';
+import { removeDays } from '../../../../utils/dateTime';
 
 interface IResponsible {
   some: {
@@ -67,8 +67,10 @@ function getPeriod(period: number | string = 365) {
 export async function listData(req: Request, res: Response) {
   const { period, buildings, categories, responsibles } = req.query;
   const { startDate, endDate } = getPeriod(period as string | undefined);
+
+  // tava invertido e funcionava de algum jeito
   const filter = {
-    period: { lte: startDate, gte: endDate },
+    period: { lte: endDate, gte: startDate },
 
     buildings:
       buildings && JSON.parse(String(buildings))?.length > 0
