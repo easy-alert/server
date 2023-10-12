@@ -69,7 +69,7 @@ export function handleMaintenanceRecentDates(maintenance: Maintenance) {
     futureNotificationDate = noWeekendTimeDate({
       date: addDays({ date: nextNotificationDate, days: frequencyDays }),
       interval:
-        maintenance.Maintenance.frequency * maintenance.Maintenance.FrequencyTimeInterval.unitTime,
+        maintenance.Maintenance.period * maintenance.Maintenance.PeriodTimeInterval.unitTime,
     });
   }
 

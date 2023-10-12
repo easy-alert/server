@@ -15,6 +15,12 @@ async function findManyMaintenanceHistory() {
               unitTime: true,
             },
           },
+          period: true,
+          PeriodTimeInterval: {
+            select: {
+              unitTime: true,
+            },
+          },
         },
       },
     },
@@ -49,8 +55,8 @@ export async function removeDatesOfWeekend(_req: Request, res: Response) {
         noWeekendTimeDate({
           date: maintenanceHistory[i].notificationDate,
           interval:
-            maintenanceHistory[i].Maintenance.frequency *
-            maintenanceHistory[i].Maintenance.FrequencyTimeInterval.unitTime,
+            maintenanceHistory[i].Maintenance.period *
+            maintenanceHistory[i].Maintenance.PeriodTimeInterval.unitTime,
         }),
       );
     }

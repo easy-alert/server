@@ -358,8 +358,8 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
         (foundBuildingMaintenance?.daysToAnticipate ?? 0),
     }),
     interval:
-      maintenanceHistory.Maintenance.frequency *
-      maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime,
+      maintenanceHistory.Maintenance.period *
+      maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
   });
 
   const dueDate = noWeekendTimeDate({

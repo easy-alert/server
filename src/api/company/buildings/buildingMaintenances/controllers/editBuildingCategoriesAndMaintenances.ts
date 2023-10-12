@@ -262,7 +262,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
     notificationDateForOldBuildingDeliveries = changeTime({
       date: noWeekendTimeDate({
         date: notificationDateForOldBuildingDeliveries,
-        interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+        interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
       }),
       time: {
         h: 0,
@@ -302,13 +302,13 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
             updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime +
             updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
         }),
-        interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+        interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
       });
 
       if (buildingDeliveryDate < today) {
         notificationDate = noWeekendTimeDate({
           date: notificationDateForOldBuildingDeliveries,
-          interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+          interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
         });
       }
 
@@ -330,7 +330,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
         notificationDate = noWeekendTimeDate({
           date: removeDays({ date: notificationDate, days: daysToAnticipate }),
-          interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+          interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
         });
         firstMaintenanceWasAntecipated = true;
       }
@@ -435,7 +435,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       notificationDateForSelectedLastResolutionDate = changeTime({
         date: noWeekendTimeDate({
           date: notificationDateForSelectedLastResolutionDate,
-          interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+          interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
         }),
         time: {
           h: 0,
@@ -447,7 +447,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
       notificationDate = noWeekendTimeDate({
         date: notificationDateForSelectedLastResolutionDate,
-        interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+        interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
       });
 
       // antecipar aqui
@@ -468,7 +468,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
         notificationDate = noWeekendTimeDate({
           date: removeDays({ date: notificationDate, days: daysToAnticipate }),
-          interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+          interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
         });
         firstMaintenanceWasAntecipated = true;
       }
@@ -492,7 +492,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
           // só soma os dias se não tiver primeira data de notificação
           (firstMaintenanceWasAntecipated ? daysToAnticipate : 0),
       }),
-      interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+      interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
     });
 
     DataForCreateHistory.push({

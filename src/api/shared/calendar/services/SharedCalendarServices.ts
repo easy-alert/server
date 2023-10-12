@@ -38,7 +38,10 @@ export class SharedCalendarServices {
         }),
         type: maintenanceData.Maintenance.MaintenanceType?.name || null,
       });
-      date = noWeekendTimeDate({ date: addDays({ date, days: interval }), interval });
+      date = noWeekendTimeDate({
+        date: addDays({ date, days: interval }),
+        interval: periodDaysInterval,
+      });
       isFuture = true;
     }
 
