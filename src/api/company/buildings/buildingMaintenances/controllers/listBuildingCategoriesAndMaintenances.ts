@@ -41,7 +41,13 @@ export async function isTemplate({
     search: '',
   })) as IListBuildingCategoriesAndMaintenances[];
 
+  // Info do building Atual
   const buildingMaintenanceHistory = await buildingServices.listMaintenancesHistoryByBuilding({
+    buildingId: currentBuildingId,
+  });
+
+  // Info do building Atual
+  const currentBuildingCategoriesAndMaintenances = await buildingServices.listMaintenances({
     buildingId: currentBuildingId,
   });
 
@@ -64,14 +70,27 @@ export async function isTemplate({
         (history) => history.maintenanceId === allCategoriesAndMaintenances[i].Maintenances[j].id,
       );
 
+      // esse é para achar as data recentes
       const foundMaintenance = currentBuildingCategoriesAndMaintenancesWithRecentDates.find(
         (e) => e.maintenanceId === allCategoriesAndMaintenances[i].Maintenances[j].id,
       );
+      //
+
+      // esses dois é para achar recuperar os dias para antecipar
+      const foundCategoryWithDaysToAnticipate = currentBuildingCategoriesAndMaintenances.find(
+        (e) => e.categoryId === allCategoriesAndMaintenances[i].id,
+      );
+
+      const foundDaysToAnticipate = foundCategoryWithDaysToAnticipate?.Maintenances.find(
+        (e) => e.Maintenance.id === allCategoriesAndMaintenances[i].Maintenances[j].id,
+      )?.daysToAnticipate;
+      //
 
       allCategoriesAndMaintenances[i].Maintenances[j] = {
         ...allCategoriesAndMaintenances[i].Maintenances[j],
         isSelected: false,
         hasHistory,
+        daysToAnticipate: foundDaysToAnticipate ?? 0,
         ...foundMaintenance?.recentDates,
       };
     }
@@ -124,6 +143,11 @@ export async function isBuilding({
     buildingId,
   });
 
+  // Info do building Atual
+  const currentBuildingCategoriesAndMaintenances = await buildingServices.listMaintenances({
+    buildingId: currentBuildingId,
+  });
+  // Info do building Atual
   const buildingMaintenanceHistory = await buildingServices.listMaintenancesHistoryByBuilding({
     buildingId: currentBuildingId,
   });
@@ -132,6 +156,7 @@ export async function isBuilding({
   const currentBuildingCategoriesAndMaintenancesWithRecentDates = buildingMaintenanceHistory.map(
     (maintenance) => {
       const recentDates = handleMaintenanceRecentDates(maintenance);
+
       return {
         maintenanceId: maintenance.maintenanceId,
         recentDates,
@@ -157,15 +182,27 @@ export async function isBuilding({
       const hasHistory = buildingMaintenanceHistory.some(
         (history) => history.maintenanceId === allCategoriesAndMaintenances[i].Maintenances[j].id,
       );
-
+      // esse é para achar as data recentes
       const foundMaintenance = currentBuildingCategoriesAndMaintenancesWithRecentDates.find(
         (e) => e.maintenanceId === allCategoriesAndMaintenances[i].Maintenances[j].id,
       );
+      //
+
+      // esses dois é para achar recuperar os dias para antecipar
+      const foundCategoryWithDaysToAnticipate = currentBuildingCategoriesAndMaintenances.find(
+        (e) => e.categoryId === allCategoriesAndMaintenances[i].id,
+      );
+
+      const foundDaysToAnticipate = foundCategoryWithDaysToAnticipate?.Maintenances.find(
+        (e) => e.Maintenance.id === allCategoriesAndMaintenances[i].Maintenances[j].id,
+      )?.daysToAnticipate;
+      //
 
       allCategoriesAndMaintenances[i].Maintenances[j] = {
         ...allCategoriesAndMaintenances[i].Maintenances[j],
         isSelected: false,
         hasHistory,
+        daysToAnticipate: foundDaysToAnticipate ?? 0,
         ...foundMaintenance?.recentDates,
       };
     }

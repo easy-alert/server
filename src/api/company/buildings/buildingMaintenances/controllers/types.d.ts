@@ -36,6 +36,7 @@ interface Maintenance {
   lastNotificationDate: string | null;
   lastNotificationStatus: string | undefined;
   lastResolutionDate: string | null | undefined;
+  daysToAnticipate: number;
 }
 
 export interface IListBuildingCategoriesAndMaintenances {
@@ -53,6 +54,7 @@ interface IDateForCreateHistory {
   notificationDate: Date;
   resolutionDate?: Date;
   dueDate: Date;
+  daysInAdvance: number;
   MaintenanceReport?: {
     create: {
       cost: number;

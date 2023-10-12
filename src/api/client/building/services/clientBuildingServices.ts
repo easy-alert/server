@@ -310,10 +310,14 @@ export class ClientBuildingServices {
           period =
             maintenance.Maintenance.period * maintenance.Maintenance.PeriodTimeInterval.unitTime;
 
-          canReportDate = removeDays({
-            date: maintenance.notificationDate,
-            days: period,
-          });
+          if (maintenance.daysInAdvance) {
+            canReportDate = maintenance.notificationDate;
+          } else {
+            canReportDate = removeDays({
+              date: maintenance.notificationDate,
+              days: period,
+            });
+          }
 
           if (
             (today >= canReportDate && history[1]?.MaintenancesStatus?.name !== 'expired') ||
@@ -663,6 +667,7 @@ export class ClientBuildingServices {
           resolutionDate: true,
           dueDate: true,
           inProgress: true,
+          daysInAdvance: true,
 
           Building: {
             select: {

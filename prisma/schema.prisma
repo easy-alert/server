@@ -442,6 +442,8 @@ model BuildingMaintenance {
   buildingCategoryId String
   maintenanceId      String
 
+  daysToAnticipate Int @default(0)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

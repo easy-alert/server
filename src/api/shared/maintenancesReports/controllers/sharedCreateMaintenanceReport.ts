@@ -11,6 +11,7 @@ import { SharedMaintenanceStatusServices } from '../../maintenanceStatus/service
 import { SharedBuildingNotificationConfigurationServices } from '../../notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { SharedMaintenanceReportsServices } from '../services/SharedMaintenanceReportsServices';
 import { IAttachments, ICreateAndEditMaintenanceReportsBody } from './types';
+import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
 
 // CLASS
 
@@ -142,6 +143,24 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       s: 0,
     },
   });
+
+  const foundBuildingMaintenance = await buildingServices.findBuildingMaintenanceDaysToAnticipate({
+    buildingId: maintenanceHistory.Building.id,
+    maintenanceId: maintenanceHistory.Maintenance.id,
+  });
+
+  // se ela foi criada com antecipação, respeitar
+  if (maintenanceHistory?.daysInAdvance) {
+    const canReportAnticipatedMaintenance = today >= maintenanceHistory.notificationDate;
+
+    if (!canReportAnticipatedMaintenance) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message:
+          'Você não pode reportar uma manutenção com antecipação antes do dia da notificação.',
+      });
+    }
+  }
 
   // VERIFICA SE A DATA DE NOTIFICAÇÃO DA PRIMEIRA POSIÇÃO QUE DEVE SER PENDENTE
   const period = history[0].Maintenance.period * history[0].Maintenance.PeriodTimeInterval.unitTime;
@@ -335,11 +354,12 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       date: today,
       days:
         maintenanceHistory.Maintenance.frequency *
-        maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime,
+          maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime -
+        (foundBuildingMaintenance?.daysToAnticipate ?? 0),
     }),
     interval:
-      maintenanceHistory.Maintenance.frequency *
-      maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime,
+      maintenanceHistory.Maintenance.period *
+      maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
   });
 
   const dueDate = noWeekendTimeDate({
@@ -347,7 +367,8 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       date: notificationDate,
       days:
         maintenanceHistory.Maintenance.period *
-        maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
+          maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime +
+        (foundBuildingMaintenance?.daysToAnticipate ?? 0),
     }),
     interval:
       maintenanceHistory.Maintenance.period *
@@ -365,6 +386,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
           maintenanceStatusId: pendingStatus.id,
           notificationDate,
           dueDate,
+          daysInAdvance: foundBuildingMaintenance?.daysToAnticipate ?? 0,
         },
       ],
     });

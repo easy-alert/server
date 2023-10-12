@@ -45,7 +45,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   const endDate =
     year === ''
       ? changeTime({
-          date: new Date(`${monthFilter ?? '12'}/31/${String(new Date().getFullYear())}`),
+          date: new Date(`${monthFilter ?? '12'}/31/${String(new Date().getFullYear() + 100)}`),
           time: {
             h: 0,
             m: 0,
@@ -92,11 +92,9 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
 
   let yearsFiltered: string[] = [];
 
-  // menor ou igual pra pegar o ano atual
+  // ALTEREI ISSO AQUI, caso dê ruim
   MaintenancesForFilter.forEach((date) => {
-    if (new Date(date.notificationDate).getFullYear() <= new Date().getFullYear()) {
-      yearsFiltered.push(String(new Date(date.notificationDate).getFullYear()));
-    }
+    yearsFiltered.push(String(new Date(date.notificationDate).getFullYear()));
   });
 
   yearsFiltered = [...new Set(yearsFiltered)];

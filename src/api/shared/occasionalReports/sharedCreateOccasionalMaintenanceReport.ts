@@ -102,11 +102,11 @@ export async function sharedCreateOccasionalMaintenanceReport({
       delayTimeIntervalId: timeInterval.id,
       frequency: 0,
       frequencyTimeIntervalId: timeInterval.id,
-      observation: 'manutenção avulsa',
+      observation: 'Manutenção avulsa',
       periodTimeIntervalId: timeInterval.id,
       period: 5,
       responsible: maintenanceData.responsible,
-      source: 'manutenção avulsa',
+      source: 'Manutenção avulsa',
     },
   });
 
