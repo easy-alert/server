@@ -38,6 +38,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
     categoryData,
     maintenanceData,
     reportData,
+    inProgress,
   }: ICreateOccassionalMaintenanceReport = body;
 
   // #region VALIDATIONS
@@ -64,6 +65,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
     { label: 'Reponsável da manutenção', variable: maintenanceData.responsible, type: 'string' },
     { label: 'Data', variable: executionDate, type: 'string' },
     { label: 'Origem', variable: origin, type: 'string' },
+    { label: 'Execução', variable: inProgress, type: 'boolean', isOptional: true },
   ]);
 
   let syndicData = null;
@@ -129,6 +131,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
             date: addDays({ date: new Date(executionDate), days: 5 }),
             interval: 2,
           }),
+          inProgress,
         },
       ],
     });

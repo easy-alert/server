@@ -58,6 +58,7 @@ export interface IMaintenanceHistory {
   resolutionDate?: Date;
   dueDate: Date;
   daysInAdvance?: number;
+  inProgress?: boolean;
 }
 
 export interface ICreateMaintenanceHistoryAndReport {

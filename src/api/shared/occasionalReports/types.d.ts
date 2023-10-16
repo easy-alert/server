@@ -17,6 +17,7 @@ export interface ICreateOccassionalMaintenanceReport {
     responsible: string;
   };
 
+  inProgress: boolean;
   categoryData: {
     id: string;
     name: string;
