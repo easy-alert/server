@@ -95,6 +95,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       ]);
 
       if (
+        bodyData[i].Maintenances[j].isSelected &&
         bodyData[i].Maintenances[j].resolutionDate &&
         new Date(bodyData[i].Maintenances[j].resolutionDate) > today
       ) {
@@ -105,6 +106,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       }
 
       if (
+        bodyData[i].Maintenances[j].isSelected &&
         bodyData[i].Maintenances[j].notificationDate &&
         new Date(bodyData[i].Maintenances[j].notificationDate) < today
       ) {
@@ -112,6 +114,34 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
           statusCode: 400,
           message: 'A data da próxima notificação deve ser maior que hoje',
         });
+      }
+
+      if (bodyData[i].Maintenances[j].daysToAnticipate) {
+        const timeIntervalFrequency = await timeIntervalServices.findById({
+          timeIntervalId: bodyData[i].Maintenances[j].FrequencyTimeInterval.id,
+        });
+        // tá repetido lá em baixo mais 2x
+        const sixMonthsInDays = 30 * 6;
+        const daysToAnticipate = bodyData[i].Maintenances[j].daysToAnticipate || 0;
+        const frequency = bodyData[i].Maintenances[j].frequency * timeIntervalFrequency.unitTime;
+        const canAnticipate = frequency >= sixMonthsInDays;
+        const maxDaysToAnticipate = frequency / 2;
+
+        if (bodyData[i].Maintenances[j].isSelected && !canAnticipate) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: `A manutenção ${bodyData[i].Maintenances[j].element} não pode ser antecipada, pois ela precisa ter uma periodicidade mínima de 6 meses.`,
+          });
+        }
+
+        if (bodyData[i].Maintenances[j].isSelected && daysToAnticipate > maxDaysToAnticipate) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: `O limite de antecipação da manutenção ${
+              bodyData[i].Maintenances[j].element
+            } é de ${Math.floor(maxDaysToAnticipate)} dias.`,
+          });
+        }
       }
 
       await sharedMaintenanceServices.findById({ maintenanceId: bodyData[i].Maintenances[j].id });
@@ -324,7 +354,9 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         if (daysToAnticipate > maxDaysToAnticipate) {
           throw new ServerMessage({
             statusCode: 400,
-            message: `O limite de antecipação da manutenção ${updatedsMaintenances[i].element} é de ${maxDaysToAnticipate} dias.`,
+            message: `O limite de antecipação da manutenção ${
+              updatedsMaintenances[i].element
+            } é de ${Math.floor(maxDaysToAnticipate)} dias.`,
           });
         }
 
@@ -462,7 +494,9 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         if (daysToAnticipate > maxDaysToAnticipate) {
           throw new ServerMessage({
             statusCode: 400,
-            message: `O limite de antecipação da manutenção ${updatedsMaintenances[i].element} é de ${maxDaysToAnticipate} dias.`,
+            message: `O limite de antecipação da manutenção ${
+              updatedsMaintenances[i].element
+            } é de ${Math.floor(maxDaysToAnticipate)} dias.`,
           });
         }
 
