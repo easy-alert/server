@@ -324,7 +324,6 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
     if (updatedsMaintenances[i].resolutionDate === null) {
       // console.log('aqui é a notificação quando não manda data de resolução');
 
-      // delay vai ser desconsiderado, por isso nao usei
       notificationDate = noWeekendTimeDate({
         date: addDays({
           date: buildingDeliveryDate,
@@ -453,8 +452,12 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       });
       // console.log('essa é a data que gera automatico quando não manda nada');
 
+      // conferir aqui, o front deixa 1 dia a menos
       if (
-        notificationDateForSelectedLastResolutionDate < today &&
+        removeDays({
+          date: notificationDateForSelectedLastResolutionDate,
+          days: daysToAnticipate,
+        }) < today &&
         !updatedsMaintenances[i].notificationDate
       ) {
         throw new ServerMessage({
@@ -462,7 +465,6 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
           message: `Você deve informar uma data de próxima notificação na manutenção ${updatedsMaintenances[i].element}`,
         });
       }
-      // é essa
 
       notificationDateForSelectedLastResolutionDate = changeTime({
         date: noWeekendTimeDate({
