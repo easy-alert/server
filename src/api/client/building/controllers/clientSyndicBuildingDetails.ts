@@ -165,11 +165,11 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
 
   const kanban = await clientBuildingServices.syndicSeparePerStatus({ data: MaintenancesHistory });
 
-  // Pendente
-  kanban[0].maintenances.sort((a: any, b: any) => (a.dueDate > b.dueDate ? 1 : -1));
-
   // Vencida
-  kanban[1].maintenances.sort((a: any, b: any) => (a.date > b.date ? 1 : -1));
+  kanban[0].maintenances.sort((a: any, b: any) => (a.date > b.date ? 1 : -1));
+
+  // Pendente
+  kanban[1].maintenances.sort((a: any, b: any) => (a.dueDate > b.dueDate ? 1 : -1));
 
   // Em execução (Vencida + Pendente)
   kanban[2].maintenances.sort((a: any, b: any) => (a.date > b.date ? 1 : -1));
