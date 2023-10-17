@@ -32,22 +32,6 @@ const sharedMaintenanceReportsServices = new SharedMaintenanceReportsServices();
 
 // #endregion
 
-// quando não manda nenhuma data cai no:
-// *aqui é a notificação quando não manda data de resolução
-// *aqui é a notificação quando não manda data de resolução 2
-
-// quando manda a data de resolução:
-// *essa é a data que gera automatico quando não manda nada
-
-// quando manda a data de notificação cai no:
-// *aqui é a notificação quando não manda data de resolução
-// *aqui é a notificação quando não manda data de resolução 2
-// *entra quando tem a notificação
-
-// quando mandar as duas:
-// *essa é a data que gera automatico quando não manda nada
-// *entra aqui quando tem os dois
-
 export async function editBuildingCategoriesAndMaintenances(req: Request, res: Response) {
   const { buildingId, origin } = req.body;
   const bodyData = req.body.data;
