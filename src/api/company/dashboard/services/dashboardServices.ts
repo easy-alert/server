@@ -294,6 +294,7 @@ export class DashboardServices {
             Category: {
               name: filter.categories,
             },
+
             // não tras avulsa no mais e menos realizadas
             MaintenanceType: {
               name: {
@@ -334,6 +335,7 @@ export class DashboardServices {
             Category: {
               name: filter.categories,
             },
+
             // não tras avulsa no mais e menos realizadas
             MaintenanceType: {
               name: {
