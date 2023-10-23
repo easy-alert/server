@@ -333,7 +333,10 @@ export class ClientBuildingServices {
               label = 'Vence hoje';
             }
 
-            if (auxiliaryData >= 1) {
+            if (
+              auxiliaryData >= 1 &&
+              maintenance.Maintenance.MaintenanceType.name !== 'occasional'
+            ) {
               label = `Vence em ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`;
             }
 

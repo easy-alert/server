@@ -68,6 +68,9 @@ export async function sharedCreateOccasionalMaintenanceReport({
     { label: 'Execução', variable: inProgress, type: 'boolean', isOptional: true },
   ]);
 
+  // 100 anos em dias
+  const defaultPeriod = 365 * 100;
+
   let syndicData = null;
   if (responsibleSyndicId) {
     syndicData = await sharedBuildingNotificationConfigurationServices.findByNanoId({
@@ -106,7 +109,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
       frequencyTimeIntervalId: timeInterval.id,
       observation: 'Manutenção avulsa',
       periodTimeIntervalId: timeInterval.id,
-      period: 5,
+      period: defaultPeriod,
       responsible: maintenanceData.responsible,
       source: 'Manutenção avulsa',
     },
@@ -128,7 +131,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
           maintenanceStatusId: pendingStatus.id,
           notificationDate: new Date(executionDate),
           dueDate: noWeekendTimeDate({
-            date: addDays({ date: new Date(executionDate), days: 5 }),
+            date: addDays({ date: new Date(executionDate), days: defaultPeriod }),
             interval: 2,
           }),
           inProgress,
@@ -148,7 +151,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
         resolutionDate: new Date(executionDate),
         notificationDate: new Date(executionDate),
         dueDate: noWeekendTimeDate({
-          date: addDays({ date: new Date(executionDate), days: 5 }),
+          date: addDays({ date: new Date(executionDate), days: defaultPeriod }),
           interval: 2,
         }),
         MaintenanceReport: {
