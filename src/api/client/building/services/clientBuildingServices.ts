@@ -272,11 +272,11 @@ export class ClientBuildingServices {
 
     const kanban: any = [
       {
-        status: 'Pendentes',
+        status: 'Vencidas',
         maintenances: [],
       },
       {
-        status: 'Vencidas',
+        status: 'Pendentes',
         maintenances: [],
       },
       {
@@ -310,10 +310,14 @@ export class ClientBuildingServices {
           period =
             maintenance.Maintenance.period * maintenance.Maintenance.PeriodTimeInterval.unitTime;
 
-          canReportDate = removeDays({
-            date: maintenance.notificationDate,
-            days: period,
-          });
+          if (maintenance.daysInAdvance) {
+            canReportDate = maintenance.notificationDate;
+          } else {
+            canReportDate = removeDays({
+              date: maintenance.notificationDate,
+              days: period,
+            });
+          }
 
           if (
             (today >= canReportDate && history[1]?.MaintenancesStatus?.name !== 'expired') ||
@@ -333,7 +337,7 @@ export class ClientBuildingServices {
               label = `Vence em ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`;
             }
 
-            kanban[maintenance.inProgress ? 2 : 0].maintenances.push({
+            kanban[maintenance.inProgress ? 2 : 1].maintenances.push({
               id: maintenance.id,
               element: maintenance.Maintenance.element,
               activity: maintenance.Maintenance.activity,
@@ -361,7 +365,7 @@ export class ClientBuildingServices {
                 days: historyPeriod,
               }) && history[1]?.MaintenancesStatus?.name !== 'expired';
 
-          kanban[maintenance.inProgress ? 2 : 1].maintenances.push({
+          kanban[maintenance.inProgress ? 2 : 0].maintenances.push({
             id: maintenance.id,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
@@ -663,6 +667,7 @@ export class ClientBuildingServices {
           resolutionDate: true,
           dueDate: true,
           inProgress: true,
+          daysInAdvance: true,
 
           Building: {
             select: {

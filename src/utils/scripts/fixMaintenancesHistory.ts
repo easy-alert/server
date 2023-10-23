@@ -66,6 +66,7 @@ interface IRecurringDates {
   startDate: Date;
   endDate: Date;
   interval: number;
+  periodInterval: number;
 }
 
 interface IMaintenancesHistoryForCreate {
@@ -247,6 +248,7 @@ async function processMaintenancesHistory(processedBuildings: IProcessedBuilding
             startDate: maintenance.history[0].notificationDate,
             endDate: today,
             interval: maintenance.frequency * maintenance.FrequencyTimeInterval.unitTime,
+            periodInterval: maintenance.period * maintenance.PeriodTimeInterval.unitTime,
           });
 
           const dueDate = noWeekendTimeDate({
@@ -254,7 +256,7 @@ async function processMaintenancesHistory(processedBuildings: IProcessedBuilding
               date: notificationDate,
               days: maintenance.period * maintenance.PeriodTimeInterval.unitTime,
             }),
-            interval: maintenance.frequency * maintenance.FrequencyTimeInterval.unitTime,
+            interval: maintenance.period * maintenance.PeriodTimeInterval.unitTime,
           });
 
           maintenancesHistoryForCreate.push({
@@ -263,7 +265,7 @@ async function processMaintenancesHistory(processedBuildings: IProcessedBuilding
             ownerCompanyId: building.companyId,
             notificationDate: noWeekendTimeDate({
               date: notificationDate,
-              interval: maintenance.frequency * maintenance.FrequencyTimeInterval.unitTime,
+              interval: maintenance.period * maintenance.PeriodTimeInterval.unitTime,
             }),
             dueDate,
             maintenanceStatusId: pendingStatus.id,
@@ -274,6 +276,7 @@ async function processMaintenancesHistory(processedBuildings: IProcessedBuilding
           startDate: building.deliveryDate,
           endDate: today,
           interval: maintenance.frequency * maintenance.FrequencyTimeInterval.unitTime,
+          periodInterval: maintenance.period * maintenance.PeriodTimeInterval.unitTime,
         });
 
         const dueDate = noWeekendTimeDate({
@@ -281,7 +284,7 @@ async function processMaintenancesHistory(processedBuildings: IProcessedBuilding
             date: notificationDate,
             days: maintenance.period * maintenance.PeriodTimeInterval.unitTime,
           }),
-          interval: maintenance.frequency * maintenance.FrequencyTimeInterval.unitTime,
+          interval: maintenance.period * maintenance.PeriodTimeInterval.unitTime,
         });
 
         maintenancesHistoryForCreate.push({
@@ -290,7 +293,7 @@ async function processMaintenancesHistory(processedBuildings: IProcessedBuilding
           ownerCompanyId: building.companyId,
           notificationDate: noWeekendTimeDate({
             date: notificationDate,
-            interval: maintenance.frequency * maintenance.FrequencyTimeInterval.unitTime,
+            interval: maintenance.period * maintenance.PeriodTimeInterval.unitTime,
           }),
           dueDate,
           maintenanceStatusId: pendingStatus.id,

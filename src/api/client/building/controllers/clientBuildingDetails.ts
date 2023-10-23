@@ -54,6 +54,13 @@ export async function clientBuildingDetails(req: Request, res: Response) {
   maintenances.push(...maintenancesHistoryWithType);
 
   for (let i = 0; i < MaintenancesPending.length; i++) {
+    const foundBuildingMaintenance = await buildingServices.findBuildingMaintenanceDaysToAnticipate(
+      {
+        buildingId: building.id,
+        maintenanceId: MaintenancesPending[i].Maintenance.id,
+      },
+    );
+
     if (MaintenancesPending[i].Maintenance?.MaintenanceType?.name === 'occasional') {
       maintenances.push({ ...MaintenancesPending[i], type: 'occasional' });
     } else {
@@ -68,11 +75,13 @@ export async function clientBuildingDetails(req: Request, res: Response) {
         }),
         interval:
           MaintenancesPending[i].Maintenance.frequency *
-          MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime,
+            MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime -
+          (foundBuildingMaintenance?.daysToAnticipate ?? 0),
         maintenanceData: MaintenancesPending[i],
         periodDaysInterval:
           MaintenancesPending[i].Maintenance.period *
-          MaintenancesPending[i].Maintenance.PeriodTimeInterval.unitTime,
+            MaintenancesPending[i].Maintenance.PeriodTimeInterval.unitTime +
+          (foundBuildingMaintenance?.daysToAnticipate ?? 0),
       });
 
       maintenances.push(...intervals);

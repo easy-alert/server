@@ -13,7 +13,7 @@ import { BuildingMaintenanceHistoryServices } from '../../buildingMaintenancesHi
 import { BuildingCategoryAndMaintenanceServices } from '../services/buildingCategoryAndMaintenanceServices';
 import { IDateForCreateHistory, IMaintenancesForHistorySelected } from './types';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
-import { addDays } from '../../../../../utils/dateTime';
+import { addDays, removeDays } from '../../../../../utils/dateTime';
 import { changeTime } from '../../../../../utils/dateTime/changeTime';
 import { SharedMaintenanceReportsServices } from '../../../../shared/maintenancesReports/services/SharedMaintenanceReportsServices';
 
@@ -79,6 +79,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       ]);
 
       if (
+        bodyData[i].Maintenances[j].isSelected &&
         bodyData[i].Maintenances[j].resolutionDate &&
         new Date(bodyData[i].Maintenances[j].resolutionDate) > today
       ) {
@@ -89,6 +90,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       }
 
       if (
+        bodyData[i].Maintenances[j].isSelected &&
         bodyData[i].Maintenances[j].notificationDate &&
         new Date(bodyData[i].Maintenances[j].notificationDate) < today
       ) {
@@ -96,6 +98,34 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
           statusCode: 400,
           message: 'A data da próxima notificação deve ser maior que hoje',
         });
+      }
+
+      if (bodyData[i].Maintenances[j].daysToAnticipate) {
+        const timeIntervalFrequency = await timeIntervalServices.findById({
+          timeIntervalId: bodyData[i].Maintenances[j].FrequencyTimeInterval.id,
+        });
+        // tá repetido lá em baixo mais 2x
+        const sixMonthsInDays = 30 * 6;
+        const daysToAnticipate = bodyData[i].Maintenances[j].daysToAnticipate || 0;
+        const frequency = bodyData[i].Maintenances[j].frequency * timeIntervalFrequency.unitTime;
+        const canAnticipate = frequency >= sixMonthsInDays;
+        const maxDaysToAnticipate = frequency / 2;
+
+        if (bodyData[i].Maintenances[j].isSelected && !canAnticipate) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: `A manutenção ${bodyData[i].Maintenances[j].element} não pode ser antecipada, pois ela precisa ter uma periodicidade mínima de 6 meses.`,
+          });
+        }
+
+        if (bodyData[i].Maintenances[j].isSelected && daysToAnticipate > maxDaysToAnticipate) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: `O limite de antecipação da manutenção ${
+              bodyData[i].Maintenances[j].element
+            } é de ${Math.floor(maxDaysToAnticipate)} dias.`,
+          });
+        }
       }
 
       await sharedMaintenanceServices.findById({ maintenanceId: bodyData[i].Maintenances[j].id });
@@ -131,7 +161,10 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
     for (let j = 0; j < bodyData[i].Maintenances.length; j++) {
       if (bodyData[i].Maintenances[j].isSelected) {
-        maintenancesForCreate.push({ maintenanceId: bodyData[i].Maintenances[j].id });
+        maintenancesForCreate.push({
+          maintenanceId: bodyData[i].Maintenances[j].id,
+          daysToAnticipate: bodyData[i].Maintenances[j].daysToAnticipate,
+        });
         maintenancesForHistorySelected.push({
           maintenanceId: bodyData[i].Maintenances[j].id,
           resolutionDate: bodyData[i].Maintenances[j].resolutionDate
@@ -243,7 +276,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
     notificationDateForOldBuildingDeliveries = changeTime({
       date: noWeekendTimeDate({
         date: notificationDateForOldBuildingDeliveries,
-        interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+        interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
       }),
       time: {
         h: 0,
@@ -255,7 +288,26 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
     // #endregion
 
+    const categoryToUpdate = bodyData.find(
+      (data: any) => data.categoryId === updatedsMaintenances[i].categoryId,
+    );
+
+    const maintenanceToUpdate = categoryToUpdate.Maintenances.find(
+      (maintenance: any) => maintenance.id === updatedsMaintenances[i].id,
+    );
+
+    // periodicidade mínima de 6 meses pra antecipar
+    const sixMonthsInDays = 30 * 6;
+    const daysToAnticipate = maintenanceToUpdate.daysToAnticipate || 0;
+    const frequency = updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime;
+    const canAnticipate = frequency >= sixMonthsInDays;
+    const maxDaysToAnticipate = frequency / 2;
+
+    let firstMaintenanceWasAntecipated = false;
+
     if (updatedsMaintenances[i].resolutionDate === null) {
+      // console.log('aqui é a notificação quando não manda data de resolução');
+
       notificationDate = noWeekendTimeDate({
         date: addDays({
           date: buildingDeliveryDate,
@@ -263,29 +315,48 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
             updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime +
             updatedsMaintenances[i].delay * timeIntervalDelay.unitTime,
         }),
-        interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+        interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
       });
 
       if (buildingDeliveryDate < today) {
         notificationDate = noWeekendTimeDate({
           date: notificationDateForOldBuildingDeliveries,
-          interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+          interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
         });
       }
 
+      // antecipar aqui
+      if (daysToAnticipate) {
+        if (!canAnticipate) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: `A manutenção ${updatedsMaintenances[i].element} não pode ser antecipada, pois ela precisa ter uma periodicidade mínima de 6 meses.`,
+          });
+        }
+
+        if (daysToAnticipate > maxDaysToAnticipate) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: `O limite de antecipação da manutenção ${
+              updatedsMaintenances[i].element
+            } é de ${Math.floor(maxDaysToAnticipate)} dias.`,
+          });
+        }
+
+        notificationDate = noWeekendTimeDate({
+          date: removeDays({ date: notificationDate, days: daysToAnticipate }),
+          interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
+        });
+        firstMaintenanceWasAntecipated = true;
+      }
+
       if (updatedsMaintenances[i].notificationDate !== null) {
+        firstMaintenanceWasAntecipated = false;
         notificationDate = updatedsMaintenances[i].notificationDate;
+        // console.log('entra quando tem a notificação');
       }
     } else {
       // #region Create History for maintenanceHistory
-
-      const categoryToUpdate = bodyData.find(
-        (data: any) => data.categoryId === updatedsMaintenances[i].categoryId,
-      );
-
-      const maintenanceToUpdate = categoryToUpdate.Maintenances.find(
-        (maintenance: any) => maintenance.id === updatedsMaintenances[i].id,
-      );
 
       const dataForCreateHistoryAndReport: ICreateMaintenanceHistoryAndReport = {
         buildingId,
@@ -363,9 +434,14 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         date: notificationDateForSelectedLastResolutionDate,
         days: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
       });
+      // console.log('essa é a data que gera automatico quando não manda nada');
 
+      // conferir aqui, o front deixa 1 dia a menos
       if (
-        notificationDateForSelectedLastResolutionDate < today &&
+        removeDays({
+          date: notificationDateForSelectedLastResolutionDate,
+          days: daysToAnticipate,
+        }) < today &&
         !updatedsMaintenances[i].notificationDate
       ) {
         throw new ServerMessage({
@@ -377,7 +453,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       notificationDateForSelectedLastResolutionDate = changeTime({
         date: noWeekendTimeDate({
           date: notificationDateForSelectedLastResolutionDate,
-          interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+          interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
         }),
         time: {
           h: 0,
@@ -389,20 +465,54 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
 
       notificationDate = noWeekendTimeDate({
         date: notificationDateForSelectedLastResolutionDate,
-        interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+        interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
       });
 
+      // antecipar aqui
+      if (daysToAnticipate) {
+        if (!canAnticipate) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: `A manutenção ${updatedsMaintenances[i].element} não pode ser antecipada, pois ela precisa ter uma periodicidade mínima de 6 meses.`,
+          });
+        }
+
+        if (daysToAnticipate > maxDaysToAnticipate) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: `O limite de antecipação da manutenção ${
+              updatedsMaintenances[i].element
+            } é de ${Math.floor(maxDaysToAnticipate)} dias.`,
+          });
+        }
+
+        notificationDate = noWeekendTimeDate({
+          date: removeDays({ date: notificationDate, days: daysToAnticipate }),
+          interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
+        });
+        firstMaintenanceWasAntecipated = true;
+      }
+
       if (updatedsMaintenances[i].notificationDate !== null) {
+        firstMaintenanceWasAntecipated = false;
         notificationDate = updatedsMaintenances[i].notificationDate;
+        // console.log('entra aqui quando tem os dois');
       }
     }
+
+    // SOMANDO OS DIAS ANTECIPADOS NOVAMENTE NA DATA DE RESOLUÇÃO,
+    // se nao ela ia descontar o que foi antecipado
+    // se não existir é zero entao ok.
 
     const dueDate = noWeekendTimeDate({
       date: addDays({
         date: notificationDate,
-        days: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
+        days:
+          updatedsMaintenances[i].period * timeIntervalPeriod.unitTime +
+          // só soma os dias se não tiver primeira data de notificação
+          (firstMaintenanceWasAntecipated ? daysToAnticipate : 0),
       }),
-      interval: updatedsMaintenances[i].frequency * timeIntervalFrequency.unitTime,
+      interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
     });
 
     DataForCreateHistory.push({
@@ -412,6 +522,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       maintenanceStatusId: maintenanceStatus.id,
       notificationDate,
       dueDate,
+      daysInAdvance: firstMaintenanceWasAntecipated ? daysToAnticipate : 0,
     });
   }
 

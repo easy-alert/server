@@ -253,6 +253,7 @@ export class SharedMaintenanceServices {
     });
   }
 
+  //  esse parece estar com nome errado é bem semelhante ao findById ali de cima
   async findHistoryByNanoId({ maintenanceHistoryId }: { maintenanceHistoryId: string }) {
     const maintenance = await prisma.maintenanceHistory.findUnique({
       select: {
@@ -260,6 +261,7 @@ export class SharedMaintenanceServices {
         maintenanceId: true,
         notificationDate: true,
         dueDate: true,
+        daysInAdvance: true,
         MaintenancesStatus: {
           select: {
             name: true,
