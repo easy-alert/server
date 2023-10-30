@@ -294,6 +294,13 @@ export class DashboardServices {
             Category: {
               name: filter.categories,
             },
+
+            // não tras avulsa no mais e menos realizadas
+            MaintenanceType: {
+              name: {
+                not: 'occasional',
+              },
+            },
           },
           MaintenancesStatus: {
             OR: [
@@ -327,6 +334,13 @@ export class DashboardServices {
           Maintenance: {
             Category: {
               name: filter.categories,
+            },
+
+            // não tras avulsa no mais e menos realizadas
+            MaintenanceType: {
+              name: {
+                not: 'occasional',
+              },
             },
           },
           ownerCompanyId: filter.companyId,
