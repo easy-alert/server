@@ -201,6 +201,13 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     });
   }
 
+  if (Building.mandatoryReportProof && (!Array.isArray(ReportImages) || ReportImages?.length < 1)) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: 'As imagens são obrigatórias para enviar esse relato.',
+    });
+  }
+
   const data = {
     origin,
     maintenanceHistoryId,
