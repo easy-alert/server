@@ -87,12 +87,14 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
     });
   }
 
-  if (data.contactNumber) {
-    await buildingNotificationConfigurationServices.findByContactNumber({
-      contactNumber: data.contactNumber,
-      buildingId: data.buildingId,
-    });
-  }
+  // #region CHECK CONTACT NUMBER
+  // TASK SA-4708 PERMITIU TELEFONES REPETIDOS
+  // if (data.contactNumber) {
+  //   await buildingNotificationConfigurationServices.findByContactNumber({
+  //     contactNumber: data.contactNumber,
+  //     buildingId: data.buildingId,
+  //   });
+  // }
 
   if (data.email === null && data.contactNumber === null) {
     throw new ServerMessage({
