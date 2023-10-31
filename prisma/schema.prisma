@@ -380,6 +380,7 @@ model Building {
   deliveryDate                      DateTime
   warrantyExpiration                DateTime
   keepNotificationAfterWarrantyEnds Boolean
+  mandatoryReportProof              Boolean  @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
