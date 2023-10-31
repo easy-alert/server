@@ -278,6 +278,8 @@ export class BuildingServices {
         deliveryDate: true,
         warrantyExpiration: true,
         keepNotificationAfterWarrantyEnds: true,
+        mandatoryReportProof: true,
+
         Company: {
           select: {
             image: true,
