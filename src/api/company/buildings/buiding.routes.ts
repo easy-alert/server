@@ -38,6 +38,7 @@ import { listBuildingsAndTemplatesForSelect } from './building/controllers/listB
 import { listAuxiliaryDataForOccasionalCategoriesAndMaintenances } from './occasionalBuildingMaintenances/controllers/listAuxiliaryDataForOccasionalCategoriesAndMaintenances';
 import { createOccasionalReport } from './reports/controllers/createOcassionalReport';
 import { foldersRouter } from './folders/folders.routes';
+import { findDataForAutocompleteInCreate } from './notificationConfiguration/controllers/findDataForAutocompleteInCreate';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -69,8 +70,11 @@ buildingRouter.post(
   sendEmailConfirmationBuildingNotificationConfiguration,
 );
 
+buildingRouter.get(
+  '/notifications/list-for-autocomplete/:buildingId',
+  findDataForAutocompleteInCreate,
+);
 buildingRouter.post('/notifications/create', createBuildingNotificationConfiguration);
-
 buildingRouter.put('/notifications/edit', editBuildingNotificationConfiguration);
 buildingRouter.delete('/notifications/delete', deleteBuildingNotificationConfiguration);
 
