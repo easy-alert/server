@@ -254,6 +254,9 @@ export class SharedBuildingNotificationConfigurationServices {
           id: { not: { equals: buildingId } },
         },
       },
+      orderBy: {
+        name: 'asc',
+      },
     });
   }
 

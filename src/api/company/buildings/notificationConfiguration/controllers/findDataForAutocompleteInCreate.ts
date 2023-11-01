@@ -25,12 +25,15 @@ export async function findDataForAutocompleteInCreate(req: Request, res: Respons
   for (let i = 0; i < data.length; i++) {
     const element = data[i];
 
-    const foundName = uniqueData.find((e) => e.name === element.name);
-    const foundEmail = uniqueData.find((e) => e.email === element.email);
-    const foundContactNumber = uniqueData.find((e) => e.contactNumber === element.contactNumber);
-    const foundRole = uniqueData.find((e) => e.role === element.role);
+    const foundData = uniqueData.find(
+      (e) =>
+        e.name === element.name &&
+        e.email === element.email &&
+        e.contactNumber === element.contactNumber &&
+        e.role === element.role,
+    );
 
-    if (!foundName || !foundEmail || !foundContactNumber || !foundRole) {
+    if (!foundData) {
       uniqueData.push({
         customId: String(i),
         name: element.name,
