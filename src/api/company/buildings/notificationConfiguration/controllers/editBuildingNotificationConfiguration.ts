@@ -73,11 +73,12 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
     });
 
   // #region CHECK EMAIL
-  await buildingNotificationConfigurationServices.findByEmailForEdit({
-    email: data.email,
-    buildingId,
-    buildingNotificationConfigurationId,
-  });
+  // TASK SA-4708 PERMITIU EMAILS REPETIDOS
+  // await buildingNotificationConfigurationServices.findByEmailForEdit({
+  //   email: data.email,
+  //   buildingId,
+  //   buildingNotificationConfigurationId,
+  // });
 
   if (data.email !== buildingNotificationConfigurationData?.email) {
     data = {
