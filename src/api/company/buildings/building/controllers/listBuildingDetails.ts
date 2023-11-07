@@ -160,6 +160,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
       keepNotificationAfterWarrantyEnds: BuildingDetails.keepNotificationAfterWarrantyEnds,
       streetName: BuildingDetails.streetName,
       warrantyExpiration: BuildingDetails.warrantyExpiration,
+      mandatoryReportProof: BuildingDetails.mandatoryReportProof,
       Annexes: BuildingDetails.Annexes,
       BuildingType: BuildingDetails.BuildingType,
       NotificationsConfigurations: BuildingDetails.NotificationsConfigurations,

@@ -177,6 +177,7 @@ export class SharedMaintenanceServices {
             name: true,
             warrantyExpiration: true,
             keepNotificationAfterWarrantyEnds: true,
+            mandatoryReportProof: true,
           },
         },
         Company: {

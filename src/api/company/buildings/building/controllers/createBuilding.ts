@@ -98,6 +98,11 @@ export async function createBuilding(req: Request, res: Response) {
       type: 'boolean',
       variable: data.keepNotificationAfterWarrantyEnds,
     },
+    {
+      label: 'Comprovação de relato',
+      type: 'boolean',
+      variable: data.mandatoryReportProof,
+    },
   ]);
 
   await buildingTypeServices.findById({ buildingTypeId: data.buildingTypeId });

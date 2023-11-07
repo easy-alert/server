@@ -240,6 +240,26 @@ export class SharedBuildingNotificationConfigurationServices {
     });
   }
 
+  async findByCompanyId({ companyId, buildingId }: { companyId: string; buildingId: string }) {
+    return prisma.buildingNotificationConfiguration.findMany({
+      select: {
+        name: true,
+        email: true,
+        contactNumber: true,
+        role: true,
+      },
+      where: {
+        Building: {
+          companyId,
+          id: { not: { equals: buildingId } },
+        },
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+  }
+
   // #endregion
 
   // #region NOTIFICATIONS
