@@ -840,6 +840,91 @@ export class ClientBuildingServices {
     return mainContact;
   }
 
+  async findSettingsData({ buildingNanoId }: { buildingNanoId: string }) {
+    const mainContact = await prisma.building.findFirst({
+      select: {
+        name: true,
+        id: true,
+
+        NotificationsConfigurations: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            emailIsConfirmed: true,
+            contactNumber: true,
+            contactNumberIsConfirmed: true,
+            role: true,
+            isMain: true,
+            showContact: true,
+            nanoId: true,
+          },
+
+          orderBy: [{ isMain: 'desc' }, { name: 'asc' }],
+        },
+        Banners: {
+          select: {
+            bannerName: true,
+            originalName: true,
+            redirectUrl: true,
+            type: true,
+            url: true,
+          },
+        },
+
+        BuildingFolders: {
+          select: {
+            BuildingFolder: {
+              select: {
+                id: true,
+                name: true,
+                Parent: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                Folders: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                  orderBy: {
+                    name: 'asc',
+                  },
+                },
+
+                Files: {
+                  select: {
+                    id: true,
+                    name: true,
+                    url: true,
+                  },
+                  orderBy: {
+                    name: 'asc',
+                  },
+                },
+              },
+            },
+          },
+
+          where: {
+            BuildingFolder: {
+              parentId: null,
+            },
+          },
+        },
+      },
+      where: {
+        nanoId: buildingNanoId,
+      },
+    });
+
+    validator.needExist([{ label: 'edificação', variable: mainContact }]);
+
+    return mainContact;
+  }
+
   async findAnnexes({ buildingId }: { buildingId: string }) {
     const Annexes = await prisma.building.findFirst({
       select: {

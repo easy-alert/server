@@ -47,6 +47,7 @@ export class BuildingServices {
     const building = await prisma.building.findUnique({
       include: {
         Banners: true,
+        Company: true,
       },
       where: {
         id: buildingId,
