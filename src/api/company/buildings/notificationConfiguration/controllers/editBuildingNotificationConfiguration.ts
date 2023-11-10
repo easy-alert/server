@@ -183,13 +183,13 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
           },
         });
 
-        await tokenServices.saveInDatabase({ token });
+        const createdToken = await tokenServices.saveInDatabase({ token });
 
         await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
           {
             buildingNotificationConfigurationId,
             receiverPhoneNumber: buildingNotificationConfigurationEditedData.contactNumber,
-            link: `${linkPhone}?token=${token}`,
+            link: `${linkPhone}?tokenId=${createdToken.id}`,
           },
         );
       }

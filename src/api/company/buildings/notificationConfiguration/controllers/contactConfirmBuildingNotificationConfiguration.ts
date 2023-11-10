@@ -28,10 +28,12 @@ export async function contactConfirmBuildingNotificationConfiguration(req: Reque
     },
   ]);
 
-  await tokenServices.find({ token });
+  const foundToken = await tokenServices.find({
+    token,
+  });
 
   const { id: buildingNotificationConfigurationId, confirmType } = tokenServices.decode({
-    token,
+    token: foundToken.token,
   }) as ITokenWhatsAppConfirmation;
 
   await buildingNotificationConfigurationServices.findById({
@@ -46,7 +48,7 @@ export async function contactConfirmBuildingNotificationConfiguration(req: Reque
         buildingNotificationConfigurationId,
       });
 
-      await tokenServices.markAsUsed({ token });
+      await tokenServices.markAsUsed({ token: foundToken.token });
 
       return res.status(200).json({
         ServerMessage: {
@@ -60,7 +62,7 @@ export async function contactConfirmBuildingNotificationConfiguration(req: Reque
         buildingNotificationConfigurationId,
       });
 
-      await tokenServices.markAsUsed({ token });
+      await tokenServices.markAsUsed({ token: foundToken.token });
 
       return res.status(200).json({
         ServerMessage: {

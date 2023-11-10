@@ -128,7 +128,7 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
         {
           buildingNotificationConfigurationId: buildingNotificationConfigurationData.id,
           receiverPhoneNumber: buildingNotificationConfigurationData.contactNumber,
-          link: `${linkPhone}?token=${token}`,
+          link: `${linkPhone}?tokenId=${token}`,
         },
       );
     }
