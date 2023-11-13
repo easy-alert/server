@@ -28,7 +28,7 @@ export class TokenServices {
   }
 
   async saveInDatabase({ token }: { token: string }) {
-    await prisma.validationToken.create({
+    return prisma.validationToken.create({
       data: {
         token,
       },
@@ -38,7 +38,7 @@ export class TokenServices {
   async find({ token }: { token: string }) {
     const tokenData = await prisma.validationToken.findFirst({
       where: {
-        token,
+        OR: [{ token }, { id: token }],
         hasUsed: false,
       },
     });

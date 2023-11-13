@@ -78,12 +78,12 @@ export async function sendWhatsappConfirmationBuildingNotificationConfiguration(
     },
   });
 
-  await tokenServices.saveInDatabase({ token });
+  const createdToken = await tokenServices.saveInDatabase({ token });
 
   await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications({
     buildingNotificationConfigurationId,
     receiverPhoneNumber: notificationData.contactNumber,
-    link: `${link}?token=${token}`,
+    link: `${link}?tokenId=${createdToken.id}`,
   });
 
   // #endregion

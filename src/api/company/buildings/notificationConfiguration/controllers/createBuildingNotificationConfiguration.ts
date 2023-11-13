@@ -17,7 +17,7 @@ const buildingServices = new BuildingServices();
 // #endregion
 
 export async function createBuildingNotificationConfiguration(req: Request, res: Response) {
-  const { linkPhone, linkEmail } = req.body;
+  const { linkEmail, linkPhone } = req.body;
 
   let { data } = req.body;
 
@@ -122,13 +122,13 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
         },
       });
 
-      await tokenServices.saveInDatabase({ token });
+      const createdToken = await tokenServices.saveInDatabase({ token });
 
       await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
         {
           buildingNotificationConfigurationId: buildingNotificationConfigurationData.id,
           receiverPhoneNumber: buildingNotificationConfigurationData.contactNumber,
-          link: `${linkPhone}?token=${token}`,
+          link: `${linkPhone}?tokenId=${createdToken.id}`,
         },
       );
     }
