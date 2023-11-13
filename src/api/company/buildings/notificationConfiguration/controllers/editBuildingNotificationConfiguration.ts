@@ -17,7 +17,7 @@ const buildingServices = new BuildingServices();
 // #endregion
 
 export async function editBuildingNotificationConfiguration(req: Request, res: Response) {
-  const { buildingNotificationConfigurationId, buildingId, linkPhone, linkEmail } = req.body;
+  const { buildingNotificationConfigurationId, buildingId, linkEmail, linkPhone } = req.body;
 
   let { data } = req.body;
 

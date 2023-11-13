@@ -11,7 +11,7 @@ export class ZenviaServices {
         contents: [
           {
             type: 'template',
-            templateId: process.env.CONFIRMATION_TEMPLATE_ZENVIA,
+            templateId: 'b05902db-7f03-43c3-a64c-cfbeaba0b3f7',
             fields: {
               link,
             },

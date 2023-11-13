@@ -80,7 +80,6 @@ export async function sendWhatsappConfirmationBuildingNotificationConfiguration(
 
   const createdToken = await tokenServices.saveInDatabase({ token });
 
-
   await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications({
     buildingNotificationConfigurationId,
     receiverPhoneNumber: notificationData.contactNumber,
