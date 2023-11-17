@@ -29,8 +29,12 @@ export async function listBuildingDetailsForConfirm(req: Request, res: Response)
     },
   ]);
 
-  const { id: buildingNotificationConfigurationId } = tokenServices.decode({
+  const foundToken = await tokenServices.find({
     token,
+  });
+
+  const { id: buildingNotificationConfigurationId } = tokenServices.decode({
+    token: foundToken.token,
   }) as ITokenWhatsAppConfirmation;
 
   const buildingNotificationConfiguration =

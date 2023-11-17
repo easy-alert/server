@@ -6,16 +6,18 @@ import { TokenServices } from '../../../../../utils/token/tokenServices';
 // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
 import { SharedBuildingNotificationConfigurationServices } from '../../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
+import { BuildingServices } from '../../building/services/buildingServices';
 
 const validator = new Validator();
 const buildingNotificationConfigurationServices =
   new SharedBuildingNotificationConfigurationServices();
 const tokenServices = new TokenServices();
+const buildingServices = new BuildingServices();
 
 // #endregion
 
 export async function createBuildingNotificationConfiguration(req: Request, res: Response) {
-  const { linkPhone, linkEmail } = req.body;
+  const { linkEmail, linkPhone } = req.body;
 
   let { data } = req.body;
 
@@ -120,13 +122,13 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
         },
       });
 
-      await tokenServices.saveInDatabase({ token });
+      const createdToken = await tokenServices.saveInDatabase({ token });
 
       await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
         {
           buildingNotificationConfigurationId: buildingNotificationConfigurationData.id,
           receiverPhoneNumber: buildingNotificationConfigurationData.contactNumber,
-          link: `${linkPhone}?token=${token}`,
+          link: `${linkPhone}?tokenId=${createdToken.id}`,
         },
       );
     }
@@ -142,10 +144,12 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
 
     await tokenServices.saveInDatabase({ token });
 
+    const building = await buildingServices.findById({ buildingId: data.buildingId });
+
     await buildingNotificationConfigurationServices.sendEmailConfirmForReceiveNotifications({
       buildingNotificationConfigurationId: buildingNotificationConfigurationData.id,
       link: `${linkEmail}?token=${token}`,
-      companyLogo: req.Company.image,
+      companyLogo: building.Company.image,
       toEmail: buildingNotificationConfigurationData.email,
     });
   }

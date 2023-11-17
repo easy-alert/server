@@ -21,6 +21,18 @@ import { createOccasionalReport } from './occasionalBuildingMaintenances/control
 import { listFolderController } from './building/controllers/listFolder';
 import { clientCreateBuildingAccessHistory } from './building/controllers/clientCreateBuildingAccessHistory';
 import { sharedUpdateInProgressMaintenanceHistory } from '../shared/maintenance/controllers/sharedUpdateInProgressMaintenanceHistory';
+import { foldersRouter } from '../company/buildings/folders/folders.routes';
+import { findSettingsData } from './building/controllers/findSettingsData';
+import {
+  changeShowContactStatus,
+  createBuildingNotificationConfiguration,
+  deleteBuildingNotificationConfiguration,
+  editBuildingNotificationConfiguration,
+  sendWhatsappConfirmationBuildingNotificationConfiguration,
+} from '../company/buildings/notificationConfiguration/controllers';
+import { findDataForAutocompleteInCreate } from '../company/buildings/notificationConfiguration/controllers/findDataForAutocompleteInCreate';
+import { sendEmailConfirmationBuildingNotificationConfiguration } from '../company/buildings/notificationConfiguration/controllers/sendEmailConfirmationBuildingNotificationConfiguration';
+import { buildingChangeBanner } from '../company/buildings/buildingBanners/controllers/buildingChangeBanner';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -51,6 +63,8 @@ clientRouter.get('/building/informations/:buildingNanoId', findClientInformation
 
 clientRouter.get('/building/home/:buildingNanoId', findHomeInformations);
 
+clientRouter.get('/building/home/:buildingNanoId', findHomeInformations);
+
 clientRouter.get('/building/annex/:buildingNanoId', findBuildingAnnex);
 
 clientRouter.get('/building/logo/:buildingNanoId', findCompanyLogo);
@@ -64,3 +78,30 @@ clientRouter.get('/templates/create', createDefaultTemplates);
 clientRouter.get('/building/folders/list/:folderId', listFolderController);
 
 clientRouter.post('/building/create-access-history', clientCreateBuildingAccessHistory);
+
+// CRUDs
+clientRouter.get('/buildings/settings-data/:buildingNanoId/:syndicNanoId', findSettingsData);
+
+clientRouter.use('/buildings/folders', foldersRouter);
+
+clientRouter.post(
+  '/buildings/notifications/sendconfirm/phone',
+  sendWhatsappConfirmationBuildingNotificationConfiguration,
+);
+
+clientRouter.put('/buildings/notifications/change/showcontact', changeShowContactStatus);
+
+clientRouter.post(
+  '/buildings/notifications/sendconfirm/email',
+  sendEmailConfirmationBuildingNotificationConfiguration,
+);
+
+clientRouter.get(
+  '/buildings/notifications/list-for-autocomplete/:buildingId',
+  findDataForAutocompleteInCreate,
+);
+clientRouter.post('/buildings/notifications/create', createBuildingNotificationConfiguration);
+clientRouter.put('/buildings/notifications/edit', editBuildingNotificationConfiguration);
+clientRouter.delete('/buildings/notifications/delete', deleteBuildingNotificationConfiguration);
+
+clientRouter.post('/buildings/banners/change', buildingChangeBanner);

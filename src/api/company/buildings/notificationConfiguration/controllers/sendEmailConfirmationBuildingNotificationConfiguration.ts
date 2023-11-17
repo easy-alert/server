@@ -6,12 +6,14 @@ import { TokenServices } from '../../../../../utils/token/tokenServices';
 // CLASS
 import { Validator } from '../../../../../utils/validator/validator';
 import { SharedBuildingNotificationConfigurationServices } from '../../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
+import { BuildingServices } from '../../building/services/buildingServices';
 
 const validator = new Validator();
 const tokenServices = new TokenServices();
 
 const buildingNotificationConfigurationServices =
   new SharedBuildingNotificationConfigurationServices();
+const buildingServices = new BuildingServices();
 
 // #endregion
 
@@ -79,9 +81,11 @@ export async function sendEmailConfirmationBuildingNotificationConfiguration(
 
   await tokenServices.saveInDatabase({ token });
 
+  const building = await buildingServices.findById({ buildingId: notificationData.buildingId });
+
   await buildingNotificationConfigurationServices.sendEmailConfirmForReceiveNotifications({
     buildingNotificationConfigurationId: notificationData.id,
-    companyLogo: req.Company.image,
+    companyLogo: building.Company.image,
     link: `${link}?token=${token}`,
     toEmail: notificationData.email,
   });

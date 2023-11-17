@@ -1,8 +1,11 @@
 import { Response, Request } from 'express';
 import { SharedBuildingNotificationConfigurationServices } from '../../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
+import { BuildingServices } from '../../building/services/buildingServices';
 
 const sharedBuildingNotificationConfigurationServices =
   new SharedBuildingNotificationConfigurationServices();
+
+const buildingServices = new BuildingServices();
 
 interface IUniqueData {
   customId: string;
@@ -15,8 +18,10 @@ interface IUniqueData {
 export async function findDataForAutocompleteInCreate(req: Request, res: Response) {
   const { buildingId } = req.params;
 
+  const building = await buildingServices.findById({ buildingId });
+
   const data = await sharedBuildingNotificationConfigurationServices.findByCompanyId({
-    companyId: req.Company.id,
+    companyId: building.companyId,
     buildingId,
   });
 
