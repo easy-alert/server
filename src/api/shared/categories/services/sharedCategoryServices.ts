@@ -76,6 +76,11 @@ export class SharedCategoryServices {
       },
       where: {
         ownerCompanyId,
+        NOT: {
+          CategoryType: {
+            name: 'occasional',
+          },
+        },
       },
       orderBy: {
         name: 'asc',
