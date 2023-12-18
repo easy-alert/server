@@ -399,6 +399,7 @@ export class BuildingServices {
         Building: {
           select: {
             name: true,
+            nanoId: true,
 
             MaintenancesHistory: {
               select: {
