@@ -789,6 +789,10 @@ export class ClientBuildingServices {
       },
       where: {
         id: buildingId,
+
+        Company: {
+          isBlocked: false,
+        },
       },
     });
 
@@ -840,6 +844,9 @@ export class ClientBuildingServices {
       },
       where: {
         id: buildingId,
+        Company: {
+          isBlocked: false,
+        },
       },
     });
 
@@ -925,6 +932,10 @@ export class ClientBuildingServices {
       },
       where: {
         nanoId: buildingNanoId,
+
+        Company: {
+          isBlocked: false,
+        },
       },
     });
 
@@ -983,6 +994,10 @@ export class ClientBuildingServices {
       },
       where: {
         id: buildingId,
+
+        Company: {
+          isBlocked: false,
+        },
       },
     });
 

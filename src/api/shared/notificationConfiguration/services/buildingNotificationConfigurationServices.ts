@@ -95,12 +95,18 @@ export class SharedBuildingNotificationConfigurationServices {
 
   async findByNanoId({ syndicNanoId }: { syndicNanoId: string }) {
     const buildingConfigurationNotification =
-      await prisma.buildingNotificationConfiguration.findUnique({
+      await prisma.buildingNotificationConfiguration.findFirst({
         include: {
           Building: true,
         },
         where: {
           nanoId: syndicNanoId,
+
+          Building: {
+            Company: {
+              isBlocked: false,
+            },
+          },
         },
       });
 
