@@ -125,12 +125,16 @@ export class BuildingServices {
   }
 
   async findByNanoId({ buildingNanoId }: { buildingNanoId: string }) {
-    const building = await prisma.building.findUnique({
+    const building = await prisma.building.findFirst({
       include: {
         Banners: true,
       },
       where: {
         nanoId: buildingNanoId,
+
+        Company: {
+          isBlocked: false,
+        },
       },
     });
 
@@ -399,6 +403,7 @@ export class BuildingServices {
         Building: {
           select: {
             name: true,
+            nanoId: true,
 
             MaintenancesHistory: {
               select: {

@@ -4,11 +4,13 @@ import { changeTime } from '../../../../utils/dateTime/changeTime';
 import { Validator } from '../../../../utils/validator/validator';
 import { SharedBuildingNotificationConfigurationServices } from '../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { ClientBuildingServices } from '../services/clientBuildingServices';
+import { SharedCategoryServices } from '../../../shared/categories/services/sharedCategoryServices';
 
 // CLASS
 const clientBuildingServices = new ClientBuildingServices();
 const sharedBuildingNotificationConfigurationServices =
   new SharedBuildingNotificationConfigurationServices();
+const sharedCategoriesServices = new SharedCategoryServices();
 
 const validator = new Validator();
 // #endregion
@@ -16,10 +18,11 @@ const validator = new Validator();
 export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   const { syndicNanoId } = req.params;
 
-  const { year, month, status } = req.query;
+  const { year, month, status, categoryId } = req.query;
 
   const monthFilter = month === '' ? undefined : String(month);
   const statusFilter = status === '' ? undefined : String(status);
+  const categoryIdFilter = categoryId === '' ? undefined : String(categoryId);
 
   const startDate =
     year === ''
@@ -86,9 +89,13 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
       status: statusFilter,
       startDate,
       endDate,
+      categoryIdFilter,
     });
 
   // #region MOUNTING FILTERS
+  const categories = await sharedCategoriesServices.listForSelect({
+    ownerCompanyId: buildingNotificationConfig.Building.companyId,
+  });
 
   let yearsFiltered: string[] = [];
 
@@ -159,6 +166,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
       { name: 'completed', label: 'concluídas' },
       { name: 'overdue', label: 'feitas em atraso' },
     ],
+    categories,
   };
 
   // #endregion

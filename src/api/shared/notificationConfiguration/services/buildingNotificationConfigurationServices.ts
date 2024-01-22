@@ -95,12 +95,18 @@ export class SharedBuildingNotificationConfigurationServices {
 
   async findByNanoId({ syndicNanoId }: { syndicNanoId: string }) {
     const buildingConfigurationNotification =
-      await prisma.buildingNotificationConfiguration.findUnique({
+      await prisma.buildingNotificationConfiguration.findFirst({
         include: {
           Building: true,
         },
         where: {
           nanoId: syndicNanoId,
+
+          Building: {
+            Company: {
+              isBlocked: false,
+            },
+          },
         },
       });
 
@@ -260,6 +266,22 @@ export class SharedBuildingNotificationConfigurationServices {
     });
   }
 
+  async findByBuildingNanoId(buildingNanoId: string) {
+    return prisma.buildingNotificationConfiguration.findMany({
+      select: {
+        nanoId: true,
+        name: true,
+      },
+      where: {
+        Building: {
+          nanoId: buildingNanoId,
+        },
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+  }
   // #endregion
 
   // #region NOTIFICATIONS

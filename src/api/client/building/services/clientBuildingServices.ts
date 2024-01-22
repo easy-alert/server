@@ -642,11 +642,13 @@ export class ClientBuildingServices {
     startDate,
     endDate,
     status,
+    categoryIdFilter,
   }: {
     buildingId: string;
     startDate: Date | undefined;
     endDate: Date | undefined;
     status: string | undefined;
+    categoryIdFilter: string | undefined;
   }) {
     const [MaintenancesForFilter, MaintenancesHistory] = await prisma.$transaction([
       prisma.maintenanceHistory.findMany({
@@ -659,6 +661,9 @@ export class ClientBuildingServices {
             name: {
               in: status,
             },
+          },
+          Maintenance: {
+            categoryId: categoryIdFilter,
           },
         },
       }),
@@ -733,6 +738,9 @@ export class ClientBuildingServices {
               in: status,
             },
           },
+          Maintenance: {
+            categoryId: categoryIdFilter,
+          },
 
           OR: [
             { notificationDate: { lte: endDate, gte: startDate } },
@@ -781,6 +789,10 @@ export class ClientBuildingServices {
       },
       where: {
         id: buildingId,
+
+        Company: {
+          isBlocked: false,
+        },
       },
     });
 
@@ -832,6 +844,9 @@ export class ClientBuildingServices {
       },
       where: {
         id: buildingId,
+        Company: {
+          isBlocked: false,
+        },
       },
     });
 
@@ -917,6 +932,10 @@ export class ClientBuildingServices {
       },
       where: {
         nanoId: buildingNanoId,
+
+        Company: {
+          isBlocked: false,
+        },
       },
     });
 
@@ -975,6 +994,10 @@ export class ClientBuildingServices {
       },
       where: {
         id: buildingId,
+
+        Company: {
+          isBlocked: false,
+        },
       },
     });
 

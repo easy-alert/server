@@ -33,6 +33,7 @@ import {
 import { findDataForAutocompleteInCreate } from '../company/buildings/notificationConfiguration/controllers/findDataForAutocompleteInCreate';
 import { sendEmailConfirmationBuildingNotificationConfiguration } from '../company/buildings/notificationConfiguration/controllers/sendEmailConfirmationBuildingNotificationConfiguration';
 import { buildingChangeBanner } from '../company/buildings/buildingBanners/controllers/buildingChangeBanner';
+import { findSyndicsByBuldingNanoId } from './building/controllers/findSyndicsByBuldingNanoId';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -52,16 +53,9 @@ clientRouter.get(
 
 clientRouter.get('/building/:buildingNanoId', clientBuildingDetails);
 
-clientRouter.get(
-  '/buildings/maintenances/occasional/auxiliarydata/:buildingNanoId',
-  listAuxiliaryDataForOccasionalCategoriesAndMaintenances,
-);
-
 clientRouter.post('/building/reports/occasional/create', createOccasionalReport);
 
 clientRouter.get('/building/informations/:buildingNanoId', findClientInformations);
-
-clientRouter.get('/building/home/:buildingNanoId', findHomeInformations);
 
 clientRouter.get('/building/home/:buildingNanoId', findHomeInformations);
 
@@ -79,10 +73,15 @@ clientRouter.get('/building/folders/list/:folderId', listFolderController);
 
 clientRouter.post('/building/create-access-history', clientCreateBuildingAccessHistory);
 
-// CRUDs
+// building com s
 clientRouter.get('/buildings/settings-data/:buildingNanoId/:syndicNanoId', findSettingsData);
 
 clientRouter.use('/buildings/folders', foldersRouter);
+
+clientRouter.get(
+  '/buildings/maintenances/occasional/auxiliarydata/:buildingNanoId',
+  listAuxiliaryDataForOccasionalCategoriesAndMaintenances,
+);
 
 clientRouter.post(
   '/buildings/notifications/sendconfirm/phone',
@@ -105,3 +104,6 @@ clientRouter.put('/buildings/notifications/edit', editBuildingNotificationConfig
 clientRouter.delete('/buildings/notifications/delete', deleteBuildingNotificationConfiguration);
 
 clientRouter.post('/buildings/banners/change', buildingChangeBanner);
+// building com s
+
+clientRouter.get('/syndics/:buildingNanoId', findSyndicsByBuldingNanoId);
