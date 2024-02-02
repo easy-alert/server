@@ -205,6 +205,8 @@ model MaintenanceHistory {
   MaintenanceReport        MaintenanceReport[]
   MaintenanceReportHistory MaintenanceReportHistory[]
 
+  MaintenanceReportProgress MaintenanceReportProgress[]
+
   @@map("maintenancesHistory")
 }
 
@@ -316,6 +318,54 @@ model MaintenanceReportImagesHistory {
   updatedAt DateTime @updatedAt
 
   @@map("maintenancesReportsImagesHistory")
+}
+
+model MaintenanceReportProgress {
+  id String @id @unique @default(uuid())
+
+  maintenanceHistoryId String  @unique
+  observation          String?
+  cost                 Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  MaintenanceHistory MaintenanceHistory @relation(fields: [maintenanceHistoryId], references: [id], onDelete: Cascade)
+
+  ReportAnnexesProgress MaintenanceReportAnnexesProgress[]
+  ReportImagesProgress  MaintenanceReportImagesProgress[]
+
+  @@map("maintenanceReportProgresses")
+}
+
+model MaintenanceReportAnnexesProgress {
+  id                          String @id @unique @default(uuid())
+  maintenanceReportProgressId String
+
+  name         String
+  originalName String
+  url          String
+
+  createdAt                 DateTime                  @default(now())
+  updatedAt                 DateTime                  @updatedAt
+  MaintenanceReportProgress MaintenanceReportProgress @relation(fields: [maintenanceReportProgressId], references: [id], onDelete: Cascade)
+
+  @@map("maintenanceReportAnnexesProgresses")
+}
+
+model MaintenanceReportImagesProgress {
+  id                          String @id @unique @default(uuid())
+  maintenanceReportProgressId String
+
+  name         String
+  originalName String
+  url          String
+
+  createdAt                 DateTime                  @default(now())
+  updatedAt                 DateTime                  @updatedAt
+  MaintenanceReportProgress MaintenanceReportProgress @relation(fields: [maintenanceReportProgressId], references: [id], onDelete: Cascade)
+
+  @@map("maintenanceReportImagesProgresses")
 }
 
 model TimeInterval {
