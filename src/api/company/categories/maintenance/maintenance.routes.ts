@@ -13,6 +13,8 @@ import { deleteMaintenance } from './controllers/deleteMaintenance';
 import { editMaintenance } from './controllers/editMaintenance';
 import { deleteOccasionalMaintenanceHistory } from './controllers/deleteOccasionalMaintenanceReport';
 import { sharedUpdateInProgressMaintenanceHistory } from '../../../shared/maintenance/controllers/sharedUpdateInProgressMaintenanceHistory';
+import { sharedCreateReportProgress } from '../../../shared/maintenancesReportProgresses/controllers/sharedCreateReportProgress';
+import { sharedFindReportProgress } from '../../../shared/maintenancesReportProgresses/controllers/sharedFindReportProgress';
 
 export const maintenanceRouter = Router();
 
@@ -27,10 +29,10 @@ maintenanceRouter.delete(
 );
 
 maintenanceRouter.post('/set/in-progress', sharedUpdateInProgressMaintenanceHistory);
-
 maintenanceRouter.post('/create/report', sharedCreateMaintenanceReport);
+maintenanceRouter.post('/create/report/progress', sharedCreateReportProgress);
 maintenanceRouter.post('/edit/report', sharedEditMaintenanceReport);
 
 maintenanceRouter.get('/list/report/versions/:maintenanceHistoryId', sharedListReportVersions);
-
+maintenanceRouter.get('/list/report/progress/:maintenanceHistoryId', sharedFindReportProgress);
 maintenanceRouter.get('/list/details/:maintenanceHistoryId', sharedMaintenanceHistoryDetails);

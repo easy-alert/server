@@ -34,6 +34,8 @@ import { findDataForAutocompleteInCreate } from '../company/buildings/notificati
 import { sendEmailConfirmationBuildingNotificationConfiguration } from '../company/buildings/notificationConfiguration/controllers/sendEmailConfirmationBuildingNotificationConfiguration';
 import { buildingChangeBanner } from '../company/buildings/buildingBanners/controllers/buildingChangeBanner';
 import { findSyndicsByBuldingNanoId } from './building/controllers/findSyndicsByBuldingNanoId';
+import { sharedCreateReportProgress } from '../shared/maintenancesReportProgresses/controllers/sharedCreateReportProgress';
+import { sharedFindReportProgress } from '../shared/maintenancesReportProgresses/controllers/sharedFindReportProgress';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -46,10 +48,6 @@ clientRouter.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
 clientRouter.use('/upload', uploadRouter);
 
 clientRouter.get('/syndic/:syndicNanoId', clientSyndicBuildingDetails);
-clientRouter.get(
-  '/maintenances/list/details/:maintenanceHistoryId',
-  sharedMaintenanceHistoryDetails,
-);
 
 clientRouter.get('/building/:buildingNanoId', clientBuildingDetails);
 
@@ -66,6 +64,18 @@ clientRouter.get('/building/logo/:buildingNanoId', findCompanyLogo);
 clientRouter.post('/maintenances/create/report', sharedCreateMaintenanceReport);
 
 clientRouter.post('/maintenances/set/in-progress', sharedUpdateInProgressMaintenanceHistory);
+
+clientRouter.post('/maintenances/create/report/progress', sharedCreateReportProgress);
+
+clientRouter.get(
+  '/maintenances/list/report/progress/:maintenanceHistoryId',
+  sharedFindReportProgress,
+);
+
+clientRouter.get(
+  '/maintenances/list/details/:maintenanceHistoryId',
+  sharedMaintenanceHistoryDetails,
+);
 
 clientRouter.get('/templates/create', createDefaultTemplates);
 
