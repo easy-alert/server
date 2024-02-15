@@ -33,4 +33,13 @@ export interface IMaintenancesData {
   inProgress: boolean;
   cost: number | null;
   type: string | null;
+
+  images: {
+    url: string;
+  }[];
+
+  annexes: {
+    url: string;
+    name: string;
+  }[];
 }
