@@ -14,7 +14,7 @@ export const capitalizeFirstLetter = (value: string) =>
 
 function formatMonthYear(monthYear: string): string {
   const [month, year] = monthYear.split('-');
-  const monthAbbreviation = new Date(`${year}-${month}-01`)
+  const monthAbbreviation = new Date(`${year}/${month}/01`)
     .toLocaleString('pt-br', {
       month: 'long',
     })
