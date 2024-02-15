@@ -8,6 +8,45 @@ const buildingReportsServices = new BuildingReportsServices();
 
 // #endregion
 
+// #region Functions
+export const capitalizeFirstLetter = (value: string) =>
+  value.charAt(0).toUpperCase() + value.slice(1);
+
+function formatMonthYear(monthYear: string): string {
+  const [month, year] = monthYear.split('-');
+  const monthAbbreviation = new Date(`${year}-${month}-01`)
+    .toLocaleString('pt-br', {
+      month: 'long',
+    })
+    .substring(0, 3);
+  return `${capitalizeFirstLetter(monthAbbreviation)}/${year.slice(2)}`;
+}
+
+function separateByMonth(array: IMaintenancesData[]) {
+  const separatedByMonth: { [key: string]: IMaintenancesData[] } = {};
+
+  array.forEach((data) => {
+    const monthYear = `${
+      data.notificationDate.getMonth() + 1
+    }-${data.notificationDate.getFullYear()}`;
+
+    if (!separatedByMonth[monthYear]) {
+      separatedByMonth[monthYear] = [];
+    }
+
+    separatedByMonth[monthYear].push(data);
+  });
+
+  const result = Object.keys(separatedByMonth).map((key) => ({
+    month: formatMonthYear(key),
+    data: separatedByMonth[key],
+  }));
+
+  return result;
+}
+
+// #endregion
+
 export async function listForBuildingReports(req: Request, res: Response) {
   // @ts-ignore                                         por causa do bug do PaserdQs
   const queryFilter = buildingReportsServices.mountQueryFilter({ query: req.query });
@@ -54,11 +93,11 @@ export async function listForBuildingReports(req: Request, res: Response) {
         break;
     }
 
+    const hasReport = maintenance.MaintenanceReport.length > 0;
+
     maintenances.push({
       id: maintenance.id,
-      observation: maintenance.MaintenanceReport.length
-        ? maintenance.MaintenanceReport[0].observation
-        : '-',
+
       maintenanceHistoryId: maintenance.id,
       buildingName: maintenance.Building.name,
       categoryName: maintenance.Maintenance.Category.name,
@@ -68,11 +107,19 @@ export async function listForBuildingReports(req: Request, res: Response) {
       notificationDate: maintenance.notificationDate,
       resolutionDate: maintenance.resolutionDate,
       status: maintenance.MaintenancesStatus.name,
-      cost: maintenance.MaintenanceReport.length > 0 ? maintenance.MaintenanceReport[0].cost : null,
       type: maintenance.Maintenance.MaintenanceType?.name ?? null,
       inProgress: maintenance.inProgress,
+
+      cost: hasReport ? maintenance.MaintenanceReport[0].cost : null,
+
+      observation: hasReport ? maintenance.MaintenanceReport[0].observation : '-',
+
+      images: hasReport ? maintenance.MaintenanceReport[0].ReportImages : [],
+      annexes: hasReport ? maintenance.MaintenanceReport[0].ReportAnnexes : [],
     });
   });
 
-  return res.status(200).json({ counts, maintenances });
+  const maintenancesForPDF = separateByMonth(maintenances);
+
+  return res.status(200).json({ counts, maintenances, maintenancesForPDF });
 }
