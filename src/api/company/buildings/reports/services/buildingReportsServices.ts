@@ -194,6 +194,7 @@ export class BuildingReportsServices {
                   name: true,
                 },
               },
+              source: true,
               responsible: true,
               observation: true,
               MaintenanceType: {

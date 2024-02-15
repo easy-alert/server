@@ -24,7 +24,9 @@ export interface IMaintenancesData {
   buildingName: string;
   categoryName: string;
   element: string;
-  observation: string | null;
+  source: string;
+  maintenanceObservation: string | null;
+  reportObservation: string | null;
   activity: string;
   responsible: string | null;
   notificationDate: Date;

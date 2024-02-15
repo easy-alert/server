@@ -104,7 +104,9 @@ export async function listForBuildingReports(req: Request, res: Response) {
       element: maintenance.Maintenance.element,
       activity: maintenance.Maintenance.activity,
       responsible: maintenance.Maintenance.responsible,
+      source: maintenance.Maintenance.source,
       notificationDate: maintenance.notificationDate,
+      maintenanceObservation: maintenance.Maintenance.observation,
       resolutionDate: maintenance.resolutionDate,
       status: maintenance.MaintenancesStatus.name,
       type: maintenance.Maintenance.MaintenanceType?.name ?? null,
@@ -112,7 +114,7 @@ export async function listForBuildingReports(req: Request, res: Response) {
 
       cost: hasReport ? maintenance.MaintenanceReport[0].cost : null,
 
-      observation: hasReport ? maintenance.MaintenanceReport[0].observation : '-',
+      reportObservation: hasReport ? maintenance.MaintenanceReport[0].observation : null,
 
       images: hasReport ? maintenance.MaintenanceReport[0].ReportImages : [],
       annexes: hasReport ? maintenance.MaintenanceReport[0].ReportAnnexes : [],
