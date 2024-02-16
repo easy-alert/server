@@ -159,6 +159,19 @@ export class BuildingReportsServices {
             select: {
               observation: true,
               cost: true,
+
+              ReportAnnexes: {
+                select: {
+                  url: true,
+                  name: true,
+                },
+              },
+
+              ReportImages: {
+                select: {
+                  url: true,
+                },
+              },
             },
           },
           MaintenancesStatus: {
@@ -181,6 +194,7 @@ export class BuildingReportsServices {
                   name: true,
                 },
               },
+              source: true,
               responsible: true,
               observation: true,
               MaintenanceType: {
