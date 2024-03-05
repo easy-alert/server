@@ -48,8 +48,8 @@ class SupplierServices {
           select: {
             id: true,
             type: true,
-            cities: { select: { city: true } },
-            states: { select: { state: true } },
+            cities: { select: { city: true }, orderBy: { city: 'asc' } },
+            states: { select: { state: true }, orderBy: { state: 'asc' } },
           },
           orderBy: {
             createdAt: 'asc',

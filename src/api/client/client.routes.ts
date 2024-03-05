@@ -36,6 +36,7 @@ import { buildingChangeBanner } from '../company/buildings/buildingBanners/contr
 import { findSyndicsByBuldingNanoId } from './building/controllers/findSyndicsByBuldingNanoId';
 import { sharedCreateReportProgress } from '../shared/maintenancesReportProgresses/controllers/sharedCreateReportProgress';
 import { sharedFindReportProgress } from '../shared/maintenancesReportProgresses/controllers/sharedFindReportProgress';
+import { findLocalSuppliers } from './building/controllers/findLocalSuppliers';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -60,6 +61,8 @@ clientRouter.get('/building/home/:buildingNanoId', findHomeInformations);
 clientRouter.get('/building/annex/:buildingNanoId', findBuildingAnnex);
 
 clientRouter.get('/building/logo/:buildingNanoId', findCompanyLogo);
+
+clientRouter.get('/building/suppliers/:buildingNanoId', findLocalSuppliers);
 
 clientRouter.post('/maintenances/create/report', sharedCreateMaintenanceReport);
 
