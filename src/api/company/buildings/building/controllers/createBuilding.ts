@@ -45,19 +45,16 @@ export async function createBuilding(req: Request, res: Response) {
       label: 'CEP',
       type: 'string',
       variable: data.cep,
-      isOptional: true,
     },
     {
       label: 'Cidade',
       type: 'string',
       variable: data.city,
-      isOptional: true,
     },
     {
       label: 'Estado',
       type: 'string',
       variable: data.state,
-      isOptional: true,
     },
     {
       label: 'Bairro',
