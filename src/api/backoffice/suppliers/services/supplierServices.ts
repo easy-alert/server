@@ -43,6 +43,18 @@ class SupplierServices {
         occupationArea: true,
         contractedValue: true,
         link: true,
+
+        regions: {
+          select: {
+            id: true,
+            type: true,
+            cities: { select: { city: true } },
+            states: { select: { state: true } },
+          },
+          orderBy: {
+            createdAt: 'asc',
+          },
+        },
       },
       where: { id },
     });
@@ -62,6 +74,32 @@ class SupplierServices {
     await this.findById(id);
 
     return prisma.supplier.delete({ where: { id } });
+  }
+
+  async createRegion(args: prismaTypes.SupplierRegionCreateArgs) {
+    await this.findById(args.data.supplierId ?? '');
+
+    await prisma.supplierRegion.create(args);
+  }
+
+  async findRegionById(id: string) {
+    const region = await prisma.supplierRegion.findUnique({ where: { id } });
+
+    validator.needExist([{ label: 'Fornecedor', variable: region }]);
+
+    return region!;
+  }
+
+  async deleteRegion(id: string) {
+    await this.findRegionById(id);
+
+    return prisma.supplierRegion.delete({ where: { id } });
+  }
+
+  async updateRegion(args: prismaTypes.SupplierRegionUpdateArgs) {
+    await this.findRegionById(args.where.id ?? '');
+
+    return prisma.supplierRegion.update(args);
   }
 }
 
