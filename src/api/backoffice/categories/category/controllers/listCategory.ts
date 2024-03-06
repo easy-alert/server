@@ -11,5 +11,7 @@ export async function listCategory(req: Request, res: Response) {
 
   const categories = await categoryServices.list({ search: search as string });
 
+  categories.sort((a, b) => a.name.localeCompare(b.name));
+
   return res.status(200).json(categories);
 }
