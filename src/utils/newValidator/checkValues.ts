@@ -111,6 +111,10 @@ export function checkValues(values: ICheckValues[]) {
         if (checkDate.toString() === 'Invalid Date') {
           invalidType({ label, type });
         }
+
+        if (!(value instanceof Date)) {
+          invalidType({ label, type });
+        }
         break;
       }
 

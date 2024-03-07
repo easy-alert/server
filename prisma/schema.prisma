@@ -383,6 +383,7 @@ model TimeInterval {
   MaintenanceFrequency Maintenance[] @relation("MaintenanceFrequency")
   MaintenancePeriod    Maintenance[] @relation("MaintenancePeriod")
   MaintenanceDelay     Maintenance[] @relation("MaintenanceDelay")
+  checklists           Checklist[]
 
   @@map("timeIntervals")
 }
@@ -447,6 +448,7 @@ model Building {
   oldBuildingIds              oldBuildingIds[]
   BuildingFolders             BuildingFolders[]
   BuildingsAccessHistory      BuildingAccessHistory[]
+  checklists                  Checklist[]
 
   @@map("buildings")
 }
@@ -467,10 +469,12 @@ model BuildingNotificationConfiguration {
   showContact              Boolean  @default(false)
   lastNotificationDate     DateTime @default(now())
 
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   Building          Building            @relation(fields: [buildingId], references: [id], onDelete: Cascade)
   MaintenanceReport MaintenanceReport[]
+  checklists        Checklist[]
 
   @@map("buildingsNotificationsConfigurations")
 }
@@ -683,7 +687,6 @@ model SupplierRegionCity {
 }
 
 // DEFAULT TEMPLATE MAINTENANCES
-
 model DefaultMaintenanceTemplate {
   id   String @id @unique @default(uuid())
   name String
@@ -723,4 +726,32 @@ model DefaultTemplateMaintenance {
   Maintenance             Maintenance             @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
 
   @@map("defaultTemplateMaintenances")
+}
+
+// CHECKLISTS
+model Checklist {
+  id String @id @default(uuid())
+
+  buildingId  String
+  syndicId    String?
+  name        String
+  description String?
+  date        DateTime
+
+  frequency               Int?
+  frequencyTimeIntervalId String?
+
+  parentId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  building              Building                           @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  syndic                BuildingNotificationConfiguration? @relation(fields: [syndicId], references: [id], onDelete: Cascade)
+  frequencyTimeInterval TimeInterval?                      @relation(fields: [frequencyTimeIntervalId], references: [id])
+
+  parentChecklist Checklist?  @relation("ParentChecklist", fields: [parentId], references: [id], onDelete: SetNull)
+  childChecklists Checklist[] @relation("ParentChecklist")
+
+  @@map("checklists")
 }

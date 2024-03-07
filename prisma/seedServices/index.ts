@@ -84,6 +84,7 @@ export class SeedServices {
       CPF: null,
       image: 'https://larguei.s3.us-west-2.amazonaws.com/1635276982966-1678106031894.jpg',
       isNotifyingOnceAWeek: false,
+      canAccessChecklists: false,
     });
 
     await companyServices.createUserCompany({
