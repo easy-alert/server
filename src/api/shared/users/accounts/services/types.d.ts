@@ -7,4 +7,5 @@ export interface IEditCompany {
   image: string;
   isNotifyingOnceAWeek: boolean;
   supportLink: string;
+  canAccessChecklists: boolean;
 }
