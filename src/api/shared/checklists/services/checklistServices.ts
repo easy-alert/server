@@ -1,14 +1,20 @@
 import { prisma, prismaTypes } from '../../../../../prisma';
+import { setToUTCLastMinuteOfDay, setToUTCMidnight } from '../../../../utils/dateTime';
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { Validator } from '../../../../utils/validator/validator';
 
 const validator = new Validator();
 
 class ChecklistServices {
-  async createChecklistService(args: prismaTypes.ChecklistCreateArgs) {
-    await prisma.checklist.create(args);
+  async create(args: prismaTypes.ChecklistCreateArgs) {
+    return prisma.checklist.create(args);
   }
 
-  async updateChecklistService(args: prismaTypes.ChecklistUpdateArgs) {
+  async createMany(args: prismaTypes.ChecklistCreateManyArgs) {
+    await prisma.checklist.createMany(args);
+  }
+
+  async update(args: prismaTypes.ChecklistUpdateArgs) {
     await prisma.checklist.update(args);
   }
 
@@ -28,17 +34,47 @@ class ChecklistServices {
     return prisma.checklist.delete({ where: { id } });
   }
 
-  async findMany({ buildingId }: { buildingId: string }) {
+  async findMany({ buildingId, date }: { buildingId: string; date: string }) {
     return prisma.checklist.findMany({
-      where: {
-        buildingId,
-        building: {
-          Company: {
-            canAccessChecklists: true,
+      select: {
+        id: true,
+        name: true,
+        syndic: {
+          select: {
+            name: true,
           },
         },
+        status: true,
       },
+      where: {
+        buildingId,
+
+        date: {
+          gte: setToUTCMidnight(new Date(date)),
+          lte: setToUTCLastMinuteOfDay(new Date(date)),
+        },
+      },
+
+      orderBy: [{ status: 'asc' }, { name: 'asc' }],
     });
+  }
+
+  async checkAccess({ buildingId }: { buildingId: string }) {
+    const company = await prisma.company.findFirst({
+      select: {
+        canAccessChecklists: true,
+      },
+      where: { Buildings: { some: { id: buildingId } } },
+    });
+
+    validator.needExist([{ label: 'Edificação', variable: company }]);
+
+    if (!company?.canAccessChecklists) {
+      throw new ServerMessage({
+        statusCode: 403,
+        message: `Sua empresa não possui acesso a este módulo.`,
+      });
+    }
   }
 }
 

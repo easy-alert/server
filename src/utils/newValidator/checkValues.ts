@@ -112,9 +112,6 @@ export function checkValues(values: ICheckValues[]) {
           invalidType({ label, type });
         }
 
-        if (!(value instanceof Date)) {
-          invalidType({ label, type });
-        }
         break;
       }
 

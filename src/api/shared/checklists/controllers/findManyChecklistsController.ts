@@ -1,10 +1,18 @@
 import { Response, Request } from 'express';
 import { checklistServices } from '../services/checklistServices';
+import { checkValues } from '../../../../utils/newValidator';
 
 export async function findManyChecklistsController(req: Request, res: Response) {
-  const { buildingId } = req.params as any as { buildingId: string };
+  const { buildingId, date } = req.params as any as { buildingId: string; date: string };
 
-  const checklists = await checklistServices.findMany({ buildingId });
+  checkValues([
+    { label: 'ID da edificação', type: 'string', value: buildingId },
+    { label: 'Data', type: 'date', value: new Date(date) },
+  ]);
+
+  await checklistServices.checkAccess({ buildingId });
+
+  const checklists = await checklistServices.findMany({ buildingId, date });
 
   return res.status(200).json({ checklists });
 }

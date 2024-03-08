@@ -1,17 +1,19 @@
 import { Response, Request } from 'express';
-import { checkValues } from '../../../../utils/newValidator';
+import { checkMinimumNumber, checkValues } from '../../../../utils/newValidator';
 import { TimeIntervalServices } from '../../timeInterval/services/timeIntervalServices';
 import { BuildingServices } from '../../../company/buildings/building/services/buildingServices';
 import { SharedBuildingNotificationConfigurationServices } from '../../notificationConfiguration/services/buildingNotificationConfigurationServices';
+import { checklistServices } from '../services/checklistServices';
+import { setToUTCMidnight } from '../../../../utils/dateTime';
 
 interface IBody {
   buildingId: string;
   name: string;
   date: string;
+  syndicId: string;
 
   description: string | null;
-  syndicId: string | null;
-  frequency: string | null;
+  frequency: number | null;
   frequencyTimeIntervalId: string | null;
 }
 
@@ -32,29 +34,54 @@ export async function createChecklistController(req: Request, res: Response) {
   }: IBody = req.body;
 
   checkValues([
-    { label: 'aa', type: 'string', value: buildingId },
-    { label: 'aa', type: 'date', value: date },
-    { label: 'aa', type: 'string', value: name },
-    { label: 'aa', type: 'string', value: description, required: false },
-    { label: 'aa', type: 'string', value: syndicId, required: false },
-    { label: 'aa', type: 'string', value: frequency, required: false },
-    { label: 'aa', type: 'string', value: frequencyTimeIntervalId, required: false },
+    { label: 'ID da edificação', type: 'string', value: buildingId },
+    { label: 'Data', type: 'date', value: date },
+    { label: 'Nome', type: 'string', value: name },
+    { label: 'ID do síndico', type: 'string', value: syndicId },
+
+    { label: 'Descrição', type: 'string', value: description, required: false },
+    { label: 'Frequência', type: 'int', value: frequency, required: false },
+    {
+      label: 'Intervalo da frequência',
+      type: 'string',
+      value: frequencyTimeIntervalId,
+      required: false,
+    },
   ]);
+
+  if (frequency) {
+    checkMinimumNumber([{ label: 'Frequência', min: 1, value: frequency }]);
+  }
 
   await buildingServices.findById({ buildingId });
 
-  if (syndicId) {
-    await buildingNotificationConfigurationServices.findById({
-      buildingNotificationConfigurationId: syndicId,
-    });
-  }
+  await buildingNotificationConfigurationServices.findById({
+    buildingNotificationConfigurationId: syndicId,
+  });
+
+  let frequencyInDays = 0;
 
   if (frequency && frequencyTimeIntervalId) {
     const frequencyData = await timeIntervalServices.findById({
       timeIntervalId: frequencyTimeIntervalId,
     });
-    // validar time interval id
+    frequencyInDays = frequencyData.unitTime * frequency;
+    console.log('frequencyInDays:', frequencyInDays);
   }
 
-  return res.status(200).json({ message: 'Checklist cadastrado com sucesso.' });
+  const parentChecklist = await checklistServices.create({
+    data: {
+      buildingId,
+      date: setToUTCMidnight(new Date(date)),
+      name,
+      description,
+      syndicId,
+      frequency,
+      frequencyTimeIntervalId,
+      status: 'pending',
+    },
+  });
+  console.log('parentChecklist:', parentChecklist);
+
+  return res.status(201).json({ ServerMessage: { message: 'Checklist cadastrado com sucesso.' } });
 }

@@ -732,26 +732,44 @@ model DefaultTemplateMaintenance {
 model Checklist {
   id String @id @default(uuid())
 
-  buildingId  String
-  syndicId    String?
-  name        String
-  description String?
-  date        DateTime
-
+  buildingId              String
+  syndicId                String
+  name                    String
+  description             String?
+  date                    DateTime
   frequency               Int?
   frequencyTimeIntervalId String?
-
-  parentId String?
+  observation             String?
+  parentId                String?
+  status                  ChecklistStatusName
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  building              Building                           @relation(fields: [buildingId], references: [id], onDelete: Cascade)
-  syndic                BuildingNotificationConfiguration? @relation(fields: [syndicId], references: [id], onDelete: Cascade)
-  frequencyTimeInterval TimeInterval?                      @relation(fields: [frequencyTimeIntervalId], references: [id])
+  building              Building                          @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  syndic                BuildingNotificationConfiguration @relation(fields: [syndicId], references: [id], onDelete: Cascade)
+  frequencyTimeInterval TimeInterval?                     @relation(fields: [frequencyTimeIntervalId], references: [id])
 
-  parentChecklist Checklist?  @relation("ParentChecklist", fields: [parentId], references: [id], onDelete: SetNull)
-  childChecklists Checklist[] @relation("ParentChecklist")
+  parentChecklist Checklist?       @relation("ParentChecklist", fields: [parentId], references: [id], onDelete: SetNull)
+  childChecklists Checklist[]      @relation("ParentChecklist")
+  images          ChecklistImage[]
 
   @@map("checklists")
+}
+
+model ChecklistImage {
+  id String @id @default(uuid())
+
+  checklistId String
+  name        String
+  url         String
+
+  checklist Checklist @relation(fields: [checklistId], references: [id])
+
+  @@map("checklistImages")
+}
+
+enum ChecklistStatusName {
+  pending
+  completed
 }

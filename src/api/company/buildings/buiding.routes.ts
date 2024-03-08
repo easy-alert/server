@@ -47,7 +47,7 @@ export const buildingRouter = Router();
 buildingRouter.post('/create', createBuilding);
 buildingRouter.put('/edit', editBuilding);
 buildingRouter.get('/list', listBuilding);
-buildingRouter.get('/listforselect/:buildingId', listBuildingForSelect);
+buildingRouter.get('/listforselect', listBuildingForSelect);
 buildingRouter.get('/listforselectwithtemplates/:buildingId', listBuildingsAndTemplatesForSelect);
 
 buildingRouter.get('/list/details/:buildingId', listBuildingDetails);
