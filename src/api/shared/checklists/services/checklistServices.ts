@@ -19,8 +19,20 @@ class ChecklistServices {
   }
 
   async findById(id: string) {
-    const checklist = await prisma.checklist.findFirst({
-      where: { id, building: { Company: { canAccessChecklists: true } } },
+    const checklist = await prisma.checklist.findUnique({
+      include: {
+        images: true,
+        building: {
+          select: {
+            Company: {
+              select: {
+                canAccessChecklists: true,
+              },
+            },
+          },
+        },
+      },
+      where: { id },
     });
 
     validator.needExist([{ label: 'Checklist', variable: checklist }]);
