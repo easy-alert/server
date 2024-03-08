@@ -4,7 +4,8 @@ import { TimeIntervalServices } from '../../timeInterval/services/timeIntervalSe
 import { BuildingServices } from '../../../company/buildings/building/services/buildingServices';
 import { SharedBuildingNotificationConfigurationServices } from '../../notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { checklistServices } from '../services/checklistServices';
-import { setToUTCMidnight } from '../../../../utils/dateTime';
+import { addDays, setToUTCMidnight } from '../../../../utils/dateTime';
+import { prismaTypes } from '../../../../../prisma';
 
 interface IBody {
   buildingId: string;
@@ -66,7 +67,6 @@ export async function createChecklistController(req: Request, res: Response) {
       timeIntervalId: frequencyTimeIntervalId,
     });
     frequencyInDays = frequencyData.unitTime * frequency;
-    console.log('frequencyInDays:', frequencyInDays);
   }
 
   const parentChecklist = await checklistServices.create({
@@ -81,7 +81,29 @@ export async function createChecklistController(req: Request, res: Response) {
       status: 'pending',
     },
   });
-  console.log('parentChecklist:', parentChecklist);
+
+  if (frequencyInDays) {
+    const childrenChecklists: prismaTypes.ChecklistCreateManyInput[] = [];
+
+    while (childrenChecklists.length < 14) {
+      childrenChecklists.push({
+        groupId: parentChecklist.groupId,
+        buildingId: parentChecklist.buildingId,
+        name: parentChecklist.name,
+        description: parentChecklist.description,
+        syndicId: parentChecklist.syndicId,
+        frequency: parentChecklist.frequency,
+        frequencyTimeIntervalId: parentChecklist.frequencyTimeIntervalId,
+        status: parentChecklist.status,
+        date: addDays({
+          date: parentChecklist.date,
+          days: frequencyInDays * childrenChecklists.length + frequencyInDays,
+        }),
+      });
+    }
+
+    await checklistServices.createMany({ data: childrenChecklists });
+  }
 
   return res.status(201).json({ ServerMessage: { message: 'Checklist cadastrado com sucesso.' } });
 }

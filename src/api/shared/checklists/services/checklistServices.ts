@@ -24,11 +24,17 @@ class ChecklistServices {
         images: true,
         building: {
           select: {
+            name: true,
             Company: {
               select: {
                 canAccessChecklists: true,
               },
             },
+          },
+        },
+        syndic: {
+          select: {
+            name: true,
           },
         },
       },

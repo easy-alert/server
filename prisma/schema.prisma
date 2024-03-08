@@ -740,8 +740,8 @@ model Checklist {
   frequency               Int?
   frequencyTimeIntervalId String?
   observation             String?
-  parentId                String?
   status                  ChecklistStatusName
+  groupId                 String              @default(nanoid(12))
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -750,9 +750,7 @@ model Checklist {
   syndic                BuildingNotificationConfiguration @relation(fields: [syndicId], references: [id], onDelete: Cascade)
   frequencyTimeInterval TimeInterval?                     @relation(fields: [frequencyTimeIntervalId], references: [id])
 
-  parentChecklist Checklist?       @relation("ParentChecklist", fields: [parentId], references: [id], onDelete: SetNull)
-  childChecklists Checklist[]      @relation("ParentChecklist")
-  images          ChecklistImage[]
+  images ChecklistImage[]
 
   @@map("checklists")
 }
