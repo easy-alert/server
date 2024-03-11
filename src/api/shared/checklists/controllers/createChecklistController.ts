@@ -12,7 +12,7 @@ import { addDays, setToUTCMidnight } from '../../../../utils/dateTime';
 import { prismaTypes } from '../../../../../prisma';
 
 interface IBody {
-  buildingId: string;
+  buildingNanoId: string;
   name: string;
   date: string;
   syndicId: string;
@@ -29,7 +29,7 @@ const buildingNotificationConfigurationServices =
 
 export async function createChecklistController(req: Request, res: Response) {
   const {
-    buildingId,
+    buildingNanoId,
     date,
     description,
     frequency,
@@ -39,7 +39,7 @@ export async function createChecklistController(req: Request, res: Response) {
   }: IBody = req.body;
 
   checkValues([
-    { label: 'ID da edificação', type: 'string', value: buildingId },
+    { label: 'ID da edificação', type: 'string', value: buildingNanoId },
     { label: 'Data', type: 'date', value: date },
     { label: 'Nome', type: 'string', value: name },
     { label: 'ID do síndico', type: 'string', value: syndicId },
@@ -58,7 +58,7 @@ export async function createChecklistController(req: Request, res: Response) {
     checkMinimumNumber([{ label: 'Frequência', min: 1, value: frequency }]);
   }
 
-  await buildingServices.findById({ buildingId });
+  const { id } = await buildingServices.findByNanoId({ buildingNanoId });
 
   await buildingNotificationConfigurationServices.findById({
     buildingNotificationConfigurationId: syndicId,
@@ -77,7 +77,7 @@ export async function createChecklistController(req: Request, res: Response) {
 
   const parentChecklist = await checklistServices.create({
     data: {
-      buildingId,
+      buildingId: id,
       date: setToUTCMidnight(new Date(date)),
       name,
       description,

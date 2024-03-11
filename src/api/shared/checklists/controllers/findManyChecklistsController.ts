@@ -3,19 +3,19 @@ import { checklistServices } from '../services/checklistServices';
 import { checkValues } from '../../../../utils/newValidator';
 
 export async function findManyChecklistsController(req: Request, res: Response) {
-  const { buildingId, date } = req.params as any as { buildingId: string; date: string };
+  const { buildingNanoId, date } = req.params as any as { buildingNanoId: string; date: string };
 
   checkValues([
-    { label: 'ID da edificação', type: 'string', value: buildingId },
+    { label: 'ID da edificação', type: 'string', value: buildingNanoId },
     { label: 'Data', type: 'date', value: new Date(date) },
   ]);
 
-  await checklistServices.checkAccess({ buildingId });
+  await checklistServices.checkAccess({ buildingNanoId });
 
-  const checklists = await checklistServices.findMany({ buildingId, date });
+  const checklists = await checklistServices.findMany({ buildingNanoId, date });
 
   // Pode ser que fique pesado no futuro
-  const calendarDates = await checklistServices.findChecklistDataByMonth({ buildingId });
+  const calendarDates = await checklistServices.findChecklistDataByMonth({ buildingNanoId });
 
   return res.status(200).json({ checklists, calendarDates });
 }

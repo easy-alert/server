@@ -580,6 +580,7 @@ export class BuildingServices {
       select: {
         id: true,
         name: true,
+        nanoId: true,
       },
       where: {
         companyId,

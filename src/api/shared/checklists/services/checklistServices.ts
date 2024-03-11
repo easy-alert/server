@@ -28,6 +28,7 @@ class ChecklistServices {
         images: true,
         building: {
           select: {
+            nanoId: true,
             id: true,
             name: true,
             Company: {
@@ -62,7 +63,7 @@ class ChecklistServices {
     await prisma.checklist.deleteMany(args);
   }
 
-  async findMany({ buildingId, date }: { buildingId: string; date: string }) {
+  async findMany({ buildingNanoId, date }: { buildingNanoId: string; date: string }) {
     return prisma.checklist.findMany({
       select: {
         id: true,
@@ -75,7 +76,9 @@ class ChecklistServices {
         status: true,
       },
       where: {
-        buildingId,
+        building: {
+          nanoId: buildingNanoId,
+        },
 
         date: {
           gte: setToUTCMidnight(new Date(date)),
@@ -87,12 +90,12 @@ class ChecklistServices {
     });
   }
 
-  async checkAccess({ buildingId }: { buildingId: string }) {
+  async checkAccess({ buildingNanoId }: { buildingNanoId: string }) {
     const company = await prisma.company.findFirst({
       select: {
         canAccessChecklists: true,
       },
-      where: { Buildings: { some: { id: buildingId } } },
+      where: { Buildings: { some: { nanoId: buildingNanoId } } },
     });
 
     validator.needExist([{ label: 'Edificação', variable: company }]);
@@ -105,17 +108,17 @@ class ChecklistServices {
     }
   }
 
-  async findChecklistDataByMonth({ buildingId }: { buildingId: string }) {
+  async findChecklistDataByMonth({ buildingNanoId }: { buildingNanoId: string }) {
     const [pending, completed] = await prisma.$transaction([
       prisma.checklist.findMany({
         select: { date: true },
         distinct: 'date',
-        where: { buildingId, status: 'pending' },
+        where: { building: { nanoId: buildingNanoId }, status: 'pending' },
       }),
       prisma.checklist.findMany({
         select: { date: true },
         distinct: 'date',
-        where: { buildingId, status: 'completed' },
+        where: { building: { nanoId: buildingNanoId }, status: 'completed' },
       }),
     ]);
 
