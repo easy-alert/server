@@ -4,6 +4,7 @@ import { findManyChecklistsController } from '../../shared/checklists/controller
 import { deleteChecklistController } from '../../shared/checklists/controllers/deleteChecklistController';
 import { findChecklistByIdController } from '../../shared/checklists/controllers/findChecklistByIdController';
 import { completeChecklistController } from '../../shared/checklists/controllers/completeChecklistController';
+import { updateChecklistReportController } from '../../shared/checklists/controllers/updateChecklistReportController';
 
 export const checklistRouter: Router = Router();
 
@@ -15,3 +16,4 @@ checklistRouter.post('/', createChecklistController);
 checklistRouter.delete('/:checklistId/:mode', deleteChecklistController);
 
 checklistRouter.put('/complete', completeChecklistController);
+checklistRouter.put('/reports', updateChecklistReportController);
