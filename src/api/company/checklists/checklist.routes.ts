@@ -12,6 +12,6 @@ checklistRouter.get('/:buildingId/:date', findManyChecklistsController);
 
 checklistRouter.post('/', createChecklistController);
 
-checklistRouter.delete('/:checklistId', deleteChecklistController);
+checklistRouter.delete('/:checklistId/:mode', deleteChecklistController);
 
 checklistRouter.put('/complete', completeChecklistController);

@@ -46,10 +46,8 @@ class ChecklistServices {
     return checklist!;
   }
 
-  async delete(id: string) {
-    await this.findById(id);
-
-    return prisma.checklist.delete({ where: { id } });
+  async deleteMany(args: prismaTypes.ChecklistDeleteManyArgs) {
+    await prisma.checklist.deleteMany(args);
   }
 
   async findMany({ buildingId, date }: { buildingId: string; date: string }) {
