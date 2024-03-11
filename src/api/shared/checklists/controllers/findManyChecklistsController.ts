@@ -14,5 +14,8 @@ export async function findManyChecklistsController(req: Request, res: Response) 
 
   const checklists = await checklistServices.findMany({ buildingId, date });
 
-  return res.status(200).json({ checklists });
+  // Pode ser que fique pesado no futuro
+  const calendarDates = await checklistServices.findChecklistDataByMonth({ buildingId });
+
+  return res.status(200).json({ checklists, calendarDates });
 }

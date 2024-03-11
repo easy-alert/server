@@ -93,15 +93,21 @@ class ChecklistServices {
     }
   }
 
-  findLastChecklistInGroup({ groupId }: { groupId: string }) {
-    return prisma.checklist.findFirst({
-      where: {
-        groupId,
-      },
-      orderBy: {
-        date: 'desc',
-      },
-    });
+  async findChecklistDataByMonth({ buildingId }: { buildingId: string }) {
+    const [pending, completed] = await prisma.$transaction([
+      prisma.checklist.findMany({
+        select: { date: true },
+        distinct: 'date',
+        where: { buildingId, status: 'pending' },
+      }),
+      prisma.checklist.findMany({
+        select: { date: true },
+        distinct: 'date',
+        where: { buildingId, status: 'completed' },
+      }),
+    ]);
+
+    return { pending, completed };
   }
 }
 
