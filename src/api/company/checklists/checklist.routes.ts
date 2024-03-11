@@ -3,6 +3,7 @@ import { createChecklistController } from '../../shared/checklists/controllers/c
 import { findManyChecklistsController } from '../../shared/checklists/controllers/findManyChecklistsController';
 import { deleteChecklistController } from '../../shared/checklists/controllers/deleteChecklistController';
 import { findChecklistByIdController } from '../../shared/checklists/controllers/findChecklistByIdController';
+import { completeChecklistController } from '../../shared/checklists/controllers/completeChecklistController';
 
 export const checklistRouter: Router = Router();
 
@@ -12,3 +13,5 @@ checklistRouter.get('/:buildingId/:date', findManyChecklistsController);
 checklistRouter.post('/', createChecklistController);
 
 checklistRouter.delete('/:checklistId', deleteChecklistController);
+
+checklistRouter.put('/complete', completeChecklistController);

@@ -1,6 +1,7 @@
 import { Response, Request } from 'express';
 import { checkValues } from '../../../../utils/newValidator';
 import { checklistServices } from '../services/checklistServices';
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
 
 interface IBody {
   checklistId: string;
@@ -30,10 +31,20 @@ export async function completeChecklistController(req: Request, res: Response) {
     ]);
   });
 
+  const foundChecklist = await checklistServices.findById(checklistId);
+
+  if (foundChecklist.status === 'completed') {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: 'Esse checklist já foi concluído.',
+    });
+  }
+
   await checklistServices.update({
     data: {
       status: 'completed',
       observation,
+      resolutionDate: new Date(),
       images: {
         createMany: {
           data: Array.isArray(images) ? images : [],

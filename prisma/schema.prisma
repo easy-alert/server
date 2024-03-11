@@ -737,6 +737,7 @@ model Checklist {
   name                    String
   description             String?
   date                    DateTime
+  resolutionDate          DateTime?
   frequency               Int?
   frequencyTimeIntervalId String?
   observation             String?
@@ -762,7 +763,7 @@ model ChecklistImage {
   name        String
   url         String
 
-  checklist Checklist @relation(fields: [checklistId], references: [id])
+  checklist Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
 
   @@map("checklistImages")
 }

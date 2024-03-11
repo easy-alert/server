@@ -15,7 +15,7 @@ class ChecklistServices {
   }
 
   async update(args: prismaTypes.ChecklistUpdateArgs) {
-    await prisma.checklist.update(args);
+    return prisma.checklist.update(args);
   }
 
   async findById(id: string) {
@@ -93,6 +93,17 @@ class ChecklistServices {
         message: `Sua empresa não possui acesso a este módulo.`,
       });
     }
+  }
+
+  findLastChecklistInGroup({ groupId }: { groupId: string }) {
+    return prisma.checklist.findFirst({
+      where: {
+        groupId,
+      },
+      orderBy: {
+        date: 'desc',
+      },
+    });
   }
 }
 
