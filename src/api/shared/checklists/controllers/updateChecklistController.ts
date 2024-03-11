@@ -71,10 +71,19 @@ export async function updateChecklistController(req: Request, res: Response) {
     buildingNotificationConfigurationId: syndicId,
   });
 
-  const { groupId, date: defaultDate } = await checklistServices.findById(id);
+  const {
+    groupId,
+    date: defaultDate,
+    frequencyTimeInterval: oldFrequencyTimeInterval,
+    frequency: oldFrequency,
+  } = await checklistServices.findById(id);
+
+  const oldFrequencyInDays =
+    oldFrequencyTimeInterval && oldFrequency ? oldFrequencyTimeInterval.unitTime * oldFrequency : 0;
 
   const newDate = setToUTCMidnight(new Date(date));
-  const createNewGroupId = newDate.getTime() < defaultDate.getTime();
+  const createNewGroupId =
+    newDate.getTime() < defaultDate.getTime() || oldFrequencyInDays !== frequencyInDays;
 
   const updatedChecklist = await checklistServices.update({
     data: {
