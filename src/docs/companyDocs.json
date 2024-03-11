@@ -1147,52 +1147,6 @@
       }
     },
 
-    "/buildings/listforselect/{buildingId}": {
-      "get": {
-        "tags": ["Building"],
-        "summary": "Lista todas as edificações para o select.",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "buildingId",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "ID da edificação"
-          }
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-
-        "responses": {
-          "200": {
-            "description": "Lista todas as edificações para o select.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": { "type": "string" },
-                      "name": { "type": "string" }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/ServerMessage"
-          }
-        }
-      }
-    },
-
     "/buildings/types/list": {
       "get": {
         "tags": ["Building"],

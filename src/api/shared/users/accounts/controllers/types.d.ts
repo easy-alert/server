@@ -12,5 +12,6 @@ export interface IEditCompanyBody {
     password: string;
     isNotifyingOnceAWeek: boolean;
     supportLink: string;
+    canAccessChecklists: boolean;
   };
 }

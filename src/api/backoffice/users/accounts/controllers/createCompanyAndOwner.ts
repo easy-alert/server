@@ -31,6 +31,7 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     contactNumber,
     image,
     isNotifyingOnceAWeek,
+    canAccessChecklists,
   } = req.body;
 
   validator.notNull([
@@ -80,6 +81,7 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     image,
     name: companyName,
     isNotifyingOnceAWeek,
+    canAccessChecklists,
   });
 
   await companyServices.createUserCompany({

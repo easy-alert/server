@@ -39,6 +39,7 @@ import { listAuxiliaryDataForOccasionalCategoriesAndMaintenances } from './occas
 import { createOccasionalReport } from './reports/controllers/createOcassionalReport';
 import { foldersRouter } from './folders/folders.routes';
 import { findDataForAutocompleteInCreate } from './notificationConfiguration/controllers/findDataForAutocompleteInCreate';
+import { listSyndicsForSelect } from './notificationConfiguration/controllers/listSyndicsForSelect';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -47,7 +48,7 @@ export const buildingRouter = Router();
 buildingRouter.post('/create', createBuilding);
 buildingRouter.put('/edit', editBuilding);
 buildingRouter.get('/list', listBuilding);
-buildingRouter.get('/listforselect/:buildingId', listBuildingForSelect);
+buildingRouter.get('/listforselect', listBuildingForSelect);
 buildingRouter.get('/listforselectwithtemplates/:buildingId', listBuildingsAndTemplatesForSelect);
 
 buildingRouter.get('/list/details/:buildingId', listBuildingDetails);
@@ -74,6 +75,7 @@ buildingRouter.get(
   '/notifications/list-for-autocomplete/:buildingId',
   findDataForAutocompleteInCreate,
 );
+buildingRouter.get('/notifications/list-for-select/:buildingId', listSyndicsForSelect);
 buildingRouter.post('/notifications/create', createBuildingNotificationConfiguration);
 buildingRouter.put('/notifications/edit', editBuildingNotificationConfiguration);
 buildingRouter.delete('/notifications/delete', deleteBuildingNotificationConfiguration);

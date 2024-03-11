@@ -587,6 +587,9 @@ export class BuildingServices {
           id: buildingId,
         },
       },
+      orderBy: {
+        name: 'asc',
+      },
     });
   }
 }

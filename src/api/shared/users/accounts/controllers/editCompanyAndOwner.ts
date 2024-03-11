@@ -24,6 +24,7 @@ export async function sharedEditCompanyAndOwner({
     password,
     isNotifyingOnceAWeek,
     supportLink,
+    canAccessChecklists,
   },
   userId,
   companyId,
@@ -66,6 +67,7 @@ export async function sharedEditCompanyAndOwner({
     name: companyName,
     isNotifyingOnceAWeek,
     supportLink,
+    canAccessChecklists,
   });
 
   if (password) {
