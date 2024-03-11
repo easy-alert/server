@@ -18,12 +18,17 @@ class ChecklistServices {
     return prisma.checklist.update(args);
   }
 
+  async updateMany(args: prismaTypes.ChecklistUpdateManyArgs) {
+    return prisma.checklist.updateMany(args);
+  }
+
   async findById(id: string) {
     const checklist = await prisma.checklist.findUnique({
       include: {
         images: true,
         building: {
           select: {
+            id: true,
             name: true,
             Company: {
               select: {
@@ -34,7 +39,14 @@ class ChecklistServices {
         },
         syndic: {
           select: {
+            id: true,
             name: true,
+          },
+        },
+        frequencyTimeInterval: {
+          select: {
+            id: true,
+            unitTime: true,
           },
         },
       },

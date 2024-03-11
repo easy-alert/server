@@ -28,5 +28,5 @@ export async function deleteChecklistController(req: Request, res: Response) {
       break;
   }
 
-  return res.status(200).json({ ServerMessage: { message: 'Checklist excluída com sucesso.' } });
+  return res.status(200).json({ ServerMessage: { message: 'Checklist excluído com sucesso.' } });
 }

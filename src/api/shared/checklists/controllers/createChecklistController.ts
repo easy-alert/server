@@ -1,5 +1,9 @@
 import { Response, Request } from 'express';
-import { checkMinimumNumber, checkValues } from '../../../../utils/newValidator';
+import {
+  checkMaximumNumber,
+  checkMinimumNumber,
+  checkValues,
+} from '../../../../utils/newValidator';
 import { TimeIntervalServices } from '../../timeInterval/services/timeIntervalServices';
 import { BuildingServices } from '../../../company/buildings/building/services/buildingServices';
 import { SharedBuildingNotificationConfigurationServices } from '../../notificationConfiguration/services/buildingNotificationConfigurationServices';
@@ -41,7 +45,7 @@ export async function createChecklistController(req: Request, res: Response) {
     { label: 'ID do síndico', type: 'string', value: syndicId },
 
     { label: 'Descrição', type: 'string', value: description, required: false },
-    { label: 'Frequência', type: 'int', value: frequency, required: false },
+    { label: 'Frequência', type: 'int', value: frequency || null, required: false },
     {
       label: 'Intervalo da frequência',
       type: 'string',
@@ -67,6 +71,8 @@ export async function createChecklistController(req: Request, res: Response) {
       timeIntervalId: frequencyTimeIntervalId,
     });
     frequencyInDays = frequencyData.unitTime * frequency;
+
+    checkMaximumNumber([{ label: 'Periodicidade em dias', max: 35000, value: frequencyInDays }]);
   }
 
   const parentChecklist = await checklistServices.create({
@@ -76,8 +82,8 @@ export async function createChecklistController(req: Request, res: Response) {
       name,
       description,
       syndicId,
-      frequency,
-      frequencyTimeIntervalId,
+      frequency: frequency || null,
+      frequencyTimeIntervalId: frequency ? frequencyTimeIntervalId : null,
       status: 'pending',
     },
   });

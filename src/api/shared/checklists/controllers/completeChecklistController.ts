@@ -54,5 +54,5 @@ export async function completeChecklistController(req: Request, res: Response) {
     where: { id: checklistId },
   });
 
-  return res.status(200).json({ ServerMessage: { message: 'Checklist completado com sucesso.' } });
+  return res.status(200).json({ ServerMessage: { message: 'Checklist concluído com sucesso.' } });
 }

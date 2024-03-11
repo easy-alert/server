@@ -51,5 +51,7 @@ export async function updateChecklistReportController(req: Request, res: Respons
     where: { id: checklistId },
   });
 
-  return res.status(200).json({ ServerMessage: { message: 'Checklist completado com sucesso.' } });
+  return res
+    .status(200)
+    .json({ ServerMessage: { message: 'Relato do checklist editado com sucesso.' } });
 }
