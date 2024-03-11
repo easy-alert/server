@@ -6,11 +6,13 @@ const buildingNotificationConfigurationServices =
   new SharedBuildingNotificationConfigurationServices();
 
 export async function listSyndicsForSelect(req: Request, res: Response) {
-  const { buildingId } = req.params as any as { buildingId: string };
+  const { buildingNanoId } = req.params as any as { buildingNanoId: string };
 
-  checkValues([{ label: 'ID da edificação', type: 'string', value: buildingId }]);
+  checkValues([{ label: 'ID da edificação', type: 'string', value: buildingNanoId }]);
 
-  const syndics = await buildingNotificationConfigurationServices.findByBuildingId(buildingId);
+  const syndics = await buildingNotificationConfigurationServices.findByBuildingNanoId(
+    buildingNanoId,
+  );
 
   return res.status(200).json({ syndics });
 }

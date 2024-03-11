@@ -269,6 +269,7 @@ export class SharedBuildingNotificationConfigurationServices {
   async findByBuildingNanoId(buildingNanoId: string) {
     return prisma.buildingNotificationConfiguration.findMany({
       select: {
+        id: true,
         nanoId: true,
         name: true,
       },
@@ -299,6 +300,7 @@ export class SharedBuildingNotificationConfigurationServices {
       },
     });
   }
+
   // #endregion
 
   // #region NOTIFICATIONS

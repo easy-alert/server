@@ -75,7 +75,7 @@ buildingRouter.get(
   '/notifications/list-for-autocomplete/:buildingId',
   findDataForAutocompleteInCreate,
 );
-buildingRouter.get('/notifications/list-for-select/:buildingId', listSyndicsForSelect);
+buildingRouter.get('/notifications/list-for-select/:buildingNanoId', listSyndicsForSelect);
 buildingRouter.post('/notifications/create', createBuildingNotificationConfiguration);
 buildingRouter.put('/notifications/edit', editBuildingNotificationConfiguration);
 buildingRouter.delete('/notifications/delete', deleteBuildingNotificationConfiguration);

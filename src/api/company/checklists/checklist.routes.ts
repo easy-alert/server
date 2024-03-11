@@ -10,7 +10,7 @@ import { updateChecklistController } from '../../shared/checklists/controllers/u
 export const checklistRouter: Router = Router();
 
 checklistRouter.get('/:checklistId', findChecklistByIdController);
-checklistRouter.get('/:buildingId/:date', findManyChecklistsController);
+checklistRouter.get('/:buildingNanoId/:date', findManyChecklistsController);
 
 checklistRouter.post('/', createChecklistController);
 
