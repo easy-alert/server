@@ -2,6 +2,7 @@ import { Response, Request } from 'express';
 import { checkValues } from '../../../../utils/newValidator';
 import { checklistServices } from '../services/checklistServices';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
+import { addDays } from '../../../../utils/dateTime';
 
 interface IBody {
   checklistId: string;
@@ -40,7 +41,7 @@ export async function completeChecklistController(req: Request, res: Response) {
     });
   }
 
-  await checklistServices.update({
+  const updatedChecklist = await checklistServices.update({
     data: {
       status: 'completed',
       observation,
@@ -53,6 +54,29 @@ export async function completeChecklistController(req: Request, res: Response) {
     },
     where: { id: checklistId },
   });
+
+  const latestChecklist = await checklistServices.findLatestChecklistFromGroup({
+    groupId: updatedChecklist.groupId,
+  });
+
+  if (latestChecklist.frequency && latestChecklist.frequencyTimeInterval) {
+    await checklistServices.create({
+      data: {
+        groupId: latestChecklist.groupId,
+        buildingId: latestChecklist.buildingId,
+        name: latestChecklist.name,
+        description: latestChecklist.description,
+        syndicId: latestChecklist.syndicId,
+        frequency: latestChecklist.frequency,
+        frequencyTimeIntervalId: latestChecklist.frequencyTimeIntervalId,
+        status: 'pending',
+        date: addDays({
+          date: latestChecklist.date,
+          days: latestChecklist.frequency * latestChecklist.frequencyTimeInterval.unitTime,
+        }),
+      },
+    });
+  }
 
   return res.status(200).json({ ServerMessage: { message: 'Checklist concluído com sucesso.' } });
 }
