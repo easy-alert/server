@@ -33,10 +33,12 @@ import {
 import { findDataForAutocompleteInCreate } from '../company/buildings/notificationConfiguration/controllers/findDataForAutocompleteInCreate';
 import { sendEmailConfirmationBuildingNotificationConfiguration } from '../company/buildings/notificationConfiguration/controllers/sendEmailConfirmationBuildingNotificationConfiguration';
 import { buildingChangeBanner } from '../company/buildings/buildingBanners/controllers/buildingChangeBanner';
-import { findSyndicsByBuldingNanoId } from './building/controllers/findSyndicsByBuldingNanoId';
+import { findSyndicsByBuildingNanoId } from './building/controllers/findSyndicsByBuildingNanoId';
 import { sharedCreateReportProgress } from '../shared/maintenancesReportProgresses/controllers/sharedCreateReportProgress';
 import { sharedFindReportProgress } from '../shared/maintenancesReportProgresses/controllers/sharedFindReportProgress';
 import { findLocalSuppliers } from './building/controllers/findLocalSuppliers';
+import { checklistRouter } from './checklists/checklist.routes';
+import { listTimeIntervals } from '../shared/timeInterval/controllers/listTimeIntervals';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -117,6 +119,9 @@ clientRouter.put('/buildings/notifications/edit', editBuildingNotificationConfig
 clientRouter.delete('/buildings/notifications/delete', deleteBuildingNotificationConfiguration);
 
 clientRouter.post('/buildings/banners/change', buildingChangeBanner);
-// building com s
 
-clientRouter.get('/syndics/:buildingNanoId', findSyndicsByBuldingNanoId);
+clientRouter.get('/syndics/:buildingNanoId', findSyndicsByBuildingNanoId);
+
+clientRouter.use('/checklists', checklistRouter);
+
+clientRouter.get('/timeinterval/list', listTimeIntervals);

@@ -8,7 +8,7 @@ const sharedBuildingNotificationConfigurationServices =
   new SharedBuildingNotificationConfigurationServices();
 const buildingServices = new BuildingServices();
 
-export async function findSyndicsByBuldingNanoId(req: Request, res: Response) {
+export async function findSyndicsByBuildingNanoId(req: Request, res: Response) {
   const { buildingNanoId } = req.params;
 
   validator.check([{ label: 'Id da edificaçao', type: 'string', variable: buildingNanoId }]);
