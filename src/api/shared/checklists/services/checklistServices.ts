@@ -124,6 +124,28 @@ class ChecklistServices {
 
     return { pending, completed };
   }
+
+  async findLatestChecklistFromGroup({ groupId }: { groupId: string }) {
+    const checklist = await prisma.checklist.findFirst({
+      include: {
+        frequencyTimeInterval: {
+          select: {
+            unitTime: true,
+          },
+        },
+      },
+      orderBy: {
+        date: 'desc',
+      },
+      where: {
+        groupId,
+      },
+    });
+
+    validator.needExist([{ label: 'Checklist', variable: checklist }]);
+
+    return checklist!;
+  }
 }
 
 export const checklistServices = new ChecklistServices();

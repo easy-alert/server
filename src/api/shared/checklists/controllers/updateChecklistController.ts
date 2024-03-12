@@ -111,9 +111,12 @@ export async function updateChecklistController(req: Request, res: Response) {
     });
 
     if (frequencyInDays) {
+      // criando 3 anos de registros proporcional a data
+      const frequenciesToCreate = Math.ceil((365 / frequencyInDays) * 3);
+
       const childrenChecklists: prismaTypes.ChecklistCreateManyInput[] = [];
 
-      while (childrenChecklists.length < 14) {
+      for (let index = 0; index < frequenciesToCreate; index++) {
         childrenChecklists.push({
           groupId: updatedChecklist.groupId,
           buildingId: updatedChecklist.buildingId,
@@ -122,10 +125,10 @@ export async function updateChecklistController(req: Request, res: Response) {
           syndicId: updatedChecklist.syndicId,
           frequency: updatedChecklist.frequency,
           frequencyTimeIntervalId: updatedChecklist.frequencyTimeIntervalId,
-          status: updatedChecklist.status,
+          status: 'pending',
           date: addDays({
             date: updatedChecklist.date,
-            days: frequencyInDays * childrenChecklists.length + frequencyInDays,
+            days: frequencyInDays * index + frequencyInDays,
           }),
         });
       }
