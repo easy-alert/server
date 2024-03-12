@@ -6,11 +6,13 @@ import { findChecklistByIdController } from '../../shared/checklists/controllers
 import { completeChecklistController } from '../../shared/checklists/controllers/completeChecklistController';
 import { updateChecklistReportController } from '../../shared/checklists/controllers/updateChecklistReportController';
 import { updateChecklistController } from '../../shared/checklists/controllers/updateChecklistController';
+import { findChecklistDataByMonthController } from '../../shared/checklists/controllers/findChecklistDataByMonthController';
 
 export const checklistRouter: Router = Router();
 
 checklistRouter.get('/:checklistId', findChecklistByIdController);
 checklistRouter.get('/:buildingNanoId/:date', findManyChecklistsController);
+checklistRouter.get('/:buildingNanoId/calendar/dates', findChecklistDataByMonthController);
 
 checklistRouter.post('/', createChecklistController);
 
