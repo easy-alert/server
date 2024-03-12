@@ -106,6 +106,7 @@ export async function updateChecklistController(req: Request, res: Response) {
         groupId,
         date: { gt: defaultDate },
         status: 'pending',
+        NOT: { id: updatedChecklist.id },
       },
     });
 
