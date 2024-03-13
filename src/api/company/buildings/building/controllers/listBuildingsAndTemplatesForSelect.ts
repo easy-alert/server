@@ -24,7 +24,10 @@ export async function listBuildingsAndTemplatesForSelect(req: Request, res: Resp
 
   await buildingServices.findById({ buildingId });
 
-  const BuildingsForSelect = await buildingServices.listForSelect({
+  const BuildingsForSelect: {
+    id: string;
+    name: string;
+  }[] = await buildingServices.listForSelect({
     companyId: req.Company.id,
     buildingId,
   });

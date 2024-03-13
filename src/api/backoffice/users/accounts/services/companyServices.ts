@@ -19,6 +19,7 @@ export class CompanyServices {
     contactNumber,
     image,
     isNotifyingOnceAWeek,
+    canAccessChecklists,
   }: ICreateCompany) {
     return prisma.company.create({
       data: {
@@ -28,6 +29,7 @@ export class CompanyServices {
         contactNumber,
         image,
         isNotifyingOnceAWeek,
+        canAccessChecklists,
       },
     });
   }

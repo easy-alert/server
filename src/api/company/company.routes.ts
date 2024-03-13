@@ -24,6 +24,7 @@ import { sendEmailForRecoveryPassword } from '../shared/recoveryPassword/control
 import { changePassword } from '../shared/recoveryPassword/controllers/changePassword';
 import { companyUserRouter } from './companyUser/companyUser.routes';
 import { dashboardRouter } from './dashboard/dashboard.routes';
+import { checklistRouter } from './checklists/checklist.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -63,3 +64,5 @@ companyRouter.post('/passwordrecovery/sendemail', sendEmailForRecoveryPassword);
 companyRouter.put('/passwordrecovery/change', changePassword);
 
 companyRouter.use('/dashboard', authMiddleware, isCompany, dashboardRouter);
+
+companyRouter.use('/checklists', authMiddleware, isCompany, checklistRouter);

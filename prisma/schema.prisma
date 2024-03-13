@@ -93,6 +93,8 @@ model Company {
   isNotifyingOnceAWeek Boolean @default(false)
   supportLink          String?
 
+  canAccessChecklists Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -381,6 +383,7 @@ model TimeInterval {
   MaintenanceFrequency Maintenance[] @relation("MaintenanceFrequency")
   MaintenancePeriod    Maintenance[] @relation("MaintenancePeriod")
   MaintenanceDelay     Maintenance[] @relation("MaintenanceDelay")
+  checklists           Checklist[]
 
   @@map("timeIntervals")
 }
@@ -445,6 +448,7 @@ model Building {
   oldBuildingIds              oldBuildingIds[]
   BuildingFolders             BuildingFolders[]
   BuildingsAccessHistory      BuildingAccessHistory[]
+  checklists                  Checklist[]
 
   @@map("buildings")
 }
@@ -465,10 +469,12 @@ model BuildingNotificationConfiguration {
   showContact              Boolean  @default(false)
   lastNotificationDate     DateTime @default(now())
 
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   Building          Building            @relation(fields: [buildingId], references: [id], onDelete: Cascade)
   MaintenanceReport MaintenanceReport[]
+  checklists        Checklist[]
 
   @@map("buildingsNotificationsConfigurations")
 }
@@ -609,8 +615,78 @@ model BuildingAccessHistory {
   @@map("buildingsAccessHistory")
 }
 
-// DEFAULT TEMPLATE MAINTENANCES
+model Supplier {
+  id String @id @unique @default(uuid())
 
+  name           String
+  description    String
+  image          String
+  link           String
+  occupationArea String
+
+  phone           String?
+  email           String?
+  contractedValue Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  regions SupplierRegion[]
+
+  @@map("suppliers")
+}
+
+enum SupplierRegionType {
+  country
+  state
+  city
+}
+
+model SupplierRegion {
+  id String @id @unique @default(uuid())
+
+  type       SupplierRegionType
+  supplierId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  supplier Supplier              @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  states   SupplierRegionState[]
+  cities   SupplierRegionCity[]
+
+  @@map("supplierRegions")
+}
+
+model SupplierRegionState {
+  id String @id @unique @default(uuid())
+
+  supplierRegionId String
+  state            String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  region SupplierRegion @relation(fields: [supplierRegionId], references: [id], onDelete: Cascade)
+
+  @@map("supplierRegionStates")
+}
+
+model SupplierRegionCity {
+  id String @id @unique @default(uuid())
+
+  supplierRegionId String
+  city             String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  region SupplierRegion @relation(fields: [supplierRegionId], references: [id], onDelete: Cascade)
+
+  @@map("supplierRegionCities")
+}
+
+// DEFAULT TEMPLATE MAINTENANCES
 model DefaultMaintenanceTemplate {
   id   String @id @unique @default(uuid())
   name String
@@ -650,4 +726,49 @@ model DefaultTemplateMaintenance {
   Maintenance             Maintenance             @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
 
   @@map("defaultTemplateMaintenances")
+}
+
+// CHECKLISTS
+model Checklist {
+  id String @id @default(uuid())
+
+  buildingId              String
+  syndicId                String
+  name                    String
+  description             String?
+  date                    DateTime
+  resolutionDate          DateTime?
+  frequency               Int?
+  frequencyTimeIntervalId String?
+  observation             String?
+  status                  ChecklistStatusName
+  groupId                 String              @default(nanoid(12))
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  building              Building                          @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  syndic                BuildingNotificationConfiguration @relation(fields: [syndicId], references: [id], onDelete: Cascade)
+  frequencyTimeInterval TimeInterval?                     @relation(fields: [frequencyTimeIntervalId], references: [id])
+
+  images ChecklistImage[]
+
+  @@map("checklists")
+}
+
+model ChecklistImage {
+  id String @id @default(uuid())
+
+  checklistId String
+  name        String
+  url         String
+
+  checklist Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+
+  @@map("checklistImages")
+}
+
+enum ChecklistStatusName {
+  pending
+  completed
 }

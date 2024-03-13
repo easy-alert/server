@@ -5,6 +5,7 @@ export interface ICreateCompany {
   contactNumber: string;
   image: string;
   isNotifyingOnceAWeek: boolean;
+  canAccessChecklists: boolean;
 }
 
 export interface IEditCompany extends ICreateCompany {
