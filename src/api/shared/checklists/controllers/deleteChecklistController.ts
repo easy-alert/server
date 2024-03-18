@@ -12,7 +12,9 @@ export async function deleteChecklistController(req: Request, res: Response) {
     { label: 'Tipo da exclusão', type: 'string', value: mode },
   ]);
 
-  const { groupId, date } = await checklistServices.findById(checklistId);
+  const { groupId, date, building } = await checklistServices.findById(checklistId);
+
+  await checklistServices.checkAccess({ buildingNanoId: building.nanoId });
 
   switch (mode) {
     case 'all':

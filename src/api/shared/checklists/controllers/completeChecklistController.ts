@@ -34,6 +34,8 @@ export async function completeChecklistController(req: Request, res: Response) {
 
   const foundChecklist = await checklistServices.findById(checklistId);
 
+  await checklistServices.checkAccess({ buildingNanoId: foundChecklist.building.nanoId });
+
   if (foundChecklist.status === 'completed') {
     throw new ServerMessage({
       statusCode: 400,
