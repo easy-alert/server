@@ -60,6 +60,8 @@ export async function createChecklistController(req: Request, res: Response) {
 
   const { id } = await buildingServices.findByNanoId({ buildingNanoId });
 
+  await checklistServices.checkAccess({ buildingNanoId });
+
   await buildingNotificationConfigurationServices.findById({
     buildingNotificationConfigurationId: syndicId,
   });

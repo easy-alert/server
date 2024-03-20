@@ -30,6 +30,8 @@ export async function updateChecklistReportController(req: Request, res: Respons
 
   const foundChecklist = await checklistServices.findById(checklistId);
 
+  await checklistServices.checkAccess({ buildingNanoId: foundChecklist.building.nanoId });
+
   if (foundChecklist.status === 'pending') {
     throw new ServerMessage({
       statusCode: 400,

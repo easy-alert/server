@@ -76,7 +76,10 @@ export async function updateChecklistController(req: Request, res: Response) {
     date: defaultDate,
     frequencyTimeInterval: oldFrequencyTimeInterval,
     frequency: oldFrequency,
+    building,
   } = await checklistServices.findById(id);
+
+  await checklistServices.checkAccess({ buildingNanoId: building.nanoId });
 
   const oldFrequencyInDays =
     oldFrequencyTimeInterval && oldFrequency ? oldFrequencyTimeInterval.unitTime * oldFrequency : 0;
