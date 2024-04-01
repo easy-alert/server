@@ -751,11 +751,13 @@ model Checklist {
   syndic                BuildingNotificationConfiguration @relation(fields: [syndicId], references: [id], onDelete: Cascade)
   frequencyTimeInterval TimeInterval?                     @relation(fields: [frequencyTimeIntervalId], references: [id])
 
-  images ChecklistImage[]
+  images       ChecklistImage[]
+  detailImages ChecklistDetailImage[]
 
   @@map("checklists")
 }
 
+// Essas são as imagens do "relato", Ficou com o nome ruim porque só depois que veio as imagens da checklist padrão.
 model ChecklistImage {
   id String @id @default(uuid())
 
@@ -771,4 +773,16 @@ model ChecklistImage {
 enum ChecklistStatusName {
   pending
   completed
+}
+
+model ChecklistDetailImage {
+  id String @id @default(uuid())
+
+  checklistId String
+  name        String
+  url         String
+
+  checklist Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+
+  @@map("checklistDetailImages")
 }
