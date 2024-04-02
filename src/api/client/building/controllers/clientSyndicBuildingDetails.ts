@@ -161,10 +161,10 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
       },
     ],
     status: [
-      { name: 'expired', label: 'vencidas' },
-      { name: 'pending', label: 'pendentes' },
       { name: 'completed', label: 'concluídas' },
       { name: 'overdue', label: 'feitas em atraso' },
+      { name: 'pending', label: 'pendentes' },
+      { name: 'expired', label: 'vencidas' },
     ],
     categories,
   };
@@ -173,7 +173,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
 
   const kanban = await clientBuildingServices.syndicSeparePerStatus({ data: MaintenancesHistory });
 
-  // Vencida
+  // Vencida, SE ALTERAR A ORDEM DISSO, ALTERAR NO SCRIPT DE DELETAR AS EXPIRADAS
   kanban[0].maintenances.sort((a: any, b: any) => (a.date > b.date ? 1 : -1));
 
   // Pendente

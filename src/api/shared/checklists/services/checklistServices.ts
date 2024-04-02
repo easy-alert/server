@@ -10,10 +10,6 @@ class ChecklistServices {
     return prisma.checklist.create(args);
   }
 
-  async createMany(args: prismaTypes.ChecklistCreateManyArgs) {
-    await prisma.checklist.createMany(args);
-  }
-
   async update(args: prismaTypes.ChecklistUpdateArgs) {
     return prisma.checklist.update(args);
   }
@@ -26,6 +22,7 @@ class ChecklistServices {
     const checklist = await prisma.checklist.findUnique({
       include: {
         images: true,
+        detailImages: true,
         building: {
           select: {
             nanoId: true,

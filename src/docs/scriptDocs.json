@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Easy Alert - Script",
-    "description": "Api do modulo de scripts.",
+    "description": "Api do módulo de scripts.",
     "version": "1.0.0",
     "contact": {
       "email": "produto@adalovelace.com.br",
@@ -11,26 +11,11 @@
   },
   "servers": [
     {
-      "description": "Local Development",
-      "url": "http://localhost:8080/api/scripts/"
-    },
-    {
-      "description": "Sandbox",
-      "url": "https://easyalert-sandbox.herokuapp.com/api/scripts/"
-    },
-    {
       "description": "Production",
       "url": "https://easyalert-production.herokuapp.com/api/scripts/"
     }
   ],
   "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
-      }
-    },
     "responses": {
       "ServerMessage": {
         "description": "Mensagem de erro padrão do backend.",
@@ -59,7 +44,7 @@
   "paths": {
     "/templates/create": {
       "post": {
-        "tags": ["Maintenances Template"],
+        "tags": ["Template de manutenções"],
         "summary": "Cria um novo template de manutenção.",
 
         "requestBody": {
@@ -84,6 +69,58 @@
             "$ref": "#/components/responses/ServerMessage"
           }
         }
+      }
+    },
+    "/expired-maintenances/all/{buildingId}": {
+      "delete": {
+        "tags": ["Manutenções vencidas"],
+        "summary": "DELETA TODAS AS MANUTENÇÕES VENCIDAS QUE NÃO PODEM SER CONCLUÍDAS DE UMA EDIFICAÇÃO. AÇÃO IRREVERSÍVEL",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "buildingId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID da edificação"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/expired-maintenances/{maintenanceHistoryId}": {
+      "delete": {
+        "tags": ["Manutenções vencidas"],
+        "summary": "DELETA UMA MANUTENÇÃO VENCIDA. AÇÃO IRREVERSÍVEL",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "maintenanceHistoryId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID do histórico da manutenção"
+          }
+        ],
+        "responses": {}
       }
     }
   }

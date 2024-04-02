@@ -9,7 +9,7 @@ import { SharedBuildingNotificationConfigurationServices } from '../../notificat
 import { checklistServices } from '../services/checklistServices';
 import { addDays, setToUTCMidnight } from '../../../../utils/dateTime';
 import { TimeIntervalServices } from '../../timeInterval/services/timeIntervalServices';
-import { prismaTypes } from '../../../../../prisma';
+import { prisma, prismaTypes } from '../../../../../prisma';
 
 type TUpdateMode = 'this' | 'thisAndFollowing' | '';
 
@@ -24,6 +24,14 @@ interface IBody {
   frequencyTimeIntervalId: string | null;
 
   mode: TUpdateMode;
+
+  detailImages:
+    | {
+        name: string;
+        url: string;
+      }[]
+    | null
+    | undefined;
 }
 
 const timeIntervalServices = new TimeIntervalServices();
@@ -31,8 +39,17 @@ const buildingNotificationConfigurationServices =
   new SharedBuildingNotificationConfigurationServices();
 
 export async function updateChecklistController(req: Request, res: Response) {
-  const { id, date, description, frequency, frequencyTimeIntervalId, name, syndicId, mode }: IBody =
-    req.body;
+  const {
+    id,
+    date,
+    description,
+    frequency,
+    frequencyTimeIntervalId,
+    name,
+    syndicId,
+    mode,
+    detailImages,
+  }: IBody = req.body;
 
   checkValues([
     { label: 'ID da checklist', type: 'string', value: id },
@@ -50,7 +67,15 @@ export async function updateChecklistController(req: Request, res: Response) {
     },
 
     { label: 'Tipo da edição', type: 'string', value: mode },
+    { label: 'Imagens', type: 'array', value: detailImages, required: false },
   ]);
+
+  detailImages?.forEach((data) => {
+    checkValues([
+      { label: 'Nome da imagem', type: 'string', value: data.name },
+      { label: 'Link da imagem', type: 'string', value: data.url },
+    ]);
+  });
 
   if (frequency) {
     checkMinimumNumber([{ label: 'Frequência', min: 1, value: frequency }]);
@@ -97,6 +122,15 @@ export async function updateChecklistController(req: Request, res: Response) {
       frequency: frequency || null,
       frequencyTimeIntervalId: frequency ? frequencyTimeIntervalId : null,
       groupId: createNewGroupId ? uuidv4().substring(0, 12) : undefined,
+
+      detailImages: {
+        deleteMany: {},
+        createMany: {
+          data: Array.isArray(detailImages)
+            ? detailImages.map((data) => ({ name: data.name, url: data.url }))
+            : [],
+        },
+      },
     },
     where: {
       id,
@@ -117,7 +151,7 @@ export async function updateChecklistController(req: Request, res: Response) {
       // criando 3 anos de registros proporcional a data
       const frequenciesToCreate = Math.ceil((365 / frequencyInDays) * 3);
 
-      const childrenChecklists: prismaTypes.ChecklistCreateManyInput[] = [];
+      const childrenChecklists: prismaTypes.ChecklistUncheckedCreateInput[] = [];
 
       for (let index = 0; index < frequenciesToCreate; index++) {
         childrenChecklists.push({
@@ -133,10 +167,19 @@ export async function updateChecklistController(req: Request, res: Response) {
             date: updatedChecklist.date,
             days: frequencyInDays * index + frequencyInDays,
           }),
+          detailImages: {
+            createMany: {
+              data: Array.isArray(detailImages)
+                ? detailImages.map((data) => ({ name: data.name, url: data.url }))
+                : [],
+            },
+          },
         });
       }
 
-      await checklistServices.createMany({ data: childrenChecklists });
+      await prisma.$transaction(
+        childrenChecklists.map((data) => prisma.checklist.create({ data })),
+      );
     }
   }
 

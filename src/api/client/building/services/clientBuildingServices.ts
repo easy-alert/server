@@ -272,6 +272,7 @@ export class ClientBuildingServices {
 
     const kanban: any = [
       {
+        // SE ALTERAR A ORDEM DISSO, ALTERAR NO SCRIPT DE DELETAR AS EXPIRADAS
         status: 'Vencidas',
         maintenances: [],
       },
