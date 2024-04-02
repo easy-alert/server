@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
 import { ServerMessage } from '../messages/serverMessage';
 import { SharedMaintenanceServices } from '../../api/shared/maintenance/services/sharedMaintenanceServices';
+import { EmailTransporterServices } from '../emailTransporter/emailTransporterServices';
 
 const maintenanceServices = new SharedMaintenanceServices();
+const emailTransporter = new EmailTransporterServices();
 
 export async function deleteExpiredMaintenance(req: Request, res: Response) {
   const { maintenanceHistoryId } = req.params;
@@ -25,6 +27,13 @@ export async function deleteExpiredMaintenance(req: Request, res: Response) {
   }
 
   await maintenanceServices.deleteHistory({ maintenanceHistoryId });
+
+  await emailTransporter.sendDeleteMaintenanceScriptUsed({
+    data: [maintenanceHistoryId],
+    route: 'uma',
+    toEmail: ['jorgeluiz112233@gmail.com', 'y.fagundes@hotmail.com', 'mandelli.augusto@gmail.com'],
+    buildingName: maintenanceHistory.Building.name,
+  });
 
   return res.status(200).json({ ServerMessage: { message: `Manutenção excluída com sucesso.` } });
 }

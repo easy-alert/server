@@ -462,4 +462,56 @@ export class EmailTemplates {
     </div>
     `;
   }
+
+  deleteMaintenanceScriptUsed({
+    route,
+    data,
+    buildingName,
+  }: {
+    route: 'todas' | 'uma';
+    data: string[];
+    buildingName: string;
+  }) {
+    return `<div
+    style='
+      background-size: cover;
+      background: #EDEDED;
+      padding: 24px;
+      '
+    >
+    <div
+      style='
+        width: 500px;
+          margin: auto;
+          background: white;
+          border-radius: 32px;
+          padding: 24px 0;
+      '
+    >
+
+
+        <p
+          style='
+              color:#000000;
+              text-align: center;
+          '
+        >
+         Alguém da Easy Alert usou a rota de deletar ${route} manutenções vencidas na edificação ${buildingName}:
+        </p>
+
+        <p
+          style='
+              color:#000000;
+              text-align: center;
+          '
+        >
+       maintenanceHistoryIds afetados: ${data.join(', ')}
+        </p>
+
+
+
+    </div>
+    </div>
+    `;
+  }
 }

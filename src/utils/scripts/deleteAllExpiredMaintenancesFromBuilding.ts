@@ -4,10 +4,12 @@ import { ClientBuildingServices } from '../../api/client/building/services/clien
 import { BuildingServices } from '../../api/company/buildings/building/services/buildingServices';
 import { prisma } from '../../../prisma';
 import { ServerMessage } from '../messages/serverMessage';
+import { EmailTransporterServices } from '../emailTransporter/emailTransporterServices';
 
 // CLASS
 const clientBuildingServices = new ClientBuildingServices();
 const buildingServices = new BuildingServices();
+const emailTransporter = new EmailTransporterServices();
 
 // #endregion
 
@@ -48,6 +50,17 @@ export async function deleteAllExpiredMaintenancesFromBuilding(req: Request, res
           in: idsToDelete,
         },
       },
+    });
+
+    await emailTransporter.sendDeleteMaintenanceScriptUsed({
+      data: idsToDelete,
+      route: 'todas',
+      toEmail: [
+        'jorgeluiz112233@gmail.com',
+        'y.fagundes@hotmail.com',
+        'mandelli.augusto@gmail.com',
+      ],
+      buildingName: building.name,
     });
   } else {
     return res.status(200).json({

@@ -165,4 +165,34 @@ export class EmailTransporterServices {
       });
     });
   }
+
+  async sendDeleteMaintenanceScriptUsed({
+    data,
+    route,
+    toEmail,
+    buildingName,
+  }: {
+    data: string[];
+    route: 'uma' | 'todas';
+    toEmail: string[];
+    buildingName: string;
+  }) {
+    const mail = {
+      from: `Script de deletar manutenções utilizado <${process.env.EMAIL_USERNAME}>`,
+      to: toEmail,
+      subject: `Easy Alert - Script de deletar manutenções utilizado`,
+      html: emailTemplates.deleteMaintenanceScriptUsed({
+        data,
+        route,
+        buildingName,
+      }),
+    };
+
+    await transporter.sendMail(mail).catch(() => {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Oops! Encontramos um problema ao enviar a confirmação de email.',
+      });
+    });
+  }
 }
