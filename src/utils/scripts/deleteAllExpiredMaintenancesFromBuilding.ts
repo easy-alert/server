@@ -54,10 +54,10 @@ export async function deleteAllExpiredMaintenancesFromBuilding(req: Request, res
 
     await emailTransporter.sendDeleteMaintenanceScriptUsed({
       data: idsToDelete,
-      route: 'todas',
+      route: 'todas manutenções expiradas',
       toEmail: [
         'jorgeluiz112233@gmail.com',
-        'y.fagundes@hotmail.com',
+        'yan.fagundes@adasoftwarehouse.com',
         'mandelli.augusto@gmail.com',
       ],
       buildingName: building.name,
