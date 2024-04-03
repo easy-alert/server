@@ -30,8 +30,12 @@ export async function deleteExpiredMaintenance(req: Request, res: Response) {
 
   await emailTransporter.sendDeleteMaintenanceScriptUsed({
     data: [maintenanceHistoryId],
-    route: 'uma',
-    toEmail: ['jorgeluiz112233@gmail.com', 'y.fagundes@hotmail.com', 'mandelli.augusto@gmail.com'],
+    route: 'uma manutenção vencida',
+    toEmail: [
+      'jorgeluiz112233@gmail.com',
+      'yan.fagundes@adasoftwarehouse.com',
+      'mandelli.augusto@gmail.com',
+    ],
     buildingName: maintenanceHistory.Building.name,
   });
 

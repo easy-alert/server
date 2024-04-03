@@ -468,7 +468,7 @@ export class EmailTemplates {
     data,
     buildingName,
   }: {
-    route: 'todas' | 'uma';
+    route: 'todas manutenções expiradas' | 'uma manutenção vencida';
     data: string[];
     buildingName: string;
   }) {
@@ -485,18 +485,16 @@ export class EmailTemplates {
           margin: auto;
           background: white;
           border-radius: 32px;
-          padding: 24px 0;
+          padding: 24px;
       '
     >
-
-
         <p
           style='
               color:#000000;
               text-align: center;
           '
         >
-         Alguém da Easy Alert usou a rota de deletar ${route} manutenções vencidas na edificação ${buildingName}:
+         Alguém da Easy Alert usou a rota de deletar ${route} na edificação ${buildingName}:
         </p>
 
         <p

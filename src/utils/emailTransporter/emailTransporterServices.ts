@@ -173,7 +173,7 @@ export class EmailTransporterServices {
     buildingName,
   }: {
     data: string[];
-    route: 'uma' | 'todas';
+    route: 'todas manutenções expiradas' | 'uma manutenção vencida';
     toEmail: string[];
     buildingName: string;
   }) {
