@@ -42,7 +42,7 @@ export async function findManyTicketsController(req: Request, res: Response) {
     take: handleQueryTake(take),
     initialCreatedAt: setToFilterStartDate(initialCreatedAt),
     finalCreatedAt: setToFilterEndDate(finalCreatedAt),
-    statusName,
+    statusName: statusName || undefined,
   });
 
   const buildingName = (await buildingServices.findByNanoId({ buildingNanoId })).name;
