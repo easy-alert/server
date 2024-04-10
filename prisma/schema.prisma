@@ -94,6 +94,7 @@ model Company {
   supportLink          String?
 
   canAccessChecklists Boolean @default(false)
+  canAccessTickets    Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -449,6 +450,7 @@ model Building {
   BuildingFolders             BuildingFolders[]
   BuildingsAccessHistory      BuildingAccessHistory[]
   checklists                  Checklist[]
+  tickets                     Ticket[]
 
   @@map("buildings")
 }
@@ -785,4 +787,90 @@ model ChecklistDetailImage {
   checklist Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
 
   @@map("checklistDetailImages")
+}
+
+// TICKETS
+model Ticket {
+  id String @id @default(uuid())
+
+  residentName      String
+  residentApartment String
+  residentEmail     String?
+  description       String
+  placeId           String
+  statusName        TicketStatusName
+  buildingId        String
+  ticketNumber      Int              @unique @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  building Building            @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  status   TicketStatus        @relation(fields: [statusName], references: [name])
+  place    TicketPlace         @relation(fields: [placeId], references: [id])
+  images   TicketImage[]
+  types    TicketServiceType[]
+
+  @@map("tickets")
+}
+
+enum TicketStatusName {
+  open
+  finished
+  awaitingToFinish
+}
+
+model TicketStatus {
+  name            TicketStatusName @id
+  label           String           @unique
+  color           String
+  backgroundColor String
+
+  tickets Ticket[]
+
+  @@map("ticketStatus")
+}
+
+model TicketImage {
+  id String @id @default(uuid())
+
+  ticketId String
+  name     String
+  url      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@map("ticketImages")
+}
+
+model TicketPlace {
+  id    String @id @default(uuid())
+  label String @unique
+
+  ticket Ticket[]
+
+  @@map("ticketPlaces")
+}
+
+model ServiceType {
+  id    String @id @default(uuid())
+  label String @unique
+
+  tickets TicketServiceType[]
+
+  @@map("serviceTypes")
+}
+
+model TicketServiceType {
+  ticketId      String
+  serviceTypeId String
+
+  ticket Ticket      @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  type   ServiceType @relation(fields: [serviceTypeId], references: [id], onDelete: Cascade)
+
+  @@id([ticketId, serviceTypeId])
+  @@map("ticketServiceTypes")
 }

@@ -8,19 +8,23 @@ const seedServices = new SeedServices();
 async function main() {
   console.log('seed is running ...');
 
-  await seedServices.createPermissions();
+  // await seedServices.createPermissions();
 
-  await seedServices.createAdminBackoffice();
+  // await seedServices.createAdminBackoffice();
 
-  await seedServices.createAdminCompany();
+  // await seedServices.createAdminCompany();
 
-  await seedServices.createTimeIntervals();
+  // await seedServices.createTimeIntervals();
 
-  await seedServices.createBuildingsTypes();
+  // await seedServices.createBuildingsTypes();
 
-  await seedServices.createMaintenancesStatus();
+  // await seedServices.createMaintenancesStatus();
 
-  await seedServices.createCategoryAndMaintenanceTypes();
+  // await seedServices.createCategoryAndMaintenanceTypes();
+
+  await seedServices.upsertTicketPlaces();
+  await seedServices.upsertTicketServiceTypes();
+  await seedServices.upsertTicketStatus();
 }
 
 main()

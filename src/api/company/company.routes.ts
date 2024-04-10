@@ -25,6 +25,7 @@ import { changePassword } from '../shared/recoveryPassword/controllers/changePas
 import { companyUserRouter } from './companyUser/companyUser.routes';
 import { dashboardRouter } from './dashboard/dashboard.routes';
 import { checklistRouter } from './checklists/checklist.routes';
+import { ticketRouter } from './tickets/ticket.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -66,3 +67,5 @@ companyRouter.put('/passwordrecovery/change', changePassword);
 companyRouter.use('/dashboard', authMiddleware, isCompany, dashboardRouter);
 
 companyRouter.use('/checklists', authMiddleware, isCompany, checklistRouter);
+
+companyRouter.use('/tickets', authMiddleware, isCompany, ticketRouter);
