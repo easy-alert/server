@@ -29,4 +29,6 @@ export interface ICreateOccassionalMaintenanceReport {
     files: IAnnexesAndImages[];
     images: IAnnexesAndImages[];
   };
+
+  ticketIds?: string[];
 }

@@ -36,7 +36,7 @@ export async function createTicketController(req: Request, res: Response) {
     { label: 'Descrição', type: 'string', value: description },
     { label: 'Local da ocorrência', type: 'string', value: placeId },
     { label: 'Nome do morador', type: 'string', value: residentName },
-    { label: 'E-mail do morador', type: 'string', value: residentEmail, required: false },
+    { label: 'E-mail do morador', type: 'email', value: residentEmail, required: false },
     { label: 'Apartamento do morador', type: 'string', value: residentApartment },
     { label: 'Imagens', type: 'array', value: images },
     { label: 'Tipo da manutenção', type: 'array', value: types },

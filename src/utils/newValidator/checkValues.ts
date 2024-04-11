@@ -145,7 +145,7 @@ export function checkValues(values: ICheckValues[]) {
       case 'email': {
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
-        if (!emailRegex.test(value)) {
+        if (value && !emailRegex.test(value)) {
           throw new ServerMessage({
             statusCode: 400,
             message: `O ${label} deve possuir o formato email@example.com`,

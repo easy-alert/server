@@ -11,6 +11,8 @@ import { addDays } from '../../../utils/dateTime';
 import { SharedMaintenanceReportsServices } from '../maintenancesReports/services/SharedMaintenanceReportsServices';
 import { noWeekendTimeDate } from '../../../utils/dateTime/noWeekendTimeDate';
 import { SharedBuildingNotificationConfigurationServices } from '../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
+import { checkValues } from '../../../utils/newValidator';
+import { ticketServices } from '../tickets/services/ticketServices';
 
 // CLASS
 const validator = new Validator();
@@ -25,7 +27,7 @@ const sharedBuildingNotificationConfigurationServices =
 
 export async function sharedCreateOccasionalMaintenanceReport({
   companyId,
-  body
+  body,
 }: {
   companyId: string;
   body: ICreateOccassionalMaintenanceReport;
@@ -38,21 +40,22 @@ export async function sharedCreateOccasionalMaintenanceReport({
     categoryData,
     maintenanceData,
     reportData,
-    inProgress
+    inProgress,
+    ticketIds,
   }: ICreateOccassionalMaintenanceReport = body;
 
   // #region VALIDATIONS
   if (!categoryData) {
     throw new ServerMessage({
       statusCode: 400,
-      message: `Dados da categoria não informados.`
+      message: `Dados da categoria não informados.`,
     });
   }
 
   if (!maintenanceData) {
     throw new ServerMessage({
       statusCode: 400,
-      message: `Dados da manutenção não informados.`
+      message: `Dados da manutenção não informados.`,
     });
   }
 
@@ -64,8 +67,10 @@ export async function sharedCreateOccasionalMaintenanceReport({
     { label: 'Reponsável da manutenção', variable: maintenanceData.responsible, type: 'string' },
     { label: 'Data', variable: executionDate, type: 'string' },
     { label: 'Origem', variable: origin, type: 'string' },
-    { label: 'Execução', variable: inProgress, type: 'boolean', isOptional: true }
+    { label: 'Execução', variable: inProgress, type: 'boolean', isOptional: true },
   ]);
+
+  checkValues([{ label: 'Chamados', type: 'array', value: ticketIds, required: false }]);
 
   // 100 anos em dias
   const defaultPeriod = 365 * 100;
@@ -73,7 +78,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
   let syndicData = null;
   if (responsibleSyndicId) {
     syndicData = await sharedBuildingNotificationConfigurationServices.findByNanoId({
-      syndicNanoId: responsibleSyndicId
+      syndicNanoId: responsibleSyndicId,
     });
   }
 
@@ -83,9 +88,9 @@ export async function sharedCreateOccasionalMaintenanceReport({
   const category = await sharedCreateCategory({
     ownerCompanyId: companyId,
     body: {
-      name: categoryData.name
+      name: categoryData.name,
     },
-    categoryTypeName: 'occasional'
+    categoryTypeName: 'occasional',
   });
 
   // #endregion
@@ -108,32 +113,58 @@ export async function sharedCreateOccasionalMaintenanceReport({
       periodTimeIntervalId: timeInterval.id,
       period: defaultPeriod,
       responsible: maintenanceData.responsible,
-      source: 'Manutenção avulsa'
-    }
+      source: 'Manutenção avulsa',
+    },
   });
 
+  // #endregion
+
+  // #region TICKETS VALIDATION
+  if (ticketIds && ticketIds?.length > 0) {
+    const openTicketsCount = await ticketServices.countOpenTickets({
+      buildingId,
+      ticketIds,
+    });
+
+    if (openTicketsCount !== ticketIds.length) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: `Algum chamado selecionado já foi respondido.`,
+      });
+    }
+  }
   // #endregion
 
   // #region REPORT
   if (new Date(executionDate) > new Date()) {
     // PENDENTE
     const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
-    await sharedMaintenanceServices.createHistory({
-      data: [
-        {
-          ownerCompanyId: companyId,
-          buildingId,
-          maintenanceId: maintenance.id,
-          maintenanceStatusId: pendingStatus.id,
-          notificationDate: new Date(executionDate),
-          dueDate: noWeekendTimeDate({
-            date: addDays({ date: new Date(executionDate), days: defaultPeriod }),
-            interval: 2
-          }),
-          inProgress
-        }
-      ]
+    const newPending = await sharedMaintenanceServices.createOneHistory({
+      data: {
+        ownerCompanyId: companyId,
+        buildingId,
+        maintenanceId: maintenance.id,
+        maintenanceStatusId: pendingStatus.id,
+        notificationDate: new Date(executionDate),
+        dueDate: noWeekendTimeDate({
+          date: addDays({ date: new Date(executionDate), days: defaultPeriod }),
+          interval: 2,
+        }),
+        inProgress,
+      },
     });
+
+    if (ticketIds && ticketIds?.length > 0) {
+      await ticketServices.updateMany({
+        data: {
+          statusName: 'awaitingToFinish',
+          maintenanceHistoryId: newPending.id,
+        },
+        where: {
+          id: { in: ticketIds },
+        },
+      });
+    }
   } else {
     // CONCLUÍDA
     const completedStatus = await sharedMaintenanceStatusServices.findByName({ name: 'completed' });
@@ -149,7 +180,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
         notificationDate: new Date(executionDate),
         dueDate: noWeekendTimeDate({
           date: addDays({ date: new Date(executionDate), days: defaultPeriod }),
-          interval: 2
+          interval: 2,
         }),
         MaintenanceReport: {
           create: {
@@ -159,21 +190,21 @@ export async function sharedCreateOccasionalMaintenanceReport({
             responsibleSyndicId: syndicData?.id || null,
             ReportImages: {
               createMany: {
-                data: reportData.images
-              }
+                data: reportData.images,
+              },
             },
             ReportAnnexes: {
               createMany: {
-                data: reportData.files
-              }
-            }
-          }
-        }
-      }
+                data: reportData.files,
+              },
+            },
+          },
+        },
+      },
     });
 
     const maintenanceReport = await sharedMaintenanceServices.findHistoryById({
-      maintenanceHistoryId: maintenanceHistory.id
+      maintenanceHistoryId: maintenanceHistory.id,
     });
 
     if (maintenanceReport?.MaintenanceReport?.length) {
@@ -187,15 +218,27 @@ export async function sharedCreateOccasionalMaintenanceReport({
           observation: reportData.observation,
           ReportImages: {
             createMany: {
-              data: reportData.images
-            }
+              data: reportData.images,
+            },
           },
           ReportAnnexes: {
             createMany: {
-              data: reportData.files
-            }
-          }
-        }
+              data: reportData.files,
+            },
+          },
+        },
+      });
+    }
+
+    if (ticketIds && ticketIds?.length > 0) {
+      await ticketServices.updateMany({
+        data: {
+          statusName: 'finished',
+          maintenanceHistoryId: maintenanceHistory.id,
+        },
+        where: {
+          id: { in: ticketIds },
+        },
       });
     }
   }

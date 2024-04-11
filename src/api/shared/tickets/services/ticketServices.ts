@@ -2,6 +2,7 @@ import { TicketStatusName } from '@prisma/client';
 import { prisma, prismaTypes } from '../../../../../prisma';
 import { Validator } from '../../../../utils/validator/validator';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
+import { removeDays, setToUTCMidnight } from '../../../../utils/dateTime';
 
 const validator = new Validator();
 
@@ -31,8 +32,8 @@ class TicketServices {
         place: true,
         types: {
           select: {
-            type: true
-          }
+            type: true,
+          },
         },
         building: {
           select: {
@@ -41,13 +42,13 @@ class TicketServices {
             name: true,
             Company: {
               select: {
-                canAccessTickets: true
-              }
-            }
-          }
-        }
+                canAccessTickets: true,
+              },
+            },
+          },
+        },
       },
-      where: { id }
+      where: { id },
     });
 
     validator.needExist([{ label: 'Ticket', variable: data }]);
@@ -61,7 +62,7 @@ class TicketServices {
     take,
     finalCreatedAt,
     initialCreatedAt,
-    statusName
+    statusName,
   }: IFindMany) {
     const [tickets, ticketsCount, status] = await prisma.$transaction([
       prisma.ticket.findMany({
@@ -71,9 +72,9 @@ class TicketServices {
           place: true,
           types: {
             select: {
-              type: true
-            }
-          }
+              type: true,
+            },
+          },
         },
 
         take,
@@ -81,38 +82,38 @@ class TicketServices {
 
         where: {
           building: {
-            nanoId: buildingNanoId
+            nanoId: buildingNanoId,
           },
 
           createdAt: {
             gte: initialCreatedAt,
-            lte: finalCreatedAt
+            lte: finalCreatedAt,
           },
 
-          statusName
+          statusName,
         },
 
-        orderBy: [{ statusName: 'asc' }, { createdAt: 'asc' }]
+        orderBy: [{ status: { label: 'asc' } }, { createdAt: 'asc' }],
       }),
       prisma.ticket.count({
         where: {
           building: {
-            nanoId: buildingNanoId
+            nanoId: buildingNanoId,
           },
 
           createdAt: {
             gte: initialCreatedAt,
-            lte: finalCreatedAt
+            lte: finalCreatedAt,
           },
 
-          statusName
-        }
+          statusName,
+        },
       }),
       prisma.ticketStatus.findMany({
         orderBy: {
-          label: 'asc'
-        }
-      })
+          label: 'asc',
+        },
+      }),
     ]);
 
     return { tickets, ticketsCount, status };
@@ -122,14 +123,14 @@ class TicketServices {
     const [places, types] = await prisma.$transaction([
       prisma.ticketPlace.findMany({
         orderBy: {
-          label: 'asc'
-        }
+          label: 'asc',
+        },
       }),
       prisma.serviceType.findMany({
         orderBy: {
-          label: 'asc'
-        }
-      })
+          label: 'asc',
+        },
+      }),
     ]);
 
     return { places, types };
@@ -138,9 +139,9 @@ class TicketServices {
   async checkAccess({ buildingNanoId }: { buildingNanoId: string }) {
     const company = await prisma.company.findFirst({
       select: {
-        canAccessTickets: true
+        canAccessTickets: true,
       },
-      where: { Buildings: { some: { nanoId: buildingNanoId } } }
+      where: { Buildings: { some: { nanoId: buildingNanoId } } },
     });
 
     validator.needExist([{ label: 'Edificação', variable: company }]);
@@ -148,9 +149,57 @@ class TicketServices {
     if (!company?.canAccessTickets) {
       throw new ServerMessage({
         statusCode: 403,
-        message: `Sua empresa não possui acesso a este módulo.`
+        message: `Sua empresa não possui acesso a este módulo.`,
       });
     }
+  }
+
+  async countOpenTickets({ buildingId, ticketIds }: { buildingId: string; ticketIds: string[] }) {
+    return prisma.ticket.count({
+      where: {
+        statusName: 'open',
+        buildingId,
+        id: { in: ticketIds },
+      },
+    });
+  }
+
+  async findExistingOccasionalMaintenances({ buildingNanoId }: { buildingNanoId: string }) {
+    return prisma.maintenanceHistory.findMany({
+      select: {
+        id: true,
+        notificationDate: true,
+        inProgress: true,
+
+        MaintenancesStatus: {
+          select: {
+            name: true,
+          },
+        },
+        Maintenance: {
+          select: {
+            element: true,
+            activity: true,
+          },
+        },
+      },
+      where: {
+        Maintenance: {
+          MaintenanceType: {
+            name: 'occasional',
+          },
+        },
+        Building: {
+          nanoId: buildingNanoId,
+        },
+        notificationDate: {
+          gte: setToUTCMidnight(removeDays({ date: new Date(), days: 60 })),
+        },
+      },
+      orderBy: {
+        notificationDate: 'asc',
+      },
+    });
   }
 }
 
