@@ -59,7 +59,7 @@ class TicketServices {
     initialCreatedAt,
     statusName,
   }: IFindMany) {
-    const [tickets, status] = await prisma.$transaction([
+    const [tickets, ticketsCount, status] = await prisma.$transaction([
       prisma.ticket.findMany({
         include: {
           images: true,
@@ -90,6 +90,20 @@ class TicketServices {
 
         orderBy: [{ statusName: 'asc' }, { createdAt: 'asc' }],
       }),
+      prisma.ticket.count({
+        where: {
+          building: {
+            nanoId: buildingNanoId,
+          },
+
+          createdAt: {
+            gte: initialCreatedAt,
+            lte: finalCreatedAt,
+          },
+
+          statusName,
+        },
+      }),
       prisma.ticketStatus.findMany({
         orderBy: {
           label: 'asc',
@@ -97,7 +111,7 @@ class TicketServices {
       }),
     ]);
 
-    return { tickets, status };
+    return { tickets, ticketsCount, status };
   }
 
   async findAuxiliaryData() {

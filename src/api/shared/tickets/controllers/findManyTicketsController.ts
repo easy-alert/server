@@ -36,7 +36,7 @@ export async function findManyTicketsController(req: Request, res: Response) {
 
   await ticketServices.checkAccess({ buildingNanoId });
 
-  const { status, tickets } = await ticketServices.findMany({
+  const { status, ticketsCount, tickets } = await ticketServices.findMany({
     buildingNanoId,
     page: handleQueryPage(page),
     take: handleQueryTake(take),
@@ -47,5 +47,5 @@ export async function findManyTicketsController(req: Request, res: Response) {
 
   const buildingName = (await buildingServices.findByNanoId({ buildingNanoId })).name;
 
-  return res.status(200).json({ tickets, buildingName, status });
+  return res.status(200).json({ tickets, ticketsCount, buildingName, status });
 }
