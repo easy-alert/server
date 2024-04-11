@@ -25,7 +25,7 @@ const sharedBuildingNotificationConfigurationServices =
 
 export async function sharedCreateOccasionalMaintenanceReport({
   companyId,
-  body,
+  body
 }: {
   companyId: string;
   body: ICreateOccassionalMaintenanceReport;
@@ -38,22 +38,21 @@ export async function sharedCreateOccasionalMaintenanceReport({
     categoryData,
     maintenanceData,
     reportData,
-    inProgress,
+    inProgress
   }: ICreateOccassionalMaintenanceReport = body;
 
   // #region VALIDATIONS
-
   if (!categoryData) {
     throw new ServerMessage({
       statusCode: 400,
-      message: `Dados da categoria não informados.`,
+      message: `Dados da categoria não informados.`
     });
   }
 
   if (!maintenanceData) {
     throw new ServerMessage({
       statusCode: 400,
-      message: `Dados da manutenção não informados.`,
+      message: `Dados da manutenção não informados.`
     });
   }
 
@@ -65,7 +64,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
     { label: 'Reponsável da manutenção', variable: maintenanceData.responsible, type: 'string' },
     { label: 'Data', variable: executionDate, type: 'string' },
     { label: 'Origem', variable: origin, type: 'string' },
-    { label: 'Execução', variable: inProgress, type: 'boolean', isOptional: true },
+    { label: 'Execução', variable: inProgress, type: 'boolean', isOptional: true }
   ]);
 
   // 100 anos em dias
@@ -74,26 +73,24 @@ export async function sharedCreateOccasionalMaintenanceReport({
   let syndicData = null;
   if (responsibleSyndicId) {
     syndicData = await sharedBuildingNotificationConfigurationServices.findByNanoId({
-      syndicNanoId: responsibleSyndicId,
+      syndicNanoId: responsibleSyndicId
     });
   }
 
   // #endregion
 
   // #region CATEGORY
-
   const category = await sharedCreateCategory({
     ownerCompanyId: companyId,
     body: {
-      name: categoryData.name,
+      name: categoryData.name
     },
-    categoryTypeName: 'occasional',
+    categoryTypeName: 'occasional'
   });
 
   // #endregion
 
   // #region MAINTENANCE
-
   const timeInterval = await timeIntervalServices.findByName({ name: 'Day' });
 
   const maintenance = await sharedCreateMaintenance({
@@ -111,17 +108,16 @@ export async function sharedCreateOccasionalMaintenanceReport({
       periodTimeIntervalId: timeInterval.id,
       period: defaultPeriod,
       responsible: maintenanceData.responsible,
-      source: 'Manutenção avulsa',
-    },
+      source: 'Manutenção avulsa'
+    }
   });
 
   // #endregion
 
   // #region REPORT
-
   if (new Date(executionDate) > new Date()) {
+    // PENDENTE
     const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
-    // cria historico do report
     await sharedMaintenanceServices.createHistory({
       data: [
         {
@@ -132,15 +128,16 @@ export async function sharedCreateOccasionalMaintenanceReport({
           notificationDate: new Date(executionDate),
           dueDate: noWeekendTimeDate({
             date: addDays({ date: new Date(executionDate), days: defaultPeriod }),
-            interval: 2,
+            interval: 2
           }),
-          inProgress,
-        },
-      ],
+          inProgress
+        }
+      ]
     });
   } else {
+    // CONCLUÍDA
     const completedStatus = await sharedMaintenanceStatusServices.findByName({ name: 'completed' });
-    // cria historico do report
+
     const maintenanceHistory = await sharedMaintenanceServices.createHistoryAndReport({
       data: {
         ownerCompanyId: companyId,
@@ -152,7 +149,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
         notificationDate: new Date(executionDate),
         dueDate: noWeekendTimeDate({
           date: addDays({ date: new Date(executionDate), days: defaultPeriod }),
-          interval: 2,
+          interval: 2
         }),
         MaintenanceReport: {
           create: {
@@ -162,21 +159,21 @@ export async function sharedCreateOccasionalMaintenanceReport({
             responsibleSyndicId: syndicData?.id || null,
             ReportImages: {
               createMany: {
-                data: reportData.images,
-              },
+                data: reportData.images
+              }
             },
             ReportAnnexes: {
               createMany: {
-                data: reportData.files,
-              },
-            },
-          },
-        },
-      },
+                data: reportData.files
+              }
+            }
+          }
+        }
+      }
     });
 
     const maintenanceReport = await sharedMaintenanceServices.findHistoryById({
-      maintenanceHistoryId: maintenanceHistory.id,
+      maintenanceHistoryId: maintenanceHistory.id
     });
 
     if (maintenanceReport?.MaintenanceReport?.length) {
@@ -190,15 +187,15 @@ export async function sharedCreateOccasionalMaintenanceReport({
           observation: reportData.observation,
           ReportImages: {
             createMany: {
-              data: reportData.images,
-            },
+              data: reportData.images
+            }
           },
           ReportAnnexes: {
             createMany: {
-              data: reportData.files,
-            },
-          },
-        },
+              data: reportData.files
+            }
+          }
+        }
       });
     }
   }

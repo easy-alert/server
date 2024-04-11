@@ -19,6 +19,10 @@ class TicketServices {
     return prisma.ticket.create(args);
   }
 
+  async updateMany(args: prismaTypes.TicketUpdateManyArgs) {
+    await prisma.ticket.updateMany(args);
+  }
+
   async findById(id: string) {
     const data = await prisma.ticket.findUnique({
       include: {
@@ -27,8 +31,8 @@ class TicketServices {
         place: true,
         types: {
           select: {
-            type: true,
-          },
+            type: true
+          }
         },
         building: {
           select: {
@@ -37,13 +41,13 @@ class TicketServices {
             name: true,
             Company: {
               select: {
-                canAccessTickets: true,
-              },
-            },
-          },
-        },
+                canAccessTickets: true
+              }
+            }
+          }
+        }
       },
-      where: { id },
+      where: { id }
     });
 
     validator.needExist([{ label: 'Ticket', variable: data }]);
@@ -57,7 +61,7 @@ class TicketServices {
     take,
     finalCreatedAt,
     initialCreatedAt,
-    statusName,
+    statusName
   }: IFindMany) {
     const [tickets, ticketsCount, status] = await prisma.$transaction([
       prisma.ticket.findMany({
@@ -67,9 +71,9 @@ class TicketServices {
           place: true,
           types: {
             select: {
-              type: true,
-            },
-          },
+              type: true
+            }
+          }
         },
 
         take,
@@ -77,38 +81,38 @@ class TicketServices {
 
         where: {
           building: {
-            nanoId: buildingNanoId,
+            nanoId: buildingNanoId
           },
 
           createdAt: {
             gte: initialCreatedAt,
-            lte: finalCreatedAt,
+            lte: finalCreatedAt
           },
 
-          statusName,
+          statusName
         },
 
-        orderBy: [{ statusName: 'asc' }, { createdAt: 'asc' }],
+        orderBy: [{ statusName: 'asc' }, { createdAt: 'asc' }]
       }),
       prisma.ticket.count({
         where: {
           building: {
-            nanoId: buildingNanoId,
+            nanoId: buildingNanoId
           },
 
           createdAt: {
             gte: initialCreatedAt,
-            lte: finalCreatedAt,
+            lte: finalCreatedAt
           },
 
-          statusName,
-        },
+          statusName
+        }
       }),
       prisma.ticketStatus.findMany({
         orderBy: {
-          label: 'asc',
-        },
-      }),
+          label: 'asc'
+        }
+      })
     ]);
 
     return { tickets, ticketsCount, status };
@@ -118,14 +122,14 @@ class TicketServices {
     const [places, types] = await prisma.$transaction([
       prisma.ticketPlace.findMany({
         orderBy: {
-          label: 'asc',
-        },
+          label: 'asc'
+        }
       }),
       prisma.serviceType.findMany({
         orderBy: {
-          label: 'asc',
-        },
-      }),
+          label: 'asc'
+        }
+      })
     ]);
 
     return { places, types };
@@ -134,9 +138,9 @@ class TicketServices {
   async checkAccess({ buildingNanoId }: { buildingNanoId: string }) {
     const company = await prisma.company.findFirst({
       select: {
-        canAccessTickets: true,
+        canAccessTickets: true
       },
-      where: { Buildings: { some: { nanoId: buildingNanoId } } },
+      where: { Buildings: { some: { nanoId: buildingNanoId } } }
     });
 
     validator.needExist([{ label: 'Edificação', variable: company }]);
@@ -144,7 +148,7 @@ class TicketServices {
     if (!company?.canAccessTickets) {
       throw new ServerMessage({
         statusCode: 403,
-        message: `Sua empresa não possui acesso a este módulo.`,
+        message: `Sua empresa não possui acesso a este módulo.`
       });
     }
   }
