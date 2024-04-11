@@ -240,6 +240,8 @@ export async function sharedCreateOccasionalMaintenanceReport({
           id: { in: ticketIds },
         },
       });
+
+      await ticketServices.sendFinishedTicketEmails({ ticketIds });
     }
   }
   // #endregion

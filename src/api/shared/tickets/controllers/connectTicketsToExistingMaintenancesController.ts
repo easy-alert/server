@@ -57,6 +57,8 @@ export async function connectTicketsToExistingMaintenancesController(req: Reques
         id: { in: ticketIds },
       },
     });
+
+    await ticketServices.sendFinishedTicketEmails({ ticketIds });
   }
 
   return res.status(200).json({ ServerMessage: { message: 'Chamados respondidos com sucesso.' } });

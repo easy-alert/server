@@ -2,6 +2,7 @@ import { Response, Request } from 'express';
 import { ticketServices } from '../services/ticketServices';
 import { checkValues } from '../../../../utils/newValidator';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
+import { EmailTransporterServices } from '../../../../utils/emailTransporter/emailTransporterServices';
 
 interface IBody {
   residentName: string;
@@ -18,6 +19,8 @@ interface IBody {
 
   types: { serviceTypeId: string }[];
 }
+
+const emailTransporter = new EmailTransporterServices();
 
 export async function createTicketController(req: Request, res: Response) {
   const {
@@ -55,14 +58,16 @@ export async function createTicketController(req: Request, res: Response) {
 
   await ticketServices.checkAccess({ buildingNanoId });
 
-  const buildingId = (await buildingServices.findByNanoId({ buildingNanoId })).id;
+  const building = await buildingServices.findByNanoId({ buildingNanoId });
 
-  await ticketServices.create({
+  const lowerCaseEmail = residentEmail ? residentEmail?.toLowerCase() : null;
+
+  const ticket = await ticketServices.create({
     data: {
-      buildingId,
+      buildingId: building.id,
       residentName,
       residentApartment,
-      residentEmail: residentEmail || null,
+      residentEmail: lowerCaseEmail,
       placeId,
       description,
       statusName: 'open',
@@ -80,6 +85,15 @@ export async function createTicketController(req: Request, res: Response) {
       },
     },
   });
+
+  if (lowerCaseEmail) {
+    await emailTransporter.sendTicketCreated({
+      toEmail: lowerCaseEmail,
+      buildingName: building.name,
+      residentName,
+      ticketNumber: ticket.ticketNumber,
+    });
+  }
 
   return res.status(200).json({ ServerMessage: { message: 'Chamado aberto com sucesso.' } });
 }

@@ -3,8 +3,10 @@ import { prisma, prismaTypes } from '../../../../../prisma';
 import { Validator } from '../../../../utils/validator/validator';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { removeDays, setToUTCMidnight } from '../../../../utils/dateTime';
+import { EmailTransporterServices } from '../../../../utils/emailTransporter/emailTransporterServices';
 
 const validator = new Validator();
+const emailTransporter = new EmailTransporterServices();
 
 interface IFindMany {
   page: number;
@@ -200,6 +202,28 @@ class TicketServices {
         notificationDate: 'asc',
       },
     });
+  }
+
+  async sendFinishedTicketEmails({ ticketIds }: { ticketIds: string[] }) {
+    const emails = await prisma.ticket.findMany({
+      select: { residentEmail: true, ticketNumber: true, residentName: true },
+      where: { id: { in: ticketIds } },
+    });
+
+    const filteredEmails = emails.filter((e) => e.residentEmail);
+
+    for (let index = 0; index < filteredEmails.length; index++) {
+      const { residentEmail, ticketNumber, residentName } = filteredEmails[index];
+
+      // Teoricamente o filter ali de cima já era pra validar o email, mas não quer.
+      if (residentEmail) {
+        await emailTransporter.sendTicketFinished({
+          residentName,
+          ticketNumber,
+          toEmail: residentEmail,
+        });
+      }
+    }
   }
 }
 

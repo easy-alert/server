@@ -8,6 +8,8 @@ import {
   ISendConfirmEmail,
   ISendProofOfReport,
   ISendRecoveryPassword,
+  ITicketCreated,
+  ITicketFinished,
 } from './types';
 
 // #endregion
@@ -185,6 +187,45 @@ export class EmailTransporterServices {
         data,
         route,
         buildingName,
+      }),
+    };
+
+    await transporter.sendMail(mail).catch(() => {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Oops! Encontramos um problema ao enviar a confirmação de email.',
+      });
+    });
+  }
+
+  async sendTicketCreated({ toEmail, buildingName, residentName, ticketNumber }: ITicketCreated) {
+    const mail = {
+      from: `Chamado aberto <${process.env.EMAIL_USERNAME}>`,
+      to: toEmail,
+      subject: `Easy Alert - Chamado aberto`,
+      html: emailTemplates.ticketCreated({
+        buildingName,
+        residentName,
+        ticketNumber,
+      }),
+    };
+
+    await transporter.sendMail(mail).catch(() => {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Oops! Encontramos um problema ao enviar a confirmação de email.',
+      });
+    });
+  }
+
+  async sendTicketFinished({ toEmail, residentName, ticketNumber }: ITicketFinished) {
+    const mail = {
+      from: `Chamado finalizado <${process.env.EMAIL_USERNAME}>`,
+      to: toEmail,
+      subject: `Easy Alert - Chamado finalizado`,
+      html: emailTemplates.ticketFinished({
+        residentName,
+        ticketNumber,
       }),
     };
 

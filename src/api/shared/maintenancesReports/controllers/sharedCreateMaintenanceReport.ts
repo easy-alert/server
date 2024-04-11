@@ -357,6 +357,10 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       },
     });
 
+    await ticketServices.sendFinishedTicketEmails({
+      ticketIds: maintenanceHistory.tickets.map(({ id }) => id),
+    });
+
     return res.status(200).json({
       ServerMessage: {
         statusCode: 200,
