@@ -161,6 +161,7 @@ export class SharedMaintenanceServices {
   async findHistoryById({ maintenanceHistoryId }: { maintenanceHistoryId: string }) {
     const maintenance = await prisma.maintenanceHistory.findUnique({
       select: {
+        id: true,
         notificationDate: true,
         dueDate: true,
         MaintenancesStatus: {

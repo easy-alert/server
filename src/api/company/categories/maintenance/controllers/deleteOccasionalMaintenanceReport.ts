@@ -4,6 +4,7 @@ import { Validator } from '../../../../../utils/validator/validator';
 import { SharedMaintenanceServices } from '../../../../shared/maintenance/services/sharedMaintenanceServices';
 import { SharedCategoryServices } from '../../../../shared/categories/services/sharedCategoryServices';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+import { ticketServices } from '../../../../shared/tickets/services/ticketServices';
 
 const validator = new Validator();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
@@ -32,7 +33,12 @@ export async function deleteOccasionalMaintenanceHistory(req: Request, res: Resp
     categoryId: maintenanceHistory.Maintenance.Category.id,
   });
 
-  if (categoryHistory.length <= 1) {
+  await ticketServices.updateMany({
+    data: { statusName: 'open' },
+    where: { maintenanceHistoryId: maintenanceHistory.id },
+  });
+
+  if (categoryHistory.length < 1) {
     await sharedCategoryServices.delete({ categoryId: maintenanceHistory.Maintenance.Category.id });
   } else {
     await sharedMaintenanceServices.deleteHistory({ maintenanceHistoryId });
