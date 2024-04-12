@@ -10,7 +10,10 @@ export const ticketRouter: Router = Router();
 ticketRouter.get('/buildings/:buildingNanoId', findManyTicketsController);
 ticketRouter.get('/:ticketId', findTicketByIdController);
 ticketRouter.get('/extras/auxiliary-data', findTicketsAuxiliaryDataController);
-ticketRouter.get('/extras/occasional-maintenances', findOccasionalMaintenancesForTicketsController);
+ticketRouter.get(
+  '/extras/occasional-maintenances/:buildingNanoId',
+  findOccasionalMaintenancesForTicketsController,
+);
 
 // ticketRouter.post('/', createTicketController);
 ticketRouter.post('/connect-to-maintenance', connectTicketsToExistingMaintenancesController);
