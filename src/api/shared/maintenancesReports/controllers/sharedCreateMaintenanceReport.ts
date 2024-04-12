@@ -348,6 +348,11 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   // #endregion
 
   if (maintenanceHistory.Maintenance.MaintenanceType?.name === 'occasional') {
+    // Os tickets que eu trago aqui sao só estao aguardando finalizar.
+    ticketServices.sendFinishedTicketEmails({
+      ticketIds: maintenanceHistory.tickets.map(({ id }) => id),
+    });
+
     await ticketServices.updateMany({
       data: {
         statusName: 'finished',
@@ -355,10 +360,6 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       where: {
         maintenanceHistoryId: maintenanceHistory.id,
       },
-    });
-
-    await ticketServices.sendFinishedTicketEmails({
-      ticketIds: maintenanceHistory.tickets.map(({ id }) => id),
     });
 
     return res.status(200).json({

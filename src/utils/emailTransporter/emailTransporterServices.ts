@@ -198,7 +198,7 @@ export class EmailTransporterServices {
     });
   }
 
-  async sendTicketCreated({ toEmail, buildingName, residentName, ticketNumber }: ITicketCreated) {
+  sendTicketCreated({ toEmail, buildingName, residentName, ticketNumber }: ITicketCreated) {
     const mail = {
       from: `Chamado aberto <${process.env.EMAIL_USERNAME}>`,
       to: toEmail,
@@ -210,15 +210,10 @@ export class EmailTransporterServices {
       }),
     };
 
-    await transporter.sendMail(mail).catch(() => {
-      throw new ServerMessage({
-        statusCode: 400,
-        message: 'Oops! Encontramos um problema ao enviar a confirmação de email.',
-      });
-    });
+    transporter.sendMail(mail);
   }
 
-  async sendTicketFinished({ toEmail, residentName, ticketNumber }: ITicketFinished) {
+  sendTicketFinished({ toEmail, residentName, ticketNumber }: ITicketFinished) {
     const mail = {
       from: `Chamado finalizado <${process.env.EMAIL_USERNAME}>`,
       to: toEmail,
@@ -229,11 +224,6 @@ export class EmailTransporterServices {
       }),
     };
 
-    await transporter.sendMail(mail).catch(() => {
-      throw new ServerMessage({
-        statusCode: 400,
-        message: 'Oops! Encontramos um problema ao enviar a confirmação de email.',
-      });
-    });
+    transporter.sendMail(mail);
   }
 }

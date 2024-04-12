@@ -344,6 +344,9 @@ export class SharedMaintenanceServices {
           select: {
             id: true,
           },
+          where: {
+            statusName: 'awaitingToFinish',
+          },
         },
       },
       where: { id: maintenanceHistoryId },

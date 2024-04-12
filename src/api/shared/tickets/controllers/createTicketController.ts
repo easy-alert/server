@@ -87,7 +87,7 @@ export async function createTicketController(req: Request, res: Response) {
   });
 
   if (lowerCaseEmail) {
-    await emailTransporter.sendTicketCreated({
+    emailTransporter.sendTicketCreated({
       toEmail: lowerCaseEmail,
       buildingName: building.name,
       residentName,

@@ -241,7 +241,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
         },
       });
 
-      await ticketServices.sendFinishedTicketEmails({ ticketIds });
+      ticketServices.sendFinishedTicketEmails({ ticketIds });
     }
   }
   // #endregion

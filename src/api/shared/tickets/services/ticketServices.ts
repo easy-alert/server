@@ -212,16 +212,23 @@ class TicketServices {
 
     const filteredEmails = emails.filter((e) => e.residentEmail);
 
+    async function sleep(ms: number) {
+      // eslint-disable-next-line no-promise-executor-return
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
     for (let index = 0; index < filteredEmails.length; index++) {
       const { residentEmail, ticketNumber, residentName } = filteredEmails[index];
 
       // Teoricamente o filter ali de cima já era pra validar o email, mas não quer.
       if (residentEmail) {
-        await emailTransporter.sendTicketFinished({
+        emailTransporter.sendTicketFinished({
           residentName,
           ticketNumber,
           toEmail: residentEmail,
         });
+
+        await sleep(6000);
       }
     }
   }
