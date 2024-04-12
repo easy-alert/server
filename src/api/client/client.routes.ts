@@ -39,6 +39,7 @@ import { sharedFindReportProgress } from '../shared/maintenancesReportProgresses
 import { findLocalSuppliers } from './building/controllers/findLocalSuppliers';
 import { checklistRouter } from './checklists/checklist.routes';
 import { listTimeIntervals } from '../shared/timeInterval/controllers/listTimeIntervals';
+import { ticketRouter } from './tickets/ticket.routes';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -122,6 +123,8 @@ clientRouter.post('/buildings/banners/change', buildingChangeBanner);
 
 clientRouter.get('/syndics/:buildingNanoId', findSyndicsByBuildingNanoId);
 
+clientRouter.get('/timeinterval/list', listTimeIntervals);
+
 clientRouter.use('/checklists', checklistRouter);
 
-clientRouter.get('/timeinterval/list', listTimeIntervals);
+clientRouter.use('/tickets', ticketRouter);

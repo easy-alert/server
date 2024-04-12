@@ -8,4 +8,5 @@ export interface IEditCompany {
   isNotifyingOnceAWeek: boolean;
   supportLink: string;
   canAccessChecklists: boolean;
+  canAccessTickets: boolean;
 }

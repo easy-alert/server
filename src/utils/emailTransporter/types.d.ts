@@ -48,3 +48,16 @@ export interface ISendProofOfReport {
   activity: string;
   reportObservation: string;
 }
+
+export interface ITicketCreated {
+  toEmail?: string;
+  buildingName: string;
+  residentName: string;
+  ticketNumber: number;
+}
+
+export interface ITicketFinished {
+  toEmail?: string;
+  residentName: string;
+  ticketNumber: number;
+}

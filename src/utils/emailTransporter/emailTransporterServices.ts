@@ -8,6 +8,8 @@ import {
   ISendConfirmEmail,
   ISendProofOfReport,
   ISendRecoveryPassword,
+  ITicketCreated,
+  ITicketFinished,
 } from './types';
 
 // #endregion
@@ -194,5 +196,34 @@ export class EmailTransporterServices {
         message: 'Oops! Encontramos um problema ao enviar a confirmação de email.',
       });
     });
+  }
+
+  sendTicketCreated({ toEmail, buildingName, residentName, ticketNumber }: ITicketCreated) {
+    const mail = {
+      from: `Chamado aberto <${process.env.EMAIL_USERNAME}>`,
+      to: toEmail,
+      subject: `Easy Alert - Chamado aberto`,
+      html: emailTemplates.ticketCreated({
+        buildingName,
+        residentName,
+        ticketNumber,
+      }),
+    };
+
+    transporter.sendMail(mail);
+  }
+
+  sendTicketFinished({ toEmail, residentName, ticketNumber }: ITicketFinished) {
+    const mail = {
+      from: `Chamado finalizado <${process.env.EMAIL_USERNAME}>`,
+      to: toEmail,
+      subject: `Easy Alert - Chamado finalizado`,
+      html: emailTemplates.ticketFinished({
+        residentName,
+        ticketNumber,
+      }),
+    };
+
+    transporter.sendMail(mail);
   }
 }

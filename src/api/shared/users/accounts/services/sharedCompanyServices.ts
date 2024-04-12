@@ -16,6 +16,7 @@ export class SharedCompanyServices {
     isNotifyingOnceAWeek,
     supportLink,
     canAccessChecklists,
+    canAccessTickets,
   }: IEditCompany) {
     await this.findById({ companyId });
 
@@ -29,6 +30,7 @@ export class SharedCompanyServices {
         isNotifyingOnceAWeek,
         supportLink,
         canAccessChecklists,
+        canAccessTickets,
       },
       where: { id: companyId },
     });
