@@ -840,6 +840,7 @@ export class ClientBuildingServices {
         Company: {
           select: {
             supportLink: true,
+            canAccessTickets: true,
           },
         },
       },

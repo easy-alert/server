@@ -11,6 +11,8 @@ import { addDays } from '../../../utils/dateTime';
 import { SharedMaintenanceReportsServices } from '../maintenancesReports/services/SharedMaintenanceReportsServices';
 import { noWeekendTimeDate } from '../../../utils/dateTime/noWeekendTimeDate';
 import { SharedBuildingNotificationConfigurationServices } from '../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
+import { checkValues } from '../../../utils/newValidator';
+import { ticketServices } from '../tickets/services/ticketServices';
 
 // CLASS
 const validator = new Validator();
@@ -39,10 +41,10 @@ export async function sharedCreateOccasionalMaintenanceReport({
     maintenanceData,
     reportData,
     inProgress,
+    ticketIds,
   }: ICreateOccassionalMaintenanceReport = body;
 
   // #region VALIDATIONS
-
   if (!categoryData) {
     throw new ServerMessage({
       statusCode: 400,
@@ -68,6 +70,8 @@ export async function sharedCreateOccasionalMaintenanceReport({
     { label: 'Execução', variable: inProgress, type: 'boolean', isOptional: true },
   ]);
 
+  checkValues([{ label: 'Chamados', type: 'array', value: ticketIds, required: false }]);
+
   // 100 anos em dias
   const defaultPeriod = 365 * 100;
 
@@ -81,7 +85,6 @@ export async function sharedCreateOccasionalMaintenanceReport({
   // #endregion
 
   // #region CATEGORY
-
   const category = await sharedCreateCategory({
     ownerCompanyId: companyId,
     body: {
@@ -93,7 +96,6 @@ export async function sharedCreateOccasionalMaintenanceReport({
   // #endregion
 
   // #region MAINTENANCE
-
   const timeInterval = await timeIntervalServices.findByName({ name: 'Day' });
 
   const maintenance = await sharedCreateMaintenance({
@@ -117,30 +119,56 @@ export async function sharedCreateOccasionalMaintenanceReport({
 
   // #endregion
 
-  // #region REPORT
-
-  if (new Date(executionDate) > new Date()) {
-    const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
-    // cria historico do report
-    await sharedMaintenanceServices.createHistory({
-      data: [
-        {
-          ownerCompanyId: companyId,
-          buildingId,
-          maintenanceId: maintenance.id,
-          maintenanceStatusId: pendingStatus.id,
-          notificationDate: new Date(executionDate),
-          dueDate: noWeekendTimeDate({
-            date: addDays({ date: new Date(executionDate), days: defaultPeriod }),
-            interval: 2,
-          }),
-          inProgress,
-        },
-      ],
+  // #region TICKETS VALIDATION
+  if (ticketIds && ticketIds?.length > 0) {
+    const openTicketsCount = await ticketServices.countOpenTickets({
+      buildingId,
+      ticketIds,
     });
+
+    if (openTicketsCount !== ticketIds.length) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: `Algum chamado selecionado já foi respondido.`,
+      });
+    }
+  }
+  // #endregion
+
+  // #region REPORT
+  if (new Date(executionDate) > new Date()) {
+    // PENDENTE
+    const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
+    const newPending = await sharedMaintenanceServices.createOneHistory({
+      data: {
+        ownerCompanyId: companyId,
+        buildingId,
+        maintenanceId: maintenance.id,
+        maintenanceStatusId: pendingStatus.id,
+        notificationDate: new Date(executionDate),
+        dueDate: noWeekendTimeDate({
+          date: addDays({ date: new Date(executionDate), days: defaultPeriod }),
+          interval: 2,
+        }),
+        inProgress,
+      },
+    });
+
+    if (ticketIds && ticketIds?.length > 0) {
+      await ticketServices.updateMany({
+        data: {
+          statusName: 'awaitingToFinish',
+          maintenanceHistoryId: newPending.id,
+        },
+        where: {
+          id: { in: ticketIds },
+        },
+      });
+    }
   } else {
+    // CONCLUÍDA
     const completedStatus = await sharedMaintenanceStatusServices.findByName({ name: 'completed' });
-    // cria historico do report
+
     const maintenanceHistory = await sharedMaintenanceServices.createHistoryAndReport({
       data: {
         ownerCompanyId: companyId,
@@ -200,6 +228,20 @@ export async function sharedCreateOccasionalMaintenanceReport({
           },
         },
       });
+    }
+
+    if (ticketIds && ticketIds?.length > 0) {
+      await ticketServices.updateMany({
+        data: {
+          statusName: 'finished',
+          maintenanceHistoryId: maintenanceHistory.id,
+        },
+        where: {
+          id: { in: ticketIds },
+        },
+      });
+
+      ticketServices.sendFinishedTicketEmails({ ticketIds });
     }
   }
   // #endregion

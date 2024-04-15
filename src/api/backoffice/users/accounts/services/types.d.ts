@@ -6,6 +6,7 @@ export interface ICreateCompany {
   image: string;
   isNotifyingOnceAWeek: boolean;
   canAccessChecklists: boolean;
+  canAccessTickets: boolean;
 }
 
 export interface IEditCompany extends ICreateCompany {

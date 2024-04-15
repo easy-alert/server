@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { Prisma } from '@prisma/client';
+import { Prisma, TicketStatusName } from '@prisma/client';
 import { hashSync } from 'bcrypt';
 
 // CLASS
@@ -85,6 +85,7 @@ export class SeedServices {
       image: 'https://larguei.s3.us-west-2.amazonaws.com/1635276982966-1678106031894.jpg',
       isNotifyingOnceAWeek: false,
       canAccessChecklists: false,
+      canAccessTickets: false,
     });
 
     await companyServices.createUserCompany({
@@ -210,5 +211,83 @@ export class SeedServices {
         },
       ],
     });
+  }
+
+  async upsertTicketPlaces() {
+    const allData = [{ label: 'Área comum' }, { label: 'Meu apartamento' }];
+
+    for (let i = 0; i < allData.length; i++) {
+      const data = allData[i];
+
+      await prisma.ticketPlace.upsert({
+        create: data,
+        update: {},
+        where: data,
+      });
+    }
+
+    console.log('Ticket places upserted.');
+  }
+
+  async upsertTicketServiceTypes() {
+    const allData = [
+      { label: 'Hidráulica' },
+      { label: 'Elétrica' },
+      { label: 'Pintura' },
+      { label: 'Mecânica' },
+      { label: 'Portas e janelas' },
+      { label: 'Gás' },
+      { label: 'Acabamentos' },
+      { label: 'Outros' },
+    ];
+
+    for (let i = 0; i < allData.length; i++) {
+      const data = allData[i];
+
+      await prisma.serviceType.upsert({
+        create: data,
+        update: {},
+        where: data,
+      });
+    }
+
+    console.log('Ticket service types upserted.');
+  }
+
+  async upsertTicketStatus() {
+    const allData = [
+      {
+        name: TicketStatusName.open,
+        label: 'Aberto',
+        color: '#FFFFFF',
+        backgroundColor: '#B21D1D',
+      },
+      {
+        name: TicketStatusName.finished,
+        label: 'Finalizado',
+        color: '#FFFFFF',
+        backgroundColor: '#34B53A',
+      },
+      {
+        name: TicketStatusName.awaitingToFinish,
+        label: 'Aguardando finalização',
+        color: '#FFFFFF',
+        backgroundColor: '#FFB200',
+      },
+    ];
+
+    for (let i = 0; i < allData.length; i++) {
+      const data = allData[i];
+
+      await prisma.ticketStatus.upsert({
+        create: data,
+        update: {},
+        where: {
+          name: data.name,
+        },
+      });
+    }
+
+    console.log('Ticket status upserted.');
   }
 }

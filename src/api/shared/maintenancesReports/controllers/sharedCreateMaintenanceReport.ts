@@ -12,6 +12,7 @@ import { SharedBuildingNotificationConfigurationServices } from '../../notificat
 import { SharedMaintenanceReportsServices } from '../services/SharedMaintenanceReportsServices';
 import { IAttachments, ICreateAndEditMaintenanceReportsBody } from './types';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
+import { ticketServices } from '../../tickets/services/ticketServices';
 
 // CLASS
 
@@ -347,6 +348,20 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   // #endregion
 
   if (maintenanceHistory.Maintenance.MaintenanceType?.name === 'occasional') {
+    // Os tickets que eu trago aqui sao só estao aguardando finalizar.
+    ticketServices.sendFinishedTicketEmails({
+      ticketIds: maintenanceHistory.tickets.map(({ id }) => id),
+    });
+
+    await ticketServices.updateMany({
+      data: {
+        statusName: 'finished',
+      },
+      where: {
+        maintenanceHistoryId: maintenanceHistory.id,
+      },
+    });
+
     return res.status(200).json({
       ServerMessage: {
         statusCode: 200,

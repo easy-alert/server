@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { prisma } from '../../../../../prisma';
+import { prisma, prismaTypes } from '../../../../../prisma';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { Validator } from '../../../../utils/validator/validator';
 import {
@@ -53,6 +53,10 @@ export class SharedMaintenanceServices {
     return prisma.maintenanceHistory.createMany({
       data,
     });
+  }
+
+  async createOneHistory(args: prismaTypes.MaintenanceHistoryCreateArgs) {
+    return prisma.maintenanceHistory.create(args);
   }
 
   async createHistoryAndReport({ data }: { data: ICreateMaintenanceHistoryAndReport }) {
@@ -157,6 +161,7 @@ export class SharedMaintenanceServices {
   async findHistoryById({ maintenanceHistoryId }: { maintenanceHistoryId: string }) {
     const maintenance = await prisma.maintenanceHistory.findUnique({
       select: {
+        id: true,
         notificationDate: true,
         dueDate: true,
         MaintenancesStatus: {
@@ -332,6 +337,15 @@ export class SharedMaintenanceServices {
                 unitTime: true,
               },
             },
+          },
+        },
+
+        tickets: {
+          select: {
+            id: true,
+          },
+          where: {
+            statusName: 'awaitingToFinish',
           },
         },
       },
