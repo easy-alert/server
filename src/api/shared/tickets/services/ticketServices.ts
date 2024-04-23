@@ -146,7 +146,7 @@ class TicketServices {
       where: { Buildings: { some: { nanoId: buildingNanoId } } },
     });
 
-    validator.needExist([{ label: 'Edificação', variable: company }]);
+    validator.needExist([{ label: 'Empresa', variable: company }]);
 
     if (!company?.canAccessTickets) {
       throw new ServerMessage({

@@ -87,6 +87,40 @@ class ChecklistServices {
     });
   }
 
+  async findManyForReport({ companyId }: { companyId: string }) {
+    return prisma.checklist.findMany({
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        date: true,
+        building: {
+          select: {
+            name: true,
+          },
+        },
+        syndic: {
+          select: {
+            name: true,
+          },
+        },
+
+        frequency: true,
+
+        status: true,
+      },
+      where: {
+        building: {
+          companyId,
+        },
+      },
+
+      orderBy: {
+        date: 'desc',
+      },
+    });
+  }
+
   async checkAccess({ buildingNanoId }: { buildingNanoId: string }) {
     const company = await prisma.company.findFirst({
       select: {
@@ -95,7 +129,27 @@ class ChecklistServices {
       where: { Buildings: { some: { nanoId: buildingNanoId } } },
     });
 
-    validator.needExist([{ label: 'Edificação', variable: company }]);
+    validator.needExist([{ label: 'Empresa', variable: company }]);
+
+    if (!company?.canAccessChecklists) {
+      throw new ServerMessage({
+        statusCode: 403,
+        message: `Sua empresa não possui acesso a este módulo.`,
+      });
+    }
+  }
+
+  async checkAccessByCompany({ companyId }: { companyId: string }) {
+    const company = await prisma.company.findFirst({
+      select: {
+        canAccessChecklists: true,
+      },
+      where: {
+        id: companyId,
+      },
+    });
+
+    validator.needExist([{ label: 'Empresa', variable: company }]);
 
     if (!company?.canAccessChecklists) {
       throw new ServerMessage({
