@@ -95,5 +95,5 @@ export async function createTicketController(req: Request, res: Response) {
     });
   }
 
-  return res.status(200).json({ ServerMessage: { message: 'Chamado aberto com sucesso.' } });
+  return res.status(201).json({ ServerMessage: { message: 'Chamado aberto com sucesso.' } });
 }

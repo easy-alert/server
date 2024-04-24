@@ -58,6 +58,12 @@ class TicketServices {
     return data!;
   }
 
+  async delete(id: string) {
+    await this.findById(id);
+
+    await prisma.ticket.delete({ where: { id } });
+  }
+
   async findMany({
     buildingNanoId,
     page,

@@ -4,6 +4,7 @@ import { findTicketByIdController } from '../../shared/tickets/controllers/findT
 import { findTicketsAuxiliaryDataController } from '../../shared/tickets/controllers/findTicketsAuxiliaryDataController';
 import { findOccasionalMaintenancesForTicketsController } from '../../shared/tickets/controllers/findOccasionalMaintenancesForTicketsController';
 import { connectTicketsToExistingMaintenancesController } from '../../shared/tickets/controllers/connectTicketsToExistingMaintenancesController';
+import { deleteTicketController } from '../../shared/tickets/controllers/deleteTicketController';
 
 export const ticketRouter: Router = Router();
 
@@ -17,3 +18,5 @@ ticketRouter.get(
 
 // ticketRouter.post('/', createTicketController);
 ticketRouter.post('/connect-to-maintenance', connectTicketsToExistingMaintenancesController);
+
+ticketRouter.delete('/:ticketId', deleteTicketController);
