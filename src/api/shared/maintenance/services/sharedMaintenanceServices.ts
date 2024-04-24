@@ -344,6 +344,7 @@ export class SharedMaintenanceServices {
           select: {
             id: true,
           },
+          // Trazendo só os que ainda não foram realizados, pois se tirar isso ele vai notificar até os que já foi utilizada essa manutenção antes
           where: {
             statusName: 'awaitingToFinish',
           },
