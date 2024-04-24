@@ -1,7 +1,11 @@
 import { Response, Request } from 'express';
 import { ChecklistStatusName } from '@prisma/client';
 import { checklistServices } from '../services/checklistServices';
-import { setToUTCLastMinuteOfDay, setToUTCMidnight } from '../../../../utils/dateTime';
+import {
+  formatMonthYear,
+  setToUTCLastMinuteOfDay,
+  setToUTCMidnight,
+} from '../../../../utils/dateTime';
 import { checkDateRanges, checkValues } from '../../../../utils/newValidator';
 
 export interface IParsedFilters {
@@ -9,6 +13,48 @@ export interface IParsedFilters {
   statusNames?: ChecklistStatusName[];
   startDate: string;
   endDate: string;
+}
+
+interface IName {
+  name: string;
+}
+interface IImage {
+  name: string;
+  url: string;
+}
+
+interface ISeparateByMonth {
+  id: string;
+  name: string;
+  description: string | null;
+  date: Date;
+  building: IName;
+  syndic: IName;
+  frequency: number | null;
+  status: ChecklistStatusName;
+  observation: string | null;
+  images: IImage[];
+}
+
+function separateByMonth(array: ISeparateByMonth[]) {
+  const separatedByMonth: { [key: string]: ISeparateByMonth[] } = {};
+
+  array.forEach((data) => {
+    const monthYear = `${data.date.getMonth() + 1}-${data.date.getFullYear()}`;
+
+    if (!separatedByMonth[monthYear]) {
+      separatedByMonth[monthYear] = [];
+    }
+
+    separatedByMonth[monthYear].push(data);
+  });
+
+  const result = Object.keys(separatedByMonth).map((key) => ({
+    month: formatMonthYear(key),
+    data: separatedByMonth[key],
+  }));
+
+  return result;
 }
 
 export async function findChecklistReportController(req: Request, res: Response) {
@@ -40,5 +86,7 @@ export async function findChecklistReportController(req: Request, res: Response)
   const completedCount = checklists.filter((e) => e.status === 'completed').length;
   const pendingCount = checklists.filter((e) => e.status === 'pending').length;
 
-  return res.status(200).json({ checklists, completedCount, pendingCount });
+  const checklistsForPDF = separateByMonth(checklists);
+
+  return res.status(200).json({ checklists, completedCount, pendingCount, checklistsForPDF });
 }

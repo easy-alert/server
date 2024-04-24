@@ -5,3 +5,4 @@ export * from './setToUTCMidnight';
 export * from './setToUTCLastMinuteOfDay';
 export * from './setToFilterEndDate';
 export * from './setToFilterStartDate';
+export * from './formatMonthYear';
