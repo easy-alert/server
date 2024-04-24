@@ -11,6 +11,7 @@ import { findChecklistReportController } from '../../shared/checklists/controlle
 
 export const checklistRouter: Router = Router();
 
+// Esse report é do relatório
 checklistRouter.get('/reports', findChecklistReportController);
 checklistRouter.get('/:checklistId', findChecklistByIdController);
 checklistRouter.get('/:buildingNanoId/:date', findManyChecklistsController);
@@ -21,5 +22,7 @@ checklistRouter.post('/', createChecklistController);
 checklistRouter.delete('/:checklistId/:mode', deleteChecklistController);
 
 checklistRouter.put('/complete', completeChecklistController);
+
+// Esse report é do relato
 checklistRouter.put('/reports', updateChecklistReportController);
 checklistRouter.put('/', updateChecklistController);

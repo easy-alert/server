@@ -5,9 +5,11 @@ import { findTicketsAuxiliaryDataController } from '../../shared/tickets/control
 import { findOccasionalMaintenancesForTicketsController } from '../../shared/tickets/controllers/findOccasionalMaintenancesForTicketsController';
 import { connectTicketsToExistingMaintenancesController } from '../../shared/tickets/controllers/connectTicketsToExistingMaintenancesController';
 import { deleteTicketController } from '../../shared/tickets/controllers/deleteTicketController';
+import { findTicketReportController } from '../../shared/tickets/controllers/findTicketReportController';
 
 export const ticketRouter: Router = Router();
 
+ticketRouter.get('/reports', findTicketReportController);
 ticketRouter.get('/buildings/:buildingNanoId', findManyTicketsController);
 ticketRouter.get('/:ticketId', findTicketByIdController);
 ticketRouter.get('/extras/auxiliary-data', findTicketsAuxiliaryDataController);

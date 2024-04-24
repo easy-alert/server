@@ -17,6 +17,14 @@ interface IFindMany {
   statusName?: TicketStatusName;
 }
 
+interface IFindManyForReport {
+  companyId: string;
+  buildingNames?: string[];
+  statusNames?: TicketStatusName[];
+  startDate: Date;
+  endDate: Date;
+}
+
 class TicketServices {
   async create(args: prismaTypes.TicketCreateArgs) {
     return prisma.ticket.create(args);
@@ -162,6 +170,26 @@ class TicketServices {
     }
   }
 
+  async checkAccessByCompany({ companyId }: { companyId: string }) {
+    const company = await prisma.company.findFirst({
+      select: {
+        canAccessTickets: true,
+      },
+      where: {
+        id: companyId,
+      },
+    });
+
+    validator.needExist([{ label: 'Empresa', variable: company }]);
+
+    if (!company?.canAccessTickets) {
+      throw new ServerMessage({
+        statusCode: 403,
+        message: `Sua empresa não possui acesso a este módulo.`,
+      });
+    }
+  }
+
   async countOpenTickets({ buildingId, ticketIds }: { buildingId: string; ticketIds: string[] }) {
     return prisma.ticket.count({
       where: {
@@ -237,6 +265,69 @@ class TicketServices {
         await sleep(6000);
       }
     }
+  }
+
+  async findManyForReport({
+    companyId,
+    endDate,
+    startDate,
+    buildingNames,
+    statusNames,
+  }: IFindManyForReport) {
+    const where: prismaTypes.TicketWhereInput = {
+      building: {
+        companyId,
+        name: buildingNames?.length ? { in: buildingNames } : undefined,
+      },
+
+      createdAt: {
+        gte: startDate,
+        lte: endDate,
+      },
+
+      statusName: statusNames?.length ? { in: statusNames } : undefined,
+    };
+
+    return prisma.ticket.findMany({
+      select: {
+        id: true,
+        building: {
+          select: {
+            name: true,
+          },
+        },
+        description: true,
+        images: {
+          select: {
+            name: true,
+            url: true,
+          },
+        },
+        place: {
+          select: {
+            label: true,
+          },
+        },
+        types: {
+          select: {
+            type: {
+              select: {
+                label: true,
+              },
+            },
+          },
+        },
+        status: true,
+        createdAt: true,
+        residentName: true,
+        residentApartment: true,
+      },
+      where,
+
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
   }
 }
 
