@@ -1,9 +1,18 @@
+import { ChecklistStatusName } from '@prisma/client';
 import { prisma, prismaTypes } from '../../../../../prisma';
 import { setToUTCLastMinuteOfDay, setToUTCMidnight } from '../../../../utils/dateTime';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { Validator } from '../../../../utils/validator/validator';
 
 const validator = new Validator();
+
+interface IFindManyForReport {
+  companyId: string;
+  buildingNames?: string[];
+  statusNames?: ChecklistStatusName[];
+  startDate: Date;
+  endDate: Date;
+}
 
 class ChecklistServices {
   async create(args: prismaTypes.ChecklistCreateArgs) {
@@ -87,7 +96,27 @@ class ChecklistServices {
     });
   }
 
-  async findManyForReport({ companyId }: { companyId: string }) {
+  async findManyForReport({
+    companyId,
+    endDate,
+    startDate,
+    buildingNames,
+    statusNames,
+  }: IFindManyForReport) {
+    const where: prismaTypes.ChecklistWhereInput = {
+      building: {
+        companyId,
+        name: buildingNames?.length ? { in: buildingNames } : undefined,
+      },
+
+      date: {
+        gte: startDate,
+        lte: endDate,
+      },
+
+      status: statusNames?.length ? { in: statusNames } : undefined,
+    };
+
     return prisma.checklist.findMany({
       select: {
         id: true,
@@ -104,16 +133,17 @@ class ChecklistServices {
             name: true,
           },
         },
-
         frequency: true,
-
         status: true,
-      },
-      where: {
-        building: {
-          companyId,
+        observation: true,
+        images: {
+          select: {
+            name: true,
+            url: true,
+          },
         },
       },
+      where,
 
       orderBy: {
         date: 'desc',
