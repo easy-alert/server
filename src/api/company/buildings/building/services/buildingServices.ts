@@ -1,5 +1,5 @@
 // #region IMPORTS
-import { prisma } from '../../../../../../prisma';
+import { prisma, prismaTypes } from '../../../../../../prisma';
 
 // TYPES
 import { ICreateBuilding, IEditBuilding, IListBuildings, IListMaintenances } from './types';
@@ -215,6 +215,30 @@ export class BuildingServices {
   }
 
   async list({ take = 20, page, search = '', companyId }: IListBuildings) {
+    const where: prismaTypes.BuildingWhereInput = {
+      OR: [
+        {
+          name: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          neighborhood: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          city: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+      ],
+      companyId,
+    };
+
     const [Buildings, buildingsCount] = await prisma.$transaction([
       prisma.building.findMany({
         select: {
@@ -239,13 +263,9 @@ export class BuildingServices {
             },
           },
         },
-        where: {
-          name: {
-            contains: search,
-            mode: 'insensitive',
-          },
-          companyId,
-        },
+
+        where,
+
         orderBy: {
           name: 'asc',
         },
@@ -255,13 +275,7 @@ export class BuildingServices {
       }),
 
       prisma.building.count({
-        where: {
-          name: {
-            contains: search,
-            mode: 'insensitive',
-          },
-          companyId,
-        },
+        where,
       }),
     ]);
 
