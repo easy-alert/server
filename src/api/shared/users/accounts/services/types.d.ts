@@ -9,4 +9,6 @@ export interface IEditCompany {
   supportLink: string;
   canAccessChecklists: boolean;
   canAccessTickets: boolean;
+  receivePreviousMonthReports: boolean;
+  receiveDailyDueReports: boolean;
 }

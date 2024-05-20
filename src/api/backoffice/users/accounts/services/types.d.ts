@@ -7,6 +7,8 @@ export interface ICreateCompany {
   isNotifyingOnceAWeek: boolean;
   canAccessChecklists: boolean;
   canAccessTickets: boolean;
+  receivePreviousMonthReports: boolean;
+  receiveDailyDueReports: boolean;
 }
 
 export interface IEditCompany extends ICreateCompany {
