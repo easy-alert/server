@@ -440,6 +440,9 @@ model Building {
   keepNotificationAfterWarrantyEnds Boolean
   mandatoryReportProof              Boolean  @default(false)
 
+  residentPassword String?
+  syndicPassword   String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

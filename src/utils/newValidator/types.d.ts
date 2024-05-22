@@ -10,7 +10,8 @@ type IType =
   | 'email'
   | 'CEP'
   | 'CPF'
-  | 'CNPJ';
+  | 'CNPJ'
+  | 'PIN';
 
 export interface ICheckValues {
   value: any;
