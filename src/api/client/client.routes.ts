@@ -40,6 +40,8 @@ import { findLocalSuppliers } from './building/controllers/findLocalSuppliers';
 import { checklistRouter } from './checklists/checklist.routes';
 import { listTimeIntervals } from '../shared/timeInterval/controllers/listTimeIntervals';
 import { ticketRouter } from './tickets/ticket.routes';
+import { checkPasswordExistenceController } from './building/controllers/checkPasswordExistenceController';
+import { validatePasswordController } from './building/controllers/validatePasswordController';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -128,3 +130,10 @@ clientRouter.get('/timeinterval/list', listTimeIntervals);
 clientRouter.use('/checklists', checklistRouter);
 
 clientRouter.use('/tickets', ticketRouter);
+
+clientRouter.get(
+  '/check-password-existence/:buildingNanoId/:type',
+  checkPasswordExistenceController,
+);
+
+clientRouter.post('/validate-password', validatePasswordController);
