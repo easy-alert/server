@@ -26,6 +26,8 @@ export async function sharedEditCompanyAndOwner({
     supportLink,
     canAccessChecklists,
     canAccessTickets,
+    receiveDailyDueReports,
+    receivePreviousMonthReports,
   },
   userId,
   companyId,
@@ -70,6 +72,8 @@ export async function sharedEditCompanyAndOwner({
     supportLink,
     canAccessChecklists,
     canAccessTickets,
+    receiveDailyDueReports,
+    receivePreviousMonthReports,
   });
 
   if (password) {

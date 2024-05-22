@@ -96,6 +96,9 @@ model Company {
   canAccessChecklists Boolean @default(false)
   canAccessTickets    Boolean @default(false)
 
+  receivePreviousMonthReports Boolean @default(false)
+  receiveDailyDueReports      Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

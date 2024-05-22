@@ -86,6 +86,8 @@ export class SeedServices {
       isNotifyingOnceAWeek: false,
       canAccessChecklists: false,
       canAccessTickets: false,
+      receiveDailyDueReports: false,
+      receivePreviousMonthReports: false,
     });
 
     await companyServices.createUserCompany({

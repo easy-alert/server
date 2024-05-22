@@ -33,6 +33,8 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     isNotifyingOnceAWeek,
     canAccessChecklists,
     canAccessTickets,
+    receivePreviousMonthReports,
+    receiveDailyDueReports,
   } = req.body;
 
   validator.notNull([
@@ -84,6 +86,8 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     isNotifyingOnceAWeek,
     canAccessChecklists,
     canAccessTickets,
+    receiveDailyDueReports,
+    receivePreviousMonthReports,
   });
 
   await companyServices.createUserCompany({
