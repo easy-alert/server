@@ -3,12 +3,12 @@ import { ServerMessage } from '../messages/serverMessage';
 export function checkPassword({
   password,
   confirmPassword,
+  passwordMinLength = 8,
 }: {
-  password?: string;
-  confirmPassword?: string;
+  password: string | undefined | null;
+  confirmPassword: string | undefined | null;
+  passwordMinLength?: number;
 }) {
-  const passwordMinLength = 8;
-
   if (!password && !confirmPassword) return;
 
   if ((password && !confirmPassword) || (!password && confirmPassword)) {

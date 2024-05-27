@@ -96,6 +96,9 @@ model Company {
   canAccessChecklists Boolean @default(false)
   canAccessTickets    Boolean @default(false)
 
+  receivePreviousMonthReports Boolean @default(false)
+  receiveDailyDueReports      Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -436,6 +439,9 @@ model Building {
   warrantyExpiration                DateTime
   keepNotificationAfterWarrantyEnds Boolean
   mandatoryReportProof              Boolean  @default(false)
+
+  residentPassword String?
+  syndicPassword   String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

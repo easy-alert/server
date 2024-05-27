@@ -40,6 +40,7 @@ import { createOccasionalReport } from './reports/controllers/createOcassionalRe
 import { foldersRouter } from './folders/folders.routes';
 import { findDataForAutocompleteInCreate } from './notificationConfiguration/controllers/findDataForAutocompleteInCreate';
 import { listSyndicsForSelect } from './notificationConfiguration/controllers/listSyndicsForSelect';
+import { updateClientPasswordController } from './building/controllers/updateClientPasswordController';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -107,3 +108,6 @@ buildingRouter.post('/reports/occasional/create', createOccasionalReport);
 
 // BUILDING FOLDERS
 buildingRouter.use('/folders', foldersRouter);
+
+//
+buildingRouter.put('/client-passwords', updateClientPasswordController);
