@@ -17,6 +17,8 @@ export class SharedCompanyServices {
     supportLink,
     canAccessChecklists,
     canAccessTickets,
+    receiveDailyDueReports,
+    receivePreviousMonthReports,
   }: IEditCompany) {
     await this.findById({ companyId });
 
@@ -31,6 +33,8 @@ export class SharedCompanyServices {
         supportLink,
         canAccessChecklists,
         canAccessTickets,
+        receiveDailyDueReports,
+        receivePreviousMonthReports,
       },
       where: { id: companyId },
     });
