@@ -160,7 +160,7 @@ export class EmailTransporterServices {
       }),
     };
 
-    transporter.sendMail(mail).catch(() => {
+    await transporter.sendMail(mail).catch(() => {
       throw new ServerMessage({
         statusCode: 400,
         message: 'Oops! Encontramos um problema ao enviar o comprovante de relato por email.',
