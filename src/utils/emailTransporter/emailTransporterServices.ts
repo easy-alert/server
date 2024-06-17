@@ -139,7 +139,6 @@ export class EmailTransporterServices {
       from: `${subject} <${process.env.EMAIL_USERNAME}>`,
       to: toEmail,
       subject: `Easy Alert - ${subject}`,
-      attachments,
       html: emailTemplates.proofOfReport({
         companyLogo,
         activity,
@@ -157,6 +156,7 @@ export class EmailTransporterServices {
         notificationDate,
         responsible,
         source,
+        attachments,
       }),
     };
 

@@ -273,32 +273,30 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
           currency: 'BRL',
         });
 
-  if (syndicData) {
-    if (syndicData.emailIsConfirmed) {
-      await emailTransporter.sendProofOfReport({
-        companyLogo: maintenanceHistory.Company.image,
-        dueDate: new Date(maintenanceHistory.dueDate).toLocaleDateString('pt-BR'),
-        notificationDate: new Date(maintenanceHistory.notificationDate).toLocaleDateString('pt-BR'),
-        buildingName: maintenanceHistory.Building.name,
-        activity: maintenanceHistory.Maintenance.activity,
-        categoryName: maintenanceHistory.Maintenance.Category.name,
-        element: maintenanceHistory.Maintenance.element,
-        responsible: maintenanceHistory.Maintenance.responsible,
-        source: maintenanceHistory.Maintenance.source,
-        maintenanceObservation:
-          maintenanceHistory.Maintenance.observation &&
-          maintenanceHistory.Maintenance.observation !== ''
-            ? maintenanceHistory.Maintenance.observation
-            : '-',
-        cost: maskeredCost,
-        reportObservation: data.observation && data.observation !== '' ? data.observation : '-',
-        resolutionDate: new Date().toLocaleString('pt-BR'),
-        subject: 'Comprovante de relato',
-        syndicName: syndicData.name,
-        toEmail: syndicData.email!,
-        attachments,
-      });
-    }
+  if (syndicData && syndicData?.emailIsConfirmed) {
+    await emailTransporter.sendProofOfReport({
+      companyLogo: maintenanceHistory.Company.image,
+      dueDate: new Date(maintenanceHistory.dueDate).toLocaleDateString('pt-BR'),
+      notificationDate: new Date(maintenanceHistory.notificationDate).toLocaleDateString('pt-BR'),
+      buildingName: maintenanceHistory.Building.name,
+      activity: maintenanceHistory.Maintenance.activity,
+      categoryName: maintenanceHistory.Maintenance.Category.name,
+      element: maintenanceHistory.Maintenance.element,
+      responsible: maintenanceHistory.Maintenance.responsible,
+      source: maintenanceHistory.Maintenance.source,
+      maintenanceObservation:
+        maintenanceHistory.Maintenance.observation &&
+        maintenanceHistory.Maintenance.observation !== ''
+          ? maintenanceHistory.Maintenance.observation
+          : '-',
+      cost: maskeredCost,
+      reportObservation: data.observation && data.observation !== '' ? data.observation : '-',
+      resolutionDate: new Date().toLocaleString('pt-BR'),
+      subject: 'Comprovante de relato',
+      syndicName: syndicData.name,
+      toEmail: syndicData.email!,
+      attachments,
+    });
   } else {
     await emailTransporter.sendProofOfReport({
       companyLogo: maintenanceHistory.Company.image,

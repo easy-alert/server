@@ -120,7 +120,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
   // #endregion
 
   // #region TICKETS VALIDATION
-  if (ticketIds && ticketIds?.length > 0) {
+  if (ticketIds && Array.isArray(ticketIds) && ticketIds?.length > 0) {
     const openTicketsCount = await ticketServices.countOpenTickets({
       buildingId,
       ticketIds,
@@ -154,7 +154,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
       },
     });
 
-    if (ticketIds && ticketIds?.length > 0) {
+    if (ticketIds && Array.isArray(ticketIds) && ticketIds?.length > 0) {
       await ticketServices.updateMany({
         data: {
           statusName: 'awaitingToFinish',
@@ -230,7 +230,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
       });
     }
 
-    if (ticketIds && ticketIds?.length > 0) {
+    if (ticketIds && Array.isArray(ticketIds) && ticketIds?.length > 0) {
       await ticketServices.updateMany({
         data: {
           statusName: 'finished',

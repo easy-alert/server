@@ -251,6 +251,7 @@ export class EmailTemplates {
     notificationDate,
     responsible,
     source,
+    attachments,
   }: ISendProofOfReport) {
     return ` <div style="background-size: cover; background: #ededed; padding: 24px;">
   <div
@@ -337,6 +338,13 @@ export class EmailTemplates {
       <p>
         <strong>Observação do relato: </strong>
         ${reportObservation}
+      </p>
+
+      <p>
+      <strong>Anexos: </strong>
+          ${attachments
+            ?.map(({ filename, path }) => `<a href="${path}" target="_blank">${filename}</a>`)
+            .join(', ')}
       </p>
     </div>
   </div>
