@@ -234,7 +234,7 @@ model MaintenanceReport {
 
   ReportAnnexes            MaintenanceReportAnnexes[]
   ReportImages             MaintenanceReportImages[]
-  ResponsibleSyndic        BuildingNotificationConfiguration? @relation(fields: [responsibleSyndicId], references: [id], onDelete: Cascade)
+  ResponsibleSyndic        BuildingNotificationConfiguration? @relation(fields: [responsibleSyndicId], references: [id], onDelete: SetNull)
   MaintenanceReportHistory MaintenanceReportHistory[]
 
   @@map("maintenancesReports")
