@@ -421,6 +421,11 @@ model BuildingType {
   @@map("buildingsTypes")
 }
 
+enum NextMaintenanceCreationBasis {
+  executionDate
+  notificationDate
+}
+
 model Building {
   id     String @id @unique @default(uuid())
   nanoId String @unique @default(nanoid(12))
@@ -442,6 +447,8 @@ model Building {
 
   residentPassword String?
   syndicPassword   String?
+
+  nextMaintenanceCreationBasis NextMaintenanceCreationBasis @default(executionDate)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -300,6 +300,7 @@ export class BuildingServices {
         mandatoryReportProof: true,
         syndicPassword: true,
         residentPassword: true,
+        nextMaintenanceCreationBasis: true,
 
         Company: {
           select: {

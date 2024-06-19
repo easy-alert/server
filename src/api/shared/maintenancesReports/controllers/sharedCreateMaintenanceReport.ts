@@ -369,18 +369,35 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   }
 
   // #region CREATE MAINTENANCE HISTORY
-  const notificationDate = noWeekendTimeDate({
-    date: addDays({
-      date: today,
-      days:
-        maintenanceHistory.Maintenance.frequency *
-          maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime -
-        (foundBuildingMaintenance?.daysToAnticipate ?? 0),
-    }),
-    interval:
-      maintenanceHistory.Maintenance.period *
-      maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
-  });
+  let notificationDate = null;
+
+  if (maintenanceHistory.Building.nextMaintenanceCreationBasis === 'executionDate') {
+    notificationDate = noWeekendTimeDate({
+      date: addDays({
+        date: today,
+        days:
+          maintenanceHistory.Maintenance.frequency *
+            maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime -
+          (foundBuildingMaintenance?.daysToAnticipate ?? 0),
+      }),
+      interval:
+        maintenanceHistory.Maintenance.period *
+        maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
+    });
+  } else {
+    notificationDate = noWeekendTimeDate({
+      date: addDays({
+        date: maintenanceHistory.notificationDate,
+        days:
+          maintenanceHistory.Maintenance.frequency *
+            maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime -
+          (foundBuildingMaintenance?.daysToAnticipate ?? 0),
+      }),
+      interval:
+        maintenanceHistory.Maintenance.period *
+        maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
+    });
+  }
 
   const dueDate = noWeekendTimeDate({
     date: addDays({

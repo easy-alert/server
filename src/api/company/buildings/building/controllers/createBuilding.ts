@@ -2,10 +2,12 @@
 import { Request, Response } from 'express';
 
 // CLASS
+import { NextMaintenanceCreationBasis } from '@prisma/client';
 import { Validator } from '../../../../../utils/validator/validator';
 import { BuildingTypeServices } from '../../buildingsTypes/services/buildingTypeServices';
 import { BuildingServices } from '../services/buildingServices';
 import { EmailTransporterServices } from '../../../../../utils/emailTransporter/emailTransporterServices';
+import { checkEnums } from '../../../../../utils/newValidator';
 
 const validator = new Validator();
 const buildingServices = new BuildingServices();
@@ -99,6 +101,19 @@ export async function createBuilding(req: Request, res: Response) {
       label: 'Comprovação de relato',
       type: 'boolean',
       variable: data.mandatoryReportProof,
+    },
+    {
+      label: 'Tipo da criação da próxima manutenção',
+      type: 'string',
+      variable: data.nextMaintenanceCreationBasis,
+    },
+  ]);
+
+  checkEnums([
+    {
+      enumType: NextMaintenanceCreationBasis,
+      label: 'Tipo da criação da próxima manutenção',
+      value: data.nextMaintenanceCreationBasis,
     },
   ]);
 

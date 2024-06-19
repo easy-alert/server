@@ -286,6 +286,7 @@ export class SharedMaintenanceServices {
             name: true,
             warrantyExpiration: true,
             keepNotificationAfterWarrantyEnds: true,
+            nextMaintenanceCreationBasis: true,
           },
         },
         Company: {
