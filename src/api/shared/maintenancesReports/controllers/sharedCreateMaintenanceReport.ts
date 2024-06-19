@@ -369,35 +369,23 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   }
 
   // #region CREATE MAINTENANCE HISTORY
-  let notificationDate = null;
 
-  if (maintenanceHistory.Building.nextMaintenanceCreationBasis === 'executionDate') {
-    notificationDate = noWeekendTimeDate({
-      date: addDays({
-        date: today,
-        days:
-          maintenanceHistory.Maintenance.frequency *
-            maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime -
-          (foundBuildingMaintenance?.daysToAnticipate ?? 0),
-      }),
-      interval:
-        maintenanceHistory.Maintenance.period *
-        maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
-    });
-  } else {
-    notificationDate = noWeekendTimeDate({
-      date: addDays({
-        date: maintenanceHistory.notificationDate,
-        days:
-          maintenanceHistory.Maintenance.frequency *
-            maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime -
-          (foundBuildingMaintenance?.daysToAnticipate ?? 0),
-      }),
-      interval:
-        maintenanceHistory.Maintenance.period *
-        maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
-    });
-  }
+  const notificationDate = noWeekendTimeDate({
+    date: addDays({
+      date:
+        // Escolhe se cria a pendente a partir da execução ou da notificação da anterior
+        maintenanceHistory.Building.nextMaintenanceCreationBasis === 'executionDate'
+          ? today
+          : maintenanceHistory.notificationDate,
+      days:
+        maintenanceHistory.Maintenance.frequency *
+          maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime -
+        (foundBuildingMaintenance?.daysToAnticipate ?? 0),
+    }),
+    interval:
+      maintenanceHistory.Maintenance.period *
+      maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
+  });
 
   const dueDate = noWeekendTimeDate({
     date: addDays({
@@ -429,9 +417,13 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     });
   }
 
-  if (maintenanceHistory.MaintenancesStatus.name === 'expired') {
+  if (
+    maintenanceHistory.MaintenancesStatus.name === 'expired' &&
+    // se for pra criar a partir da notificação, não tem porque atualizar, pq a pendente nova já foi criada a partir da notificação antiga
+    maintenanceHistory.Building.nextMaintenanceCreationBasis === 'executionDate'
+  ) {
     // CRIAR UM IF PARA CASO A MANUTENÇÃO DA POSIÇÃO 0 POSSUA OUTRO STATUS QUE NAO SEJA PENDENTE
-
+    //
     await sharedMaintenanceServices.updateMaintenanceHistory({
       data: {
         notificationDate,
