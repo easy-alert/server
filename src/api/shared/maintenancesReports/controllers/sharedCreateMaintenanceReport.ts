@@ -369,9 +369,14 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   }
 
   // #region CREATE MAINTENANCE HISTORY
+
   const notificationDate = noWeekendTimeDate({
     date: addDays({
-      date: today,
+      date:
+        // Escolhe se cria a pendente a partir da execução ou da notificação da anterior
+        maintenanceHistory.Building.nextMaintenanceCreationBasis === 'executionDate'
+          ? today
+          : maintenanceHistory.notificationDate,
       days:
         maintenanceHistory.Maintenance.frequency *
           maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime -
@@ -412,9 +417,13 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     });
   }
 
-  if (maintenanceHistory.MaintenancesStatus.name === 'expired') {
+  if (
+    maintenanceHistory.MaintenancesStatus.name === 'expired' &&
+    // se for pra criar a partir da notificação, não tem porque atualizar, pq a pendente nova já foi criada a partir da notificação antiga
+    maintenanceHistory.Building.nextMaintenanceCreationBasis === 'executionDate'
+  ) {
     // CRIAR UM IF PARA CASO A MANUTENÇÃO DA POSIÇÃO 0 POSSUA OUTRO STATUS QUE NAO SEJA PENDENTE
-
+    //
     await sharedMaintenanceServices.updateMaintenanceHistory({
       data: {
         notificationDate,

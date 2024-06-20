@@ -167,6 +167,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
       Banners: BuildingDetails.Banners,
       residentPassword: BuildingDetails.residentPassword,
       syndicPassword: BuildingDetails.syndicPassword,
+      nextMaintenanceCreationBasis: BuildingDetails.nextMaintenanceCreationBasis,
 
       // @ts-ignore
       Folders:
