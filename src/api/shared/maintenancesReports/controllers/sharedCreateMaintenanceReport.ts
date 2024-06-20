@@ -273,7 +273,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
           currency: 'BRL',
         });
 
-  if (syndicData && syndicData?.emailIsConfirmed) {
+  if (syndicData && syndicData?.emailIsConfirmed && syndicData?.email) {
     await emailTransporter.sendProofOfReport({
       companyLogo: maintenanceHistory.Company.image,
       dueDate: new Date(maintenanceHistory.dueDate).toLocaleDateString('pt-BR'),
@@ -294,10 +294,10 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       resolutionDate: new Date().toLocaleString('pt-BR'),
       subject: 'Comprovante de relato',
       syndicName: syndicData.name,
-      toEmail: syndicData.email!,
+      toEmail: syndicData.email,
       attachments,
     });
-  } else {
+  } else if (maintenanceHistory.Company.UserCompanies[0].User.email) {
     await emailTransporter.sendProofOfReport({
       companyLogo: maintenanceHistory.Company.image,
       dueDate: new Date(maintenanceHistory.dueDate).toLocaleDateString('pt-BR'),
