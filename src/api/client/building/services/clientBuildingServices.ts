@@ -1009,44 +1009,23 @@ export class ClientBuildingServices {
   }
 
   async findLocalSuppliers({ buildingNanoId }: { buildingNanoId: string }) {
-    const buildingLocation = await prisma.building.findUnique({
-      select: {
-        state: true,
-        city: true,
-      },
-      where: {
-        nanoId: buildingNanoId,
-      },
-    });
-
     return prisma.supplier.findMany({
       select: {
         id: true,
-        description: true,
         email: true,
         image: true,
         phone: true,
         name: true,
-        occupationArea: true,
-        link: true,
       },
 
       where: {
-        OR: [
-          { regions: { some: { type: 'country' } } },
-
-          {
-            regions: {
-              some: { type: 'state', states: { some: { state: buildingLocation?.state ?? '' } } },
+        company: {
+          Buildings: {
+            some: {
+              nanoId: buildingNanoId,
             },
           },
-
-          {
-            regions: {
-              some: { type: 'city', cities: { some: { city: buildingLocation?.city ?? '' } } },
-            },
-          },
-        ],
+        },
       },
 
       orderBy: {
