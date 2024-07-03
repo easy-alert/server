@@ -14,7 +14,6 @@ import { categoryRouter } from './categories/category/category.routes';
 import { maintenanceRouter } from './categories/maintenance/maintenance.routes';
 import { companyRouter } from './users/accounts/company.routes';
 import { listTimeIntervals } from '../shared/timeInterval/controllers/listTimeIntervals';
-import { supplierRouter } from './suppliers/supplier.routes';
 
 // ROUTES
 export const backofficeRouter: Router = Router();
@@ -31,6 +30,5 @@ backofficeRouter.use('/auth', authRouter);
 backofficeRouter.use('/categories', authMiddleware, isBackoffice, categoryRouter);
 backofficeRouter.use('/maintenances', authMiddleware, isBackoffice, maintenanceRouter);
 backofficeRouter.use('/companies', authMiddleware, isBackoffice, companyRouter);
-backofficeRouter.use('/suppliers', authMiddleware, isBackoffice, supplierRouter);
 
 backofficeRouter.get('/timeinterval/list', listTimeIntervals);

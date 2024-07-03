@@ -108,6 +108,7 @@ model Company {
   Maintenances        Maintenance[]
   Buildings           Building[]
   MaintenancesHistory MaintenanceHistory[]
+  suppliers           Supplier[]
 
   @@map("companies")
 }
@@ -634,72 +635,37 @@ model BuildingAccessHistory {
 model Supplier {
   id String @id @unique @default(uuid())
 
-  name           String
-  description    String
-  image          String
-  link           String
-  occupationArea String
+  image String
+  name  String
+  state String
+  city  String
 
-  phone           String?
-  email           String?
-  contractedValue Int?
+  cnpj  String?
+  phone String?
+  email String?
+  link  String?
+
+  companyId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  regions SupplierRegion[]
+  serviceTypes SupplierServiceType[]
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@map("suppliers")
 }
 
-enum SupplierRegionType {
-  country
-  state
-  city
-}
+model SupplierServiceType {
+  supplierId    String
+  serviceTypeId String
 
-model SupplierRegion {
-  id String @id @unique @default(uuid())
+  supplier Supplier    @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  type     ServiceType @relation(fields: [serviceTypeId], references: [id], onDelete: Cascade)
 
-  type       SupplierRegionType
-  supplierId String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  supplier Supplier              @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  states   SupplierRegionState[]
-  cities   SupplierRegionCity[]
-
-  @@map("supplierRegions")
-}
-
-model SupplierRegionState {
-  id String @id @unique @default(uuid())
-
-  supplierRegionId String
-  state            String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  region SupplierRegion @relation(fields: [supplierRegionId], references: [id], onDelete: Cascade)
-
-  @@map("supplierRegionStates")
-}
-
-model SupplierRegionCity {
-  id String @id @unique @default(uuid())
-
-  supplierRegionId String
-  city             String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  region SupplierRegion @relation(fields: [supplierRegionId], references: [id], onDelete: Cascade)
-
-  @@map("supplierRegionCities")
+  @@id([supplierId, serviceTypeId])
+  @@map("supplierServiceTypes")
 }
 
 // DEFAULT TEMPLATE MAINTENANCES
@@ -871,15 +837,6 @@ model TicketPlace {
   @@map("ticketPlaces")
 }
 
-model ServiceType {
-  id    String @id @default(uuid())
-  label String @unique
-
-  tickets TicketServiceType[]
-
-  @@map("serviceTypes")
-}
-
 model TicketServiceType {
   ticketId      String
   serviceTypeId String
@@ -889,4 +846,14 @@ model TicketServiceType {
 
   @@id([ticketId, serviceTypeId])
   @@map("ticketServiceTypes")
+}
+
+model ServiceType {
+  id    String @id @default(uuid())
+  label String @unique
+
+  tickets   TicketServiceType[]
+  suppliers SupplierServiceType[]
+
+  @@map("serviceTypes")
 }
