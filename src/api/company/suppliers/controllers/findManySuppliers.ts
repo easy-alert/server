@@ -11,11 +11,11 @@ interface IQuery {
 export async function findManySuppliers(req: Request, res: Response) {
   const { page, take, search } = req.query as any as IQuery;
 
-  const suppliers = await supplierServices.findMany({
+  const { suppliers, suppliersCount } = await supplierServices.findMany({
     page: handleQueryPage(page),
-    take: handleQueryTake(take),
+    take: handleQueryTake(take, 10),
     search,
   });
 
-  return res.status(200).json({ suppliers });
+  return res.status(200).json({ suppliers, suppliersCount });
 }

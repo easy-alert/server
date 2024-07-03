@@ -1,5 +1,6 @@
 import { prisma, prismaTypes } from '../../../../../prisma';
-import { unmask } from '../../../../utils/dataHandler';
+import { capitalizeFirstLetter, unmask } from '../../../../utils/dataHandler';
+import { checkValues } from '../../../../utils/newValidator';
 import { Validator } from '../../../../utils/validator/validator';
 
 const validator = new Validator();
@@ -8,6 +9,11 @@ interface IFindMany {
   page: number;
   take: number;
   search?: string;
+}
+
+interface ICreateOrConnectServiceTypesService {
+  serviceTypeLabels: string[] | undefined;
+  isUpdate: boolean;
 }
 
 class SupplierServices {
@@ -141,6 +147,31 @@ class SupplierServices {
     await this.findById(id);
 
     return prisma.supplier.delete({ where: { id } });
+  }
+
+  createOrConnectServiceTypesService({
+    serviceTypeLabels,
+    isUpdate,
+  }: ICreateOrConnectServiceTypesService) {
+    serviceTypeLabels?.forEach((tag) => {
+      checkValues([{ label: 'Tag', type: 'string', value: tag }]);
+    });
+
+    const uniqueLabels = [...new Set(serviceTypeLabels)].map((label) =>
+      capitalizeFirstLetter(label.trim()),
+    );
+
+    const serviceTypes = {
+      create: uniqueLabels.map((label) => ({
+        type: { connectOrCreate: { create: { label }, where: { label } } },
+      })),
+    };
+
+    if (isUpdate) {
+      return { serviceTypes: { deleteMany: {}, ...serviceTypes } };
+    }
+
+    return { serviceTypes };
   }
 }
 
