@@ -43,7 +43,7 @@ export async function createSupplier(req: Request, res: Response) {
       city,
       cnpj: cnpj ? unmask(cnpj) : null,
       image: image || createInitialsAvatar(name),
-      link,
+      link: link || null,
       name,
       state,
       email: email ? email.toLowerCase() : null,
