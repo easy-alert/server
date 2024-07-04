@@ -132,24 +132,6 @@ export class SharedMaintenanceReportsServices {
           },
         },
 
-        supplier: {
-          select: {
-            name: true,
-            serviceTypes: {
-              select: {
-                type: {
-                  select: {
-                    label: true,
-                  },
-                },
-              },
-              orderBy: {
-                type: { label: 'asc' },
-              },
-            },
-          },
-        },
-
         MaintenancesStatus: {
           select: {
             name: true,

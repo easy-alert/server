@@ -180,18 +180,13 @@ class SupplierServices {
     return { serviceTypes };
   }
 
-  async findByMaintenanceHistoryId(maintenanceHistoryId: string) {
-    return prisma.supplier.findFirst({
+  async findManyByMaintenanceHistoryId(maintenanceHistoryId: string) {
+    return prisma.supplier.findMany({
       select: {
         id: true,
-        email: true,
-        image: true,
-        phone: true,
         name: true,
-        link: true,
-        city: true,
-        cnpj: true,
-        state: true,
+        phone: true,
+        email: true,
         serviceTypes: {
           select: {
             type: {
@@ -206,13 +201,108 @@ class SupplierServices {
         },
       },
       where: {
-        maintenanceHistory: {
+        maintenancesHistory: {
           some: {
-            id: maintenanceHistoryId,
+            maintenanceHistoryId,
           },
         },
       },
+
+      orderBy: { name: 'asc' },
     });
+  }
+
+  async findToSelectByMaintenanceHistoryId(maintenanceHistoryId: string) {
+    const [suggestedSuppliers, remainingSuppliers] = await prisma.$transaction([
+      prisma.supplier.findMany({
+        select: {
+          id: true,
+          name: true,
+          serviceTypes: {
+            select: {
+              type: {
+                select: {
+                  label: true,
+                },
+              },
+            },
+            orderBy: {
+              type: { label: 'asc' },
+            },
+          },
+        },
+        where: {
+          maintenances: {
+            some: { maintenance: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } } },
+          },
+        },
+      }),
+      prisma.supplier.findMany({
+        select: {
+          id: true,
+          name: true,
+          serviceTypes: {
+            select: {
+              type: {
+                select: {
+                  label: true,
+                },
+              },
+            },
+            orderBy: {
+              type: { label: 'asc' },
+            },
+          },
+        },
+        where: {
+          maintenances: {
+            none: { maintenance: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } } },
+          },
+        },
+      }),
+    ]);
+
+    return { suggestedSuppliers, remainingSuppliers };
+  }
+
+  async linkWithMaintenanceHistory({
+    maintenanceHistoryId,
+    supplierId,
+  }: {
+    maintenanceHistoryId: string;
+    supplierId: string;
+  }) {
+    const foundMaintenanceHistorySuplier = await prisma.maintenanceHistorySupplier.findUnique({
+      where: {
+        maintenanceHistoryId_supplierId: {
+          maintenanceHistoryId,
+          supplierId,
+        },
+      },
+    });
+
+    // SE EU CLICAR EM UM QUE JÁ ESTA SELECIONADO, DESVINCULAR
+    if (foundMaintenanceHistorySuplier) {
+      await prisma.maintenanceHistorySupplier.deleteMany({
+        where: {
+          maintenanceHistoryId,
+        },
+      });
+    } else {
+      // REMOVER ISSO SE TIVER MAIS DE UM SUPPLIER POR MaintenanceHistory
+      await prisma.maintenanceHistorySupplier.deleteMany({
+        where: {
+          maintenanceHistoryId,
+        },
+      });
+
+      await prisma.maintenanceHistorySupplier.create({
+        data: {
+          maintenanceHistoryId,
+          supplierId,
+        },
+      });
+    }
   }
 }
 

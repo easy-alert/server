@@ -183,7 +183,8 @@ model Maintenance {
   MaintenancesHistory        MaintenanceHistory[]
   DefaultTemplateMaintenance DefaultTemplateMaintenance[]
 
-  MaintenanceType CategoryAndMaintenanceTypes? @relation(fields: [maintenanceTypeId], references: [id])
+  MaintenanceType    CategoryAndMaintenanceTypes? @relation(fields: [maintenanceTypeId], references: [id])
+  suggestedSuppliers MaintenanceSupplier[]
 
   @@map("maintenances")
 }
@@ -201,12 +202,10 @@ model MaintenanceHistory {
   wasNotified      Boolean   @default(false)
   inProgress       Boolean   @default(false)
   daysInAdvance    Int       @default(0)
-  supplierId       String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  supplier                 Supplier?                  @relation(fields: [supplierId], references: [id], onDelete: SetNull)
   Building                 Building                   @relation(fields: [buildingId], references: [id], onDelete: Cascade)
   Maintenance              Maintenance                @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
   Company                  Company                    @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
@@ -216,6 +215,7 @@ model MaintenanceHistory {
 
   MaintenanceReportProgress MaintenanceReportProgress[]
   tickets                   Ticket[]
+  suppliers                 MaintenanceHistorySupplier[]
 
   @@map("maintenancesHistory")
 }
@@ -654,8 +654,9 @@ model Supplier {
 
   serviceTypes SupplierServiceType[]
 
-  company            Company              @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  maintenanceHistory MaintenanceHistory[]
+  company             Company                      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  maintenances        MaintenanceSupplier[]
+  maintenancesHistory MaintenanceHistorySupplier[]
 
   @@map("suppliers")
 }
@@ -859,4 +860,36 @@ model ServiceType {
   suppliers SupplierServiceType[]
 
   @@map("serviceTypes")
+}
+
+model MaintenanceSupplier {
+  id String @id @default(uuid())
+
+  maintenanceId String
+  supplierId    String
+
+  maintenance Maintenance @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+  supplier    Supplier    @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([maintenanceId, supplierId])
+  @@map("maintenanceSuppliers")
+}
+
+model MaintenanceHistorySupplier {
+  id String @id @default(uuid())
+
+  maintenanceHistoryId String
+  supplierId           String
+
+  maintenanceHistory MaintenanceHistory @relation(fields: [maintenanceHistoryId], references: [id], onDelete: Cascade)
+  supplier           Supplier           @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([maintenanceHistoryId, supplierId])
+  @@map("maintenanceHistorySuppliers")
 }
