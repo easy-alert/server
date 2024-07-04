@@ -7,6 +7,8 @@ import { findSupplierById } from './controllers/findSupplierById';
 import { findLinkedSuppliersByMaintenanceHistoryId } from './controllers/findLinkedSuppliersByMaintenanceHistoryId';
 import { findManySuppliersToSelectByMaintenanceHistoryId } from './controllers/findManySuppliersToSelectByMaintenanceHistoryId';
 import { linkSupplierToMaintenanceHistory } from './controllers/linkSupplierToMaintenanceHistory';
+import { unlinkSupplierToMaintenanceHistory } from './controllers/unlinkSupplierToMaintenanceHistory';
+import { createAndLinkSupplier } from './controllers/createAndLinkSupplier';
 
 export const supplierRouter = Router();
 
@@ -21,6 +23,8 @@ supplierRouter.get(
 );
 
 supplierRouter.post('/', createSupplier);
+supplierRouter.post('/create-and-link', createAndLinkSupplier);
 supplierRouter.post('/link-to-maintenance-history', linkSupplierToMaintenanceHistory);
+supplierRouter.post('/unlink-to-maintenance-history', unlinkSupplierToMaintenanceHistory);
 
 supplierRouter.put('/', updateSupplier);

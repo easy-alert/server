@@ -272,7 +272,29 @@ class SupplierServices {
     maintenanceHistoryId: string;
     supplierId: string;
   }) {
-    const foundMaintenanceHistorySuplier = await prisma.maintenanceHistorySupplier.findUnique({
+    // REMOVER ISSO SE TIVER MAIS DE UM SUPPLIER POR MaintenanceHistory
+    await prisma.maintenanceHistorySupplier.deleteMany({
+      where: {
+        maintenanceHistoryId,
+      },
+    });
+
+    await prisma.maintenanceHistorySupplier.create({
+      data: {
+        maintenanceHistoryId,
+        supplierId,
+      },
+    });
+  }
+
+  async findMaintenanceHistorySupplier({
+    maintenanceHistoryId,
+    supplierId,
+  }: {
+    maintenanceHistoryId: string;
+    supplierId: string;
+  }) {
+    const maintenanceHistorySupplier = await prisma.maintenanceHistorySupplier.findUnique({
       where: {
         maintenanceHistoryId_supplierId: {
           maintenanceHistoryId,
@@ -281,28 +303,55 @@ class SupplierServices {
       },
     });
 
-    // SE EU CLICAR EM UM QUE JÁ ESTA SELECIONADO, DESVINCULAR
-    if (foundMaintenanceHistorySuplier) {
-      await prisma.maintenanceHistorySupplier.deleteMany({
-        where: {
-          maintenanceHistoryId,
-        },
-      });
-    } else {
-      // REMOVER ISSO SE TIVER MAIS DE UM SUPPLIER POR MaintenanceHistory
-      await prisma.maintenanceHistorySupplier.deleteMany({
-        where: {
-          maintenanceHistoryId,
-        },
-      });
+    validator.needExist([
+      { label: 'Fornecedor da manutenção', variable: maintenanceHistorySupplier },
+    ]);
 
-      await prisma.maintenanceHistorySupplier.create({
-        data: {
+    return maintenanceHistorySupplier!;
+  }
+
+  async unlinkWithMaintenanceHistory({
+    maintenanceHistoryId,
+    supplierId,
+  }: {
+    maintenanceHistoryId: string;
+    supplierId: string;
+  }) {
+    await this.findMaintenanceHistorySupplier({
+      maintenanceHistoryId,
+      supplierId,
+    });
+
+    await prisma.maintenanceHistorySupplier.delete({
+      where: {
+        maintenanceHistoryId_supplierId: {
           maintenanceHistoryId,
           supplierId,
         },
-      });
-    }
+      },
+    });
+  }
+
+  async linkSuggestedSupplier({
+    maintenanceId,
+    supplierId,
+  }: {
+    maintenanceId: string;
+    supplierId: string;
+  }) {
+    await prisma.maintenanceSupplier.upsert({
+      create: {
+        maintenanceId,
+        supplierId,
+      },
+      update: {},
+      where: {
+        maintenanceId_supplierId: {
+          maintenanceId,
+          supplierId,
+        },
+      },
+    });
   }
 }
 
