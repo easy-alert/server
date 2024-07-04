@@ -246,6 +246,23 @@ class SupplierServices {
             type: { label: 'asc' },
           },
         },
+
+        maintenances: {
+          select: {
+            maintenance: {
+              select: {
+                id: true,
+                Category: { select: { name: true } },
+                element: true,
+                activity: true,
+              },
+            },
+          },
+          orderBy: [
+            { maintenance: { Category: { name: 'asc' } } },
+            { maintenance: { element: 'asc' } },
+          ],
+        },
       },
       where: { id },
     });
