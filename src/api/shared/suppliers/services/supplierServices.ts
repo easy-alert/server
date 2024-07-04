@@ -9,6 +9,14 @@ interface IFindMany {
   page: number;
   take: number;
   search?: string;
+  companyId: string;
+}
+
+interface IFindManyByBuildingNanoId {
+  page: number;
+  take: number;
+  search?: string;
+  buildingNanoId: string;
 }
 
 interface ICreateOrConnectServiceTypesService {
@@ -21,7 +29,7 @@ class SupplierServices {
     return prisma.supplier.create(args);
   }
 
-  async findMany({ page, take, search = '' }: IFindMany) {
+  async findMany({ page, take, search = '', companyId }: IFindMany) {
     const where: prismaTypes.SupplierWhereInput = {
       OR: [
         {
@@ -67,6 +75,110 @@ class SupplierServices {
           },
         },
       ],
+
+      companyId,
+    };
+
+    const [suppliers, suppliersCount] = await prisma.$transaction([
+      prisma.supplier.findMany({
+        select: {
+          id: true,
+          email: true,
+          image: true,
+          phone: true,
+          name: true,
+          link: true,
+          city: true,
+          cnpj: true,
+          state: true,
+          serviceTypes: {
+            select: {
+              type: {
+                select: {
+                  label: true,
+                },
+              },
+            },
+            orderBy: {
+              type: { label: 'asc' },
+            },
+          },
+        },
+        where,
+
+        take,
+        skip: (page - 1) * take,
+
+        orderBy: {
+          name: 'asc',
+        },
+      }),
+
+      prisma.supplier.count({ where }),
+    ]);
+
+    return { suppliers, suppliersCount };
+  }
+
+  async findManyByBuildingNanoId({
+    page,
+    take,
+    search = '',
+    buildingNanoId,
+  }: IFindManyByBuildingNanoId) {
+    const where: prismaTypes.SupplierWhereInput = {
+      OR: [
+        {
+          name: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          email: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          phone: {
+            contains: unmask(search),
+            mode: 'insensitive',
+          },
+        },
+        {
+          state: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          city: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          serviceTypes: {
+            some: {
+              type: {
+                label: {
+                  contains: search,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+        },
+      ],
+
+      company: {
+        Buildings: {
+          some: {
+            nanoId: buildingNanoId,
+          },
+        },
+      },
     };
 
     const [suppliers, suppliersCount] = await prisma.$transaction([
@@ -212,7 +324,13 @@ class SupplierServices {
     });
   }
 
-  async findToSelectByMaintenanceHistoryId(maintenanceHistoryId: string) {
+  async findToSelectByMaintenanceHistoryId({
+    companyId,
+    maintenanceHistoryId,
+  }: {
+    maintenanceHistoryId: string;
+    companyId: string;
+  }) {
     const [suggestedSuppliers, remainingSuppliers] = await prisma.$transaction([
       prisma.supplier.findMany({
         select: {
@@ -235,7 +353,9 @@ class SupplierServices {
           maintenances: {
             some: { maintenance: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } } },
           },
+          companyId,
         },
+        orderBy: { name: 'asc' },
       }),
       prisma.supplier.findMany({
         select: {
@@ -258,7 +378,9 @@ class SupplierServices {
           maintenances: {
             none: { maintenance: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } } },
           },
+          companyId,
         },
+        orderBy: { name: 'asc' },
       }),
     ]);
 
@@ -272,7 +394,29 @@ class SupplierServices {
     maintenanceHistoryId: string;
     supplierId: string;
   }) {
-    const foundMaintenanceHistorySuplier = await prisma.maintenanceHistorySupplier.findUnique({
+    // REMOVER ISSO SE TIVER MAIS DE UM SUPPLIER POR MaintenanceHistory
+    await prisma.maintenanceHistorySupplier.deleteMany({
+      where: {
+        maintenanceHistoryId,
+      },
+    });
+
+    await prisma.maintenanceHistorySupplier.create({
+      data: {
+        maintenanceHistoryId,
+        supplierId,
+      },
+    });
+  }
+
+  async findMaintenanceHistorySupplier({
+    maintenanceHistoryId,
+    supplierId,
+  }: {
+    maintenanceHistoryId: string;
+    supplierId: string;
+  }) {
+    const maintenanceHistorySupplier = await prisma.maintenanceHistorySupplier.findUnique({
       where: {
         maintenanceHistoryId_supplierId: {
           maintenanceHistoryId,
@@ -281,28 +425,55 @@ class SupplierServices {
       },
     });
 
-    // SE EU CLICAR EM UM QUE JÁ ESTA SELECIONADO, DESVINCULAR
-    if (foundMaintenanceHistorySuplier) {
-      await prisma.maintenanceHistorySupplier.deleteMany({
-        where: {
-          maintenanceHistoryId,
-        },
-      });
-    } else {
-      // REMOVER ISSO SE TIVER MAIS DE UM SUPPLIER POR MaintenanceHistory
-      await prisma.maintenanceHistorySupplier.deleteMany({
-        where: {
-          maintenanceHistoryId,
-        },
-      });
+    validator.needExist([
+      { label: 'Fornecedor da manutenção', variable: maintenanceHistorySupplier },
+    ]);
 
-      await prisma.maintenanceHistorySupplier.create({
-        data: {
+    return maintenanceHistorySupplier!;
+  }
+
+  async unlinkWithMaintenanceHistory({
+    maintenanceHistoryId,
+    supplierId,
+  }: {
+    maintenanceHistoryId: string;
+    supplierId: string;
+  }) {
+    await this.findMaintenanceHistorySupplier({
+      maintenanceHistoryId,
+      supplierId,
+    });
+
+    await prisma.maintenanceHistorySupplier.delete({
+      where: {
+        maintenanceHistoryId_supplierId: {
           maintenanceHistoryId,
           supplierId,
         },
-      });
-    }
+      },
+    });
+  }
+
+  async linkSuggestedSupplier({
+    maintenanceId,
+    supplierId,
+  }: {
+    maintenanceId: string;
+    supplierId: string;
+  }) {
+    await prisma.maintenanceSupplier.upsert({
+      create: {
+        maintenanceId,
+        supplierId,
+      },
+      update: {},
+      where: {
+        maintenanceId_supplierId: {
+          maintenanceId,
+          supplierId,
+        },
+      },
+    });
   }
 }
 

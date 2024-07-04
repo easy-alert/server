@@ -15,6 +15,7 @@ export async function findManySuppliers(req: Request, res: Response) {
     page: handleQueryPage(page),
     take: handleQueryTake(take, 10),
     search,
+    companyId: req.Company.id,
   });
 
   return res.status(200).json({ suppliers, suppliersCount });

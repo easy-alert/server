@@ -1,6 +1,7 @@
 import { Response, Request } from 'express';
 import { supplierServices } from '../services/supplierServices';
 import { Validator } from '../../../../utils/validator/validator';
+import { SharedMaintenanceServices } from '../../maintenance/services/sharedMaintenanceServices';
 
 const validator = new Validator();
 
@@ -13,6 +14,8 @@ interface SupplierWithSelection {
   }[];
 }
 
+const sharedMaintenanceServices = new SharedMaintenanceServices();
+
 export async function findManySuppliersToSelectByMaintenanceHistoryId(req: Request, res: Response) {
   const { maintenanceHistoryId } = req.params as any as { maintenanceHistoryId: string };
 
@@ -20,8 +23,13 @@ export async function findManySuppliersToSelectByMaintenanceHistoryId(req: Reque
     { label: 'ID do histórico de manutenção', type: 'string', variable: maintenanceHistoryId },
   ]);
 
+  const { Company } = await sharedMaintenanceServices.findHistoryById({ maintenanceHistoryId });
+
   const { remainingSuppliers, suggestedSuppliers } =
-    await supplierServices.findToSelectByMaintenanceHistoryId(maintenanceHistoryId);
+    await supplierServices.findToSelectByMaintenanceHistoryId({
+      maintenanceHistoryId,
+      companyId: Company.id,
+    });
 
   const linkedSuppliersIds = (
     await supplierServices.findManyByMaintenanceHistoryId(maintenanceHistoryId)
@@ -41,10 +49,8 @@ export async function findManySuppliersToSelectByMaintenanceHistoryId(req: Reque
     }),
   );
 
-  return res
-    .status(200)
-    .json({
-      remainingSuppliers: remainingSuppliersWithSelection,
-      suggestedSuppliers: suggestedSuppliersWithSelection,
-    });
+  return res.status(200).json({
+    remainingSuppliers: remainingSuppliersWithSelection,
+    suggestedSuppliers: suggestedSuppliersWithSelection,
+  });
 }
