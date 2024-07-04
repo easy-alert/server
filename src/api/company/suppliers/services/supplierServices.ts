@@ -1,0 +1,309 @@
+import { prisma, prismaTypes } from '../../../../../prisma';
+import { capitalizeFirstLetter, unmask } from '../../../../utils/dataHandler';
+import { checkValues } from '../../../../utils/newValidator';
+import { Validator } from '../../../../utils/validator/validator';
+
+const validator = new Validator();
+
+interface IFindMany {
+  page: number;
+  take: number;
+  search?: string;
+}
+
+interface ICreateOrConnectServiceTypesService {
+  serviceTypeLabels: string[] | undefined;
+  isUpdate: boolean;
+}
+
+class SupplierServices {
+  async create(args: prismaTypes.SupplierCreateArgs) {
+    return prisma.supplier.create(args);
+  }
+
+  async findMany({ page, take, search = '' }: IFindMany) {
+    const where: prismaTypes.SupplierWhereInput = {
+      OR: [
+        {
+          name: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          email: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          phone: {
+            contains: unmask(search),
+            mode: 'insensitive',
+          },
+        },
+        {
+          state: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          city: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          serviceTypes: {
+            some: {
+              type: {
+                label: {
+                  contains: search,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+        },
+      ],
+    };
+
+    const [suppliers, suppliersCount] = await prisma.$transaction([
+      prisma.supplier.findMany({
+        select: {
+          id: true,
+          email: true,
+          image: true,
+          phone: true,
+          name: true,
+          link: true,
+          city: true,
+          cnpj: true,
+          state: true,
+          serviceTypes: {
+            select: {
+              type: {
+                select: {
+                  label: true,
+                },
+              },
+            },
+            orderBy: {
+              type: { label: 'asc' },
+            },
+          },
+        },
+        where,
+
+        take,
+        skip: (page - 1) * take,
+
+        orderBy: {
+          name: 'asc',
+        },
+      }),
+
+      prisma.supplier.count({ where }),
+    ]);
+
+    return { suppliers, suppliersCount };
+  }
+
+  async findById(id: string) {
+    const supplier = await prisma.supplier.findUnique({
+      select: {
+        id: true,
+        email: true,
+        image: true,
+        phone: true,
+        name: true,
+        link: true,
+        city: true,
+        cnpj: true,
+        state: true,
+        serviceTypes: {
+          select: {
+            type: {
+              select: {
+                label: true,
+              },
+            },
+          },
+          orderBy: {
+            type: { label: 'asc' },
+          },
+        },
+      },
+      where: { id },
+    });
+
+    validator.needExist([{ label: 'Fornecedor', variable: supplier }]);
+
+    return supplier!;
+  }
+
+  async update(args: prismaTypes.SupplierUpdateArgs) {
+    await this.findById(args.where.id ?? '');
+
+    return prisma.supplier.update(args);
+  }
+
+  async delete(id: string) {
+    await this.findById(id);
+
+    return prisma.supplier.delete({ where: { id } });
+  }
+
+  createOrConnectServiceTypesService({
+    serviceTypeLabels,
+    isUpdate,
+  }: ICreateOrConnectServiceTypesService) {
+    serviceTypeLabels?.forEach((tag) => {
+      checkValues([{ label: 'Tag', type: 'string', value: tag }]);
+    });
+
+    const uniqueLabels = [...new Set(serviceTypeLabels)].map((label) =>
+      capitalizeFirstLetter(label.trim()),
+    );
+
+    const serviceTypes = {
+      create: uniqueLabels.map((label) => ({
+        type: { connectOrCreate: { create: { label }, where: { label } } },
+      })),
+    };
+
+    if (isUpdate) {
+      return { serviceTypes: { deleteMany: {}, ...serviceTypes } };
+    }
+
+    return { serviceTypes };
+  }
+
+  async findManyByMaintenanceHistoryId(maintenanceHistoryId: string) {
+    return prisma.supplier.findMany({
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        email: true,
+        serviceTypes: {
+          select: {
+            type: {
+              select: {
+                label: true,
+              },
+            },
+          },
+          orderBy: {
+            type: { label: 'asc' },
+          },
+        },
+      },
+      where: {
+        maintenancesHistory: {
+          some: {
+            maintenanceHistoryId,
+          },
+        },
+      },
+
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  async findToSelectByMaintenanceHistoryId(maintenanceHistoryId: string) {
+    const [suggestedSuppliers, remainingSuppliers] = await prisma.$transaction([
+      prisma.supplier.findMany({
+        select: {
+          id: true,
+          name: true,
+          serviceTypes: {
+            select: {
+              type: {
+                select: {
+                  label: true,
+                },
+              },
+            },
+            orderBy: {
+              type: { label: 'asc' },
+            },
+          },
+        },
+        where: {
+          maintenances: {
+            some: { maintenance: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } } },
+          },
+        },
+      }),
+      prisma.supplier.findMany({
+        select: {
+          id: true,
+          name: true,
+          serviceTypes: {
+            select: {
+              type: {
+                select: {
+                  label: true,
+                },
+              },
+            },
+            orderBy: {
+              type: { label: 'asc' },
+            },
+          },
+        },
+        where: {
+          maintenances: {
+            none: { maintenance: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } } },
+          },
+        },
+      }),
+    ]);
+
+    return { suggestedSuppliers, remainingSuppliers };
+  }
+
+  async linkWithMaintenanceHistory({
+    maintenanceHistoryId,
+    supplierId,
+  }: {
+    maintenanceHistoryId: string;
+    supplierId: string;
+  }) {
+    const foundMaintenanceHistorySuplier = await prisma.maintenanceHistorySupplier.findUnique({
+      where: {
+        maintenanceHistoryId_supplierId: {
+          maintenanceHistoryId,
+          supplierId,
+        },
+      },
+    });
+
+    // SE EU CLICAR EM UM QUE JÁ ESTA SELECIONADO, DESVINCULAR
+    if (foundMaintenanceHistorySuplier) {
+      await prisma.maintenanceHistorySupplier.deleteMany({
+        where: {
+          maintenanceHistoryId,
+        },
+      });
+    } else {
+      // REMOVER ISSO SE TIVER MAIS DE UM SUPPLIER POR MaintenanceHistory
+      await prisma.maintenanceHistorySupplier.deleteMany({
+        where: {
+          maintenanceHistoryId,
+        },
+      });
+
+      await prisma.maintenanceHistorySupplier.create({
+        data: {
+          maintenanceHistoryId,
+          supplierId,
+        },
+      });
+    }
+  }
+}
+
+export const supplierServices = new SupplierServices();

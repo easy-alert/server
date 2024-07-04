@@ -26,6 +26,7 @@ import { companyUserRouter } from './companyUser/companyUser.routes';
 import { dashboardRouter } from './dashboard/dashboard.routes';
 import { checklistRouter } from './checklists/checklist.routes';
 import { ticketRouter } from './tickets/ticket.routes';
+import { supplierRouter } from './suppliers/supplier.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -69,3 +70,5 @@ companyRouter.use('/dashboard', authMiddleware, isCompany, dashboardRouter);
 companyRouter.use('/checklists', authMiddleware, isCompany, checklistRouter);
 
 companyRouter.use('/tickets', authMiddleware, isCompany, ticketRouter);
+
+companyRouter.use('/suppliers', authMiddleware, isCompany, supplierRouter);
