@@ -324,7 +324,13 @@ class SupplierServices {
     });
   }
 
-  async findToSelectByMaintenanceHistoryId(maintenanceHistoryId: string) {
+  async findToSelectByMaintenanceHistoryId({
+    companyId,
+    maintenanceHistoryId,
+  }: {
+    maintenanceHistoryId: string;
+    companyId: string;
+  }) {
     const [suggestedSuppliers, remainingSuppliers] = await prisma.$transaction([
       prisma.supplier.findMany({
         select: {
@@ -347,6 +353,7 @@ class SupplierServices {
           maintenances: {
             some: { maintenance: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } } },
           },
+          companyId,
         },
         orderBy: { name: 'asc' },
       }),
@@ -371,6 +378,7 @@ class SupplierServices {
           maintenances: {
             none: { maintenance: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } } },
           },
+          companyId,
         },
         orderBy: { name: 'asc' },
       }),
