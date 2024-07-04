@@ -201,10 +201,12 @@ model MaintenanceHistory {
   wasNotified      Boolean   @default(false)
   inProgress       Boolean   @default(false)
   daysInAdvance    Int       @default(0)
+  supplierId       String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  supplier                 Supplier?                  @relation(fields: [supplierId], references: [id], onDelete: SetNull)
   Building                 Building                   @relation(fields: [buildingId], references: [id], onDelete: Cascade)
   Maintenance              Maintenance                @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
   Company                  Company                    @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
@@ -652,7 +654,8 @@ model Supplier {
 
   serviceTypes SupplierServiceType[]
 
-  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company            Company              @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  maintenanceHistory MaintenanceHistory[]
 
   @@map("suppliers")
 }

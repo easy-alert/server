@@ -44,6 +44,9 @@ class TicketServices {
           select: {
             type: true,
           },
+          orderBy: {
+            type: { label: 'asc' },
+          },
         },
         building: {
           select: {
@@ -89,6 +92,9 @@ class TicketServices {
           types: {
             select: {
               type: true,
+            },
+            orderBy: {
+              type: { label: 'asc' },
             },
           },
         },
@@ -315,6 +321,9 @@ class TicketServices {
                 label: true,
               },
             },
+          },
+          orderBy: {
+            type: { label: 'asc' },
           },
         },
         status: true,

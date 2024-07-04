@@ -89,6 +89,9 @@ class SupplierServices {
                 },
               },
             },
+            orderBy: {
+              type: { label: 'asc' },
+            },
           },
         },
         where,
@@ -126,6 +129,9 @@ class SupplierServices {
                 label: true,
               },
             },
+          },
+          orderBy: {
+            type: { label: 'asc' },
           },
         },
       },
@@ -172,6 +178,41 @@ class SupplierServices {
     }
 
     return { serviceTypes };
+  }
+
+  async findByMaintenanceHistoryId(maintenanceHistoryId: string) {
+    return prisma.supplier.findFirst({
+      select: {
+        id: true,
+        email: true,
+        image: true,
+        phone: true,
+        name: true,
+        link: true,
+        city: true,
+        cnpj: true,
+        state: true,
+        serviceTypes: {
+          select: {
+            type: {
+              select: {
+                label: true,
+              },
+            },
+          },
+          orderBy: {
+            type: { label: 'asc' },
+          },
+        },
+      },
+      where: {
+        maintenanceHistory: {
+          some: {
+            id: maintenanceHistoryId,
+          },
+        },
+      },
+    });
   }
 }
 
