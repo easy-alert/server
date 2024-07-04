@@ -6,16 +6,17 @@ interface IQuery {
   page: string;
   take: string;
   search?: string;
+  buildingNanoId: string;
 }
 
-export async function findManySuppliers(req: Request, res: Response) {
-  const { page, take, search } = req.query as any as IQuery;
+export async function findManySuppliersByBuildingNanoId(req: Request, res: Response) {
+  const { page, take, search, buildingNanoId } = req.query as any as IQuery;
 
-  const { suppliers, suppliersCount } = await supplierServices.findMany({
+  const { suppliers, suppliersCount } = await supplierServices.findManyByBuildingNanoId({
     page: handleQueryPage(page),
     take: handleQueryTake(take, 10),
     search,
-    companyId: req.Company.id,
+    buildingNanoId,
   });
 
   return res.status(200).json({ suppliers, suppliersCount });

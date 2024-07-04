@@ -1,15 +1,15 @@
 import { Router } from 'express';
 import { createAndLinkSupplier } from '../../shared/suppliers/controllers/createAndLinkSupplier';
 import { findLinkedSuppliersByMaintenanceHistoryId } from '../../shared/suppliers/controllers/findLinkedSuppliersByMaintenanceHistoryId';
-import { findManySuppliers } from '../../shared/suppliers/controllers/findManySuppliers';
 import { findManySuppliersToSelectByMaintenanceHistoryId } from '../../shared/suppliers/controllers/findManySuppliersToSelectByMaintenanceHistoryId';
 import { findSupplierById } from '../../shared/suppliers/controllers/findSupplierById';
 import { linkSupplierToMaintenanceHistory } from '../../shared/suppliers/controllers/linkSupplierToMaintenanceHistory';
 import { unlinkSupplierToMaintenanceHistory } from '../../shared/suppliers/controllers/unlinkSupplierToMaintenanceHistory';
+import { findManySuppliersByBuildingNanoId } from '../../shared/suppliers/controllers/findManySuppliersByBuildingNanoId';
 
 export const supplierRouter = Router();
 
-supplierRouter.get('/', findManySuppliers);
+supplierRouter.get('/', findManySuppliersByBuildingNanoId);
 supplierRouter.get('/:supplierId', findSupplierById);
 supplierRouter.get('/selected/:maintenanceHistoryId', findLinkedSuppliersByMaintenanceHistoryId);
 supplierRouter.get(
