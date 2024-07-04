@@ -236,6 +236,7 @@ class SupplierServices {
             some: { maintenance: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } } },
           },
         },
+        orderBy: { name: 'asc' },
       }),
       prisma.supplier.findMany({
         select: {
@@ -259,6 +260,7 @@ class SupplierServices {
             none: { maintenance: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } } },
           },
         },
+        orderBy: { name: 'asc' },
       }),
     ]);
 

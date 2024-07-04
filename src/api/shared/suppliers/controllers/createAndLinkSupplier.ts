@@ -50,6 +50,11 @@ export async function createAndLinkSupplier(req: Request, res: Response) {
     { label: 'Área de atuação', type: 'array', value: serviceTypeLabels },
   ]);
 
+  // Adicionando fornecedor como sugerido pra manutenção
+  const { Maintenance, Company } = await sharedMaintenanceServices.findHistoryById({
+    maintenanceHistoryId,
+  });
+
   const { serviceTypes } = supplierServices.createOrConnectServiceTypesService({
     isUpdate: false,
     serviceTypeLabels,
@@ -65,7 +70,7 @@ export async function createAndLinkSupplier(req: Request, res: Response) {
       state,
       email: email ? email.toLowerCase() : null,
       phone: phone ? unmask(phone) : null,
-      companyId: req.Company.id,
+      companyId: Company.id,
       serviceTypes,
     },
   });
@@ -75,9 +80,6 @@ export async function createAndLinkSupplier(req: Request, res: Response) {
     maintenanceHistoryId,
     supplierId: supplier.id,
   });
-
-  // Adicionando fornecedor como sugerido pra manutenção
-  const { Maintenance } = await sharedMaintenanceServices.findHistoryById({ maintenanceHistoryId });
 
   await supplierServices.linkSuggestedSupplier({
     maintenanceId: Maintenance.id,

@@ -1007,30 +1007,4 @@ export class ClientBuildingServices {
 
     return Annexes;
   }
-
-  async findLocalSuppliers({ buildingNanoId }: { buildingNanoId: string }) {
-    return prisma.supplier.findMany({
-      select: {
-        id: true,
-        email: true,
-        image: true,
-        phone: true,
-        name: true,
-      },
-
-      where: {
-        company: {
-          Buildings: {
-            some: {
-              nanoId: buildingNanoId,
-            },
-          },
-        },
-      },
-
-      orderBy: {
-        name: 'asc',
-      },
-    });
-  }
 }

@@ -36,12 +36,12 @@ import { buildingChangeBanner } from '../company/buildings/buildingBanners/contr
 import { findSyndicsByBuildingNanoId } from './building/controllers/findSyndicsByBuildingNanoId';
 import { sharedCreateReportProgress } from '../shared/maintenancesReportProgresses/controllers/sharedCreateReportProgress';
 import { sharedFindReportProgress } from '../shared/maintenancesReportProgresses/controllers/sharedFindReportProgress';
-import { findLocalSuppliers } from './building/controllers/findLocalSuppliers';
 import { checklistRouter } from './checklists/checklist.routes';
 import { listTimeIntervals } from '../shared/timeInterval/controllers/listTimeIntervals';
 import { ticketRouter } from './tickets/ticket.routes';
 import { checkPasswordExistenceController } from './building/controllers/checkPasswordExistenceController';
 import { validatePasswordController } from './building/controllers/validatePasswordController';
+import { supplierRouter } from './suppliers/supplier.routes';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -66,8 +66,6 @@ clientRouter.get('/building/home/:buildingNanoId', findHomeInformations);
 clientRouter.get('/building/annex/:buildingNanoId', findBuildingAnnex);
 
 clientRouter.get('/building/logo/:buildingNanoId', findCompanyLogo);
-
-clientRouter.get('/building/suppliers/:buildingNanoId', findLocalSuppliers);
 
 clientRouter.post('/maintenances/create/report', sharedCreateMaintenanceReport);
 
@@ -130,6 +128,8 @@ clientRouter.get('/timeinterval/list', listTimeIntervals);
 clientRouter.use('/checklists', checklistRouter);
 
 clientRouter.use('/tickets', ticketRouter);
+
+clientRouter.use('/suppliers', supplierRouter);
 
 clientRouter.get(
   '/check-password-existence/:buildingNanoId/:type',
