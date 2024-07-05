@@ -246,6 +246,23 @@ class SupplierServices {
             type: { label: 'asc' },
           },
         },
+
+        maintenances: {
+          select: {
+            maintenance: {
+              select: {
+                id: true,
+                Category: { select: { name: true } },
+                element: true,
+                activity: true,
+              },
+            },
+          },
+          orderBy: [
+            { maintenance: { Category: { name: 'asc' } } },
+            { maintenance: { element: 'asc' } },
+          ],
+        },
       },
       where: { id },
     });
@@ -467,6 +484,49 @@ class SupplierServices {
         supplierId,
       },
       update: {},
+      where: {
+        maintenanceId_supplierId: {
+          maintenanceId,
+          supplierId,
+        },
+      },
+    });
+  }
+
+  async findMaintenanceSuggestedSupplier({
+    maintenanceId,
+    supplierId,
+  }: {
+    maintenanceId: string;
+    supplierId: string;
+  }) {
+    const maintenanceSuggestedSupplier = await prisma.maintenanceSupplier.findUnique({
+      where: {
+        maintenanceId_supplierId: {
+          maintenanceId,
+          supplierId,
+        },
+      },
+    });
+
+    validator.needExist([{ label: 'Fornecedor sugerido', variable: maintenanceSuggestedSupplier }]);
+
+    return maintenanceSuggestedSupplier!;
+  }
+
+  async unlinkWithMaintenance({
+    maintenanceId,
+    supplierId,
+  }: {
+    maintenanceId: string;
+    supplierId: string;
+  }) {
+    await this.findMaintenanceSuggestedSupplier({
+      maintenanceId,
+      supplierId,
+    });
+
+    await prisma.maintenanceSupplier.delete({
       where: {
         maintenanceId_supplierId: {
           maintenanceId,

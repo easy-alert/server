@@ -9,6 +9,7 @@ import { findSupplierById } from '../../shared/suppliers/controllers/findSupplie
 import { linkSupplierToMaintenanceHistory } from '../../shared/suppliers/controllers/linkSupplierToMaintenanceHistory';
 import { unlinkSupplierToMaintenanceHistory } from '../../shared/suppliers/controllers/unlinkSupplierToMaintenanceHistory';
 import { updateSupplier } from '../../shared/suppliers/controllers/updateSupplier';
+import { unlinkSupplierToMaintenance } from '../../shared/suppliers/controllers/unlinkSupplierToMaintenance';
 
 export const supplierRouter = Router();
 
@@ -26,5 +27,6 @@ supplierRouter.post('/', createSupplier);
 supplierRouter.post('/create-and-link', createAndLinkSupplier);
 supplierRouter.post('/link-to-maintenance-history', linkSupplierToMaintenanceHistory);
 supplierRouter.post('/unlink-to-maintenance-history', unlinkSupplierToMaintenanceHistory);
+supplierRouter.post('/unlink-to-maintenance', unlinkSupplierToMaintenance);
 
 supplierRouter.put('/', updateSupplier);

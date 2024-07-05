@@ -8,13 +8,27 @@ const sharedBuildingNotificationConfigurationServices =
 const buildingServices = new BuildingServices();
 
 interface IUniqueData {
-  customId: string;
   name: string;
-  email: string;
-  contactNumber: string;
+  email: string | null;
+  contactNumber: string | null;
   role: string;
 }
 
+interface IUniqueDataWithId extends IUniqueData {
+  customId: string;
+}
+
+function removeDuplicates(data: IUniqueData[]): IUniqueData[] {
+  const uniqueData = new Set<string>();
+  return data.filter((item) => {
+    const itemKey = `${item.name}-${item.email}-${item.contactNumber}-${item.role}`;
+    if (uniqueData.has(itemKey)) {
+      return false;
+    }
+    uniqueData.add(itemKey);
+    return true;
+  });
+}
 export async function findDataForAutocompleteInCreate(req: Request, res: Response) {
   const { buildingId } = req.params;
 
@@ -25,29 +39,12 @@ export async function findDataForAutocompleteInCreate(req: Request, res: Respons
     buildingId,
   });
 
-  const uniqueData: IUniqueData[] = [];
+  const uniqueData = removeDuplicates(data);
+  const uniqueDataWithId: IUniqueDataWithId[] = [];
 
-  for (let i = 0; i < data.length; i++) {
-    const element = data[i];
+  uniqueData.forEach((element, index) => {
+    uniqueDataWithId.push({ ...element, customId: String(index) });
+  });
 
-    const foundData = uniqueData.find(
-      (e) =>
-        e.name === element.name &&
-        e.email === element.email &&
-        e.contactNumber === element.contactNumber &&
-        e.role === element.role,
-    );
-
-    if (!foundData) {
-      uniqueData.push({
-        customId: String(i),
-        name: element.name,
-        email: element.email || '',
-        contactNumber: element.contactNumber || '',
-        role: element.role,
-      });
-    }
-  }
-
-  return res.status(200).json(uniqueData);
+  return res.status(200).json(uniqueDataWithId);
 }
