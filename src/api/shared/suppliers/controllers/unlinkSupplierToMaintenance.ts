@@ -2,14 +2,14 @@ import { Response, Request } from 'express';
 import { supplierServices } from '../services/supplierServices';
 
 interface IBody {
-  maintenanceHistoryId: string;
+  maintenanceId: string;
   supplierId: string;
 }
 
-export async function unlinkSupplierToMaintenanceHistory(req: Request, res: Response) {
-  const { maintenanceHistoryId, supplierId }: IBody = req.body;
+export async function unlinkSupplierToMaintenance(req: Request, res: Response) {
+  const { maintenanceId, supplierId }: IBody = req.body;
 
-  await supplierServices.unlinkWithMaintenanceHistory({ maintenanceHistoryId, supplierId });
+  await supplierServices.unlinkWithMaintenance({ maintenanceId, supplierId });
 
   return res
     .status(200)

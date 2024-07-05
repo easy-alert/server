@@ -492,6 +492,49 @@ class SupplierServices {
       },
     });
   }
+
+  async findMaintenanceSuggestedSupplier({
+    maintenanceId,
+    supplierId,
+  }: {
+    maintenanceId: string;
+    supplierId: string;
+  }) {
+    const maintenanceSuggestedSupplier = await prisma.maintenanceSupplier.findUnique({
+      where: {
+        maintenanceId_supplierId: {
+          maintenanceId,
+          supplierId,
+        },
+      },
+    });
+
+    validator.needExist([{ label: 'Fornecedor sugerido', variable: maintenanceSuggestedSupplier }]);
+
+    return maintenanceSuggestedSupplier!;
+  }
+
+  async unlinkWithMaintenance({
+    maintenanceId,
+    supplierId,
+  }: {
+    maintenanceId: string;
+    supplierId: string;
+  }) {
+    await this.findMaintenanceSuggestedSupplier({
+      maintenanceId,
+      supplierId,
+    });
+
+    await prisma.maintenanceSupplier.delete({
+      where: {
+        maintenanceId_supplierId: {
+          maintenanceId,
+          supplierId,
+        },
+      },
+    });
+  }
 }
 
 export const supplierServices = new SupplierServices();

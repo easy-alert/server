@@ -50,7 +50,7 @@ export async function createAndLinkSupplier(req: Request, res: Response) {
     { label: 'Área de atuação', type: 'array', value: serviceTypeLabels },
   ]);
 
-  // Adicionando fornecedor como sugerido pra manutenção
+  // Para adicionar fornecedor como sugerido pra manutenção
   const { Maintenance, Company } = await sharedMaintenanceServices.findHistoryById({
     maintenanceHistoryId,
   });
