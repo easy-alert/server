@@ -487,7 +487,7 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
                       ],
                     },
                     {
-                      columns: annexesForPDF,
+                      columns: imagesForPDF,
                     },
                   ],
                   [
@@ -542,7 +542,7 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
                           bold: true,
                         },
                         {
-                          text: annexes,
+                          text: annexesForPDF,
                         },
                       ],
                     },
