@@ -9,3 +9,4 @@ export * from './handleQueryTake';
 export * from './handleQueryFilter';
 export * from './capitalizeFirstLetter';
 export * from './createInitialsAvatar';
+export * from './simplifyNameForURL';

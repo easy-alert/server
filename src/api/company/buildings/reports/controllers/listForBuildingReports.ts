@@ -1,7 +1,8 @@
+/* eslint-disable no-loop-func */
 // #region IMPORTS
 import { Request, Response } from 'express';
-import { BuildingReportsServices } from '../services/buildingReportsServices';
 import { IMaintenancesData } from '../services/types';
+import { BuildingReportsServices } from '../services/buildingReportsServices';
 
 // CLASS
 const buildingReportsServices = new BuildingReportsServices();
@@ -12,45 +13,43 @@ const buildingReportsServices = new BuildingReportsServices();
 export const capitalizeFirstLetter = (value: string) =>
   value.charAt(0).toUpperCase() + value.slice(1);
 
-function formatMonthYear(monthYear: string): string {
-  const [month, year] = monthYear.split('-');
-  const monthAbbreviation = new Date(`${year}/${month}/01`)
-    .toLocaleString('pt-br', {
-      month: 'long',
-    })
-    .substring(0, 3);
-  return `${capitalizeFirstLetter(monthAbbreviation)}/${year.slice(2)}`;
-}
+// function formatMonthYear(monthYear: string): string {
+//   const [month, year] = monthYear.split('-');
+//   const monthAbbreviation = new Date(`${year}/${month}/01`)
+//     .toLocaleString('pt-br', {
+//       month: 'long',
+//     })
+//     .substring(0, 3);
+//   return `${capitalizeFirstLetter(monthAbbreviation)}/${year.slice(2)}`;
+// }
 
-function separateByMonth(array: IMaintenancesData[]) {
-  const separatedByMonth: { [key: string]: IMaintenancesData[] } = {};
+// function separateByMonth(array: IMaintenancesData[]) {
+//   const separatedByMonth: { [key: string]: IMaintenancesData[] } = {};
 
-  array.forEach((data) => {
-    const monthYear = `${
-      data.notificationDate.getMonth() + 1
-    }-${data.notificationDate.getFullYear()}`;
+//   array.forEach((data) => {
+//     const monthYear = `${
+//       data.notificationDate.getMonth() + 1
+//     }-${data.notificationDate.getFullYear()}`;
 
-    if (!separatedByMonth[monthYear]) {
-      separatedByMonth[monthYear] = [];
-    }
+//     if (!separatedByMonth[monthYear]) {
+//       separatedByMonth[monthYear] = [];
+//     }
 
-    separatedByMonth[monthYear].push(data);
-  });
+//     separatedByMonth[monthYear].push(data);
+//   });
 
-  const result = Object.keys(separatedByMonth).map((key) => ({
-    month: formatMonthYear(key),
-    data: separatedByMonth[key],
-  }));
+//   const result = Object.keys(separatedByMonth).map((key) => ({
+//     month: formatMonthYear(key),
+//     data: separatedByMonth[key],
+//   }));
 
-  return result;
-}
+//   return result;
+// }
 
 // #endregion
 
 export async function listForBuildingReports(req: Request, res: Response) {
-  // @ts-ignore                                         por causa do bug do PaserdQs
-  const queryFilter = buildingReportsServices.mountQueryFilter({ query: req.query });
-
+  const queryFilter = buildingReportsServices.mountQueryFilter({ query: req.query as any });
   const { maintenancesHistory } = await buildingReportsServices.findBuildingMaintenancesHistory({
     companyId: req.Company.id,
     queryFilter,
@@ -121,7 +120,7 @@ export async function listForBuildingReports(req: Request, res: Response) {
     });
   });
 
-  const maintenancesForPDF = separateByMonth(maintenances);
+  // const maintenancesForPDF = separateByMonth(maintenances);
 
-  return res.status(200).json({ counts, maintenances, maintenancesForPDF });
+  return res.status(200).json({ counts, maintenances });
 }
