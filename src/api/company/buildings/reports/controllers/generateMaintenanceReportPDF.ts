@@ -626,7 +626,6 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
     );
 
     contentData.push(countData);
-
     const docDefinitions: TDocumentDefinitions = {
       pageOrientation: 'landscape',
       defaultStyle: { font: 'Arial', lineHeight: 1.1, fontSize: 10 },
@@ -665,7 +664,7 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
                 text: [
                   { text: 'Edificação:', bold: true },
                   { text: ' ' },
-                  { text: query.buildingNames },
+                  { text: query.buildingNames || 'Todas' },
                 ],
                 fontSize: 12,
               },
@@ -673,7 +672,7 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
                 text: [
                   { text: 'Categoria:', bold: true },
                   { text: ' ' },
-                  { text: query.categoryNames },
+                  { text: query.categoryNames || 'Todas' },
                 ],
                 fontSize: 12,
               },
@@ -683,13 +682,15 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
                   { text: ' ' },
                   {
                     text: query.maintenanceStatusNames
-                      .split(',')
-                      .map(
-                        (value: string, i: number) =>
-                          `${getSingularStatusNameforPdf(value)}${
-                            query.maintenanceStatusNames.split(',').length === i + 1 ? '' : ','
-                          }`,
-                      ),
+                      ? query.maintenanceStatusNames
+                          .split(',')
+                          .map(
+                            (value: string, i: number) =>
+                              `${getSingularStatusNameforPdf(value)}${
+                                query.maintenanceStatusNames.split(',').length === i + 1 ? '' : ','
+                              }`,
+                          )
+                      : 'Todos',
                   },
                 ],
                 fontSize: 12,
