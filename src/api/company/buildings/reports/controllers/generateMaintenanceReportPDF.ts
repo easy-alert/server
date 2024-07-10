@@ -354,6 +354,7 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
               image: path.join(folderName, downloadedImage),
               width: 50,
               height: 50,
+              link: url,
             },
             { text: ' ' },
           ]);
