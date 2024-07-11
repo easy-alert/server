@@ -174,6 +174,10 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
   const folderName = `Folder-${Date.now()}`;
   fs.mkdirSync(folderName);
   const headerLogo = await downloadFromS3(company!.image, folderName);
+  const placeholderLogo = await downloadFromS3(
+    'https://larguei.s3.us-west-2.amazonaws.com/placeholder-image-1720725818435.jpg',
+    folderName,
+  );
 
   const maintenances: IMaintenancesData[] = [];
   const counts = {
@@ -347,17 +351,14 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
         for (let imageIndex = 0; imageIndex < Math.min(images.length, 4); imageIndex++) {
           const { url } = images[imageIndex];
 
-          const downloadedImage = await downloadFromS3(url, folderName);
+          // const downloadedImage = await downloadFromS3(url, folderName);
 
-          imagesForPDF.push([
-            {
-              image: path.join(folderName, downloadedImage),
-              width: 50,
-              height: 50,
-              link: url,
-            },
-            { text: ' ' },
-          ]);
+          imagesForPDF.push({
+            image: path.join(folderName, placeholderLogo),
+            width: 50,
+            height: 50,
+            link: url,
+          });
         }
 
         const tags: Content = [];
@@ -489,6 +490,7 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
                     },
                     {
                       columns: imagesForPDF,
+                      columnGap: 8,
                     },
                   ],
                   [
