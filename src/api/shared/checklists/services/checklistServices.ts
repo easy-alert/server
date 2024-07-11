@@ -73,6 +73,7 @@ class ChecklistServices {
     return prisma.checklist.findMany({
       select: {
         id: true,
+        buildingId: true,
         name: true,
         syndic: {
           select: {

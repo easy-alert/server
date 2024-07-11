@@ -29,7 +29,7 @@ interface ISeparateByMonth {
   description: string | null;
   date: Date;
   building: IName;
-  syndic: IName;
+  syndic: IName | null;
   frequency: number | null;
   status: ChecklistStatusName;
   observation: string | null;

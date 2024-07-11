@@ -359,6 +359,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       // #region Create History for maintenanceHistory
 
       const dataForCreateHistoryAndReport: ICreateMaintenanceHistoryAndReport = {
+        inProgress: false,
         buildingId,
         maintenanceId: updatedsMaintenances[i].id,
         ownerCompanyId: req.Company.id,

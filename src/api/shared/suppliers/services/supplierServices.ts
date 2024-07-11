@@ -1,5 +1,6 @@
 import { prisma, prismaTypes } from '../../../../../prisma';
 import { capitalizeFirstLetter, unmask } from '../../../../utils/dataHandler';
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { checkValues } from '../../../../utils/newValidator';
 import { Validator } from '../../../../utils/validator/validator';
 
@@ -263,6 +264,10 @@ class SupplierServices {
             { maintenance: { element: 'asc' } },
           ],
         },
+
+        maintenancesHistory: {
+          select: { id: true },
+        },
       },
       where: { id },
     });
@@ -279,7 +284,14 @@ class SupplierServices {
   }
 
   async delete(id: string) {
-    await this.findById(id);
+    const supplier = await this.findById(id);
+
+    if (supplier.maintenancesHistory.length) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Você não pode excluir um fornecedor em uso.',
+      });
+    }
 
     return prisma.supplier.delete({ where: { id } });
   }

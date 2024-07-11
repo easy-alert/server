@@ -136,9 +136,10 @@ export async function sharedCreateOccasionalMaintenanceReport({
   // #endregion
 
   // #region REPORT
+  const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
+
   if (new Date(executionDate) > new Date()) {
     // PENDENTE
-    const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
     const newPending = await sharedMaintenanceServices.createOneHistory({
       data: {
         ownerCompanyId: companyId,
@@ -154,6 +155,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
       },
     });
 
+    // Repetido lá embaixo
     if (ticketIds && Array.isArray(ticketIds) && ticketIds?.length > 0) {
       await ticketServices.updateMany({
         data: {
@@ -167,27 +169,86 @@ export async function sharedCreateOccasionalMaintenanceReport({
     }
   } else {
     // CONCLUÍDA
+    // se inProgress for true, é pra criar ela pendente na data escolhida, que anteriormente seria concluida E se for in progress, não criar relato
+    // Task SA-6823
     const completedStatus = await sharedMaintenanceStatusServices.findByName({ name: 'completed' });
 
-    const maintenanceHistory = await sharedMaintenanceServices.createHistoryAndReport({
-      data: {
-        ownerCompanyId: companyId,
-        buildingId,
-        maintenanceId: maintenance.id,
-        maintenanceStatusId: completedStatus.id,
-        wasNotified: true,
-        resolutionDate: new Date(executionDate),
-        notificationDate: new Date(executionDate),
-        dueDate: noWeekendTimeDate({
-          date: addDays({ date: new Date(executionDate), days: defaultPeriod }),
-          interval: 2,
-        }),
-        MaintenanceReport: {
-          create: {
+    if (inProgress) {
+      const pendingInProgress = await sharedMaintenanceServices.createOneHistory({
+        data: {
+          ownerCompanyId: companyId,
+          buildingId,
+          maintenanceId: maintenance.id,
+          maintenanceStatusId: pendingStatus.id,
+          notificationDate: new Date(executionDate),
+          dueDate: noWeekendTimeDate({
+            date: addDays({ date: new Date(executionDate), days: defaultPeriod }),
+            interval: 2,
+          }),
+          inProgress,
+        },
+      });
+
+      if (ticketIds && Array.isArray(ticketIds) && ticketIds?.length > 0) {
+        await ticketServices.updateMany({
+          data: {
+            statusName: 'awaitingToFinish',
+            maintenanceHistoryId: pendingInProgress.id,
+          },
+          where: {
+            id: { in: ticketIds },
+          },
+        });
+      }
+    } else {
+      const maintenanceHistory = await sharedMaintenanceServices.createHistoryAndReport({
+        data: {
+          inProgress: inProgress || false,
+          ownerCompanyId: companyId,
+          buildingId,
+          maintenanceId: maintenance.id,
+          maintenanceStatusId: completedStatus.id,
+          wasNotified: true,
+          resolutionDate: new Date(executionDate),
+          notificationDate: new Date(executionDate),
+          dueDate: noWeekendTimeDate({
+            date: addDays({ date: new Date(executionDate), days: defaultPeriod }),
+            interval: 2,
+          }),
+          MaintenanceReport: {
+            create: {
+              cost: Number(reportData.cost),
+              observation: reportData.observation,
+              origin,
+              responsibleSyndicId: syndicData?.id || null,
+              ReportImages: {
+                createMany: {
+                  data: reportData.images,
+                },
+              },
+              ReportAnnexes: {
+                createMany: {
+                  data: reportData.files,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const maintenanceReport = await sharedMaintenanceServices.findHistoryById({
+        maintenanceHistoryId: maintenanceHistory.id,
+      });
+
+      if (maintenanceReport?.MaintenanceReport?.length) {
+        await sharedMaintenanceReportsServices.createHistory({
+          data: {
+            version: 1,
+            origin,
+            maintenanceReportId: maintenanceReport.MaintenanceReport[0].id,
+            maintenanceHistoryId: maintenanceHistory.id,
             cost: Number(reportData.cost),
             observation: reportData.observation,
-            origin,
-            responsibleSyndicId: syndicData?.id || null,
             ReportImages: {
               createMany: {
                 data: reportData.images,
@@ -199,49 +260,22 @@ export async function sharedCreateOccasionalMaintenanceReport({
               },
             },
           },
-        },
-      },
-    });
+        });
+      }
 
-    const maintenanceReport = await sharedMaintenanceServices.findHistoryById({
-      maintenanceHistoryId: maintenanceHistory.id,
-    });
-
-    if (maintenanceReport?.MaintenanceReport?.length) {
-      await sharedMaintenanceReportsServices.createHistory({
-        data: {
-          version: 1,
-          origin,
-          maintenanceReportId: maintenanceReport.MaintenanceReport[0].id,
-          maintenanceHistoryId: maintenanceHistory.id,
-          cost: Number(reportData.cost),
-          observation: reportData.observation,
-          ReportImages: {
-            createMany: {
-              data: reportData.images,
-            },
+      if (ticketIds && Array.isArray(ticketIds) && ticketIds?.length > 0) {
+        await ticketServices.updateMany({
+          data: {
+            statusName: 'finished',
+            maintenanceHistoryId: maintenanceHistory.id,
           },
-          ReportAnnexes: {
-            createMany: {
-              data: reportData.files,
-            },
+          where: {
+            id: { in: ticketIds },
           },
-        },
-      });
-    }
+        });
 
-    if (ticketIds && Array.isArray(ticketIds) && ticketIds?.length > 0) {
-      await ticketServices.updateMany({
-        data: {
-          statusName: 'finished',
-          maintenanceHistoryId: maintenanceHistory.id,
-        },
-        where: {
-          id: { in: ticketIds },
-        },
-      });
-
-      ticketServices.sendFinishedTicketEmails({ ticketIds });
+        ticketServices.sendFinishedTicketEmails({ ticketIds });
+      }
     }
   }
   // #endregion

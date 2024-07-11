@@ -70,6 +70,7 @@ export interface ICreateMaintenanceHistoryAndReport {
   wasNotified?: boolean;
   resolutionDate?: Date;
   dueDate: Date;
+  inProgress: boolean;
 
   MaintenanceReport: {
     create: {

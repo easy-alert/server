@@ -147,7 +147,7 @@ export class BuildingReportsServices {
     companyId,
     queryFilter,
   }: IFindBuildingMaintenancesHistory) {
-    const [maintenancesHistory] = await prisma.$transaction([
+    const [maintenancesHistory, company] = await prisma.$transaction([
       prisma.maintenanceHistory.findMany({
         select: {
           id: true,
@@ -232,8 +232,9 @@ export class BuildingReportsServices {
           OR: queryFilter.dateFilter,
         },
       }),
+      prisma.company.findUnique({ select: { image: true }, where: { id: companyId } }),
     ]);
 
-    return { maintenancesHistory };
+    return { maintenancesHistory, company };
   }
 }

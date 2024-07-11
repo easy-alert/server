@@ -719,7 +719,7 @@ model Checklist {
   id String @id @default(uuid())
 
   buildingId              String
-  syndicId                String
+  syndicId                String?
   name                    String
   description             String?
   date                    DateTime
@@ -733,9 +733,9 @@ model Checklist {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  building              Building                          @relation(fields: [buildingId], references: [id], onDelete: Cascade)
-  syndic                BuildingNotificationConfiguration @relation(fields: [syndicId], references: [id], onDelete: Cascade)
-  frequencyTimeInterval TimeInterval?                     @relation(fields: [frequencyTimeIntervalId], references: [id])
+  building              Building                           @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  syndic                BuildingNotificationConfiguration? @relation(fields: [syndicId], references: [id], onDelete: SetNull)
+  frequencyTimeInterval TimeInterval?                      @relation(fields: [frequencyTimeIntervalId], references: [id])
 
   images       ChecklistImage[]
   detailImages ChecklistDetailImage[]
