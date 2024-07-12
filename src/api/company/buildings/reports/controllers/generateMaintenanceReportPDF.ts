@@ -662,7 +662,6 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
             {
               image: path.join(folderName, headerLogo),
               width: 60,
-              link: company?.image || '',
             },
             { text: ' ', width: 8 },
             [
