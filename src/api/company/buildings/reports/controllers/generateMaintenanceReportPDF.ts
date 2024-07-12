@@ -173,11 +173,19 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
 
   const folderName = `Folder-${Date.now()}`;
   fs.mkdirSync(folderName);
-  const headerLogo = await downloadFromS3(company!.image, folderName);
+
   const placeholderLogo = await downloadFromS3(
     'https://larguei.s3.us-west-2.amazonaws.com/placeholder-image-1720725818435.jpg',
     folderName,
   );
+  const isDicebear = company?.image.includes('dicebear');
+
+  const footerLogo = await downloadFromS3(
+    'https://larguei.s3.us-west-2.amazonaws.com/LOGOPDF-1716384513443.png',
+    folderName,
+  );
+
+  const headerLogo = isDicebear ? footerLogo : await downloadFromS3(company!.image, folderName);
 
   const maintenances: IMaintenancesData[] = [];
   const counts = {
@@ -622,11 +630,6 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
         });
       }
     }
-
-    const footerLogo = await downloadFromS3(
-      'https://larguei.s3.us-west-2.amazonaws.com/LOGOPDF-1716384513443.png',
-      folderName,
-    );
 
     contentData.push(countData);
     const docDefinitions: TDocumentDefinitions = {
