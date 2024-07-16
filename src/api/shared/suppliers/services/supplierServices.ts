@@ -1,23 +1,30 @@
 import { prisma, prismaTypes } from '../../../../../prisma';
-import { capitalizeFirstLetter, unmask } from '../../../../utils/dataHandler';
+import { capitalizeFirstLetter } from '../../../../utils/dataHandler';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { checkValues } from '../../../../utils/newValidator';
 import { Validator } from '../../../../utils/validator/validator';
 
 const validator = new Validator();
 
+export interface IParsedFilter {
+  search: string | undefined;
+  serviceTypeLabel: string | undefined;
+  state: string | undefined;
+  city: string | undefined;
+}
+
 interface IFindMany {
   page: number;
   take: number;
-  search?: string;
   companyId: string;
+  filter?: IParsedFilter;
 }
 
 interface IFindManyByBuildingNanoId {
   page: number;
   take: number;
-  search?: string;
   buildingNanoId: string;
+  filter?: IParsedFilter;
 }
 
 interface ICreateOrConnectServiceTypesService {
@@ -30,93 +37,79 @@ class SupplierServices {
     return prisma.supplier.create(args);
   }
 
-  async findMany({ page, take, search = '', companyId }: IFindMany) {
+  async findMany({ page, take, companyId, filter }: IFindMany) {
     const where: prismaTypes.SupplierWhereInput = {
-      OR: [
-        {
-          name: {
-            contains: search,
-            mode: 'insensitive',
-          },
-        },
-        {
-          email: {
-            contains: search,
-            mode: 'insensitive',
-          },
-        },
-        {
-          phone: {
-            contains: unmask(search),
-            mode: 'insensitive',
-          },
-        },
-        {
-          state: {
-            contains: search,
-            mode: 'insensitive',
-          },
-        },
-        {
-          city: {
-            contains: search,
-            mode: 'insensitive',
-          },
-        },
-        {
-          serviceTypes: {
-            some: {
-              type: {
-                label: {
-                  contains: search,
-                  mode: 'insensitive',
-                },
-              },
-            },
-          },
-        },
-      ],
-
       companyId,
     };
 
-    const [suppliers, suppliersCount] = await prisma.$transaction([
-      prisma.supplier.findMany({
-        select: {
-          id: true,
-          email: true,
-          image: true,
-          phone: true,
-          name: true,
-          link: true,
-          city: true,
-          cnpj: true,
-          state: true,
-          serviceTypes: {
-            select: {
-              type: {
-                select: {
-                  label: true,
-                },
+    if (filter) {
+      if (filter.search) {
+        where.OR = [
+          { name: { contains: filter.search, mode: 'insensitive' } },
+          { email: { contains: filter.search, mode: 'insensitive' } },
+          { phone: { contains: filter.search, mode: 'insensitive' } },
+          { city: { contains: filter.search, mode: 'insensitive' } },
+          { state: { contains: filter.search, mode: 'insensitive' } },
+        ];
+      }
+
+      if (filter.serviceTypeLabel) {
+        where.serviceTypes = {
+          some: {
+            type: {
+              label: {
+                equals: filter.serviceTypeLabel,
+                mode: 'insensitive',
               },
             },
-            orderBy: {
-              type: { label: 'asc' },
+          },
+        };
+      }
+
+      if (filter.state) {
+        where.state = { equals: filter.state, mode: 'insensitive' };
+      }
+
+      if (filter.city) {
+        where.city = { equals: filter.city, mode: 'insensitive' };
+      }
+    }
+
+    const suppliers = await prisma.supplier.findMany({
+      select: {
+        id: true,
+        email: true,
+        image: true,
+        phone: true,
+        name: true,
+        link: true,
+        city: true,
+        cnpj: true,
+        state: true,
+        serviceTypes: {
+          select: {
+            type: {
+              select: {
+                label: true,
+              },
             },
           },
+          orderBy: {
+            type: { label: 'asc' },
+          },
         },
-        where,
+      },
+      where,
 
-        take,
-        skip: (page - 1) * take,
+      take,
+      skip: (page - 1) * take,
 
-        orderBy: {
-          name: 'asc',
-        },
-      }),
+      orderBy: {
+        name: 'asc',
+      },
+    });
 
-      prisma.supplier.count({ where }),
-    ]);
+    const suppliersCount = await prisma.supplier.count({ where });
 
     return { suppliers, suppliersCount };
   }
@@ -124,55 +117,10 @@ class SupplierServices {
   async findManyByBuildingNanoId({
     page,
     take,
-    search = '',
     buildingNanoId,
+    filter,
   }: IFindManyByBuildingNanoId) {
     const where: prismaTypes.SupplierWhereInput = {
-      OR: [
-        {
-          name: {
-            contains: search,
-            mode: 'insensitive',
-          },
-        },
-        {
-          email: {
-            contains: search,
-            mode: 'insensitive',
-          },
-        },
-        {
-          phone: {
-            contains: unmask(search),
-            mode: 'insensitive',
-          },
-        },
-        {
-          state: {
-            contains: search,
-            mode: 'insensitive',
-          },
-        },
-        {
-          city: {
-            contains: search,
-            mode: 'insensitive',
-          },
-        },
-        {
-          serviceTypes: {
-            some: {
-              type: {
-                label: {
-                  contains: search,
-                  mode: 'insensitive',
-                },
-              },
-            },
-          },
-        },
-      ],
-
       company: {
         Buildings: {
           some: {
@@ -181,6 +129,39 @@ class SupplierServices {
         },
       },
     };
+
+    if (filter) {
+      if (filter.search) {
+        where.OR = [
+          { name: { contains: filter.search, mode: 'insensitive' } },
+          { email: { contains: filter.search, mode: 'insensitive' } },
+          { phone: { contains: filter.search, mode: 'insensitive' } },
+          { city: { contains: filter.search, mode: 'insensitive' } },
+          { state: { contains: filter.search, mode: 'insensitive' } },
+        ];
+      }
+
+      if (filter.serviceTypeLabel) {
+        where.serviceTypes = {
+          some: {
+            type: {
+              label: {
+                equals: filter.serviceTypeLabel,
+                mode: 'insensitive',
+              },
+            },
+          },
+        };
+      }
+
+      if (filter.state) {
+        where.state = { equals: filter.state, mode: 'insensitive' };
+      }
+
+      if (filter.city) {
+        where.city = { equals: filter.city, mode: 'insensitive' };
+      }
+    }
 
     const [suppliers, suppliersCount] = await prisma.$transaction([
       prisma.supplier.findMany({
