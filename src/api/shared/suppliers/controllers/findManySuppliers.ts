@@ -1,21 +1,22 @@
 import { Response, Request } from 'express';
-import { supplierServices } from '../services/supplierServices';
-import { handleQueryPage, handleQueryTake } from '../../../../utils/dataHandler';
+import { IParsedFilter, supplierServices } from '../services/supplierServices';
+import { handleQueryPage } from '../../../../utils/dataHandler';
 
 interface IQuery {
   page: string;
-  take: string;
-  search?: string;
+  filter?: string;
 }
 
 export async function findManySuppliers(req: Request, res: Response) {
-  const { page, take, search } = req.query as any as IQuery;
+  const { page, filter } = req.query as any as IQuery;
+
+  const parsedFilter: IParsedFilter = filter ? JSON.parse(filter) : null;
 
   const { suppliers, suppliersCount } = await supplierServices.findMany({
     page: handleQueryPage(page),
-    take: handleQueryTake(take, 10),
-    search,
+    take: 10,
     companyId: req.Company.id,
+    filter: parsedFilter,
   });
 
   return res.status(200).json({ suppliers, suppliersCount });
