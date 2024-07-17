@@ -16,7 +16,7 @@ export async function findManyMaintenanceHistoryActivitiesController(req: Reques
     maintenanceHistoryId,
   });
 
-  if (!syndicNanoId && !isActivityLogPublic) {
+  if (!syndicNanoId && !isActivityLogPublic && !req.Company) {
     throw new ServerMessage({
       statusCode: 400,
       message: `Você não tem permissão para acessar as atividades.`,
