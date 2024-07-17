@@ -216,6 +216,7 @@ model MaintenanceHistory {
   MaintenanceReportProgress MaintenanceReportProgress[]
   tickets                   Ticket[]
   suppliers                 MaintenanceHistorySupplier[]
+  activities                MaintenanceHistoryActivity[]
 
   @@map("maintenancesHistory")
 }
@@ -447,6 +448,7 @@ model Building {
   warrantyExpiration                DateTime
   keepNotificationAfterWarrantyEnds Boolean
   mandatoryReportProof              Boolean  @default(false)
+  isActivityLogPublic               Boolean  @default(false)
 
   residentPassword String?
   syndicPassword   String?
@@ -892,4 +894,24 @@ model MaintenanceHistorySupplier {
 
   @@unique([maintenanceHistoryId, supplierId])
   @@map("maintenanceHistorySuppliers")
+}
+
+enum MaintenanceHistoryActivityType {
+  comment
+}
+
+model MaintenanceHistoryActivity {
+  id String @id @default(uuid())
+
+  maintenanceHistoryId String
+  type                 MaintenanceHistoryActivityType
+  title                String
+  content              String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  maintenanceHistory MaintenanceHistory @relation(fields: [maintenanceHistoryId], references: [id], onDelete: Cascade)
+
+  @@map("maintenanceHistoryActivities")
 }

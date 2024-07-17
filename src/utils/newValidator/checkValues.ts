@@ -1,3 +1,4 @@
+import { setToUTCMidnight } from '../dateTime';
 import { ServerMessage } from '../messages/serverMessage';
 
 import { ICheckValues, IType } from './types';
@@ -107,12 +108,28 @@ export function checkValues(values: ICheckValues[]) {
           invalidType({ label, type });
         }
 
-        const checkDate = new Date(value);
+        const checkDate = setToUTCMidnight(new Date(value));
 
         if (checkDate.toString() === 'Invalid Date') {
           invalidType({ label, type });
         }
 
+        const minDate = setToUTCMidnight(new Date('1000/01/01'));
+        const maxDate = setToUTCMidnight(new Date('9999/12/31'));
+
+        if (checkDate <= minDate) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: `A informação ${label} deve ser maior que 01/01/1000`,
+          });
+        }
+
+        if (checkDate >= maxDate) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: `A informação ${label} deve ser menor que 31/12/9999`,
+          });
+        }
         break;
       }
 

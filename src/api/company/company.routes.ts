@@ -27,6 +27,7 @@ import { dashboardRouter } from './dashboard/dashboard.routes';
 import { checklistRouter } from './checklists/checklist.routes';
 import { ticketRouter } from './tickets/ticket.routes';
 import { supplierRouter } from './suppliers/supplier.routes';
+import { maintenanceHistoryActivitiesRouter } from '../shared/maintenanceHistoryActivities/maintenanceHistoryActivities.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -72,3 +73,10 @@ companyRouter.use('/checklists', authMiddleware, isCompany, checklistRouter);
 companyRouter.use('/tickets', authMiddleware, isCompany, ticketRouter);
 
 companyRouter.use('/suppliers', authMiddleware, isCompany, supplierRouter);
+
+companyRouter.use(
+  '/maintenance-history-activities',
+  authMiddleware,
+  isCompany,
+  maintenanceHistoryActivitiesRouter,
+);

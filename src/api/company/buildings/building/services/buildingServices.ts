@@ -59,6 +59,22 @@ export class BuildingServices {
     return building!;
   }
 
+  async findByMaintenanceHistoryId({ maintenanceHistoryId }: { maintenanceHistoryId: string }) {
+    const building = await prisma.building.findFirst({
+      where: {
+        MaintenancesHistory: {
+          some: {
+            id: maintenanceHistoryId,
+          },
+        },
+      },
+    });
+
+    validator.needExist([{ label: 'Edificação', variable: building }]);
+
+    return building!;
+  }
+
   async findByOldId({ oldBuildingId }: { oldBuildingId: string }) {
     const building = await prisma.oldBuildingIds.findFirst({
       select: {
@@ -301,6 +317,7 @@ export class BuildingServices {
         syndicPassword: true,
         residentPassword: true,
         nextMaintenanceCreationBasis: true,
+        isActivityLogPublic: true,
 
         Company: {
           select: {

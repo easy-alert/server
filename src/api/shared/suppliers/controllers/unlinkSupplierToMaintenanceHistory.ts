@@ -1,5 +1,6 @@
 import { Response, Request } from 'express';
 import { supplierServices } from '../services/supplierServices';
+import { checkValues } from '../../../../utils/newValidator';
 
 interface IBody {
   maintenanceHistoryId: string;
@@ -8,6 +9,11 @@ interface IBody {
 
 export async function unlinkSupplierToMaintenanceHistory(req: Request, res: Response) {
   const { maintenanceHistoryId, supplierId }: IBody = req.body;
+
+  checkValues([
+    { label: 'ID do histórico de manutenção', type: 'string', value: maintenanceHistoryId },
+    { label: 'ID do fornecedor', type: 'string', value: supplierId },
+  ]);
 
   await supplierServices.unlinkWithMaintenanceHistory({ maintenanceHistoryId, supplierId });
 
