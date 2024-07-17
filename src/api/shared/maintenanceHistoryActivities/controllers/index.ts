@@ -1,3 +1,2 @@
 export * from './createMaintenanceHistoryActivityController';
-export * from './findManyMaintenanceHistoryActivitysController';
-
+export * from './findManyMaintenanceHistoryActivitiesController';

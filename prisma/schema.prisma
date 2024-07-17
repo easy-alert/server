@@ -448,6 +448,7 @@ model Building {
   warrantyExpiration                DateTime
   keepNotificationAfterWarrantyEnds Boolean
   mandatoryReportProof              Boolean  @default(false)
+  isActivityLogPublic               Boolean  @default(false)
 
   residentPassword String?
   syndicPassword   String?

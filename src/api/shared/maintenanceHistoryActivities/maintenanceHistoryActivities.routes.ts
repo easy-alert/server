@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import {
   createMaintenanceHistoryActivityController,
-  findManyMaintenanceHistoryActivitysController,
+  findManyMaintenanceHistoryActivitiesController,
 } from '../../shared/maintenanceHistoryActivities/controllers';
 
 export const maintenanceHistoryActivitiesRouter: Router = Router();
 
 maintenanceHistoryActivitiesRouter.get(
   '/:maintenanceHistoryId',
-  findManyMaintenanceHistoryActivitysController,
+  findManyMaintenanceHistoryActivitiesController,
 );
 
 maintenanceHistoryActivitiesRouter.post('/', createMaintenanceHistoryActivityController);

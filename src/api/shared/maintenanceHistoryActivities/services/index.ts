@@ -1,5 +1,6 @@
 export * from './createMaintenanceHistoryActivityService';
 export * from './deleteMaintenanceHistoryActivityByIdService';
-export * from './findManyMaintenanceHistoryActivitysService';
+export * from './findManyMaintenanceHistoryActivitiesService';
 export * from './findMaintenanceHistoryActivityByIdService';
 export * from './updateMaintenanceHistoryActivityService';
+
