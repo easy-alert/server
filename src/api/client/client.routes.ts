@@ -42,6 +42,7 @@ import { ticketRouter } from './tickets/ticket.routes';
 import { checkPasswordExistenceController } from './building/controllers/checkPasswordExistenceController';
 import { validatePasswordController } from './building/controllers/validatePasswordController';
 import { supplierRouter } from './suppliers/supplier.routes';
+import { maintenanceHistoryActivitiesRouter } from '../shared/maintenanceHistoryActivities/maintenanceHistoryActivities.routes';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -137,3 +138,5 @@ clientRouter.get(
 );
 
 clientRouter.post('/validate-password', validatePasswordController);
+
+clientRouter.use('/maintenance-history-activities', maintenanceHistoryActivitiesRouter);

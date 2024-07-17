@@ -1,6 +1,7 @@
 import { Response, Request } from 'express';
 import { supplierServices } from '../services/supplierServices';
 import { SharedMaintenanceServices } from '../../../shared/maintenance/services/sharedMaintenanceServices';
+import { checkValues } from '../../../../utils/newValidator';
 
 interface IBody {
   maintenanceHistoryId: string;
@@ -11,6 +12,11 @@ const sharedMaintenanceServices = new SharedMaintenanceServices();
 
 export async function linkSupplierToMaintenanceHistory(req: Request, res: Response) {
   const { maintenanceHistoryId, supplierId }: IBody = req.body;
+
+  checkValues([
+    { label: 'ID do histórico de manutenção', type: 'string', value: maintenanceHistoryId },
+    { label: 'ID do fornecedor', type: 'string', value: supplierId },
+  ]);
 
   // Vinculando fornecedor no histórico
   await supplierServices.linkWithMaintenanceHistory({ maintenanceHistoryId, supplierId });
