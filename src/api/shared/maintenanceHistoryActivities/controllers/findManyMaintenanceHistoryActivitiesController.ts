@@ -6,7 +6,7 @@ import { buildingServices } from '../../../company/buildings/building/services/b
 
 export async function findManyMaintenanceHistoryActivitiesController(req: Request, res: Response) {
   const { maintenanceHistoryId } = req.params as any as { maintenanceHistoryId: string };
-  const { accessBy } = req.query as any as { accessBy: string };
+  const { syndicNanoId } = req.query as any as { syndicNanoId: string };
 
   checkValues([
     { label: 'ID do histórico de manutenção', type: 'string', value: maintenanceHistoryId },
@@ -16,7 +16,7 @@ export async function findManyMaintenanceHistoryActivitiesController(req: Reques
     maintenanceHistoryId,
   });
 
-  if (accessBy === 'resident' && !isActivityLogPublic) {
+  if (!syndicNanoId && !isActivityLogPublic) {
     throw new ServerMessage({
       statusCode: 400,
       message: `Você não tem permissão para acessar as atividades.`,
