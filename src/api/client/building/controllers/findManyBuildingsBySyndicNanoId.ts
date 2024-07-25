@@ -11,6 +11,7 @@ interface IBuildingsBySyndic {
   syndicName: string;
   buildingNanoId: string;
   companyName: string;
+  label: string;
 }
 
 export async function findManyBuildingsBySyndicNanoId(req: Request, res: Response) {
@@ -50,12 +51,16 @@ export async function findManyBuildingsBySyndicNanoId(req: Request, res: Respons
   const buildings: IBuildingsBySyndic[] = [];
 
   syndics.forEach(({ Building, nanoId, name }) => {
+    const hasDuplicatedBuilding =
+      syndics.filter((data) => Building.nanoId === data.Building.nanoId).length > 1;
+
     buildings.push({
       buildingNanoId: Building.nanoId,
       buildingName: Building.name,
       syndicNanoId: nanoId,
       companyName: Building.Company.name,
       syndicName: name,
+      label: hasDuplicatedBuilding ? `${`${Building.name} - ${name}`}` : Building.name,
     });
   });
 
