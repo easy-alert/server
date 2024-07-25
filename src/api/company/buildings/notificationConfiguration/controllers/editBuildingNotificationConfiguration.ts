@@ -165,35 +165,37 @@ export async function editBuildingNotificationConfiguration(req: Request, res: R
     });
 
   // #region SEND MESSAGE
-  if (buildingNotificationConfigurationEditedData.isMain) {
+  // Todos os sindicos vao ter que validar pra poder listar o select de building no kanban
+  // SA-6889
+  // if (buildingNotificationConfigurationEditedData.isMain) {
+  if (
+    buildingNotificationConfigurationEditedData.contactNumber &&
+    !buildingNotificationConfigurationEditedData.contactNumberIsConfirmed
+  ) {
     if (
-      buildingNotificationConfigurationEditedData.contactNumber &&
-      !buildingNotificationConfigurationEditedData.contactNumberIsConfirmed
+      buildingNotificationConfigurationEditedData.contactNumber !==
+        buildingNotificationConfigurationData?.contactNumber ||
+      (!buildingNotificationConfigurationData?.isMain &&
+        buildingNotificationConfigurationEditedData.isMain)
     ) {
-      if (
-        buildingNotificationConfigurationEditedData.contactNumber !==
-          buildingNotificationConfigurationData?.contactNumber ||
-        (!buildingNotificationConfigurationData?.isMain &&
-          buildingNotificationConfigurationEditedData.isMain)
-      ) {
-        const token = tokenServices.generate({
-          tokenData: {
-            id: buildingNotificationConfigurationId,
-            confirmType: 'whatsapp',
-          },
-        });
+      const token = tokenServices.generate({
+        tokenData: {
+          id: buildingNotificationConfigurationId,
+          confirmType: 'whatsapp',
+        },
+      });
 
-        const createdToken = await tokenServices.saveInDatabase({ token });
+      const createdToken = await tokenServices.saveInDatabase({ token });
 
-        await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
-          {
-            buildingNotificationConfigurationId,
-            receiverPhoneNumber: buildingNotificationConfigurationEditedData.contactNumber,
-            link: `${linkPhone}?tokenId=${createdToken.id}`,
-          },
-        );
-      }
+      await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
+        {
+          buildingNotificationConfigurationId,
+          receiverPhoneNumber: buildingNotificationConfigurationEditedData.contactNumber,
+          link: `${linkPhone}?tokenId=${createdToken.id}`,
+        },
+      );
     }
+    // }
   }
 
   // EMAIL

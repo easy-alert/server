@@ -43,6 +43,7 @@ import { checkPasswordExistenceController } from './building/controllers/checkPa
 import { validatePasswordController } from './building/controllers/validatePasswordController';
 import { supplierRouter } from './suppliers/supplier.routes';
 import { maintenanceHistoryActivitiesRouter } from '../shared/maintenanceHistoryActivities/maintenanceHistoryActivities.routes';
+import { findManyBuildingsBySyndicNanoId } from './building/controllers/findManyBuildingsBySyndicNanoId';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -140,3 +141,8 @@ clientRouter.get(
 clientRouter.post('/validate-password', validatePasswordController);
 
 clientRouter.use('/maintenance-history-activities', maintenanceHistoryActivitiesRouter);
+
+clientRouter.get(
+  '/find-buildings-by-syndic-nano-id/:syndicNanoId',
+  findManyBuildingsBySyndicNanoId,
+);
