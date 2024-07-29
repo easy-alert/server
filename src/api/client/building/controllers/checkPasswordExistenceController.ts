@@ -16,8 +16,12 @@ export async function checkPasswordExistenceController(req: Request, res: Respon
   const building = await buildingServices.findByNanoId({ buildingNanoId });
 
   if (type === 'resident') {
-    return res.status(200).json({ needPassword: !!building.residentPassword });
+    return res
+      .status(200)
+      .json({ needPassword: !!building.residentPassword, buildingName: building.name });
   }
 
-  return res.status(200).json({ needPassword: !!building.syndicPassword });
+  return res
+    .status(200)
+    .json({ needPassword: !!building.syndicPassword, buildingName: building.name });
 }

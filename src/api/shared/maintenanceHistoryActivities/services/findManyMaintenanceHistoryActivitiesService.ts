@@ -5,6 +5,15 @@ export async function findManyMaintenanceHistoryActivitiesService(maintenanceHis
     where: {
       maintenanceHistoryId,
     },
+    include: {
+      images: {
+        select: {
+          id: true,
+          name: true,
+          url: true,
+        },
+      },
+    },
 
     orderBy: {
       createdAt: 'desc',

@@ -906,12 +906,28 @@ model MaintenanceHistoryActivity {
   maintenanceHistoryId String
   type                 MaintenanceHistoryActivityType
   title                String
-  content              String
+  content              String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  maintenanceHistory MaintenanceHistory @relation(fields: [maintenanceHistoryId], references: [id], onDelete: Cascade)
+  maintenanceHistory MaintenanceHistory                @relation(fields: [maintenanceHistoryId], references: [id], onDelete: Cascade)
+  images             MaintenanceHistoryActivityImage[]
 
   @@map("maintenanceHistoryActivities")
+}
+
+model MaintenanceHistoryActivityImage {
+  id String @id @default(uuid())
+
+  activityId String
+  name       String
+  url        String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  activity MaintenanceHistoryActivity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@map("maintenanceHistoryActivityImages")
 }

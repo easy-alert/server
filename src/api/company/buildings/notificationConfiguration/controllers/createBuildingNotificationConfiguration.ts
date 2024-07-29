@@ -113,26 +113,28 @@ export async function createBuildingNotificationConfiguration(req: Request, res:
 
   // #region SEND MESSAGE
 
-  if (buildingNotificationConfigurationData.isMain) {
-    if (buildingNotificationConfigurationData.contactNumber) {
-      const token = tokenServices.generate({
-        tokenData: {
-          id: buildingNotificationConfigurationData.id,
-          confirmType: 'whatsapp',
-        },
-      });
+  // Todos os sindicos vao ter que validar pra poder listar o select de building no kanban
+  // SA-6889
+  // if (buildingNotificationConfigurationData.isMain) {
+  if (buildingNotificationConfigurationData.contactNumber) {
+    const token = tokenServices.generate({
+      tokenData: {
+        id: buildingNotificationConfigurationData.id,
+        confirmType: 'whatsapp',
+      },
+    });
 
-      const createdToken = await tokenServices.saveInDatabase({ token });
+    const createdToken = await tokenServices.saveInDatabase({ token });
 
-      await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
-        {
-          buildingNotificationConfigurationId: buildingNotificationConfigurationData.id,
-          receiverPhoneNumber: buildingNotificationConfigurationData.contactNumber,
-          link: `${linkPhone}?tokenId=${createdToken.id}`,
-        },
-      );
-    }
+    await buildingNotificationConfigurationServices.sendWhatsappConfirmationForReceiveNotifications(
+      {
+        buildingNotificationConfigurationId: buildingNotificationConfigurationData.id,
+        receiverPhoneNumber: buildingNotificationConfigurationData.contactNumber,
+        link: `${linkPhone}?tokenId=${createdToken.id}`,
+      },
+    );
   }
+  // }
 
   if (buildingNotificationConfigurationData.email) {
     const token = tokenServices.generate({
