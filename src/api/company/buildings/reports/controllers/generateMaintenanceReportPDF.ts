@@ -184,7 +184,7 @@ async function processImageToBase64(stream: Readable): Promise<string> {
 
   const processedBuffer = await sharp(buffer)
     .rotate()
-    .resize({ width: 50, height: 50, fit: 'inside' })
+    .resize({ width: 300, height: 300, fit: 'inside' })
     .toBuffer();
 
   return `data:image/jpeg;base64,${processedBuffer.toString('base64')}`;
