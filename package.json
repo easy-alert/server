@@ -32,6 +32,7 @@
     "multer-sharp-s3": "^0.2.5",
     "nodemailer": "^6.8.0",
     "pdfmake": "^0.2.10",
+    "sharp": "0.32.6",
     "swagger-ui-express": "^4.5.0",
     "ts-node": "^10.9.1",
     "uuid": "^9.0.1",

@@ -42,6 +42,7 @@ import { findDataForAutocompleteInCreate } from './notificationConfiguration/con
 import { listSyndicsForSelect } from './notificationConfiguration/controllers/listSyndicsForSelect';
 import { updateClientPasswordController } from './building/controllers/updateClientPasswordController';
 import { generateMaintenanceReportPDF } from './reports/controllers/generateMaintenanceReportPDF';
+import { listReportPdfs } from './reports/controllers/listReportPdfs';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -97,7 +98,9 @@ buildingRouter.get('/reports/listforselect', listForSelectBuildingReports);
 
 buildingRouter.get('/reports/list', listForBuildingReports);
 
-buildingRouter.get('/reports/list/pdf', generateMaintenanceReportPDF);
+buildingRouter.get('/reports/create/pdf', generateMaintenanceReportPDF);
+
+buildingRouter.get('/reports/list/pdf', listReportPdfs);
 
 // OCCAISIONAL REPORTS AND MAINTENANCES
 

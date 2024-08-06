@@ -4,6 +4,7 @@ import PDFPrinter from 'pdfmake';
 import { Request, Response } from 'express';
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
+import sharp from 'sharp';
 import fs from 'fs';
 import path from 'path';
 import { Content, TDocumentDefinitions } from 'pdfmake/interfaces';
@@ -13,6 +14,7 @@ import { BuildingReportsServices } from '../services/buildingReportsServices';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 import { mask, simplifyNameForURL } from '../../../../../utils/dataHandler';
 import { dateFormatter, setToUTCMidnight } from '../../../../../utils/dateTime';
+import { prisma } from '../../../../../../prisma';
 
 // CLASS
 const buildingReportsServices = new BuildingReportsServices();
@@ -117,6 +119,54 @@ async function downloadFromS3(url: string, folderName: string) {
   return key;
 }
 
+// Função para obter um stream de imagem do S3
+async function getImageStreamFromS3(url: string): Promise<Readable> {
+  const s3bucket = new S3Client({
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    },
+    region: 'us-west-2',
+  });
+
+  const key = url.split('/').pop() ?? '';
+
+  const s3Params = {
+    Bucket: url.includes('larguei') ? process.env.AWS_S3_BUCKET! : 'easy-alert',
+    Key: key ? decodeURI(key) : '',
+  };
+
+  const { Body } = (await s3bucket.send(new GetObjectCommand(s3Params))) as { Body: Readable };
+
+  if (!Body) {
+    throw new Error('Falha ao obter a imagem do S3');
+  }
+
+  return Body;
+}
+
+// Função para converter stream em buffer
+async function streamToBuffer(stream: Readable): Promise<Buffer> {
+  const chunks: Buffer[] = [];
+  return new Promise((resolve, reject) => {
+    stream.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
+    stream.on('end', () => resolve(Buffer.concat(chunks)));
+    stream.on('error', reject);
+  });
+}
+
+// Função para processar a imagem e convertê-la para base64
+async function processImageToBase64(stream: Readable): Promise<string> {
+  const buffer = await streamToBuffer(stream); // Converte o stream em buffer
+
+  const processedBuffer = await sharp(buffer)
+    .rotate()
+    .resize({ width: 300, height: 300, fit: 'inside' })
+    .toBuffer();
+
+  return `data:image/jpeg;base64,${processedBuffer.toString('base64')}`;
+}
+
 function deleteFolder(folderName: string) {
   fs.rmSync(folderName, { force: true, recursive: true });
 }
@@ -161,10 +211,20 @@ const getSingularStatusNameforPdf = (status: string) => {
   return statusName;
 };
 
-export async function generateMaintenanceReportPDF(req: Request, res: Response) {
+async function PDFService(req: Request) {
   const { query } = req as any;
-
   const queryFilter = buildingReportsServices.mountQueryFilter({ query: req.query as any });
+
+  const { id } = await prisma.maintenanceReportPdf.create({
+    data: {
+      name: `${dateFormatter(queryFilter.dateFilter[0].notificationDate.gte)} a ${dateFormatter(
+        queryFilter.dateFilter[0].notificationDate.lte,
+      )}`,
+      authorId: req.userId,
+      authorCompanyId: req.Company.id,
+    },
+  });
+
   const { maintenancesHistory, company } =
     await buildingReportsServices.findBuildingMaintenancesHistory({
       companyId: req.Company.id,
@@ -174,10 +234,6 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
   const folderName = `Folder-${Date.now()}`;
   fs.mkdirSync(folderName);
 
-  const placeholderLogo = await downloadFromS3(
-    'https://larguei.s3.us-west-2.amazonaws.com/placeholder-image-1720725818435.jpg',
-    folderName,
-  );
   const isDicebear = company?.image.includes('dicebear');
 
   const footerLogo = await downloadFromS3(
@@ -359,10 +415,14 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
         for (let imageIndex = 0; imageIndex < Math.min(images.length, 4); imageIndex++) {
           const { url } = images[imageIndex];
 
-          // const downloadedImage = await downloadFromS3(url, folderName);
+          // Obter o stream da imagem do S3
+          const imageStream = await getImageStreamFromS3(url);
+
+          // Processar a imagem com sharp e converter para base64
+          const base64Image = await processImageToBase64(imageStream);
 
           imagesForPDF.push({
-            image: path.join(folderName, placeholderLogo),
+            image: base64Image,
             width: 50,
             height: 50,
             link: url,
@@ -774,11 +834,35 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
 
     const pdfLink = bucketUrl + filename;
 
-    return res.status(200).json({ pdfLink });
+    await prisma.maintenanceReportPdf.update({
+      data: { url: pdfLink, status: 'finished' },
+      where: { id },
+    });
   } catch (error) {
     deleteFolder(folderName);
     // eslint-disable-next-line no-console
     console.error(error);
+    await prisma.maintenanceReportPdf.update({
+      data: { status: 'failed' },
+      where: { id },
+    });
   }
-  return null;
+}
+
+export async function generateMaintenanceReportPDF(req: Request, res: Response) {
+  const previousReport = await prisma.maintenanceReportPdf.findFirst({
+    where: { authorId: req.userId },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  if (previousReport?.status === 'pending') {
+    throw new ServerMessage({
+      message: 'Aguarde o último relatório ser finalizado para gerar um novo',
+      statusCode: 400,
+    });
+  }
+
+  PDFService(req);
+
+  return res.status(200).json({ ServerMessage: { message: 'Geração de PDF em andamento.' } });
 }
