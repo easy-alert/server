@@ -119,29 +119,6 @@ async function downloadFromS3(url: string, folderName: string) {
   return key;
 }
 
-// Função para redimensionar e substituir a imagem
-// async function resizeAndOverwriteImage(originalPath: string) {
-//   const tempPath = `${originalPath}.temp`; // Nome temporário para a imagem redimensionada
-
-//   try {
-//     await sharp(originalPath)
-//       .rotate()
-//       .resize({ width: 50, height: 50, fit: 'inside' })
-//       .toFile(tempPath);
-
-//     // Substituir a imagem original pela imagem redimensionada
-//     fs.renameSync(tempPath, originalPath);
-//   } catch (error) {
-//     console.error('Erro ao redimensionar e substituir a imagem:', error);
-//     throw error;
-//   } finally {
-//     // Remove o arquivo temporário se ainda existir
-//     if (fs.existsSync(tempPath)) {
-//       fs.unlinkSync(tempPath);
-//     }
-//   }
-// }
-
 // Função para obter um stream de imagem do S3
 async function getImageStreamFromS3(url: string): Promise<Readable> {
   const s3bucket = new S3Client({
