@@ -12,14 +12,14 @@ export function checkDateRanges(data: ICheckDateRanges[]) {
     if (!allowEquals && startDate && endDate && new Date(startDate) >= new Date(endDate)) {
       throw new ServerMessage({
         statusCode: 400,
-        message: `A ${label} inicial deve ser maior ou igual a ${label} final.`,
+        message: `A ${label} inicial deve ser menor ou igual a ${label} final.`,
       });
     }
 
     if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
       throw new ServerMessage({
         statusCode: 400,
-        message: `A ${label} inicial deve ser maior que a ${label} final.`,
+        message: `A ${label} inicial deve ser menor que a ${label} final.`,
       });
     }
   });

@@ -37,6 +37,7 @@ model User {
 
   Permissions UserPermissions[]
   Companies   UserCompanies[]
+  reportPdfs  MaintenanceReportPdf[]
 
   @@map("users")
 }
@@ -109,6 +110,7 @@ model Company {
   Buildings           Building[]
   MaintenancesHistory MaintenanceHistory[]
   suppliers           Supplier[]
+  reportPdfs          MaintenanceReportPdf[]
 
   @@map("companies")
 }
@@ -930,4 +932,26 @@ model MaintenanceHistoryActivityImage {
   activity MaintenanceHistoryActivity @relation(fields: [activityId], references: [id], onDelete: Cascade)
 
   @@map("maintenanceHistoryActivityImages")
+}
+
+enum MaintenanceReportPdfStatusName {
+  pending
+  finished
+  failed
+}
+
+model MaintenanceReportPdf {
+  id String @id @default(uuid())
+
+  name            String
+  url             String?
+  authorId        String
+  authorCompanyId String
+  status          MaintenanceReportPdfStatusName @default(pending)
+  createdAt       DateTime                       @default(now())
+
+  author        User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorCompany Company @relation(fields: [authorCompanyId], references: [id], onDelete: Cascade)
+
+  @@map("maintenanceReportPdfs")
 }
