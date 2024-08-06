@@ -119,11 +119,27 @@ async function downloadFromS3(url: string, folderName: string) {
   return key;
 }
 
-async function resizeAndOverwriteImage(imagePath: string) {
-  await sharp(imagePath)
-    .rotate()
-    .resize({ width: 800, height: 800, fit: 'inside' })
-    .toFile(imagePath);
+// Função para redimensionar e substituir a imagem
+async function resizeAndOverwriteImage(originalPath: string) {
+  const tempPath = `${originalPath}.temp`; // Nome temporário para a imagem redimensionada
+
+  try {
+    await sharp(originalPath)
+      .rotate()
+      .resize({ width: 800, height: 800, fit: 'inside' })
+      .toFile(tempPath);
+
+    // Substituir a imagem original pela imagem redimensionada
+    fs.renameSync(tempPath, originalPath);
+  } catch (error) {
+    console.error('Erro ao redimensionar e substituir a imagem:', error);
+    throw error;
+  } finally {
+    // Remove o arquivo temporário se ainda existir
+    if (fs.existsSync(tempPath)) {
+      fs.unlinkSync(tempPath);
+    }
+  }
 }
 
 function deleteFolder(folderName: string) {
