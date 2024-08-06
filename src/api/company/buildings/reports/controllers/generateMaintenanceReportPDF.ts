@@ -4,6 +4,7 @@ import PDFPrinter from 'pdfmake';
 import { Request, Response } from 'express';
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
+import sharp from 'sharp';
 import fs from 'fs';
 import path from 'path';
 import { Content, TDocumentDefinitions } from 'pdfmake/interfaces';
@@ -118,42 +119,11 @@ async function downloadFromS3(url: string, folderName: string) {
   return key;
 }
 
-// Função para obter um stream de uma imagem do S3
-async function getImageStreamFromS3(url: string): Promise<Readable> {
-  const s3bucket = new S3Client({
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-    },
-    region: 'us-west-2',
-  });
-
-  const key = url.split('/').pop() ?? '';
-
-  const s3Params = {
-    Bucket: url.includes('larguei') ? process.env.AWS_S3_BUCKET! : 'easy-alert',
-    Key: key ? decodeURI(key) : '',
-  };
-
-  const { Body } = (await s3bucket.send(new GetObjectCommand(s3Params))) as { Body: Readable };
-
-  if (!Body) {
-    throw new Error('Failed to get image from S3');
-  }
-
-  return Body;
-}
-
-async function streamToBase64(stream: Readable): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const chunks: any[] = [];
-    stream.on('data', (chunk) => chunks.push(chunk));
-    stream.on('end', () => {
-      const buffer = Buffer.concat(chunks);
-      resolve(`data:image/jpeg;base64,${buffer.toString('base64')}`);
-    });
-    stream.on('error', reject);
-  });
+async function resizeAndOverwriteImage(imagePath: string) {
+  await sharp(imagePath)
+    .rotate() // Aplica a rotação correta com base nos metadados EXIF
+    .resize({ width: 800, height: 800, fit: 'inside' }) // Redimensiona mantendo proporção
+    .toFile(imagePath); // Sobrescreve a imagem original
 }
 
 function deleteFolder(folderName: string) {
@@ -404,24 +374,20 @@ async function PDFService(req: Request) {
         for (let imageIndex = 0; imageIndex < Math.min(images.length, 4); imageIndex++) {
           const { url } = images[imageIndex];
 
-          const imageStream = await getImageStreamFromS3(url);
-          const base64Image = await streamToBase64(imageStream);
+          const downloadedImage = await downloadFromS3(url, folderName);
+
+          // Caminho da imagem original
+          const imagePath = path.join(folderName, downloadedImage);
+
+          // Redimensionar e sobrescrever a imagem
+          await resizeAndOverwriteImage(imagePath);
 
           imagesForPDF.push({
-            image: base64Image,
+            image: imagePath,
             width: 50,
             height: 50,
             link: url,
           });
-
-          // const downloadedImage = await downloadFromS3(url, folderName);
-
-          // imagesForPDF.push({
-          //   image: path.join(folderName, downloadedImage),
-          //   width: 50,
-          //   height: 50,
-          //   link: url,
-          // });
         }
 
         const tags: Content = [];
