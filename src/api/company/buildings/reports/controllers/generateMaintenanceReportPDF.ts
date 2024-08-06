@@ -120,26 +120,74 @@ async function downloadFromS3(url: string, folderName: string) {
 }
 
 // Função para redimensionar e substituir a imagem
-async function resizeAndOverwriteImage(originalPath: string) {
-  const tempPath = `${originalPath}.temp`; // Nome temporário para a imagem redimensionada
+// async function resizeAndOverwriteImage(originalPath: string) {
+//   const tempPath = `${originalPath}.temp`; // Nome temporário para a imagem redimensionada
 
-  try {
-    await sharp(originalPath)
-      .rotate()
-      .resize({ width: 50, height: 50, fit: 'inside' })
-      .toFile(tempPath);
+//   try {
+//     await sharp(originalPath)
+//       .rotate()
+//       .resize({ width: 50, height: 50, fit: 'inside' })
+//       .toFile(tempPath);
 
-    // Substituir a imagem original pela imagem redimensionada
-    fs.renameSync(tempPath, originalPath);
-  } catch (error) {
-    console.error('Erro ao redimensionar e substituir a imagem:', error);
-    throw error;
-  } finally {
-    // Remove o arquivo temporário se ainda existir
-    if (fs.existsSync(tempPath)) {
-      fs.unlinkSync(tempPath);
-    }
+//     // Substituir a imagem original pela imagem redimensionada
+//     fs.renameSync(tempPath, originalPath);
+//   } catch (error) {
+//     console.error('Erro ao redimensionar e substituir a imagem:', error);
+//     throw error;
+//   } finally {
+//     // Remove o arquivo temporário se ainda existir
+//     if (fs.existsSync(tempPath)) {
+//       fs.unlinkSync(tempPath);
+//     }
+//   }
+// }
+
+// Função para obter um stream de imagem do S3
+async function getImageStreamFromS3(url: string): Promise<Readable> {
+  const s3bucket = new S3Client({
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    },
+    region: 'us-west-2',
+  });
+
+  const key = url.split('/').pop() ?? '';
+
+  const s3Params = {
+    Bucket: url.includes('larguei') ? process.env.AWS_S3_BUCKET! : 'easy-alert',
+    Key: key ? decodeURI(key) : '',
+  };
+
+  const { Body } = (await s3bucket.send(new GetObjectCommand(s3Params))) as { Body: Readable };
+
+  if (!Body) {
+    throw new Error('Falha ao obter a imagem do S3');
   }
+
+  return Body;
+}
+
+// Função para converter stream em buffer
+async function streamToBuffer(stream: Readable): Promise<Buffer> {
+  const chunks: Buffer[] = [];
+  return new Promise((resolve, reject) => {
+    stream.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
+    stream.on('end', () => resolve(Buffer.concat(chunks)));
+    stream.on('error', reject);
+  });
+}
+
+// Função para processar a imagem e convertê-la para base64
+async function processImageToBase64(stream: Readable): Promise<string> {
+  const buffer = await streamToBuffer(stream); // Converte o stream em buffer
+
+  const processedBuffer = await sharp(buffer)
+    .rotate()
+    .resize({ width: 50, height: 50, fit: 'inside' })
+    .toBuffer();
+
+  return `data:image/jpeg;base64,${processedBuffer.toString('base64')}`;
 }
 
 function deleteFolder(folderName: string) {
@@ -390,20 +438,33 @@ async function PDFService(req: Request) {
         for (let imageIndex = 0; imageIndex < Math.min(images.length, 4); imageIndex++) {
           const { url } = images[imageIndex];
 
-          const downloadedImage = await downloadFromS3(url, folderName);
+          // Obter o stream da imagem do S3
+          const imageStream = await getImageStreamFromS3(url);
 
-          // Caminho da imagem original
-          const imagePath = path.join(folderName, downloadedImage);
-
-          // Redimensionar e sobrescrever a imagem
-          await resizeAndOverwriteImage(imagePath);
+          // Processar a imagem com sharp e converter para base64
+          const base64Image = await processImageToBase64(imageStream);
 
           imagesForPDF.push({
-            image: imagePath,
+            image: base64Image,
             width: 50,
             height: 50,
             link: url,
           });
+
+          // const downloadedImage = await downloadFromS3(url, folderName);
+
+          // // Caminho da imagem original
+          // const imagePath = path.join(folderName, downloadedImage);
+
+          // // Redimensionar e sobrescrever a imagem
+          // await resizeAndOverwriteImage(imagePath);
+
+          // imagesForPDF.push({
+          //   image: imagePath,
+          //   width: 50,
+          //   height: 50,
+          //   link: url,
+          // });
         }
 
         const tags: Content = [];
