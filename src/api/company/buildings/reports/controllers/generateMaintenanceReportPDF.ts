@@ -126,7 +126,7 @@ async function resizeAndOverwriteImage(originalPath: string) {
   try {
     await sharp(originalPath)
       .rotate()
-      .resize({ width: 800, height: 800, fit: 'inside' })
+      .resize({ width: 50, height: 50, fit: 'inside' })
       .toFile(tempPath);
 
     // Substituir a imagem original pela imagem redimensionada
