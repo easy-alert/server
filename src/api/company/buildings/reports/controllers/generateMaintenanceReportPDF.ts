@@ -427,21 +427,6 @@ async function PDFService(req: Request) {
             height: 50,
             link: url,
           });
-
-          // const downloadedImage = await downloadFromS3(url, folderName);
-
-          // // Caminho da imagem original
-          // const imagePath = path.join(folderName, downloadedImage);
-
-          // // Redimensionar e sobrescrever a imagem
-          // await resizeAndOverwriteImage(imagePath);
-
-          // imagesForPDF.push({
-          //   image: imagePath,
-          //   width: 50,
-          //   height: 50,
-          //   link: url,
-          // });
         }
 
         const tags: Content = [];
