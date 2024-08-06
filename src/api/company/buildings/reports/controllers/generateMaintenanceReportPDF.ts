@@ -121,9 +121,9 @@ async function downloadFromS3(url: string, folderName: string) {
 
 async function resizeAndOverwriteImage(imagePath: string) {
   await sharp(imagePath)
-    .rotate() // Aplica a rotação correta com base nos metadados EXIF
-    .resize({ width: 800, height: 800, fit: 'inside' }) // Redimensiona mantendo proporção
-    .toFile(imagePath); // Sobrescreve a imagem original
+    .rotate()
+    .resize({ width: 800, height: 800, fit: 'inside' })
+    .toFile(imagePath);
 }
 
 function deleteFolder(folderName: string) {
