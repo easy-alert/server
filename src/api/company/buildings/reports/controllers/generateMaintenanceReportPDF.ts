@@ -15,6 +15,7 @@ import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 import { mask, simplifyNameForURL } from '../../../../../utils/dataHandler';
 import { dateFormatter, setToUTCMidnight } from '../../../../../utils/dateTime';
 import { prisma } from '../../../../../../prisma';
+import { sendErrorToServerLog } from '../../../../../utils/messages/sendErrorToServerLog';
 
 // CLASS
 const buildingReportsServices = new BuildingReportsServices();
@@ -80,12 +81,7 @@ async function uploadPDFToS3({ pdfBuffer, filename }: { pdfBuffer: Buffer; filen
       }),
     );
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    throw new ServerMessage({
-      message: 'Erro ao salvar PDF no S3.',
-      statusCode: 500,
-    });
+    sendErrorToServerLog({ stack: error, extraInfo: 'Erro nas funções que o Augusto fez' });
   }
 }
 
@@ -211,26 +207,19 @@ const getSingularStatusNameforPdf = (status: string) => {
   return statusName;
 };
 
-async function PDFService(req: Request) {
-  const { query } = req as any;
-  const queryFilter = buildingReportsServices.mountQueryFilter({ query: req.query as any });
-
-  const { id } = await prisma.maintenanceReportPdf.create({
-    data: {
-      name: `${dateFormatter(queryFilter.dateFilter[0].notificationDate.gte)} a ${dateFormatter(
-        queryFilter.dateFilter[0].notificationDate.lte,
-      )}`,
-      authorId: req.userId,
-      authorCompanyId: req.Company.id,
-    },
-  });
-
-  const { maintenancesHistory, company } =
-    await buildingReportsServices.findBuildingMaintenancesHistory({
-      companyId: req.Company.id,
-      queryFilter,
-    });
-
+async function PDFService({
+  company,
+  id,
+  query,
+  maintenancesHistory,
+  req,
+}: {
+  company: { image: string } | null;
+  id: string;
+  query: any;
+  maintenancesHistory: any;
+  req: Request;
+}) {
   const folderName = `Folder-${Date.now()}`;
   fs.mkdirSync(folderName);
 
@@ -251,7 +240,7 @@ async function PDFService(req: Request) {
     totalCost: 0,
   };
 
-  maintenancesHistory.forEach((maintenance) => {
+  maintenancesHistory.forEach((maintenance: any) => {
     if (
       maintenance.MaintenanceReport.length > 0 &&
       maintenance.MaintenanceReport[0].cost !== null
@@ -839,6 +828,8 @@ async function PDFService(req: Request) {
       where: { id },
     });
   } catch (error) {
+    sendErrorToServerLog({ stack: error, extraInfo: 'Erro nas funções que o Augusto fez' });
+
     deleteFolder(folderName);
     // eslint-disable-next-line no-console
     console.error(error);
@@ -862,7 +853,42 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
     });
   }
 
-  PDFService(req);
+  const { query } = req as any;
+  const queryFilter = buildingReportsServices.mountQueryFilter({ query: req.query as any });
+
+  const { maintenancesHistory, company } =
+    await buildingReportsServices.findBuildingMaintenancesHistory({
+      companyId: req.Company.id,
+      queryFilter,
+    });
+
+  let imageCount = 0;
+  maintenancesHistory.forEach(({ MaintenanceReport }) => {
+    MaintenanceReport.forEach(({ ReportImages }) => {
+      imageCount += ReportImages.length;
+    });
+  });
+
+  const imageLimit = 500;
+
+  if (imageCount > imageLimit) {
+    throw new ServerMessage({
+      message: `Você selecionou manutenções contendo ${imageCount} imagens. O limite para o PDF é ${imageLimit} imagens.`,
+      statusCode: 400,
+    });
+  }
+
+  const { id } = await prisma.maintenanceReportPdf.create({
+    data: {
+      name: `${dateFormatter(queryFilter.dateFilter[0].notificationDate.gte)} a ${dateFormatter(
+        queryFilter.dateFilter[0].notificationDate.lte,
+      )}`,
+      authorId: req.userId,
+      authorCompanyId: req.Company.id,
+    },
+  });
+
+  PDFService({ company, id, query, maintenancesHistory, req });
 
   return res.status(200).json({ ServerMessage: { message: 'Geração de PDF em andamento.' } });
 }
