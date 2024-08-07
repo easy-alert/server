@@ -857,7 +857,7 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
 
   if (previousReport?.status === 'pending') {
     throw new ServerMessage({
-      message: 'Aguarde o último relatório ser finalizado para gerar um novo',
+      message: 'Aguarde o último relatório ser finalizado para gerar um novo.',
       statusCode: 400,
     });
   }
