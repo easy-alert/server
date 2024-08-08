@@ -46,7 +46,7 @@ companyRouter.post('/buildings/list/detailsforconfirm', listBuildingDetailsForCo
 
 companyRouter.use('/auth', authRouter);
 
-companyRouter.use('/usercompany', companyUserRouter);
+companyRouter.use('/usercompany', authMiddleware, isCompany, companyUserRouter);
 
 companyRouter.get('/timeinterval/list', listTimeIntervals);
 

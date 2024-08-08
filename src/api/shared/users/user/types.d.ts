@@ -1,7 +1,8 @@
 export interface IEditUser {
   userId: string;
   name: string;
-  email?: string;
+  email: string;
+  isBlocked?: boolean;
 }
 
 export interface IEditUserPassword {
