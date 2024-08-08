@@ -12,7 +12,6 @@ export const authValidateToken = async (req: Request, res: Response) => {
   return res.status(200).json({
     User: {
       id: user.id,
-      image: user.image,
       name: user.name,
       email: user.email,
       lastAccess: user.lastAccess,

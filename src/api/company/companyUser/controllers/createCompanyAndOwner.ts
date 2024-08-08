@@ -108,7 +108,6 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     Account: {
       User: {
         id: createdUser.id,
-        image: createdUser.image,
         name: createdUser.name,
         email: createdUser.email,
         lastAccess: createdUser.lastAccess,
