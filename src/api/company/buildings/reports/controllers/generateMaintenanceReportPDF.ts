@@ -220,6 +220,7 @@ async function PDFService({
   maintenancesHistory: any;
   req: Request;
 }) {
+  const pdfId = uuidv4().substring(0, 10);
   const folderName = `Folder-${Date.now()}`;
   fs.mkdirSync(folderName);
 
@@ -768,7 +769,7 @@ async function PDFService({
                   { text: 'ID:', bold: true },
                   { text: ' ' },
                   {
-                    text: uuidv4().substring(0, 10),
+                    text: pdfId,
                   },
                 ],
                 alignment: 'right',
