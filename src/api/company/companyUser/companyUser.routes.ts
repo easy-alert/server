@@ -6,6 +6,8 @@ import { createCompanyAndOwner } from './controllers/createCompanyAndOwner';
 import { updateUserController } from './controllers/updateUserController';
 import { deleteUserController } from './controllers/deleteUserController';
 import { createUserController } from './controllers/createUserController';
+import { authMiddleware } from '../../../middlewares/auth';
+import { isCompany } from '../../../middlewares/permissions/isCompany';
 
 // ROUTES
 export const companyUserRouter = Router();
@@ -13,8 +15,8 @@ export const companyUserRouter = Router();
 // BUILDING
 
 companyUserRouter.post('/create', createCompanyAndOwner);
-companyUserRouter.post('/create-user', createUserController);
+companyUserRouter.post('/create-user', authMiddleware, isCompany, createUserController);
 
-companyUserRouter.put('/update', updateUserController);
+companyUserRouter.put('/update', authMiddleware, isCompany, updateUserController);
 
-companyUserRouter.delete('/delete/:userId', deleteUserController);
+companyUserRouter.delete('/delete/:userId', authMiddleware, isCompany, deleteUserController);

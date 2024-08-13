@@ -8,7 +8,7 @@ import { Itoken } from './types';
 import { UserServices } from '../api/shared/users/user/services/userServices';
 // TYPES
 
-const userServices = new UserServices()
+const userServices = new UserServices();
 
 export const authMiddleware = async (req: Request, _res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
@@ -27,7 +27,7 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
     const decoded = verify(token, secret);
     const { userId, Permissions, Company } = decoded as Itoken;
 
-    await userServices.findById({userId})
+    await userServices.findById({ userId });
 
     req.userId = userId;
     req.Permissions = Permissions;
