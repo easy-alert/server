@@ -106,6 +106,7 @@ buildingRouter.get('/reports/list/pdf', listReportPdfs);
 
 buildingRouter.get('/reports/create', listForBuildingReports);
 
+// ANTES AQUI LISTAVA AS AVULSAS JUNTOS - REMOVIDO NA TASK SA-7137
 buildingRouter.get(
   '/maintenances/occasional/auxiliarydata',
   listAuxiliaryDataForOccasionalCategoriesAndMaintenances,

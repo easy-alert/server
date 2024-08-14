@@ -96,6 +96,7 @@ clientRouter.get('/buildings/settings-data/:buildingNanoId/:syndicNanoId', findS
 
 clientRouter.use('/buildings/folders', foldersRouter);
 
+// ANTES AQUI LISTAVA AS AVULSAS JUNTOS - REMOVIDO NA TASK SA-7137
 clientRouter.get(
   '/buildings/maintenances/occasional/auxiliarydata/:buildingNanoId',
   listAuxiliaryDataForOccasionalCategoriesAndMaintenances,

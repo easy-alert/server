@@ -137,6 +137,7 @@ export class SharedCategoryServices {
     return defaultCategories;
   }
 
+  // ANTES AQUI LISTAVA AS AVULSAS JUNTOS - REMOVIDO NA TASK SA-7137
   async listOccasionalForSelect({ ownerCompanyId }: { ownerCompanyId: string }) {
     const categories = await prisma.category.findMany({
       select: {
@@ -150,6 +151,13 @@ export class SharedCategoryServices {
             activity: true,
             responsible: true,
           },
+          where: {
+            NOT: {
+              MaintenanceType: {
+                name: 'occasional',
+              },
+            },
+          },
         },
       },
       where: {
@@ -161,6 +169,12 @@ export class SharedCategoryServices {
             ownerCompanyId: null,
           },
         ],
+
+        NOT: {
+          CategoryType: {
+            name: 'occasional',
+          },
+        },
       },
       orderBy: {
         name: 'asc',

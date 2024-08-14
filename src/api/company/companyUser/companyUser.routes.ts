@@ -9,12 +9,10 @@ import { createUserController } from './controllers/createUserController';
 import { authMiddleware } from '../../../middlewares/auth';
 import { isCompany } from '../../../middlewares/permissions/isCompany';
 
-// ROUTES
 export const companyUserRouter = Router();
 
-// BUILDING
-
 companyUserRouter.post('/create', createCompanyAndOwner);
+
 companyUserRouter.post('/create-user', authMiddleware, isCompany, createUserController);
 
 companyUserRouter.put('/update', authMiddleware, isCompany, updateUserController);
