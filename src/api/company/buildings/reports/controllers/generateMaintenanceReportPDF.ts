@@ -32,21 +32,6 @@ const sharedCalendarServices = new SharedCalendarServices();
 // #endregion
 
 // #region Functions
-function formatDateRange(startDate: string, endDate: string) {
-  if (startDate && endDate) {
-    return `${dateFormatter(setToUTCMidnight(new Date(startDate)))} a ${dateFormatter(
-      setToUTCMidnight(new Date(endDate)),
-    )}`;
-  }
-  if (startDate) {
-    return `A partir de ${dateFormatter(setToUTCMidnight(new Date(startDate)))}`;
-  }
-  if (endDate) {
-    return `Até ${dateFormatter(setToUTCMidnight(new Date(endDate)))}`;
-  }
-  return '-';
-}
-
 export const capitalizeFirstLetter = (value: string) =>
   value.charAt(0).toUpperCase() + value.slice(1);
 
@@ -250,205 +235,206 @@ async function PDFService({
 }) {
   const pdfId = uuidv4().substring(0, 10);
   const folderName = `Folder-${Date.now()}`;
-  fs.mkdirSync(folderName);
+  try {
+    fs.mkdirSync(folderName);
 
-  const isDicebear = company?.image.includes('dicebear');
+    const isDicebear = company?.image.includes('dicebear');
 
-  const footerLogo = await downloadFromS3(
-    'https://larguei.s3.us-west-2.amazonaws.com/LOGOPDF-1716384513443.png',
-    folderName,
-  );
+    const footerLogo = await downloadFromS3(
+      'https://larguei.s3.us-west-2.amazonaws.com/LOGOPDF-1716384513443.png',
+      folderName,
+    );
+    const headerLogo = isDicebear ? footerLogo : await downloadFromS3(company!.image, folderName);
 
-  const headerLogo = isDicebear ? footerLogo : await downloadFromS3(company!.image, folderName);
+    let maintenances: IMaintenancesData[] = [];
 
-  let maintenances: IMaintenancesData[] = [];
+    for (let i = 0; i < MaintenancesPending.length; i++) {
+      if (MaintenancesPending[i].Maintenance?.MaintenanceType?.name === 'occasional') {
+        const hasReport = MaintenancesPending[i].MaintenanceReport.length > 0;
 
-  for (let i = 0; i < MaintenancesPending.length; i++) {
-    if (MaintenancesPending[i].Maintenance?.MaintenanceType?.name === 'occasional') {
-      const hasReport = MaintenancesPending[i].MaintenanceReport.length > 0;
+        maintenances.push({
+          id: MaintenancesPending[i].id,
+          dueDate: MaintenancesPending[i].dueDate,
+          maintenanceHistoryId: MaintenancesPending[i].id,
+          buildingName: MaintenancesPending[i].Building.name,
+          categoryName: MaintenancesPending[i].Maintenance.Category.name,
+          element: MaintenancesPending[i].Maintenance.element,
+          activity: MaintenancesPending[i].Maintenance.activity,
+          responsible: MaintenancesPending[i].Maintenance.responsible,
+          source: MaintenancesPending[i].Maintenance.source,
+          notificationDate: MaintenancesPending[i].notificationDate,
+          maintenanceObservation: MaintenancesPending[i].Maintenance.observation,
+          resolutionDate: MaintenancesPending[i].resolutionDate,
+          status: MaintenancesPending[i].MaintenancesStatus.name,
+          type: MaintenancesPending[i].Maintenance.MaintenanceType?.name ?? null,
+          inProgress: MaintenancesPending[i].inProgress,
 
-      maintenances.push({
-        id: MaintenancesPending[i].id,
+          cost: hasReport ? MaintenancesPending[i].MaintenanceReport[0].cost : null,
 
-        maintenanceHistoryId: MaintenancesPending[i].id,
-        buildingName: MaintenancesPending[i].Building.name,
-        categoryName: MaintenancesPending[i].Maintenance.Category.name,
-        element: MaintenancesPending[i].Maintenance.element,
-        activity: MaintenancesPending[i].Maintenance.activity,
-        responsible: MaintenancesPending[i].Maintenance.responsible,
-        source: MaintenancesPending[i].Maintenance.source,
-        notificationDate: MaintenancesPending[i].notificationDate,
-        maintenanceObservation: MaintenancesPending[i].Maintenance.observation,
-        resolutionDate: MaintenancesPending[i].resolutionDate,
-        status: MaintenancesPending[i].MaintenancesStatus.name,
-        type: MaintenancesPending[i].Maintenance.MaintenanceType?.name ?? null,
-        inProgress: MaintenancesPending[i].inProgress,
+          reportObservation: hasReport
+            ? MaintenancesPending[i].MaintenanceReport[0].observation
+            : null,
 
-        cost: hasReport ? MaintenancesPending[i].MaintenanceReport[0].cost : null,
+          images: hasReport ? MaintenancesPending[i].MaintenanceReport[0].ReportImages : [],
+          annexes: hasReport ? MaintenancesPending[i].MaintenanceReport[0].ReportAnnexes : [],
+        });
+      } else {
+        const foundBuildingMaintenance =
+          await buildingServices.findBuildingMaintenanceDaysToAnticipate({
+            buildingId: MaintenancesPending[i].Building.id,
+            maintenanceId: MaintenancesPending[i].Maintenance.id,
+          });
 
-        reportObservation: hasReport
-          ? MaintenancesPending[i].MaintenanceReport[0].observation
-          : null,
-
-        images: hasReport ? MaintenancesPending[i].MaintenanceReport[0].ReportImages : [],
-        annexes: hasReport ? MaintenancesPending[i].MaintenanceReport[0].ReportAnnexes : [],
-      });
-    } else {
-      const foundBuildingMaintenance =
-        await buildingServices.findBuildingMaintenanceDaysToAnticipate({
-          buildingId: MaintenancesPending[i].Building.id,
-          maintenanceId: MaintenancesPending[i].Maintenance.id,
+        const intervals = sharedCalendarServices.recurringDates({
+          startDate: MaintenancesPending[i].notificationDate,
+          endDate: setToUTCLastMinuteOfDay(queryFilter.dateFilter.lte),
+          interval:
+            MaintenancesPending[i].Maintenance.frequency *
+              MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime -
+            (foundBuildingMaintenance?.daysToAnticipate ?? 0),
+          maintenanceData: MaintenancesPending[i],
+          periodDaysInterval:
+            MaintenancesPending[i].Maintenance.period *
+              MaintenancesPending[i].Maintenance.PeriodTimeInterval.unitTime +
+            (foundBuildingMaintenance?.daysToAnticipate ?? 0),
         });
 
-      const intervals = sharedCalendarServices.recurringDates({
-        startDate: MaintenancesPending[i].notificationDate,
-        endDate: setToUTCLastMinuteOfDay(queryFilter.dateFilter.notificationDate.lte),
-        interval:
-          MaintenancesPending[i].Maintenance.frequency *
-            MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime -
-          (foundBuildingMaintenance?.daysToAnticipate ?? 0),
-        maintenanceData: MaintenancesPending[i],
-        periodDaysInterval:
-          MaintenancesPending[i].Maintenance.period *
-            MaintenancesPending[i].Maintenance.PeriodTimeInterval.unitTime +
-          (foundBuildingMaintenance?.daysToAnticipate ?? 0),
-      });
+        const intervalsTyped: IInterval[] = intervals;
 
-      const intervalsTyped: IInterval[] = intervals;
-
-      intervalsTyped.forEach(
-        ({
-          Building,
-          Maintenance,
-          MaintenanceReport,
-          MaintenancesStatus,
-          expectedDueDate,
-          expectedNotificationDate,
-          id,
-          inProgress,
-          // notificationDate,
-          resolutionDate,
-          isFuture,
-        }) => {
-          const hasReport = MaintenanceReport.length > 0;
-
-          maintenances.push({
-            id: Maintenance.id,
+        intervalsTyped.forEach(
+          ({
+            Building,
+            Maintenance,
+            MaintenanceReport,
+            MaintenancesStatus,
             expectedDueDate,
             expectedNotificationDate,
-            isFuture,
-            maintenanceHistoryId: id,
-            buildingName: Building.name,
-            categoryName: Maintenance.Category.name,
-            element: Maintenance.element,
-            activity: Maintenance.activity,
-            responsible: Maintenance.responsible,
-            source: Maintenance.source,
-            // PRO SORT
-            notificationDate: expectedNotificationDate,
-            maintenanceObservation: Maintenance.observation,
-            resolutionDate,
-            status: MaintenancesStatus.name,
-            type: Maintenance.MaintenanceType?.name ?? null,
+            id,
             inProgress,
+            // notificationDate,
+            resolutionDate,
+            isFuture,
+          }) => {
+            const hasReport = MaintenanceReport.length > 0;
 
-            cost: hasReport ? MaintenanceReport[0].cost : null,
+            maintenances.push({
+              id: Maintenance.id,
+              expectedDueDate,
+              dueDate: expectedDueDate,
+              expectedNotificationDate,
+              isFuture,
+              maintenanceHistoryId: id,
+              buildingName: Building.name,
+              categoryName: Maintenance.Category.name,
+              element: Maintenance.element,
+              activity: Maintenance.activity,
+              responsible: Maintenance.responsible,
+              source: Maintenance.source,
+              // PRO SORT
+              notificationDate: expectedNotificationDate,
+              maintenanceObservation: Maintenance.observation,
+              resolutionDate,
+              status: MaintenancesStatus.name,
+              type: Maintenance.MaintenanceType?.name ?? null,
+              inProgress,
 
-            reportObservation: hasReport ? MaintenanceReport[0].observation : null,
+              cost: hasReport ? MaintenanceReport[0].cost : null,
 
-            images: hasReport ? MaintenanceReport[0].ReportImages : [],
-            annexes: hasReport ? MaintenanceReport[0].ReportAnnexes : [],
-          });
-        },
-      );
-    }
-  }
+              reportObservation: hasReport ? MaintenanceReport[0].observation : null,
 
-  maintenances = maintenances.filter(
-    ({ notificationDate }) => notificationDate >= queryFilter.dateFilter.notificationDate.gte,
-  );
-
-  const counts = {
-    completed: 0,
-    // Nesse momento só tem as pendentes
-    pending: maintenances.length,
-    expired: 0,
-    totalCost: 0,
-  };
-
-  maintenancesHistory.forEach((maintenance: any) => {
-    if (
-      maintenance.MaintenanceReport.length > 0 &&
-      maintenance.MaintenanceReport[0].cost !== null
-    ) {
-      counts.totalCost += maintenance.MaintenanceReport[0].cost;
-    }
-
-    switch (maintenance.MaintenancesStatus.name) {
-      case 'completed':
-        counts.completed += 1;
-        break;
-
-      case 'overdue':
-        counts.completed += 1;
-        break;
-
-      case 'pending':
-        counts.pending += 1;
-        break;
-
-      case 'expired':
-        counts.expired += 1;
-        break;
-
-      default:
-        break;
+              images: hasReport ? MaintenanceReport[0].ReportImages : [],
+              annexes: hasReport ? MaintenanceReport[0].ReportAnnexes : [],
+            });
+          },
+        );
+      }
     }
 
-    const hasReport = maintenance.MaintenanceReport.length > 0;
+    maintenances = maintenances.filter(
+      (data: any) => data[queryFilter.filterBy] >= queryFilter.dateFilter.gte,
+    );
 
-    maintenances.push({
-      id: maintenance.id,
+    const counts = {
+      completed: 0,
+      // Nesse momento só tem as pendentes
+      pending: maintenances.length,
+      expired: 0,
+      totalCost: 0,
+    };
 
-      maintenanceHistoryId: maintenance.id,
-      buildingName: maintenance.Building.name,
-      categoryName: maintenance.Maintenance.Category.name,
-      element: maintenance.Maintenance.element,
-      activity: maintenance.Maintenance.activity,
-      responsible: maintenance.Maintenance.responsible,
-      source: maintenance.Maintenance.source,
-      notificationDate: maintenance.notificationDate,
-      maintenanceObservation: maintenance.Maintenance.observation,
-      resolutionDate: maintenance.resolutionDate,
-      status: maintenance.MaintenancesStatus.name,
-      type: maintenance.Maintenance.MaintenanceType?.name ?? null,
-      inProgress: maintenance.inProgress,
+    maintenancesHistory.forEach((maintenance: any) => {
+      if (
+        maintenance.MaintenanceReport.length > 0 &&
+        maintenance.MaintenanceReport[0].cost !== null
+      ) {
+        counts.totalCost += maintenance.MaintenanceReport[0].cost;
+      }
 
-      cost: hasReport ? maintenance.MaintenanceReport[0].cost : null,
+      switch (maintenance.MaintenancesStatus.name) {
+        case 'completed':
+          counts.completed += 1;
+          break;
 
-      reportObservation: hasReport ? maintenance.MaintenanceReport[0].observation : null,
+        case 'overdue':
+          counts.completed += 1;
+          break;
 
-      images: hasReport ? maintenance.MaintenanceReport[0].ReportImages : [],
-      annexes: hasReport ? maintenance.MaintenanceReport[0].ReportAnnexes : [],
+        case 'pending':
+          counts.pending += 1;
+          break;
+
+        case 'expired':
+          counts.expired += 1;
+          break;
+
+        default:
+          break;
+      }
+
+      const hasReport = maintenance.MaintenanceReport.length > 0;
+      maintenances.push({
+        id: maintenance.id,
+
+        dueDate: maintenance.dueDate,
+        maintenanceHistoryId: maintenance.id,
+        buildingName: maintenance.Building.name,
+        categoryName: maintenance.Maintenance.Category.name,
+        element: maintenance.Maintenance.element,
+        activity: maintenance.Maintenance.activity,
+        responsible: maintenance.Maintenance.responsible,
+        source: maintenance.Maintenance.source,
+        notificationDate: maintenance.notificationDate,
+        maintenanceObservation: maintenance.Maintenance.observation,
+        resolutionDate: maintenance.resolutionDate,
+        status: maintenance.MaintenancesStatus.name,
+        type: maintenance.Maintenance.MaintenanceType?.name ?? null,
+        inProgress: maintenance.inProgress,
+
+        cost: hasReport ? maintenance.MaintenanceReport[0].cost : null,
+
+        reportObservation: hasReport ? maintenance.MaintenanceReport[0].observation : null,
+
+        images: hasReport ? maintenance.MaintenanceReport[0].ReportImages : [],
+        annexes: hasReport ? maintenance.MaintenanceReport[0].ReportAnnexes : [],
+      });
     });
-  });
 
-  maintenances.sort((a, b) => b.notificationDate.getTime() - a.notificationDate.getTime());
+    maintenances.sort((a, b) => b.notificationDate.getTime() - a.notificationDate.getTime());
 
-  const maintenancesForPDF = separateByMonth(maintenances);
+    const maintenancesForPDF = separateByMonth(maintenances);
 
-  const bucketUrl = 'https://larguei.s3.us-west-2.amazonaws.com/';
+    const bucketUrl = 'https://larguei.s3.us-west-2.amazonaws.com/';
 
-  const fonts = {
-    Arial: {
-      normal: 'fonts/Arial/Arial.ttf',
-      bold: 'fonts/Arial/ArialMedium.ttf',
-    },
-  };
+    const fonts = {
+      Arial: {
+        normal: 'fonts/Arial/Arial.ttf',
+        bold: 'fonts/Arial/ArialMedium.ttf',
+      },
+    };
 
-  const printer = new PDFPrinter(fonts);
-  const contentData: Content = [];
-  try {
+    const printer = new PDFPrinter(fonts);
+    const contentData: Content = [];
+
     const countData: Content = [
       {
         table: {
@@ -889,25 +875,17 @@ async function PDFService({
               },
               {
                 text: [
-                  { text: 'Período de notificação:', bold: true },
+                  {
+                    text: `Período de ${
+                      queryFilter.filterBy === 'notificationDate' ? 'notificação' : 'vencimento'
+                    }:`,
+                    bold: true,
+                  },
                   { text: ' ' },
                   {
                     text: `${dateFormatter(
                       setToUTCMidnight(new Date(req.query.startDate as string)),
                     )} a ${dateFormatter(setToUTCMidnight(new Date(req.query.endDate as string)))}`,
-                  },
-                ],
-                fontSize: 12,
-              },
-              {
-                text: [
-                  { text: 'Período de vencimento:', bold: true },
-                  { text: ' ' },
-                  {
-                    text: formatDateRange(
-                      req.query.startDueDate as any,
-                      req.query.endDueDate as any,
-                    ),
                   },
                 ],
                 fontSize: 12,
@@ -1031,8 +1009,10 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
 
   const { id } = await prisma.maintenanceReportPdf.create({
     data: {
-      name: `${dateFormatter(queryFilter.dateFilter.notificationDate.gte)} a ${dateFormatter(
-        queryFilter.dateFilter.notificationDate.lte,
+      name: `Perído de ${
+        queryFilter.filterBy === 'notificationDate' ? 'notificação' : 'vencimento'
+      } - ${dateFormatter(queryFilter.dateFilter.gte)} a ${dateFormatter(
+        queryFilter.dateFilter.lte,
       )}`,
       authorId: req.userId,
       authorCompanyId: req.Company.id,

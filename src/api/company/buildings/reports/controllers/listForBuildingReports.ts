@@ -114,6 +114,7 @@ export async function listForBuildingReports(req: Request, res: Response) {
       maintenances.push({
         id: MaintenancesPending[i].id,
 
+        dueDate: MaintenancesPending[i].dueDate,
         maintenanceHistoryId: MaintenancesPending[i].id,
         buildingName: MaintenancesPending[i].Building.name,
         categoryName: MaintenancesPending[i].Maintenance.Category.name,
@@ -146,7 +147,7 @@ export async function listForBuildingReports(req: Request, res: Response) {
 
       const intervals = sharedCalendarServices.recurringDates({
         startDate: MaintenancesPending[i].notificationDate,
-        endDate: setToUTCLastMinuteOfDay(queryFilter.dateFilter.notificationDate.lte),
+        endDate: setToUTCLastMinuteOfDay(queryFilter.dateFilter.lte),
         interval:
           MaintenancesPending[i].Maintenance.frequency *
             MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime -
@@ -189,6 +190,7 @@ export async function listForBuildingReports(req: Request, res: Response) {
             responsible: Maintenance.responsible,
             source: Maintenance.source,
             // PRO SORT
+            dueDate: expectedDueDate,
             notificationDate: expectedNotificationDate,
             maintenanceObservation: Maintenance.observation,
             resolutionDate,
@@ -209,7 +211,7 @@ export async function listForBuildingReports(req: Request, res: Response) {
   }
 
   maintenances = maintenances.filter(
-    ({ notificationDate }) => notificationDate >= queryFilter.dateFilter.notificationDate.gte,
+    (data: any) => data[queryFilter.filterBy] >= queryFilter.dateFilter.gte,
   );
 
   const counts = {
@@ -254,6 +256,7 @@ export async function listForBuildingReports(req: Request, res: Response) {
     maintenances.push({
       id: maintenance.id,
 
+      dueDate: maintenance.dueDate,
       maintenanceHistoryId: maintenance.id,
       buildingName: maintenance.Building.name,
       categoryName: maintenance.Maintenance.Category.name,

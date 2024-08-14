@@ -1,6 +1,6 @@
 // #region IMPORTS
 import { prisma } from '../../../../../../prisma';
-import { differenceInDays, setToUTCLastMinuteOfDay } from '../../../../../utils/dateTime';
+import { differenceInDays, setToUTCMidnight } from '../../../../../utils/dateTime';
 import { changeUTCTime } from '../../../../../utils/dateTime/changeTime';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
@@ -17,13 +17,19 @@ import { IFindBuildingMaintenancesHistory, IListForBuildingReportQuery } from '.
 
 export class BuildingReportsServices {
   mountQueryFilter({ query }: IListForBuildingReportQuery) {
+    if (!query.filterBy) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Selecione qual tipo de data deve ser filtrada.',
+      });
+    }
+
     if (!query.startDate || !query.endDate) {
       throw new ServerMessage({
         statusCode: 400,
         message: 'Você deve informar o intervalo de datas corretamente.',
       });
     }
-
     // AQUI É UTC PORQUE NÃO CONSEGUI MANDAR CERTO DO FRONT
     const dates = {
       startDate: changeUTCTime({
@@ -35,7 +41,7 @@ export class BuildingReportsServices {
           ms: 0,
         },
       }),
-      endDate: setToUTCLastMinuteOfDay(query.endDate),
+      endDate: setToUTCMidnight(query.endDate),
     };
 
     if (dates.endDate < dates.startDate) {
@@ -45,39 +51,12 @@ export class BuildingReportsServices {
       });
     }
 
-    const TWO_YEARS_IN_DAYS = 366 * 5;
+    const FIVE_YEARS_IN_DAYS = 366 * 5;
 
-    if (differenceInDays(dates.endDate, dates.startDate) > TWO_YEARS_IN_DAYS) {
+    if (differenceInDays(dates.endDate, dates.startDate) > FIVE_YEARS_IN_DAYS) {
       throw new ServerMessage({
         statusCode: 400,
         message: 'A diferença entre as datas de notificação não pode exceder 5 anos.',
-      });
-    }
-
-    //
-    const dueDates = {
-      startDueDate: query.startDueDate
-        ? changeUTCTime({
-            date: new Date(String(query.startDueDate)),
-            time: {
-              h: 3,
-              m: 0,
-              s: 0,
-              ms: 0,
-            },
-          })
-        : undefined,
-      endDueDate: query.endDueDate ? setToUTCLastMinuteOfDay(query.endDueDate) : undefined,
-    };
-
-    if (
-      dueDates.endDueDate &&
-      dueDates.startDueDate &&
-      dueDates.endDueDate < dueDates.startDueDate
-    ) {
-      throw new ServerMessage({
-        statusCode: 400,
-        message: 'A data  de vencimento final deve ser maior que a data de vencimento  inicial.',
       });
     }
 
@@ -91,16 +70,10 @@ export class BuildingReportsServices {
       categoryNames:
         query.categoryNames?.split(',')[0] !== '' ? query.categoryNames?.split(',') : undefined,
       dateFilter: {
-        notificationDate: {
-          gte: dates.startDate,
-          lte: dates.endDate,
-        },
-
-        dueDate: {
-          gte: dueDates.startDueDate,
-          lte: dueDates.endDueDate,
-        },
+        gte: dates.startDate,
+        lte: dates.endDate,
       },
+      filterBy: query.filterBy,
     };
 
     return filter;
@@ -181,6 +154,7 @@ export class BuildingReportsServices {
           notificationDate: true,
           resolutionDate: true,
           inProgress: true,
+          dueDate: true,
 
           MaintenanceReport: {
             select: {
@@ -250,9 +224,7 @@ export class BuildingReportsServices {
             },
           },
 
-          notificationDate: queryFilter.dateFilter.notificationDate,
-
-          dueDate: queryFilter.dateFilter.dueDate,
+          [queryFilter.filterBy]: queryFilter.dateFilter,
 
           MaintenancesStatus: {
             NOT: {
@@ -268,6 +240,7 @@ export class BuildingReportsServices {
           notificationDate: true,
           resolutionDate: true,
           inProgress: true,
+          dueDate: true,
 
           MaintenanceReport: {
             select: {
@@ -354,8 +327,8 @@ export class BuildingReportsServices {
             },
           },
 
-          notificationDate: {
-            lte: queryFilter.dateFilter.notificationDate.lte,
+          [queryFilter.filterBy]: {
+            lte: queryFilter.dateFilter.lte,
           },
 
           MaintenancesStatus: {
