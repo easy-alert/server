@@ -40,7 +40,7 @@ interface Maintenance {
   MaintenanceType: MaintenancesStatus;
 }
 
-interface IInterval {
+export interface IInterval {
   id: string;
   notificationDate: any;
   resolutionDate?: any;
