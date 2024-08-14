@@ -1,5 +1,6 @@
 // #region IMPORTS
 import { prisma } from '../../../../../../prisma';
+import { differenceInDays, setToUTCLastMinuteOfDay } from '../../../../../utils/dateTime';
 import { changeUTCTime } from '../../../../../utils/dateTime/changeTime';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
@@ -16,7 +17,7 @@ import { IFindBuildingMaintenancesHistory, IListForBuildingReportQuery } from '.
 
 export class BuildingReportsServices {
   mountQueryFilter({ query }: IListForBuildingReportQuery) {
-    if (query.startDate === '' || query.endDate === '') {
+    if (!query.startDate || !query.endDate) {
       throw new ServerMessage({
         statusCode: 400,
         message: 'Você deve informar o intervalo de datas corretamente.',
@@ -34,21 +35,49 @@ export class BuildingReportsServices {
           ms: 0,
         },
       }),
-      endDate: changeUTCTime({
-        date: new Date(String(query.endDate)),
-        time: {
-          h: 3,
-          m: 0,
-          s: 0,
-          ms: 0,
-        },
-      }),
+      endDate: setToUTCLastMinuteOfDay(query.endDate),
     };
 
     if (dates.endDate < dates.startDate) {
       throw new ServerMessage({
         statusCode: 400,
-        message: 'A data final deve ser maior que a data inicial.',
+        message: 'A data de notificação final deve ser maior que a data de notificação inicial.',
+      });
+    }
+
+    const TWO_YEARS_IN_DAYS = 366 * 5;
+
+    if (differenceInDays(dates.endDate, dates.startDate) > TWO_YEARS_IN_DAYS) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'A diferença entre as datas de notificação não pode exceder 5 anos.',
+      });
+    }
+
+    //
+    const dueDates = {
+      startDueDate: query.startDueDate
+        ? changeUTCTime({
+            date: new Date(String(query.startDueDate)),
+            time: {
+              h: 3,
+              m: 0,
+              s: 0,
+              ms: 0,
+            },
+          })
+        : undefined,
+      endDueDate: query.endDueDate ? setToUTCLastMinuteOfDay(query.endDueDate) : undefined,
+    };
+
+    if (
+      dueDates.endDueDate &&
+      dueDates.startDueDate &&
+      dueDates.endDueDate < dueDates.startDueDate
+    ) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'A data  de vencimento final deve ser maior que a data de vencimento  inicial.',
       });
     }
 
@@ -61,20 +90,17 @@ export class BuildingReportsServices {
         query.buildingIds?.split(',')[0] !== '' ? query.buildingIds?.split(',') : undefined,
       categoryNames:
         query.categoryNames?.split(',')[0] !== '' ? query.categoryNames?.split(',') : undefined,
-      dateFilter: [
-        {
-          notificationDate: {
-            gte: dates.startDate,
-            lte: dates.endDate,
-          },
+      dateFilter: {
+        notificationDate: {
+          gte: dates.startDate,
+          lte: dates.endDate,
         },
-        // {
-        //   resolutionDate: {
-        //     lte: new Date(new Date(String(query.endDate)).toISOString().split('T')[0]),
-        //     gte: new Date(new Date(String(query.startDate)).toISOString().split('T')[0]),
-        //   },
-        // },
-      ],
+
+        dueDate: {
+          gte: dueDates.startDueDate,
+          lte: dueDates.endDueDate,
+        },
+      },
     };
 
     return filter;
@@ -147,7 +173,8 @@ export class BuildingReportsServices {
     companyId,
     queryFilter,
   }: IFindBuildingMaintenancesHistory) {
-    const [maintenancesHistory, company] = await prisma.$transaction([
+    // nome diabo pra reaproveitar função
+    const [maintenancesHistory, MaintenancesPending, company] = await prisma.$transaction([
       prisma.maintenanceHistory.findMany({
         select: {
           id: true,
@@ -205,6 +232,103 @@ export class BuildingReportsServices {
             },
           },
         },
+        orderBy: { notificationDate: 'desc' },
+        where: {
+          maintenanceStatusId: {
+            in: queryFilter.maintenanceStatusIds,
+          },
+
+          buildingId: {
+            in: queryFilter.buildingIds,
+          },
+
+          ownerCompanyId: companyId,
+
+          Maintenance: {
+            Category: {
+              name: { in: queryFilter.categoryNames },
+            },
+          },
+
+          notificationDate: queryFilter.dateFilter.notificationDate,
+
+          dueDate: queryFilter.dateFilter.dueDate,
+
+          MaintenancesStatus: {
+            NOT: {
+              name: 'pending',
+            },
+          },
+        },
+      }),
+
+      prisma.maintenanceHistory.findMany({
+        select: {
+          id: true,
+          notificationDate: true,
+          resolutionDate: true,
+          inProgress: true,
+
+          MaintenanceReport: {
+            select: {
+              observation: true,
+              cost: true,
+
+              ReportAnnexes: {
+                select: {
+                  url: true,
+                  name: true,
+                },
+              },
+
+              ReportImages: {
+                select: {
+                  url: true,
+                },
+              },
+            },
+          },
+          MaintenancesStatus: {
+            select: {
+              name: true,
+            },
+          },
+
+          Building: {
+            select: {
+              name: true,
+              id: true,
+            },
+          },
+          Maintenance: {
+            select: {
+              id: true,
+              element: true,
+              activity: true,
+              Category: {
+                select: {
+                  name: true,
+                },
+              },
+              frequency: true,
+              FrequencyTimeInterval: {
+                select: { unitTime: true },
+              },
+              period: true,
+              PeriodTimeInterval: {
+                select: { unitTime: true },
+              },
+              source: true,
+              responsible: true,
+              observation: true,
+              MaintenanceType: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
         orderBy: [
           {
             Building: {
@@ -229,12 +353,20 @@ export class BuildingReportsServices {
               name: { in: queryFilter.categoryNames },
             },
           },
-          OR: queryFilter.dateFilter,
+
+          notificationDate: {
+            lte: queryFilter.dateFilter.notificationDate.lte,
+          },
+
+          MaintenancesStatus: {
+            name: 'pending',
+          },
         },
       }),
+
       prisma.company.findUnique({ select: { image: true }, where: { id: companyId } }),
     ]);
 
-    return { maintenancesHistory, company };
+    return { maintenancesHistory, MaintenancesPending, company };
   }
 }

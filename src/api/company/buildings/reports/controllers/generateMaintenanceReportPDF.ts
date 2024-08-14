@@ -23,6 +23,21 @@ const buildingReportsServices = new BuildingReportsServices();
 // #endregion
 
 // #region Functions
+function formatDateRange(startDate: string, endDate: string) {
+  if (startDate && endDate) {
+    return `${dateFormatter(setToUTCMidnight(new Date(startDate)))} a ${dateFormatter(
+      setToUTCMidnight(new Date(endDate)),
+    )}`;
+  }
+  if (startDate) {
+    return `A partir de ${dateFormatter(setToUTCMidnight(new Date(startDate)))}`;
+  }
+  if (endDate) {
+    return `Até ${dateFormatter(setToUTCMidnight(new Date(endDate)))}`;
+  }
+  return '-';
+}
+
 export const capitalizeFirstLetter = (value: string) =>
   value.charAt(0).toUpperCase() + value.slice(1);
 
@@ -752,12 +767,25 @@ async function PDFService({
               },
               {
                 text: [
-                  { text: 'Período:', bold: true },
+                  { text: 'Período de notificação:', bold: true },
                   { text: ' ' },
                   {
                     text: `${dateFormatter(
                       setToUTCMidnight(new Date(req.query.startDate as string)),
                     )} a ${dateFormatter(setToUTCMidnight(new Date(req.query.endDate as string)))}`,
+                  },
+                ],
+                fontSize: 12,
+              },
+              {
+                text: [
+                  { text: 'Período de vencimento:', bold: true },
+                  { text: ' ' },
+                  {
+                    text: formatDateRange(
+                      req.query.startDueDate as any,
+                      req.query.endDueDate as any,
+                    ),
                   },
                 ],
                 fontSize: 12,
@@ -881,8 +909,8 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
 
   const { id } = await prisma.maintenanceReportPdf.create({
     data: {
-      name: `${dateFormatter(queryFilter.dateFilter[0].notificationDate.gte)} a ${dateFormatter(
-        queryFilter.dateFilter[0].notificationDate.lte,
+      name: `${dateFormatter(queryFilter.dateFilter.notificationDate.gte)} a ${dateFormatter(
+        queryFilter.dateFilter.notificationDate.lte,
       )}`,
       authorId: req.userId,
       authorCompanyId: req.Company.id,
