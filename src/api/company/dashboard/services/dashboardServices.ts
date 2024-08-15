@@ -49,9 +49,14 @@ export class DashboardServices {
       completedMaintenancesScore,
       expiredMaintenancesScore,
       pendingMaintenancesScore,
-    ] = await prisma.$transaction([
+      occasionalCompleted,
+      occasionalCompletedCost,
+      commonCompleted,
+      commonCompletedCost,
+      openTicketsCount,
+      finishedTicketsCount,
+    ] = await Promise.all([
       // #region timeLine
-
       prisma.maintenanceHistory.groupBy({
         by: ['notificationDate'],
         _count: {
@@ -172,7 +177,6 @@ export class DashboardServices {
       // #endregion
 
       // #region score
-
       prisma.maintenanceHistory.aggregate({
         _count: { resolutionDate: true },
 
@@ -245,6 +249,157 @@ export class DashboardServices {
       }),
 
       // #endregion
+
+      // #region counts
+      prisma.maintenanceHistory.count({
+        where: {
+          resolutionDate: filter.period,
+          Building: {
+            NotificationsConfigurations: filter.responsibles,
+            name: filter.buildings,
+          },
+          ownerCompanyId: filter.companyId,
+
+          Maintenance: {
+            Category: {
+              name: filter.categories,
+            },
+
+            MaintenanceType: { name: 'occasional' },
+          },
+
+          MaintenancesStatus: {
+            OR: [
+              {
+                name: 'completed',
+              },
+              {
+                name: 'overdue',
+              },
+            ],
+          },
+        },
+      }),
+
+      prisma.maintenanceReport.aggregate({
+        _sum: { cost: true },
+        where: {
+          MaintenanceHistory: {
+            resolutionDate: filter.period,
+            Building: {
+              NotificationsConfigurations: filter.responsibles,
+              name: filter.buildings,
+            },
+            ownerCompanyId: filter.companyId,
+            Maintenance: {
+              Category: {
+                name: filter.categories,
+              },
+
+              MaintenanceType: { name: 'occasional' },
+            },
+
+            MaintenancesStatus: {
+              OR: [
+                {
+                  name: 'completed',
+                },
+                {
+                  name: 'overdue',
+                },
+              ],
+            },
+          },
+        },
+      }),
+
+      prisma.maintenanceHistory.count({
+        where: {
+          resolutionDate: filter.period,
+          Building: {
+            NotificationsConfigurations: filter.responsibles,
+            name: filter.buildings,
+          },
+          ownerCompanyId: filter.companyId,
+
+          Maintenance: {
+            Category: {
+              name: filter.categories,
+            },
+
+            MaintenanceType: { name: 'common' },
+          },
+
+          MaintenancesStatus: {
+            OR: [
+              {
+                name: 'completed',
+              },
+              {
+                name: 'overdue',
+              },
+            ],
+          },
+        },
+      }),
+
+      prisma.maintenanceReport.aggregate({
+        _sum: { cost: true },
+        where: {
+          MaintenanceHistory: {
+            resolutionDate: filter.period,
+            Building: {
+              NotificationsConfigurations: filter.responsibles,
+              name: filter.buildings,
+            },
+            ownerCompanyId: filter.companyId,
+            Maintenance: {
+              Category: {
+                name: filter.categories,
+              },
+
+              MaintenanceType: { name: 'common' },
+            },
+
+            MaintenancesStatus: {
+              OR: [
+                {
+                  name: 'completed',
+                },
+                {
+                  name: 'overdue',
+                },
+              ],
+            },
+          },
+        },
+      }),
+      // #endregion
+
+      // #region tickets
+      prisma.ticket.count({
+        where: {
+          statusName: { in: ['awaitingToFinish', 'open'] },
+          createdAt: filter.period,
+          building: {
+            name: filter.buildings,
+            companyId: filter.companyId,
+          },
+        },
+      }),
+
+      prisma.ticket.count({
+        where: {
+          statusName: 'finished',
+          createdAt: filter.period,
+          building: {
+            name: filter.buildings,
+            companyId: filter.companyId,
+          },
+        },
+      }),
+
+      // #endregion
     ]);
 
     return {
@@ -255,6 +410,12 @@ export class DashboardServices {
       completedMaintenancesScore,
       expiredMaintenancesScore,
       pendingMaintenancesScore,
+      occasionalCompleted,
+      occasionalCompletedCost,
+      commonCompleted,
+      commonCompletedCost,
+      openTicketsCount,
+      finishedTicketsCount,
     };
   }
 
