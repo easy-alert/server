@@ -4,11 +4,14 @@ import { createBuildingFolders } from './createBuildingFolders';
 import { deleteAllExpiredMaintenancesFromBuilding } from './deleteAllExpiredMaintenancesFromBuilding';
 import { deleteExpiredMaintenance } from './deleteExpiredMaintenance';
 import { migrateBuildingToOtherCompany } from './migrateBuildingToOtherCompany';
+import { fixSupplierAreaOfActivity } from './fixSupplierAreaOfActivity';
 
 // ROUTES
 export const scriptRouter: Router = Router();
 
 scriptRouter.get('/migrate-building', migrateBuildingToOtherCompany);
+
+scriptRouter.get('/fix-supplier-area-of-activity', fixSupplierAreaOfActivity);
 
 scriptRouter.post('/templates/create', createDefaultTemplates);
 scriptRouter.get('/buildings/create-folders', createBuildingFolders);

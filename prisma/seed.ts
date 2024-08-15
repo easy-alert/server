@@ -9,23 +9,17 @@ async function main() {
   console.log('seed is running ...');
 
   await seedServices.createPermissions();
-
   await seedServices.createAdminBackoffice();
-
   await seedServices.createAdminCompany();
-
   await seedServices.createTimeIntervals();
-
   await seedServices.createBuildingsTypes();
-
   await seedServices.createMaintenancesStatus();
-
   await seedServices.createCategoryAndMaintenanceTypes();
 
   await seedServices.upsertTicketPlaces();
   await seedServices.upsertTicketServiceTypes();
   await seedServices.upsertTicketStatus();
-  await seedServices.upsertSupplierAreaOfActivities();
+  await seedServices.createSupplierAreaOfActivities();
 }
 
 main()

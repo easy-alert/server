@@ -293,7 +293,7 @@ export class SeedServices {
     console.log('Ticket status upserted.');
   }
 
-  async upsertSupplierAreaOfActivities() {
+  async createSupplierAreaOfActivities() {
     const allData = [
       { label: 'Hidráulica' },
       { label: 'Elétrica' },
@@ -305,16 +305,10 @@ export class SeedServices {
       { label: 'Outros' },
     ];
 
-    for (let i = 0; i < allData.length; i++) {
-      const data = allData[i];
+    await prisma.areaOfActivity.createMany({
+      data: allData,
+    });
 
-      await prisma.areaOfActivity.upsert({
-        create: data,
-        update: {},
-        where: data,
-      });
-    }
-
-    console.log('Area of activities upserted.');
+    console.log('Area of activities created.');
   }
 }

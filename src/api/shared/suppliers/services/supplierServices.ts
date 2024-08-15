@@ -293,7 +293,14 @@ class SupplierServices {
 
     const areaOfActivities = {
       create: uniqueLabels.map((label) => ({
-        areaOfActivity: { connectOrCreate: { create: { label, companyId }, where: { label } } },
+        areaOfActivity: {
+          connectOrCreate: {
+            create: { label, companyId },
+            where: {
+              label_companyId: { companyId, label },
+            },
+          },
+        },
       })),
     };
 
