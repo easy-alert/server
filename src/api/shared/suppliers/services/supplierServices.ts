@@ -28,8 +28,9 @@ interface IFindManyByBuildingNanoId {
 }
 
 interface ICreateOrConnectServiceTypesService {
-  serviceTypeLabels: string[] | undefined;
+  areaOfActivityLabels: string[];
   isUpdate: boolean;
+  companyId: string;
 }
 
 class SupplierServices {
@@ -54,9 +55,9 @@ class SupplierServices {
       }
 
       if (filter.serviceTypeLabel) {
-        where.serviceTypes = {
+        where.areaOfActivities = {
           some: {
-            type: {
+            areaOfActivity: {
               label: {
                 equals: filter.serviceTypeLabel,
                 mode: 'insensitive',
@@ -86,16 +87,16 @@ class SupplierServices {
         city: true,
         cnpj: true,
         state: true,
-        serviceTypes: {
+        areaOfActivities: {
           select: {
-            type: {
+            areaOfActivity: {
               select: {
                 label: true,
               },
             },
           },
           orderBy: {
-            type: { label: 'asc' },
+            areaOfActivity: { label: 'asc' },
           },
         },
       },
@@ -142,9 +143,9 @@ class SupplierServices {
       }
 
       if (filter.serviceTypeLabel) {
-        where.serviceTypes = {
+        where.areaOfActivities = {
           some: {
-            type: {
+            areaOfActivity: {
               label: {
                 equals: filter.serviceTypeLabel,
                 mode: 'insensitive',
@@ -175,16 +176,16 @@ class SupplierServices {
           city: true,
           cnpj: true,
           state: true,
-          serviceTypes: {
+          areaOfActivities: {
             select: {
-              type: {
+              areaOfActivity: {
                 select: {
                   label: true,
                 },
               },
             },
             orderBy: {
-              type: { label: 'asc' },
+              areaOfActivity: { label: 'asc' },
             },
           },
         },
@@ -216,16 +217,16 @@ class SupplierServices {
         city: true,
         cnpj: true,
         state: true,
-        serviceTypes: {
+        areaOfActivities: {
           select: {
-            type: {
+            areaOfActivity: {
               select: {
                 label: true,
               },
             },
           },
           orderBy: {
-            type: { label: 'asc' },
+            areaOfActivity: { label: 'asc' },
           },
         },
 
@@ -277,29 +278,30 @@ class SupplierServices {
     return prisma.supplier.delete({ where: { id } });
   }
 
-  createOrConnectServiceTypesService({
-    serviceTypeLabels,
+  createOrConnectAreaOfActivityService({
+    areaOfActivityLabels,
     isUpdate,
+    companyId,
   }: ICreateOrConnectServiceTypesService) {
-    serviceTypeLabels?.forEach((tag) => {
+    areaOfActivityLabels.forEach((tag) => {
       checkValues([{ label: 'Tag', type: 'string', value: tag }]);
     });
 
-    const uniqueLabels = [...new Set(serviceTypeLabels)].map((label) =>
-      capitalizeFirstLetter(label.trim()),
-    );
+    const uniqueLabels = [
+      ...new Set(areaOfActivityLabels.map((label) => capitalizeFirstLetter(label.trim()))),
+    ];
 
-    const serviceTypes = {
+    const areaOfActivities = {
       create: uniqueLabels.map((label) => ({
-        type: { connectOrCreate: { create: { label }, where: { label } } },
+        areaOfActivity: { connectOrCreate: { create: { label, companyId }, where: { label } } },
       })),
     };
 
     if (isUpdate) {
-      return { serviceTypes: { deleteMany: {}, ...serviceTypes } };
+      return { areaOfActivities: { deleteMany: {}, ...areaOfActivities } };
     }
 
-    return { serviceTypes };
+    return { areaOfActivities };
   }
 
   async findManyByMaintenanceHistoryId(maintenanceHistoryId: string) {
@@ -309,16 +311,16 @@ class SupplierServices {
         name: true,
         phone: true,
         email: true,
-        serviceTypes: {
+        areaOfActivities: {
           select: {
-            type: {
+            areaOfActivity: {
               select: {
                 label: true,
               },
             },
           },
           orderBy: {
-            type: { label: 'asc' },
+            areaOfActivity: { label: 'asc' },
           },
         },
       },
@@ -346,16 +348,16 @@ class SupplierServices {
         select: {
           id: true,
           name: true,
-          serviceTypes: {
+          areaOfActivities: {
             select: {
-              type: {
+              areaOfActivity: {
                 select: {
                   label: true,
                 },
               },
             },
             orderBy: {
-              type: { label: 'asc' },
+              areaOfActivity: { label: 'asc' },
             },
           },
         },
@@ -371,16 +373,16 @@ class SupplierServices {
         select: {
           id: true,
           name: true,
-          serviceTypes: {
+          areaOfActivities: {
             select: {
-              type: {
+              areaOfActivity: {
                 select: {
                   label: true,
                 },
               },
             },
             orderBy: {
-              type: { label: 'asc' },
+              areaOfActivity: { label: 'asc' },
             },
           },
         },
@@ -526,6 +528,19 @@ class SupplierServices {
           supplierId,
         },
       },
+    });
+  }
+
+  async findAreaOfActivities({ companyId }: { companyId: string | undefined }) {
+    return prisma.areaOfActivity.findMany({
+      select: {
+        id: true,
+        label: true,
+      },
+      where: {
+        OR: [{ companyId: null }, { companyId }],
+      },
+      orderBy: { label: 'asc' },
     });
   }
 }

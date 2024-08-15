@@ -111,6 +111,7 @@ model Company {
   MaintenancesHistory MaintenanceHistory[]
   suppliers           Supplier[]
   reportPdfs          MaintenanceReportPdf[]
+  areaOfActivities    AreaOfActivity[]
 
   @@map("companies")
 }
@@ -656,7 +657,7 @@ model Supplier {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  serviceTypes SupplierServiceType[]
+  areaOfActivities SupplierAreaOfActivity[]
 
   company             Company                      @relation(fields: [companyId], references: [id], onDelete: Cascade)
   maintenances        MaintenanceSupplier[]
@@ -665,15 +666,27 @@ model Supplier {
   @@map("suppliers")
 }
 
-model SupplierServiceType {
-  supplierId    String
-  serviceTypeId String
+model SupplierAreaOfActivity {
+  supplierId       String
+  areaOfActivityId String
 
-  supplier Supplier    @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  type     ServiceType @relation(fields: [serviceTypeId], references: [id], onDelete: Cascade)
+  supplier       Supplier       @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  areaOfActivity AreaOfActivity @relation(fields: [areaOfActivityId], references: [id])
 
-  @@id([supplierId, serviceTypeId])
-  @@map("supplierServiceTypes")
+  @@id([supplierId, areaOfActivityId])
+  @@map("supplierAreaOfActivities")
+}
+
+model AreaOfActivity {
+  id        String  @id @default(uuid())
+  label     String  @unique
+  companyId String?
+
+  company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  suppliers SupplierAreaOfActivity[]
+
+  @@map("areaOfActivities")
 }
 
 // DEFAULT TEMPLATE MAINTENANCES
@@ -860,8 +873,7 @@ model ServiceType {
   id    String @id @default(uuid())
   label String @unique
 
-  tickets   TicketServiceType[]
-  suppliers SupplierServiceType[]
+  tickets TicketServiceType[]
 
   @@map("serviceTypes")
 }

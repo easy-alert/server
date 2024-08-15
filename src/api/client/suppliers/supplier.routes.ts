@@ -6,12 +6,15 @@ import { findSupplierById } from '../../shared/suppliers/controllers/findSupplie
 import { linkSupplierToMaintenanceHistory } from '../../shared/suppliers/controllers/linkSupplierToMaintenanceHistory';
 import { unlinkSupplierToMaintenanceHistory } from '../../shared/suppliers/controllers/unlinkSupplierToMaintenanceHistory';
 import { findManySuppliersByBuildingNanoId } from '../../shared/suppliers/controllers/findManySuppliersByBuildingNanoId';
+import { findManyAreaOfActivities } from '../../shared/suppliers/controllers/findManyAreaOfActivities';
 
 export const supplierRouter = Router();
 
 supplierRouter.get('/', findManySuppliersByBuildingNanoId);
 supplierRouter.get('/:supplierId', findSupplierById);
 supplierRouter.get('/selected/:maintenanceHistoryId', findLinkedSuppliersByMaintenanceHistoryId);
+supplierRouter.get('/extras/area-of-activities', findManyAreaOfActivities);
+
 supplierRouter.get(
   '/to-select/:maintenanceHistoryId',
   findManySuppliersToSelectByMaintenanceHistoryId,
