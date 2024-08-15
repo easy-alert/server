@@ -136,6 +136,24 @@ export class SharedMaintenanceServices {
     });
   }
 
+  async updateMaintenanceHistoryToInProgress(maintenanceHistoryId: string) {
+    const { MaintenancesStatus } = await this.findHistoryById({ maintenanceHistoryId });
+
+    if (MaintenancesStatus.name === 'completed' || MaintenancesStatus.name === 'overdue') {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Essa manutenção já foi finalizada.',
+      });
+    }
+
+    return prisma.maintenanceHistory.update({
+      data: { inProgress: true },
+      where: {
+        id: maintenanceHistoryId,
+      },
+    });
+  }
+
   async findById({ maintenanceId }: { maintenanceId: string }) {
     const maintenance = await prisma.maintenance.findUnique({
       where: { id: maintenanceId },
