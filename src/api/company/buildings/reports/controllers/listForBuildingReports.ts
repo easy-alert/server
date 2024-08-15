@@ -211,7 +211,9 @@ export async function listForBuildingReports(req: Request, res: Response) {
   }
 
   maintenances = maintenances.filter(
-    (data: any) => data[queryFilter.filterBy] >= queryFilter.dateFilter.gte,
+    (data: any) =>
+      data[queryFilter.filterBy] >= queryFilter.dateFilter.gte &&
+      data[queryFilter.filterBy] <= queryFilter.dateFilter.lte,
   );
 
   const counts = {
