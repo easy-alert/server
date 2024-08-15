@@ -679,13 +679,14 @@ model SupplierAreaOfActivity {
 
 model AreaOfActivity {
   id        String  @id @default(uuid())
-  label     String  @unique
+  label     String
   companyId String?
 
   company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   suppliers SupplierAreaOfActivity[]
 
+  @@unique([label, companyId])
   @@map("areaOfActivities")
 }
 
