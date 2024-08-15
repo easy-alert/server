@@ -1009,7 +1009,7 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
 
   const { id } = await prisma.maintenanceReportPdf.create({
     data: {
-      name: `Perído de ${
+      name: `Período de ${
         queryFilter.filterBy === 'notificationDate' ? 'notificação' : 'vencimento'
       } - ${dateFormatter(queryFilter.dateFilter.gte)} a ${dateFormatter(
         queryFilter.dateFilter.lte,
