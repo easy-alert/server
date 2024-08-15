@@ -53,9 +53,9 @@ export async function createMaintenanceHistoryActivityController(req: Request, r
     ]);
   });
 
-  let author: string | null = null;
-
-  if (syndicNanoId) {
+  let author: string = 'Convidado';
+  // Gambiarra, ver lá na modal
+  if (syndicNanoId && syndicNanoId !== 'true') {
     author = (await sharedBuildingNotificationConfigurationServices.findByNanoId({ syndicNanoId }))
       .name;
   }
