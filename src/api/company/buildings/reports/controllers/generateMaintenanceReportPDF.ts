@@ -351,7 +351,9 @@ async function PDFService({
     }
 
     maintenances = maintenances.filter(
-      (data: any) => data[queryFilter.filterBy] >= queryFilter.dateFilter.gte,
+      (data: any) =>
+        data[queryFilter.filterBy] >= queryFilter.dateFilter.gte &&
+        data[queryFilter.filterBy] <= queryFilter.dateFilter.lte,
     );
 
     const counts = {
