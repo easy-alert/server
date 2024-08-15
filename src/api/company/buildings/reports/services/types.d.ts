@@ -4,7 +4,8 @@ export interface IFindBuildingMaintenancesHistory {
     maintenanceStatusIds: string[] | undefined;
     buildingIds: string[] | undefined;
     categoryNames: string[] | undefined;
-    dateFilter: any;
+    dateFilter: { gte: Date; lte: Date };
+    filterBy: string;
   };
 }
 
@@ -15,6 +16,7 @@ export interface IListForBuildingReportQuery {
     categoryNames: string | undefined;
     startDate: string | undefined;
     endDate: string | undefined;
+    filterBy: string;
   };
 }
 
@@ -35,6 +37,10 @@ export interface IMaintenancesData {
   inProgress: boolean;
   cost: number | null;
   type: string | null;
+  expectedDueDate?: Date;
+  expectedNotificationDate?: Date;
+  isFuture?: boolean;
+  dueDate: Date;
 
   images: {
     url: string;

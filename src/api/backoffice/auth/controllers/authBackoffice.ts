@@ -24,9 +24,7 @@ export const authBackoffice = async (req: Request, res: Response) => {
     { label: 'senha', variable: password },
   ]);
 
-  const user = await authServices.findByEmail({ email });
-
-  await authServices.canLogin({ user, password });
+  const user = await authServices.canLogin({ email, password });
 
   await permissionServices.checkPermission({
     UserPermissions: user.Permissions,
@@ -45,7 +43,6 @@ export const authBackoffice = async (req: Request, res: Response) => {
   return res.status(200).json({
     User: {
       id: user.id,
-      image: user.image,
       name: user.name,
       email: user.email,
       lastAccess: user.lastAccess,

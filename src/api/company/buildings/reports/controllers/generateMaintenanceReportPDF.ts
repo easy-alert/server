@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable no-loop-func */
 // #region IMPORTS
 import PDFPrinter from 'pdfmake';
@@ -13,12 +14,20 @@ import { IMaintenancesData } from '../services/types';
 import { BuildingReportsServices } from '../services/buildingReportsServices';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 import { mask, simplifyNameForURL } from '../../../../../utils/dataHandler';
-import { dateFormatter, setToUTCMidnight } from '../../../../../utils/dateTime';
+import {
+  dateFormatter,
+  setToUTCLastMinuteOfDay,
+  setToUTCMidnight,
+} from '../../../../../utils/dateTime';
 import { prisma } from '../../../../../../prisma';
 import { sendErrorToServerLog } from '../../../../../utils/messages/sendErrorToServerLog';
+import { buildingServices } from '../../building/services/buildingServices';
+import { IInterval } from './listForBuildingReports';
+import { SharedCalendarServices } from '../../../../shared/calendar/services/SharedCalendarServices';
 
 // CLASS
 const buildingReportsServices = new BuildingReportsServices();
+const sharedCalendarServices = new SharedCalendarServices();
 
 // #endregion
 
@@ -213,104 +222,219 @@ async function PDFService({
   query,
   maintenancesHistory,
   req,
+  MaintenancesPending,
+  queryFilter,
 }: {
   company: { image: string } | null;
   id: string;
   query: any;
   maintenancesHistory: any;
   req: Request;
+  MaintenancesPending: any;
+  queryFilter: any;
 }) {
+  const pdfId = uuidv4().substring(0, 10);
   const folderName = `Folder-${Date.now()}`;
-  fs.mkdirSync(folderName);
-
-  const isDicebear = company?.image.includes('dicebear');
-
-  const footerLogo = await downloadFromS3(
-    'https://larguei.s3.us-west-2.amazonaws.com/LOGOPDF-1716384513443.png',
-    folderName,
-  );
-
-  const headerLogo = isDicebear ? footerLogo : await downloadFromS3(company!.image, folderName);
-
-  const maintenances: IMaintenancesData[] = [];
-  const counts = {
-    completed: 0,
-    pending: 0,
-    expired: 0,
-    totalCost: 0,
-  };
-
-  maintenancesHistory.forEach((maintenance: any) => {
-    if (
-      maintenance.MaintenanceReport.length > 0 &&
-      maintenance.MaintenanceReport[0].cost !== null
-    ) {
-      counts.totalCost += maintenance.MaintenanceReport[0].cost;
-    }
-
-    switch (maintenance.MaintenancesStatus.name) {
-      case 'completed':
-        counts.completed += 1;
-        break;
-
-      case 'overdue':
-        counts.completed += 1;
-        break;
-
-      case 'pending':
-        counts.pending += 1;
-        break;
-
-      case 'expired':
-        counts.expired += 1;
-        break;
-
-      default:
-        break;
-    }
-
-    const hasReport = maintenance.MaintenanceReport.length > 0;
-
-    maintenances.push({
-      id: maintenance.id,
-
-      maintenanceHistoryId: maintenance.id,
-      buildingName: maintenance.Building.name,
-      categoryName: maintenance.Maintenance.Category.name,
-      element: maintenance.Maintenance.element,
-      activity: maintenance.Maintenance.activity,
-      responsible: maintenance.Maintenance.responsible,
-      source: maintenance.Maintenance.source,
-      notificationDate: maintenance.notificationDate,
-      maintenanceObservation: maintenance.Maintenance.observation,
-      resolutionDate: maintenance.resolutionDate,
-      status: maintenance.MaintenancesStatus.name,
-      type: maintenance.Maintenance.MaintenanceType?.name ?? null,
-      inProgress: maintenance.inProgress,
-
-      cost: hasReport ? maintenance.MaintenanceReport[0].cost : null,
-
-      reportObservation: hasReport ? maintenance.MaintenanceReport[0].observation : null,
-
-      images: hasReport ? maintenance.MaintenanceReport[0].ReportImages : [],
-      annexes: hasReport ? maintenance.MaintenanceReport[0].ReportAnnexes : [],
-    });
-  });
-
-  const maintenancesForPDF = separateByMonth(maintenances);
-
-  const bucketUrl = 'https://larguei.s3.us-west-2.amazonaws.com/';
-
-  const fonts = {
-    Arial: {
-      normal: 'fonts/Arial/Arial.ttf',
-      bold: 'fonts/Arial/ArialMedium.ttf',
-    },
-  };
-
-  const printer = new PDFPrinter(fonts);
-  const contentData: Content = [];
   try {
+    fs.mkdirSync(folderName);
+
+    const isDicebear = company?.image.includes('dicebear');
+
+    const footerLogo = await downloadFromS3(
+      'https://larguei.s3.us-west-2.amazonaws.com/LOGOPDF-1716384513443.png',
+      folderName,
+    );
+    const headerLogo = isDicebear ? footerLogo : await downloadFromS3(company!.image, folderName);
+
+    let maintenances: IMaintenancesData[] = [];
+
+    for (let i = 0; i < MaintenancesPending.length; i++) {
+      if (MaintenancesPending[i].Maintenance?.MaintenanceType?.name === 'occasional') {
+        const hasReport = MaintenancesPending[i].MaintenanceReport.length > 0;
+
+        maintenances.push({
+          id: MaintenancesPending[i].id,
+          dueDate: MaintenancesPending[i].dueDate,
+          maintenanceHistoryId: MaintenancesPending[i].id,
+          buildingName: MaintenancesPending[i].Building.name,
+          categoryName: MaintenancesPending[i].Maintenance.Category.name,
+          element: MaintenancesPending[i].Maintenance.element,
+          activity: MaintenancesPending[i].Maintenance.activity,
+          responsible: MaintenancesPending[i].Maintenance.responsible,
+          source: MaintenancesPending[i].Maintenance.source,
+          notificationDate: MaintenancesPending[i].notificationDate,
+          maintenanceObservation: MaintenancesPending[i].Maintenance.observation,
+          resolutionDate: MaintenancesPending[i].resolutionDate,
+          status: MaintenancesPending[i].MaintenancesStatus.name,
+          type: MaintenancesPending[i].Maintenance.MaintenanceType?.name ?? null,
+          inProgress: MaintenancesPending[i].inProgress,
+
+          cost: hasReport ? MaintenancesPending[i].MaintenanceReport[0].cost : null,
+
+          reportObservation: hasReport
+            ? MaintenancesPending[i].MaintenanceReport[0].observation
+            : null,
+
+          images: hasReport ? MaintenancesPending[i].MaintenanceReport[0].ReportImages : [],
+          annexes: hasReport ? MaintenancesPending[i].MaintenanceReport[0].ReportAnnexes : [],
+        });
+      } else {
+        const foundBuildingMaintenance =
+          await buildingServices.findBuildingMaintenanceDaysToAnticipate({
+            buildingId: MaintenancesPending[i].Building.id,
+            maintenanceId: MaintenancesPending[i].Maintenance.id,
+          });
+
+        const intervals = sharedCalendarServices.recurringDates({
+          startDate: MaintenancesPending[i].notificationDate,
+          endDate: setToUTCLastMinuteOfDay(queryFilter.dateFilter.lte),
+          interval:
+            MaintenancesPending[i].Maintenance.frequency *
+              MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime -
+            (foundBuildingMaintenance?.daysToAnticipate ?? 0),
+          maintenanceData: MaintenancesPending[i],
+          periodDaysInterval:
+            MaintenancesPending[i].Maintenance.period *
+              MaintenancesPending[i].Maintenance.PeriodTimeInterval.unitTime +
+            (foundBuildingMaintenance?.daysToAnticipate ?? 0),
+        });
+
+        const intervalsTyped: IInterval[] = intervals;
+
+        intervalsTyped.forEach(
+          ({
+            Building,
+            Maintenance,
+            MaintenanceReport,
+            MaintenancesStatus,
+            expectedDueDate,
+            expectedNotificationDate,
+            id,
+            inProgress,
+            // notificationDate,
+            resolutionDate,
+            isFuture,
+          }) => {
+            const hasReport = MaintenanceReport.length > 0;
+
+            maintenances.push({
+              id: Maintenance.id,
+              expectedDueDate,
+              dueDate: expectedDueDate,
+              expectedNotificationDate,
+              isFuture,
+              maintenanceHistoryId: id,
+              buildingName: Building.name,
+              categoryName: Maintenance.Category.name,
+              element: Maintenance.element,
+              activity: Maintenance.activity,
+              responsible: Maintenance.responsible,
+              source: Maintenance.source,
+              // PRO SORT
+              notificationDate: expectedNotificationDate,
+              maintenanceObservation: Maintenance.observation,
+              resolutionDate,
+              status: MaintenancesStatus.name,
+              type: Maintenance.MaintenanceType?.name ?? null,
+              inProgress,
+
+              cost: hasReport ? MaintenanceReport[0].cost : null,
+
+              reportObservation: hasReport ? MaintenanceReport[0].observation : null,
+
+              images: hasReport ? MaintenanceReport[0].ReportImages : [],
+              annexes: hasReport ? MaintenanceReport[0].ReportAnnexes : [],
+            });
+          },
+        );
+      }
+    }
+
+    maintenances = maintenances.filter(
+      (data: any) => data[queryFilter.filterBy] >= queryFilter.dateFilter.gte,
+    );
+
+    const counts = {
+      completed: 0,
+      // Nesse momento só tem as pendentes
+      pending: maintenances.length,
+      expired: 0,
+      totalCost: 0,
+    };
+
+    maintenancesHistory.forEach((maintenance: any) => {
+      if (
+        maintenance.MaintenanceReport.length > 0 &&
+        maintenance.MaintenanceReport[0].cost !== null
+      ) {
+        counts.totalCost += maintenance.MaintenanceReport[0].cost;
+      }
+
+      switch (maintenance.MaintenancesStatus.name) {
+        case 'completed':
+          counts.completed += 1;
+          break;
+
+        case 'overdue':
+          counts.completed += 1;
+          break;
+
+        case 'pending':
+          counts.pending += 1;
+          break;
+
+        case 'expired':
+          counts.expired += 1;
+          break;
+
+        default:
+          break;
+      }
+
+      const hasReport = maintenance.MaintenanceReport.length > 0;
+      maintenances.push({
+        id: maintenance.id,
+
+        dueDate: maintenance.dueDate,
+        maintenanceHistoryId: maintenance.id,
+        buildingName: maintenance.Building.name,
+        categoryName: maintenance.Maintenance.Category.name,
+        element: maintenance.Maintenance.element,
+        activity: maintenance.Maintenance.activity,
+        responsible: maintenance.Maintenance.responsible,
+        source: maintenance.Maintenance.source,
+        notificationDate: maintenance.notificationDate,
+        maintenanceObservation: maintenance.Maintenance.observation,
+        resolutionDate: maintenance.resolutionDate,
+        status: maintenance.MaintenancesStatus.name,
+        type: maintenance.Maintenance.MaintenanceType?.name ?? null,
+        inProgress: maintenance.inProgress,
+
+        cost: hasReport ? maintenance.MaintenanceReport[0].cost : null,
+
+        reportObservation: hasReport ? maintenance.MaintenanceReport[0].observation : null,
+
+        images: hasReport ? maintenance.MaintenanceReport[0].ReportImages : [],
+        annexes: hasReport ? maintenance.MaintenanceReport[0].ReportAnnexes : [],
+      });
+    });
+
+    maintenances.sort((a, b) => b.notificationDate.getTime() - a.notificationDate.getTime());
+
+    const maintenancesForPDF = separateByMonth(maintenances);
+
+    const bucketUrl = 'https://larguei.s3.us-west-2.amazonaws.com/';
+
+    const fonts = {
+      Arial: {
+        normal: 'fonts/Arial/Arial.ttf',
+        bold: 'fonts/Arial/ArialMedium.ttf',
+      },
+    };
+
+    const printer = new PDFPrinter(fonts);
+    const contentData: Content = [];
+
     const countData: Content = [
       {
         table: {
@@ -367,7 +491,7 @@ async function PDFService({
     for (let i = 0; i < maintenancesForPDF.length; i++) {
       const { data, month } = maintenancesForPDF[i];
 
-      contentData.push({ text: month, fontSize: 16, marginTop: i > 0 ? 16 : 0, marginBottom: 8 });
+      contentData.push({ text: month, fontSize: 14, marginTop: i > 0 ? 8 : 0, marginBottom: 4 });
 
       for (let j = 0; j < data.length; j++) {
         const {
@@ -751,7 +875,12 @@ async function PDFService({
               },
               {
                 text: [
-                  { text: 'Período:', bold: true },
+                  {
+                    text: `Período de ${
+                      queryFilter.filterBy === 'notificationDate' ? 'notificação' : 'vencimento'
+                    }:`,
+                    bold: true,
+                  },
                   { text: ' ' },
                   {
                     text: `${dateFormatter(
@@ -768,7 +897,7 @@ async function PDFService({
                   { text: 'ID:', bold: true },
                   { text: ' ' },
                   {
-                    text: uuidv4().substring(0, 10),
+                    text: pdfId,
                   },
                 ],
                 alignment: 'right',
@@ -856,7 +985,7 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
   const { query } = req as any;
   const queryFilter = buildingReportsServices.mountQueryFilter({ query: req.query as any });
 
-  const { maintenancesHistory, company } =
+  const { maintenancesHistory, company, MaintenancesPending } =
     await buildingReportsServices.findBuildingMaintenancesHistory({
       companyId: req.Company.id,
       queryFilter,
@@ -880,15 +1009,17 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
 
   const { id } = await prisma.maintenanceReportPdf.create({
     data: {
-      name: `${dateFormatter(queryFilter.dateFilter[0].notificationDate.gte)} a ${dateFormatter(
-        queryFilter.dateFilter[0].notificationDate.lte,
+      name: `Perído de ${
+        queryFilter.filterBy === 'notificationDate' ? 'notificação' : 'vencimento'
+      } - ${dateFormatter(queryFilter.dateFilter.gte)} a ${dateFormatter(
+        queryFilter.dateFilter.lte,
       )}`,
       authorId: req.userId,
       authorCompanyId: req.Company.id,
     },
   });
 
-  PDFService({ company, id, query, maintenancesHistory, req });
+  PDFService({ company, id, query, maintenancesHistory, req, MaintenancesPending, queryFilter });
 
   return res.status(200).json({ ServerMessage: { message: 'Geração de PDF em andamento.' } });
 }

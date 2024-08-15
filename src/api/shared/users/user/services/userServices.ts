@@ -9,6 +9,7 @@ import { IEditUser, IEditUserPassword, IListUser } from '../types';
 
 // CLASS
 const validator = new Validator();
+
 export class UserServices {
   // #region create
   async create({ name, email, passwordHash }: Prisma.UserCreateInput) {
@@ -24,11 +25,12 @@ export class UserServices {
   // #endregion
 
   // #region edit
-  async edit({ userId, name, email }: IEditUser) {
+  async edit({ userId, name, email, isBlocked }: IEditUser) {
     await prisma.user.update({
       data: {
         name,
         email,
+        isBlocked,
       },
       where: { id: userId },
     });

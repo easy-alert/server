@@ -5,9 +5,12 @@ import { verify } from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { ServerMessage } from '../utils/messages/serverMessage';
 import { Itoken } from './types';
+import { UserServices } from '../api/shared/users/user/services/userServices';
 // TYPES
 
-export const authMiddleware = (req: Request, _res: Response, next: NextFunction) => {
+const userServices = new UserServices();
+
+export const authMiddleware = async (req: Request, _res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
 
   if (!authorization) {
@@ -23,6 +26,8 @@ export const authMiddleware = (req: Request, _res: Response, next: NextFunction)
 
     const decoded = verify(token, secret);
     const { userId, Permissions, Company } = decoded as Itoken;
+
+    await userServices.findById({ userId });
 
     req.userId = userId;
     req.Permissions = Permissions;

@@ -44,7 +44,6 @@ export const authBackofficeCompany = async (req: Request, res: Response) => {
       origin: 'Backoffice',
       User: {
         id: user.id,
-        image: user.image,
         name: user.name,
         email: user.email,
         lastAccess: user.lastAccess,

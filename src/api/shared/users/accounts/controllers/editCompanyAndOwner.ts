@@ -40,7 +40,6 @@ export async function sharedEditCompanyAndOwner({
     { label: 'imagem', variable: image },
     { label: 'Número de contato', variable: contactNumber },
     { label: 'nome da empresa', variable: companyName },
-    // { label: 'frequência de notificações', variable: isNotifyingOnceAWeek },
   ]);
 
   if (!CNPJ && !CPF) {

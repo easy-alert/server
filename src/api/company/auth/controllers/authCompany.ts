@@ -2,18 +2,17 @@
 import { Response, Request } from 'express';
 
 // CLASS
-import { AuthServices } from '../../../shared/auth/services/authServices';
 import { TokenServices } from '../../../../utils/token/tokenServices';
 import { Validator } from '../../../../utils/validator/validator';
 import { UserServices } from '../../../shared/users/user/services/userServices';
 
 import { PermissionServices } from '../../../shared/permission/services/permissionServices';
+import { AuthServices } from '../../../shared/auth/services/authServices';
 
 const permissionServices = new PermissionServices();
-const authServices = new AuthServices();
 const tokenServices = new TokenServices();
 const userServices = new UserServices();
-
+const authServices = new AuthServices();
 const validator = new Validator();
 
 export const authCompany = async (req: Request, res: Response) => {
@@ -24,9 +23,7 @@ export const authCompany = async (req: Request, res: Response) => {
     { label: 'senha', variable: password },
   ]);
 
-  const user = await authServices.findByEmail({ email });
-
-  await authServices.canLogin({ user, password });
+  const user = await authServices.canLogin({ email, password });
 
   await permissionServices.checkPermission({
     UserPermissions: user.Permissions,
@@ -48,7 +45,6 @@ export const authCompany = async (req: Request, res: Response) => {
       origin: 'Company',
       User: {
         id: user.id,
-        image: user.image,
         name: user.name,
         email: user.email,
         lastAccess: user.lastAccess,

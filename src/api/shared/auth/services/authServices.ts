@@ -3,7 +3,6 @@ import { compare } from 'bcrypt';
 
 // PRISMA
 import { prisma } from '../../../../../prisma';
-import { IUser } from './types';
 
 // CLASS
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
@@ -12,7 +11,9 @@ import { Validator } from '../../../../utils/validator/validator';
 const validator = new Validator();
 
 export class AuthServices {
-  async canLogin({ user, password }: { user: IUser; password: string }) {
+  async canLogin({ email, password }: { email: string; password: string }) {
+    const user = await this.findByEmail({ email });
+
     const isValuePassword = await compare(password, user.passwordHash);
 
     if (!isValuePassword) {
@@ -30,10 +31,12 @@ export class AuthServices {
         message: 'Sua conta está bloqueada, entre em contato com a administração.',
       });
     }
+
+    return user!;
   }
 
   async findByEmail({ email }: { email: string }) {
-    const User = (await prisma.user.findUnique({
+    const User = await prisma.user.findUnique({
       select: {
         id: true,
         name: true,
@@ -67,7 +70,7 @@ export class AuthServices {
       },
 
       where: { email: email.toLowerCase() },
-    })) as IUser;
+    });
 
     if (!User) {
       throw new ServerMessage({
@@ -80,7 +83,7 @@ export class AuthServices {
   }
 
   async findById({ userId }: { userId: string }) {
-    const User = (await prisma.user.findUnique({
+    const User = await prisma.user.findUnique({
       select: {
         id: true,
         name: true,
@@ -114,7 +117,7 @@ export class AuthServices {
       },
 
       where: { id: userId },
-    })) as IUser;
+    });
 
     if (!User) {
       throw new ServerMessage({
@@ -127,7 +130,7 @@ export class AuthServices {
   }
 
   async validateToken({ userId }: { userId: string }) {
-    const User = (await prisma.user.findUnique({
+    const User = await prisma.user.findUnique({
       select: {
         id: true,
         name: true,
@@ -149,6 +152,24 @@ export class AuthServices {
                 createdAt: true,
                 image: true,
                 supportLink: true,
+                UserCompanies: {
+                  select: {
+                    User: {
+                      select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        lastAccess: true,
+                        createdAt: true,
+                        isBlocked: true,
+                      },
+                    },
+                  },
+                  // pra não mostrar o user logado na tela de minha conta
+                  where: { userId: { not: userId } },
+
+                  orderBy: { User: { name: 'asc' } },
+                },
               },
             },
           },
@@ -160,10 +181,10 @@ export class AuthServices {
       },
 
       where: { id: userId },
-    })) as IUser;
+    });
 
     validator.notNull([{ label: 'Usuário não encontrado.', variable: User }]);
 
-    return User;
+    return User!;
   }
 }
