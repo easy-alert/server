@@ -9,8 +9,8 @@ interface SupplierWithSelection {
   isSelected: boolean;
   id: string;
   name: string;
-  serviceTypes: {
-    type: { label: string };
+  areaOfActivities: {
+    areaOfActivity: { label: string };
   }[];
 }
 

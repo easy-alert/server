@@ -292,4 +292,29 @@ export class SeedServices {
 
     console.log('Ticket status upserted.');
   }
+
+  async upsertSupplierAreaOfActivities() {
+    const allData = [
+      { label: 'Hidráulica' },
+      { label: 'Elétrica' },
+      { label: 'Pintura' },
+      { label: 'Mecânica' },
+      { label: 'Portas e janelas' },
+      { label: 'Gás' },
+      { label: 'Acabamentos' },
+      { label: 'Outros' },
+    ];
+
+    for (let i = 0; i < allData.length; i++) {
+      const data = allData[i];
+
+      await prisma.areaOfActivity.upsert({
+        create: data,
+        update: {},
+        where: data,
+      });
+    }
+
+    console.log('Area of activities upserted.');
+  }
 }

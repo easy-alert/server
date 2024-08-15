@@ -14,11 +14,11 @@ interface IBody {
   cnpj?: string | null;
   phone?: string | null;
   email?: string | null;
-  serviceTypeLabels: string[] | undefined;
+  areaOfActivityLabels: string[];
 }
 
 export async function updateSupplier(req: Request, res: Response) {
-  const { city, image, link, name, state, email, phone, cnpj, id, serviceTypeLabels }: IBody =
+  const { city, image, link, name, state, email, phone, cnpj, id, areaOfActivityLabels }: IBody =
     req.body;
 
   checkValues([
@@ -31,12 +31,13 @@ export async function updateSupplier(req: Request, res: Response) {
     { label: 'Telefone/Celular', type: 'string', value: phone, required: false },
     { label: 'Email', type: 'email', value: email, required: false },
     { label: 'CNPJ', type: 'CNPJ', value: cnpj, required: false },
-    { label: 'Área de atuação', type: 'array', value: serviceTypeLabels },
+    { label: 'Área de atuação', type: 'array', value: areaOfActivityLabels },
   ]);
 
-  const { serviceTypes } = supplierServices.createOrConnectServiceTypesService({
+  const { areaOfActivities } = supplierServices.createOrConnectAreaOfActivityService({
     isUpdate: true,
-    serviceTypeLabels,
+    areaOfActivityLabels,
+    companyId: req.Company.id,
   });
 
   await supplierServices.update({
@@ -49,7 +50,7 @@ export async function updateSupplier(req: Request, res: Response) {
       state,
       email: email ? email.toLowerCase() : null,
       phone: phone ? unmask(phone) : null,
-      serviceTypes,
+      areaOfActivities,
     },
     where: {
       id,

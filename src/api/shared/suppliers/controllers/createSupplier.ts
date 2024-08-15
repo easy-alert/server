@@ -14,11 +14,12 @@ interface IBody {
   phone?: string | null;
   email?: string | null;
 
-  serviceTypeLabels: string[] | undefined;
+  areaOfActivityLabels: string[];
 }
 
 export async function createSupplier(req: Request, res: Response) {
-  const { city, image, link, name, state, email, phone, cnpj, serviceTypeLabels }: IBody = req.body;
+  const { city, image, link, name, state, email, phone, cnpj, areaOfActivityLabels }: IBody =
+    req.body;
 
   checkValues([
     { label: 'Nome', type: 'string', value: name },
@@ -30,12 +31,13 @@ export async function createSupplier(req: Request, res: Response) {
     { label: 'Email', type: 'email', value: email, required: false },
     { label: 'CNPJ', type: 'CNPJ', value: cnpj, required: false },
 
-    { label: 'Área de atuação', type: 'array', value: serviceTypeLabels },
+    { label: 'Área de atuação', type: 'array', value: areaOfActivityLabels },
   ]);
 
-  const { serviceTypes } = supplierServices.createOrConnectServiceTypesService({
+  const { areaOfActivities } = supplierServices.createOrConnectAreaOfActivityService({
     isUpdate: false,
-    serviceTypeLabels,
+    areaOfActivityLabels,
+    companyId: req.Company.id,
   });
 
   await supplierServices.create({
@@ -49,7 +51,7 @@ export async function createSupplier(req: Request, res: Response) {
       email: email ? email.toLowerCase() : null,
       phone: phone ? unmask(phone) : null,
       companyId: req.Company.id,
-      serviceTypes,
+      areaOfActivities,
     },
   });
 
