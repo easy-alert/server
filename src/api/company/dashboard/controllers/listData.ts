@@ -1,9 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 import { Request, Response } from 'express';
-import { changeTime } from '../../../../utils/dateTime/changeTime';
 import { dashboardServices } from '../services/dashboardServices';
 import { mask } from '../../../../utils/masks';
-import { removeDays } from '../../../../utils/dateTime';
+import { removeDays, setToUTCLastMinuteOfDay } from '../../../../utils/dateTime';
 
 interface IResponsible {
   some: {
@@ -47,15 +46,8 @@ function getMonthLabel(label: string) {
 
 // inicia com 1 ano
 function getPeriod(period: number | string = 365) {
-  const endDate = changeTime({
-    date: new Date(),
-    time: {
-      h: 0,
-      m: 0,
-      s: 0,
-      ms: 0,
-    },
-  });
+  const endDate = setToUTCLastMinuteOfDay(new Date());
+
   const startDate = removeDays({
     date: endDate,
     days: Number(period),
@@ -103,6 +95,12 @@ export async function listData(req: Request, res: Response) {
     completedMaintenancesScore,
     expiredMaintenancesScore,
     pendingMaintenancesScore,
+    occasionalCompleted,
+    occasionalCompletedCost,
+    commonCompleted,
+    commonCompletedCost,
+    finishedTicketsCount,
+    openTicketsCount,
   } = await dashboardServices.getDashboardData(filter);
 
   // #rengion TimeLine
@@ -189,7 +187,7 @@ export async function listData(req: Request, res: Response) {
     });
     // #endregion
 
-    // #region compelted
+    // #region completed
 
     timeLineCompleted.forEach((data) => {
       const dataPeriod = `${
@@ -233,10 +231,44 @@ export async function listData(req: Request, res: Response) {
     quantityToReturn: 2,
   });
 
+  // #region counts
+  const counts = {
+    occasionalMaintenances: {
+      total: occasionalCompleted,
+      info: `Valor investido ${mask({
+        type: 'BRL',
+        value: String(occasionalCompletedCost._sum.cost),
+      })}`,
+    },
+    commonMaintenances: {
+      total: commonCompleted,
+      info: `Valor investido ${mask({
+        type: 'BRL',
+        value: String(commonCompletedCost._sum.cost),
+      })}`,
+    },
+    totalMaintenances: {
+      total: occasionalCompleted + commonCompleted,
+      info: `Valor investido ${mask({
+        type: 'BRL',
+        value: String(
+          (commonCompletedCost._sum.cost || 0) + (occasionalCompletedCost._sum.cost || 0),
+        ),
+      })}`,
+    },
+    tickets: {
+      total: openTicketsCount + finishedTicketsCount,
+      info: `Em aberto: ${openTicketsCount} / Resolvidos: ${finishedTicketsCount}`,
+    },
+  };
+
+  // #endregion
+
   return res.status(200).json({
     maintenancesData,
     score,
     investments,
     timeLine,
+    counts,
   });
 }

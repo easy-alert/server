@@ -111,10 +111,7 @@ export async function sharedCreateReportProgress(req: Request, res: Response) {
     },
   });
 
-  await sharedMaintenanceServices.updateMaintenanceHistory({
-    data: { inProgress: true },
-    maintenanceHistoryId,
-  });
+  await sharedMaintenanceServices.updateMaintenanceHistoryToInProgress(maintenanceHistoryId);
 
   return res.status(200).json({
     ServerMessage: {
