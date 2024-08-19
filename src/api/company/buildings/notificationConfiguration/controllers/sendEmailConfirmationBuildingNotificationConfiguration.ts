@@ -44,7 +44,7 @@ export async function sendEmailConfirmationBuildingNotificationConfiguration(
   // if (!notificationData?.isMain) {
   //   throw new ServerMessage({
   //     statusCode: 400,
-  //     message: 'O usuário não esta configurado como principal para receber notificações.',
+  //     message: 'O usuário não está configurado como principal para receber notificações.',
   //   });
   // }
   if (!notificationData?.email) {

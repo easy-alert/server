@@ -21,6 +21,12 @@ export async function findManyBuildingsBySyndicNanoId(req: Request, res: Respons
 
   const syndic = await syndicService.findByNanoId({ syndicNanoId });
 
+  const buildings: IBuildingsBySyndic[] = [];
+
+  if (!syndic.contactNumberIsConfirmed) {
+    return res.status(200).json({ buildings });
+  }
+
   const syndics = await prisma.buildingNotificationConfiguration.findMany({
     select: {
       nanoId: true,
@@ -47,8 +53,6 @@ export async function findManyBuildingsBySyndicNanoId(req: Request, res: Respons
       },
     },
   });
-
-  const buildings: IBuildingsBySyndic[] = [];
 
   syndics.forEach(({ Building, nanoId, name }) => {
     const hasDuplicatedBuilding =
