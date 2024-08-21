@@ -55,6 +55,8 @@ export class DashboardServices {
       commonCompletedCost,
       openTicketsCount,
       finishedTicketsCount,
+      ticketServiceTypesCount,
+      serviceTypes,
     ] = await Promise.all([
       // #region timeLine
       prisma.maintenanceHistory.groupBy({
@@ -400,6 +402,27 @@ export class DashboardServices {
       }),
 
       // #endregion
+
+      // #region ticket types count
+      prisma.ticketServiceType.groupBy({
+        by: ['serviceTypeId'],
+        _count: {
+          ticketId: true,
+        },
+        where: {
+          ticket: {
+            createdAt: filter.period,
+            building: {
+              name: filter.buildings,
+              companyId: filter.companyId,
+            },
+          },
+        },
+      }),
+
+      prisma.serviceType.findMany(),
+
+      // #endregion
     ]);
 
     return {
@@ -416,6 +439,8 @@ export class DashboardServices {
       commonCompletedCost,
       openTicketsCount,
       finishedTicketsCount,
+      ticketServiceTypesCount,
+      serviceTypes,
     };
   }
 

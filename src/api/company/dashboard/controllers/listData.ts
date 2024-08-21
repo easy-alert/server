@@ -101,6 +101,8 @@ export async function listData(req: Request, res: Response) {
     commonCompletedCost,
     finishedTicketsCount,
     openTicketsCount,
+    ticketServiceTypesCount,
+    serviceTypes,
   } = await dashboardServices.getDashboardData(filter);
 
   // #rengion TimeLine
@@ -264,11 +266,26 @@ export async function listData(req: Request, res: Response) {
 
   // #endregion
 
+  const ticketTypes: { data: number[]; labels: string[] } = {
+    data: [],
+    labels: [],
+  };
+
+  ticketServiceTypesCount.forEach(({ _count, serviceTypeId }) => {
+    const typeLabel = serviceTypes.find(({ id }) => id === serviceTypeId)?.label;
+
+    if (typeLabel) {
+      ticketTypes.data.push(_count.ticketId);
+      ticketTypes.labels.push(typeLabel);
+    }
+  });
+
   return res.status(200).json({
     maintenancesData,
     score,
     investments,
     timeLine,
     counts,
+    ticketTypes,
   });
 }
