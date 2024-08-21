@@ -13,8 +13,8 @@ interface IImage {
 }
 
 interface IData {
-  syndicNanoId?: string;
-  userId?: string;
+  syndicNanoId: string | undefined;
+  userId: string | undefined;
   maintenanceHistoryId: string;
   content: string | null;
   images?: IImage[];

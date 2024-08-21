@@ -2,11 +2,9 @@
 import { Request, Response } from 'express';
 import { Validator } from '../../../../utils/validator/validator';
 import { SharedMaintenanceReportProgressesServices } from '../services/SharedMaintenanceReportProgressesServices';
-import { SharedMaintenanceServices } from '../../maintenance/services/sharedMaintenanceServices';
 
 const validator = new Validator();
 const sharedMaintenanceReportProgressesServices = new SharedMaintenanceReportProgressesServices();
-const sharedMaintenanceServices = new SharedMaintenanceServices();
 
 // #endregion
 
@@ -111,7 +109,8 @@ export async function sharedCreateReportProgress(req: Request, res: Response) {
     },
   });
 
-  await sharedMaintenanceServices.updateMaintenanceHistoryToInProgress(maintenanceHistoryId);
+  // removido
+  // await sharedMaintenanceServices.updateMaintenanceHistoryToInProgress(maintenanceHistoryId);
 
   return res.status(200).json({
     ServerMessage: {

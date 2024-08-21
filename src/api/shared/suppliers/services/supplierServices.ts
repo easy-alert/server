@@ -314,6 +314,7 @@ class SupplierServices {
   async findManyByMaintenanceHistoryId(maintenanceHistoryId: string) {
     return prisma.supplier.findMany({
       select: {
+        image: true,
         id: true,
         name: true,
         phone: true,

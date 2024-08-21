@@ -4,24 +4,24 @@ export interface ICreateMaintenanceReports {
     maintenanceHistoryId: string;
     cost: number;
     observation: string;
-    ReportImages: {
-      createMany: {
-        data: {
-          name: string;
-          originalName: string;
-          url: string;
-        }[];
-      };
-    };
-    ReportAnnexes: {
-      createMany: {
-        data: {
-          name: string;
-          originalName: string;
-          url: string;
-        }[];
-      };
-    };
+    // ReportImages: {
+    //   createMany: {
+    //     data: {
+    //       name: string;
+    //       originalName: string;
+    //       url: string;
+    //     }[];
+    //   };
+    // };
+    // ReportAnnexes: {
+    //   createMany: {
+    //     data: {
+    //       name: string;
+    //       originalName: string;
+    //       url: string;
+    //     }[];
+    //   };
+    // };
   };
 }
 
