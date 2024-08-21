@@ -3,4 +3,4 @@ export * from './deleteMaintenanceHistoryActivityByIdService';
 export * from './findManyMaintenanceHistoryActivitiesService';
 export * from './findMaintenanceHistoryActivityByIdService';
 export * from './updateMaintenanceHistoryActivityService';
-
+export * from './createMaintenanceHistoryActivityCommentService';
