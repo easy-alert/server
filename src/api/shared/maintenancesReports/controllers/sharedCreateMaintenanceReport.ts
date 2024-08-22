@@ -13,6 +13,7 @@ import { SharedMaintenanceReportsServices } from '../services/SharedMaintenanceR
 import { IAttachments, ICreateAndEditMaintenanceReportsBody } from './types';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
 import { ticketServices } from '../../tickets/services/ticketServices';
+import { createMaintenanceHistoryActivityCommentService } from '../../maintenanceHistoryActivities/services';
 
 // CLASS
 
@@ -118,7 +119,8 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
 
   let syndicData = null;
 
-  if (responsibleSyndicId) {
+  // GAMBIARRINHA por causa da tela de convidados do client
+  if (responsibleSyndicId && responsibleSyndicId !== 'guest') {
     syndicData = await sharedBuildingNotificationConfigurationServices.findByNanoId({
       syndicNanoId: responsibleSyndicId,
     });
@@ -344,6 +346,13 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     });
   }
   // #endregion
+
+  await createMaintenanceHistoryActivityCommentService({
+    userId: req.userId,
+    syndicNanoId: responsibleSyndicId,
+    maintenanceHistoryId,
+    content: 'A manutenção foi concluída.',
+  });
 
   if (maintenanceHistory.Maintenance.MaintenanceType?.name === 'occasional') {
     // Os tickets que eu trago aqui sao só estao aguardando finalizar.

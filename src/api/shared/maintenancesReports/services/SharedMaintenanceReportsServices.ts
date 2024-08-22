@@ -41,6 +41,7 @@ export class SharedMaintenanceReportsServices {
     return prisma.maintenanceReport.findFirst({
       select: {
         version: true,
+        cost: true,
       },
       where: { id: maintenanceReportId },
     });

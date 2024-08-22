@@ -29,7 +29,7 @@ export async function createMaintenanceHistoryActivityCommentService({
 }: IData) {
   let author: string = 'Convidado';
   // Gambiarra, ver lá na modal
-  if (syndicNanoId && syndicNanoId !== 'true') {
+  if (syndicNanoId && syndicNanoId !== 'guest') {
     author = (await sharedBuildingNotificationConfigurationServices.findByNanoId({ syndicNanoId }))
       .name;
   }

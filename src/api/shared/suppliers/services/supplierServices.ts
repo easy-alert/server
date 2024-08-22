@@ -481,7 +481,7 @@ class SupplierServices {
     maintenanceId: string;
     supplierId: string;
   }) {
-    await prisma.maintenanceSupplier.upsert({
+    return prisma.maintenanceSupplier.upsert({
       create: {
         maintenanceId,
         supplierId,
@@ -491,6 +491,13 @@ class SupplierServices {
         maintenanceId_supplierId: {
           maintenanceId,
           supplierId,
+        },
+      },
+      select: {
+        supplier: {
+          select: {
+            name: true,
+          },
         },
       },
     });
