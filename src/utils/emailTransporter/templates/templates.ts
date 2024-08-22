@@ -245,7 +245,6 @@ export class EmailTemplates {
     categoryName,
     syndicName,
     activity,
-    reportObservation,
     dueDate,
     maintenanceObservation,
     notificationDate,
@@ -333,11 +332,6 @@ export class EmailTemplates {
       <p>
         <strong>Custo: </strong>
         ${cost}
-      </p>
-
-      <p>
-        <strong>Observação do relato: </strong>
-        ${reportObservation}
       </p>
 
       <p>

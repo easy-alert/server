@@ -506,7 +506,7 @@ async function PDFService({
           cost,
           element,
           images,
-          reportObservation,
+          // reportObservation,
           responsible,
           status,
           type,
@@ -763,13 +763,14 @@ async function PDFService({
                         status === 'overdue' ? 'completed' : status,
                       ),
                     },
-                    {
-                      text: [
-                        { text: 'Observação do relato: ', bold: true },
-                        { text: reportObservation || '-' },
-                      ],
-                      marginLeft: 8,
-                    },
+                    // {
+                    //   text: [
+                    //     { text: 'Observação do relato: ', bold: true },
+                    //     { text: MaintenanceReport?.[0]?.observation || '-' },
+                    //   ],
+                    //   marginLeft: 8,
+                    // },
+                    { text: '' }, // REMOVER ESSE SE VOLTAR O DE CIMA
                     { text: '' },
                     { text: '' },
                   ],
