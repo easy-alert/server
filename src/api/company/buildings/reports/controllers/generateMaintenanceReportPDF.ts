@@ -184,6 +184,7 @@ const getStatusBackgroundColor = (status: string) => {
     expired: '#FF3508', // theme.color.actionDanger
     occasional: '#8A1FDF', // theme.color.purple
     inProgress: '#28A5FF', // theme.color.actionBlue
+    common: '#B21D1D',
   };
 
   return backgroundColor[status];
@@ -566,6 +567,13 @@ async function PDFService({
           tags.push({
             text: `  Avulsa  `,
             background: getStatusBackgroundColor('occasional'),
+            color: '#FFFFFF',
+            marginRight: 12,
+          });
+        } else {
+          tags.push({
+            text: `  Preventiva  `,
+            background: getStatusBackgroundColor('common'),
             color: '#FFFFFF',
             marginRight: 12,
           });
