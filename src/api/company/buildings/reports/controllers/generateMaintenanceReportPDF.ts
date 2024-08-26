@@ -107,7 +107,7 @@ async function downloadFromS3(url: string, folderName: string) {
 
   const s3Params = {
     Bucket: url.includes('larguei') ? process.env.AWS_S3_BUCKET! : 'easy-alert',
-    Key: key ? decodeURI(key) : '',
+    Key: key ? decodeURIComponent(key) : '',
   };
 
   const filePath = path.join(folderName, key);
@@ -138,7 +138,7 @@ async function getImageStreamFromS3(url: string): Promise<Readable> {
 
   const s3Params = {
     Bucket: url.includes('larguei') ? process.env.AWS_S3_BUCKET! : 'easy-alert',
-    Key: key ? decodeURI(key) : '',
+    Key: key ? decodeURIComponent(key) : '',
   };
 
   const { Body } = (await s3bucket.send(new GetObjectCommand(s3Params))) as { Body: Readable };
