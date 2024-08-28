@@ -347,11 +347,20 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   }
   // #endregion
 
+  let complement = '.';
+
+  const hasImages = ReportImages.length > 0;
+  const hasAnnexes = ReportAnnexes.length > 0;
+
+  if (hasImages) complement = ' com imagens.';
+  if (hasAnnexes) complement = ' com anexos.';
+  if (hasImages && hasAnnexes) complement = ' com imagens e anexos.';
+
   await createMaintenanceHistoryActivityCommentService({
     userId: req.userId,
     syndicNanoId: responsibleSyndicId,
     maintenanceHistoryId,
-    content: 'A manutenção foi concluída.',
+    content: `A manutenção foi concluída${complement}`,
   });
 
   if (maintenanceHistory.Maintenance.MaintenanceType?.name === 'occasional') {
