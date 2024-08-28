@@ -1,8 +1,8 @@
 import { ServerMessage } from '../messages/serverMessage';
 
 interface ICheckDateRanges {
-  startDate: string | undefined;
-  endDate: string | undefined;
+  startDate: string | null | undefined;
+  endDate: string | null | undefined;
   label: string;
   allowEquals?: boolean;
 }
@@ -12,14 +12,14 @@ export function checkDateRanges(data: ICheckDateRanges[]) {
     if (!allowEquals && startDate && endDate && new Date(startDate) >= new Date(endDate)) {
       throw new ServerMessage({
         statusCode: 400,
-        message: `A ${label} inicial deve ser menor ou igual a ${label} final.`,
+        message: `A ${label} inicial deve ser menor que a ${label} final.`,
       });
     }
 
-    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+    if (allowEquals && startDate && endDate && new Date(startDate) > new Date(endDate)) {
       throw new ServerMessage({
         statusCode: 400,
-        message: `A ${label} inicial deve ser menor que a ${label} final.`,
+        message: `A ${label} inicial deve ser menor ou igual a ${label} final.`,
       });
     }
   });

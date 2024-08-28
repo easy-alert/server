@@ -1,8 +1,7 @@
 import { Response, Request } from 'express';
-import { createMaintenanceHistoryActivityService } from '../services';
+import { createMaintenanceHistoryActivityCommentService } from '../services';
 import { checkValues } from '../../../../utils/newValidator';
-import { SharedBuildingNotificationConfigurationServices } from '../../notificationConfiguration/services/buildingNotificationConfigurationServices';
-import { UserServices } from '../../users/user/services/userServices';
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
 
 interface IImage {
   originalName: string;
@@ -16,11 +15,6 @@ interface IBody {
   content: string | null;
   images?: IImage[];
 }
-
-const sharedBuildingNotificationConfigurationServices =
-  new SharedBuildingNotificationConfigurationServices();
-
-const userServices = new UserServices();
 
 export async function createMaintenanceHistoryActivityController(req: Request, res: Response) {
   const { maintenanceHistoryId, syndicNanoId, userId, content, images } = req.body as IBody;
@@ -53,36 +47,20 @@ export async function createMaintenanceHistoryActivityController(req: Request, r
     ]);
   });
 
-  let author: string = 'Convidado';
-  // Gambiarra, ver lá na modal
-  if (syndicNanoId && syndicNanoId !== 'true') {
-    author = (await sharedBuildingNotificationConfigurationServices.findByNanoId({ syndicNanoId }))
-      .name;
+  if (!images?.length && !content?.trim()) {
+    throw new ServerMessage({
+      message: 'Envie um comentário ou imagem.',
+      statusCode: 400,
+    });
   }
 
-  if (userId) {
-    author = (await userServices.findById({ userId })).name;
-  }
-
-  await createMaintenanceHistoryActivityService({
-    data: {
-      content: content ? content.trim() : null,
-      title: `Nova atividade de ${author}`,
-      type: 'comment',
-      maintenanceHistoryId,
-
-      images: {
-        createMany: {
-          data: images
-            ? images.map(({ originalName, url }) => ({
-                name: originalName,
-                url,
-              }))
-            : [],
-        },
-      },
-    },
+  await createMaintenanceHistoryActivityCommentService({
+    content,
+    maintenanceHistoryId,
+    images,
+    syndicNanoId,
+    userId,
   });
 
-  return res.status(201).json({ ServerMessage: { message: 'Atividade cadastrado com sucesso.' } });
+  return res.status(201).json({ ServerMessage: { message: 'Atividade cadastrada com sucesso.' } });
 }

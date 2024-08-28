@@ -4,6 +4,8 @@ import { Validator } from '../../../../utils/validator/validator';
 
 import { SharedMaintenanceReportsServices } from '../services/SharedMaintenanceReportsServices';
 import { ICreateAndEditMaintenanceReportsBody } from './types';
+import { createMaintenanceHistoryActivityCommentService } from '../../maintenanceHistoryActivities/services';
+import { mask } from '../../../../utils/dataHandler';
 
 // CLASS
 
@@ -101,6 +103,22 @@ export async function sharedEditMaintenanceReport(req: Request, res: Response) {
   const report = await sharedMaintenanceReportsServices.getReportVersion({ maintenanceReportId });
 
   validator.needExist([{ label: 'Relato de manutenção', variable: report }]);
+
+  const changedCost = report?.cost !== cost;
+
+  if (changedCost) {
+    // Síndico não edita o relato, por isso só o userId foi passado
+    // Talvez tirar await?
+    await createMaintenanceHistoryActivityCommentService({
+      userId: req.userId,
+      maintenanceHistoryId,
+      syndicNanoId: undefined,
+      content: `Campo custo alterado de ${mask({
+        type: 'BRL',
+        value: String(report?.cost || '0'),
+      })} para ${mask({ type: 'BRL', value: String(cost) })}.`,
+    });
+  }
 
   const data = {
     version: report && report.version + 0.1,

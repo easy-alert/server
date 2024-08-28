@@ -2,11 +2,10 @@
 import { Request, Response } from 'express';
 import { Validator } from '../../../../utils/validator/validator';
 import { SharedMaintenanceReportProgressesServices } from '../services/SharedMaintenanceReportProgressesServices';
-import { SharedMaintenanceServices } from '../../maintenance/services/sharedMaintenanceServices';
+import { createMaintenanceHistoryActivityCommentService } from '../../maintenanceHistoryActivities/services';
 
 const validator = new Validator();
 const sharedMaintenanceReportProgressesServices = new SharedMaintenanceReportProgressesServices();
-const sharedMaintenanceServices = new SharedMaintenanceServices();
 
 // #endregion
 
@@ -30,6 +29,7 @@ export interface IBody {
 
 export async function sharedCreateReportProgress(req: Request, res: Response) {
   const { cost, maintenanceHistoryId, observation, ReportAnnexes, ReportImages }: IBody = req.body;
+  const { syndicNanoId } = req.query as any as { syndicNanoId: string };
 
   // #region VALIDATIONS
   validator.check([
@@ -111,7 +111,15 @@ export async function sharedCreateReportProgress(req: Request, res: Response) {
     },
   });
 
-  await sharedMaintenanceServices.updateMaintenanceHistoryToInProgress(maintenanceHistoryId);
+  // removido
+  // await sharedMaintenanceServices.updateMaintenanceHistoryToInProgress(maintenanceHistoryId);
+
+  await createMaintenanceHistoryActivityCommentService({
+    content: `O progresso foi salvo.`,
+    userId: req.userId,
+    maintenanceHistoryId,
+    syndicNanoId,
+  });
 
   return res.status(200).json({
     ServerMessage: {

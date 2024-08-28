@@ -107,7 +107,7 @@ async function downloadFromS3(url: string, folderName: string) {
 
   const s3Params = {
     Bucket: url.includes('larguei') ? process.env.AWS_S3_BUCKET! : 'easy-alert',
-    Key: key ? decodeURI(key) : '',
+    Key: key ? decodeURIComponent(key) : '',
   };
 
   const filePath = path.join(folderName, key);
@@ -138,7 +138,7 @@ async function getImageStreamFromS3(url: string): Promise<Readable> {
 
   const s3Params = {
     Bucket: url.includes('larguei') ? process.env.AWS_S3_BUCKET! : 'easy-alert',
-    Key: key ? decodeURI(key) : '',
+    Key: key ? decodeURIComponent(key) : '',
   };
 
   const { Body } = (await s3bucket.send(new GetObjectCommand(s3Params))) as { Body: Readable };
@@ -184,6 +184,7 @@ const getStatusBackgroundColor = (status: string) => {
     expired: '#FF3508', // theme.color.actionDanger
     occasional: '#8A1FDF', // theme.color.purple
     inProgress: '#28A5FF', // theme.color.actionBlue
+    common: '#B21D1D',
   };
 
   return backgroundColor[status];
@@ -506,7 +507,7 @@ async function PDFService({
           cost,
           element,
           images,
-          reportObservation,
+          // reportObservation,
           responsible,
           status,
           type,
@@ -566,6 +567,13 @@ async function PDFService({
           tags.push({
             text: `  Avulsa  `,
             background: getStatusBackgroundColor('occasional'),
+            color: '#FFFFFF',
+            marginRight: 12,
+          });
+        } else {
+          tags.push({
+            text: `  Preventiva  `,
+            background: getStatusBackgroundColor('common'),
             color: '#FFFFFF',
             marginRight: 12,
           });
@@ -763,13 +771,14 @@ async function PDFService({
                         status === 'overdue' ? 'completed' : status,
                       ),
                     },
-                    {
-                      text: [
-                        { text: 'Observação do relato: ', bold: true },
-                        { text: reportObservation || '-' },
-                      ],
-                      marginLeft: 8,
-                    },
+                    // {
+                    //   text: [
+                    //     { text: 'Observação do relato: ', bold: true },
+                    //     { text: MaintenanceReport?.[0]?.observation || '-' },
+                    //   ],
+                    //   marginLeft: 8,
+                    // },
+                    { text: '' }, // REMOVER ESSE SE VOLTAR O DE CIMA
                     { text: '' },
                     { text: '' },
                   ],

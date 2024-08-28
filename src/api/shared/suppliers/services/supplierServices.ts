@@ -314,6 +314,7 @@ class SupplierServices {
   async findManyByMaintenanceHistoryId(maintenanceHistoryId: string) {
     return prisma.supplier.findMany({
       select: {
+        image: true,
         id: true,
         name: true,
         phone: true,
@@ -480,7 +481,7 @@ class SupplierServices {
     maintenanceId: string;
     supplierId: string;
   }) {
-    await prisma.maintenanceSupplier.upsert({
+    return prisma.maintenanceSupplier.upsert({
       create: {
         maintenanceId,
         supplierId,
@@ -490,6 +491,13 @@ class SupplierServices {
         maintenanceId_supplierId: {
           maintenanceId,
           supplierId,
+        },
+      },
+      select: {
+        supplier: {
+          select: {
+            name: true,
+          },
         },
       },
     });
