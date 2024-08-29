@@ -28,6 +28,14 @@ export async function validatePasswordController(req: Request, res: Response) {
     validPassword = await compare(password, building.syndicPassword || '');
   }
 
+  if (!validPassword && type === 'resident') {
+    validPassword = password === building.residentPassword;
+  }
+
+  if (!validPassword && type === 'responsible') {
+    validPassword = password === building.syndicPassword;
+  }
+
   if (!validPassword) {
     throw new ServerMessage({
       statusCode: 400,
