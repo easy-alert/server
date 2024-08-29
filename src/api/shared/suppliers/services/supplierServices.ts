@@ -371,7 +371,15 @@ class SupplierServices {
         },
         where: {
           maintenances: {
-            some: { maintenance: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } } },
+            some: {
+              maintenance: {
+                Category: {
+                  Maintenances: {
+                    some: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } },
+                  },
+                },
+              },
+            },
           },
           companyId,
         },
@@ -396,7 +404,15 @@ class SupplierServices {
         },
         where: {
           maintenances: {
-            none: { maintenance: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } } },
+            none: {
+              maintenance: {
+                Category: {
+                  Maintenances: {
+                    some: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } },
+                  },
+                },
+              },
+            },
           },
           companyId,
         },
