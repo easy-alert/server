@@ -34,6 +34,7 @@ interface ISeparateByMonth {
   status: ChecklistStatusName;
   observation: string | null;
   images: IImage[];
+  detailImages: IImage[];
 }
 
 function separateByMonth(array: ISeparateByMonth[]) {

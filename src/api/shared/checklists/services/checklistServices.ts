@@ -143,6 +143,12 @@ class ChecklistServices {
             url: true,
           },
         },
+        detailImages: {
+          select: {
+            name: true,
+            url: true,
+          },
+        },
       },
       where,
 
