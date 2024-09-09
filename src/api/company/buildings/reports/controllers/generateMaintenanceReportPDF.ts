@@ -152,10 +152,10 @@ async function getImageStreamFromS3(url: string): Promise<Readable> {
 
 // Função para converter stream em buffer
 async function streamToBuffer(stream: Readable): Promise<Buffer> {
-  const chunks: Buffer[] = [];
+  const chunks: any = [];
   return new Promise((resolve, reject) => {
     stream.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
-    stream.on('end', () => resolve(Buffer.concat(chunks)));
+    stream.on('end', () => resolve(Buffer.concat(chunks) as any));
     stream.on('error', reject);
   });
 }
