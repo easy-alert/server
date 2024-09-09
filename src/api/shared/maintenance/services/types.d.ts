@@ -28,6 +28,7 @@ export interface IEditMaintenance {
   delay: number;
   delayTimeIntervalId: string;
   observation: string | null;
+  instructions: { url: string; name: string }[];
 }
 
 export interface ICreateMaintenance {
@@ -46,6 +47,7 @@ export interface ICreateMaintenance {
   delayTimeIntervalId: string;
   observation: string | null;
   maintenanceTypeId: string;
+  instructions: { url: string; name: string }[];
 }
 
 export interface IMaintenanceHistory {

@@ -188,8 +188,21 @@ model Maintenance {
 
   MaintenanceType    CategoryAndMaintenanceTypes? @relation(fields: [maintenanceTypeId], references: [id])
   suggestedSuppliers MaintenanceSupplier[]
+  instructions       MaintenanceInstruction[]
 
   @@map("maintenances")
+}
+
+model MaintenanceInstruction {
+  id String @id @default(uuid())
+
+  maintenanceId String
+  name          String
+  url           String
+
+  maintenance Maintenance @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+
+  @@map("maintenanceInstructions")
 }
 
 model MaintenanceHistory {

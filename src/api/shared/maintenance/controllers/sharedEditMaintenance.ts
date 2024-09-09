@@ -25,6 +25,7 @@ export async function sharedEditMaintenance({
     delay,
     delayTimeIntervalId,
     observation,
+    instructions,
   },
 }: {
   ownerCompanyId: string | null;
@@ -107,6 +108,7 @@ export async function sharedEditMaintenance({
     delay,
     delayTimeIntervalId,
     observation,
+    instructions,
   });
 
   return {
@@ -114,5 +116,6 @@ export async function sharedEditMaintenance({
     FrequencyTimeInterval: frequencyData,
     PeriodTimeInterval: periodData,
     DelayTimeInterval: delayData,
+    instructions,
   };
 }

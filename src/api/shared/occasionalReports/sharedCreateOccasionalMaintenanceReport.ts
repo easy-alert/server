@@ -114,6 +114,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
       period: defaultPeriod,
       responsible: maintenanceData.responsible,
       source: 'Manutenção avulsa',
+      instructions: [],
     },
   });
 
