@@ -2,8 +2,8 @@
 /* eslint-disable no-loop-func */
 // #region IMPORTS
 import PDFPrinter from 'pdfmake';
-import { Request, Response } from 'express';
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { Request, Response } from 'express';
 import { Readable } from 'stream';
 import sharp from 'sharp';
 import fs from 'fs';
