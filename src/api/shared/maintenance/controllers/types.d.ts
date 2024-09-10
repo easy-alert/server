@@ -14,6 +14,7 @@ interface MaintenanceBody {
 
 export interface ICreateMaintenanceBody extends MaintenanceBody {
   categoryId: string;
+  instructions: { name: string; url: string }[];
 }
 
 export interface IEditMaintenanceBody extends MaintenanceBody {

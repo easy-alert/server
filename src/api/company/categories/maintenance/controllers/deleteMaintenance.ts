@@ -6,6 +6,7 @@ export async function deleteMaintenance(req: Request, res: Response) {
     ownerCompanyId: req.Company.id,
     body: req.body,
   });
+
   return res.status(200).json({
     ServerMessage: {
       statusCode: 200,

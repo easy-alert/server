@@ -2,8 +2,8 @@
 /* eslint-disable no-loop-func */
 // #region IMPORTS
 import PDFPrinter from 'pdfmake';
-import { Request, Response } from 'express';
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { Request, Response } from 'express';
 import { Readable } from 'stream';
 import sharp from 'sharp';
 import fs from 'fs';
@@ -152,10 +152,10 @@ async function getImageStreamFromS3(url: string): Promise<Readable> {
 
 // Função para converter stream em buffer
 async function streamToBuffer(stream: Readable): Promise<Buffer> {
-  const chunks: Buffer[] = [];
+  const chunks: any = [];
   return new Promise((resolve, reject) => {
     stream.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
-    stream.on('end', () => resolve(Buffer.concat(chunks)));
+    stream.on('end', () => resolve(Buffer.concat(chunks) as any));
     stream.on('error', reject);
   });
 }
@@ -511,6 +511,7 @@ async function PDFService({
           responsible,
           status,
           type,
+          buildingName,
         } = data[j];
 
         if (j >= 1) {
@@ -546,6 +547,13 @@ async function PDFService({
         }
 
         const tags: Content = [];
+
+        tags.push({
+          text: buildingName,
+          marginRight: 12,
+          fontSize: 12,
+          bold: true,
+        });
 
         if (status === 'overdue') {
           tags.push({
@@ -623,7 +631,7 @@ async function PDFService({
                         body: [tags],
                       },
                       layout: 'noBorders',
-                      marginLeft: 13,
+                      marginLeft: 8,
                       marginTop: 8,
                     },
                     { text: '' },

@@ -177,6 +177,7 @@ export class SharedMaintenanceReportsServices {
                 name: true,
               },
             },
+            instructions: { select: { name: true, url: true } },
           },
         },
       },

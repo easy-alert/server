@@ -514,6 +514,7 @@ export class BuildingServices {
                     unitTime: true,
                   },
                 },
+                instructions: { select: { name: true, url: true } },
               },
             },
           },

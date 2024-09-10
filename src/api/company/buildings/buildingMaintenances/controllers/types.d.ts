@@ -37,6 +37,7 @@ interface Maintenance {
   lastNotificationStatus: string | undefined;
   lastResolutionDate: string | null | undefined;
   daysToAnticipate: number;
+  instructions: { url: string; name: string }[];
 }
 
 export interface IListBuildingCategoriesAndMaintenances {
