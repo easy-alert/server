@@ -31,6 +31,7 @@ interface Maintenance {
     singularLabel: string;
     unitTime: number;
   };
+  instructions: { url: string; name: string }[];
 }
 
 export interface IListBuildingCategoriesAndMaintenances {
