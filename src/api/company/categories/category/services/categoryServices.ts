@@ -66,6 +66,8 @@ export class CategoryServices {
                 id: true,
               },
             },
+
+            instructions: { select: { url: true, name: true } },
           },
           orderBy: {
             element: 'asc',
@@ -149,6 +151,8 @@ export class CategoryServices {
                 unitTime: true,
               },
             },
+
+            instructions: { select: { url: true, name: true } },
           },
           orderBy: {
             element: 'asc',

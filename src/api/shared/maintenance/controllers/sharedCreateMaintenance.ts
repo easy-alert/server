@@ -116,5 +116,6 @@ export async function sharedCreateMaintenance({
     FrequencyTimeInterval: frequencyData,
     PeriodTimeInterval: periodData,
     DelayTimeInterval: delayData,
+    instructions,
   };
 }
