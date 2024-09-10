@@ -511,6 +511,7 @@ async function PDFService({
           responsible,
           status,
           type,
+          buildingName,
         } = data[j];
 
         if (j >= 1) {
@@ -546,6 +547,13 @@ async function PDFService({
         }
 
         const tags: Content = [];
+
+        tags.push({
+          text: buildingName,
+          marginRight: 12,
+          fontSize: 12,
+          bold: true,
+        });
 
         if (status === 'overdue') {
           tags.push({
@@ -623,7 +631,7 @@ async function PDFService({
                         body: [tags],
                       },
                       layout: 'noBorders',
-                      marginLeft: 13,
+                      marginLeft: 8,
                       marginTop: 8,
                     },
                     { text: '' },

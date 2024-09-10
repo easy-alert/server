@@ -976,6 +976,7 @@ model MaintenanceReportPdf {
   status          MaintenanceReportPdfStatusName @default(pending)
   createdAt       DateTime                       @default(now())
 
+  // aqui o cascade talvez não seria o ideal
   author        User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorCompany Company @relation(fields: [authorCompanyId], references: [id], onDelete: Cascade)
 
