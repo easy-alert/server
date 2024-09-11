@@ -1780,9 +1780,6 @@
                         "buildingId": {
                           "type": "string"
                         },
-                        "bannerName": {
-                          "type": "string"
-                        },
                         "originalName": {
                           "type": "string"
                         },

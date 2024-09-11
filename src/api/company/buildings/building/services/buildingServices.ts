@@ -143,7 +143,15 @@ export class BuildingServices {
   async findByNanoId({ buildingNanoId }: { buildingNanoId: string }) {
     const building = await prisma.building.findFirst({
       include: {
-        Banners: true,
+        Banners: {
+          select: {
+            originalName: true,
+            redirectUrl: true,
+            url: true,
+            id: true,
+          },
+          orderBy: { createdAt: 'asc' },
+        },
       },
       where: {
         nanoId: buildingNanoId,
@@ -370,12 +378,12 @@ export class BuildingServices {
         },
         Banners: {
           select: {
-            bannerName: true,
             originalName: true,
             redirectUrl: true,
-            type: true,
             url: true,
+            id: true,
           },
+          orderBy: { createdAt: 'asc' },
         },
 
         BuildingFolders: {

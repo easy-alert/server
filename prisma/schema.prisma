@@ -567,10 +567,8 @@ model BuildingBanners {
   id         String @id @unique @default(uuid())
   buildingId String
 
-  bannerName   String
   originalName String
   url          String
-  type         String
   redirectUrl  String?
 
   createdAt DateTime @default(now())

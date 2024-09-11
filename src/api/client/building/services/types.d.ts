@@ -8,7 +8,6 @@ export interface ISeparePerMonthData {
     name: string;
     Banners: {
       id: string;
-      bannerName: string;
       originalName: string;
       redirectUrl: string;
       url: string;
