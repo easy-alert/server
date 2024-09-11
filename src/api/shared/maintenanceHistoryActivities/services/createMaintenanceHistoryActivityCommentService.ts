@@ -47,7 +47,7 @@ export async function createMaintenanceHistoryActivityCommentService({
 
       images: {
         createMany: {
-          data: images
+          data: Array.isArray(images)
             ? images.map(({ originalName, url }) => ({
                 name: originalName,
                 url,

@@ -30,7 +30,7 @@ import {
 import { listBuildingForSelect } from './building/controllers/listBuildingsForSelect';
 import { sendEmailConfirmationBuildingNotificationConfiguration } from './notificationConfiguration/controllers/sendEmailConfirmationBuildingNotificationConfiguration';
 import { buildingAnnexeRouter } from './annexes/annexe.routes';
-import { buildingChangeBanner } from './buildingBanners/controllers/buildingChangeBanner';
+import { createBuildingBanner } from './buildingBanners/controllers/createBuildingBanner';
 import { listForBuildingReports } from './reports/controllers/listForBuildingReports';
 import { listForSelectBuildingReports } from './reports/controllers/listForSelectBuildingReports';
 import { listBuildingsAndTemplatesForSelect } from './building/controllers/listBuildingsAndTemplatesForSelect';
@@ -43,6 +43,8 @@ import { listSyndicsForSelect } from './notificationConfiguration/controllers/li
 import { updateClientPasswordController } from './building/controllers/updateClientPasswordController';
 import { generateMaintenanceReportPDF } from './reports/controllers/generateMaintenanceReportPDF';
 import { listReportPdfs } from './reports/controllers/listReportPdfs';
+import { updateBuildingBanner } from './buildingBanners/controllers/updateBuildingBanner';
+import { deleteBuildingBanner } from './buildingBanners/controllers/deleteBuildingBanner';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -91,7 +93,9 @@ buildingRouter.post('/maintenances/list', listBuildingCategoriesAndMaintenances)
 buildingRouter.use('/annexes', buildingAnnexeRouter);
 
 // BUILDING BANNERS
-buildingRouter.post('/banners/change', buildingChangeBanner);
+buildingRouter.post('/banners/create', createBuildingBanner);
+buildingRouter.put('/banners/update', updateBuildingBanner);
+buildingRouter.delete('/banners/delete/:bannerId', deleteBuildingBanner);
 
 // BUILDING REPORTS
 buildingRouter.get('/reports/listforselect', listForSelectBuildingReports);

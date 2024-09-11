@@ -482,11 +482,9 @@ export class ClientBuildingServices {
               Banners: {
                 select: {
                   id: true,
-                  bannerName: true,
                   originalName: true,
                   redirectUrl: true,
                   url: true,
-                  type: true,
                 },
               },
             },
@@ -551,11 +549,9 @@ export class ClientBuildingServices {
               Banners: {
                 select: {
                   id: true,
-                  bannerName: true,
                   originalName: true,
                   redirectUrl: true,
                   url: true,
-                  type: true,
                 },
               },
             },
@@ -686,11 +682,9 @@ export class ClientBuildingServices {
               Banners: {
                 select: {
                   id: true,
-                  bannerName: true,
                   originalName: true,
                   redirectUrl: true,
                   url: true,
-                  type: true,
                 },
               },
             },
@@ -829,11 +823,9 @@ export class ClientBuildingServices {
         Banners: {
           select: {
             id: true,
-            bannerName: true,
             originalName: true,
             redirectUrl: true,
             url: true,
-            type: true,
           },
         },
 
@@ -881,12 +873,12 @@ export class ClientBuildingServices {
         },
         Banners: {
           select: {
-            bannerName: true,
             originalName: true,
             redirectUrl: true,
-            type: true,
             url: true,
+            id: true,
           },
+          orderBy: { createdAt: 'asc' },
         },
 
         BuildingFolders: {

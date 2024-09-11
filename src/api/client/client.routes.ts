@@ -32,7 +32,7 @@ import {
 } from '../company/buildings/notificationConfiguration/controllers';
 import { findDataForAutocompleteInCreate } from '../company/buildings/notificationConfiguration/controllers/findDataForAutocompleteInCreate';
 import { sendEmailConfirmationBuildingNotificationConfiguration } from '../company/buildings/notificationConfiguration/controllers/sendEmailConfirmationBuildingNotificationConfiguration';
-import { buildingChangeBanner } from '../company/buildings/buildingBanners/controllers/buildingChangeBanner';
+import { createBuildingBanner } from '../company/buildings/buildingBanners/controllers/createBuildingBanner';
 import { findSyndicsByBuildingNanoId } from './building/controllers/findSyndicsByBuildingNanoId';
 import { sharedCreateReportProgress } from '../shared/maintenancesReportProgresses/controllers/sharedCreateReportProgress';
 import { sharedFindReportProgress } from '../shared/maintenancesReportProgresses/controllers/sharedFindReportProgress';
@@ -44,6 +44,8 @@ import { validatePasswordController } from './building/controllers/validatePassw
 import { supplierRouter } from './suppliers/supplier.routes';
 import { maintenanceHistoryActivitiesRouter } from '../shared/maintenanceHistoryActivities/maintenanceHistoryActivities.routes';
 import { findManyBuildingsBySyndicNanoId } from './building/controllers/findManyBuildingsBySyndicNanoId';
+import { deleteBuildingBanner } from '../company/buildings/buildingBanners/controllers/deleteBuildingBanner';
+import { updateBuildingBanner } from '../company/buildings/buildingBanners/controllers/updateBuildingBanner';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -122,7 +124,9 @@ clientRouter.post('/buildings/notifications/create', createBuildingNotificationC
 clientRouter.put('/buildings/notifications/edit', editBuildingNotificationConfiguration);
 clientRouter.delete('/buildings/notifications/delete', deleteBuildingNotificationConfiguration);
 
-clientRouter.post('/buildings/banners/change', buildingChangeBanner);
+clientRouter.post('/buildings/banners/create', createBuildingBanner);
+clientRouter.put('/buildings/banners/update', updateBuildingBanner);
+clientRouter.delete('/buildings/banners/delete/:bannerId', deleteBuildingBanner);
 
 clientRouter.get('/syndics/:buildingNanoId', findSyndicsByBuildingNanoId);
 

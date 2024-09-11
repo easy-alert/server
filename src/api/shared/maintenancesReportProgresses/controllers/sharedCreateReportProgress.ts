@@ -114,11 +114,20 @@ export async function sharedCreateReportProgress(req: Request, res: Response) {
   // removido
   // await sharedMaintenanceServices.updateMaintenanceHistoryToInProgress(maintenanceHistoryId);
 
+  const annexesForActivity = Array.isArray(ReportAnnexes)
+    ? ReportAnnexes.map(({ originalName, url }) => ({ originalName, url }))
+    : [];
+
+  const imagesForActivity = Array.isArray(ReportImages)
+    ? ReportImages.map(({ originalName, url }) => ({ originalName, url }))
+    : [];
+
   await createMaintenanceHistoryActivityCommentService({
     content: `O progresso foi salvo.`,
     userId: req.userId,
     maintenanceHistoryId,
     syndicNanoId,
+    images: [...annexesForActivity, ...imagesForActivity],
   });
 
   return res.status(200).json({
