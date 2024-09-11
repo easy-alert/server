@@ -106,6 +106,24 @@ export class AuthServices {
                 image: true,
                 isBlocked: true,
                 supportLink: true,
+                UserCompanies: {
+                  select: {
+                    User: {
+                      select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        lastAccess: true,
+                        createdAt: true,
+                        isBlocked: true,
+                      },
+                    },
+                  },
+                  // pra não mostrar o user logado na tela de minha conta
+                  where: { userId: { not: userId } },
+
+                  orderBy: { User: { name: 'asc' } },
+                },
               },
             },
           },
