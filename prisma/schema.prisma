@@ -84,15 +84,16 @@ model Permission {
 //COMPANY
 
 model Company {
-  id                   String  @id @unique @default(uuid())
+  id                   String            @id @unique @default(uuid())
   name                 String
-  CNPJ                 String? @unique
-  CPF                  String? @unique
+  CNPJ                 String?           @unique
+  CPF                  String?           @unique
   contactNumber        String
   image                String
-  isBlocked            Boolean @default(false)
-  isNotifyingOnceAWeek Boolean @default(false)
-  supportLink          String?
+  isBlocked            Boolean           @default(false)
+  isNotifyingOnceAWeek Boolean           @default(false)
+  ticketType           CompanyTicketType @default(platform)
+  ticketInfo           String?
 
   canAccessChecklists Boolean @default(false)
   canAccessTickets    Boolean @default(false)
@@ -114,6 +115,14 @@ model Company {
   areaOfActivities    AreaOfActivity[]
 
   @@map("companies")
+}
+
+enum CompanyTicketType {
+  none
+  whatsapp
+  email
+  link
+  platform
 }
 
 //CATEGORIES AND MAINTENANCES TYPES

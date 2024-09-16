@@ -143,6 +143,7 @@ export class BuildingServices {
   async findByNanoId({ buildingNanoId }: { buildingNanoId: string }) {
     const building = await prisma.building.findFirst({
       include: {
+        Company: { select: { ticketInfo: true, ticketType: true, canAccessTickets: true } },
         Banners: {
           select: {
             originalName: true,

@@ -1,7 +1,31 @@
 import { setToUTCMidnight } from '../dateTime';
 import { ServerMessage } from '../messages/serverMessage';
 
-import { ICheckValues, IType } from './types';
+type IType =
+  | 'string'
+  | 'int'
+  | 'float'
+  | 'boolean'
+  | 'date'
+  | 'json'
+  | 'array'
+  | 'time'
+  | 'email'
+  | 'CEP'
+  | 'CPF'
+  | 'CNPJ'
+  | 'urlString'
+  | 'username'
+  | 'stringNumbers'
+  | 'phone';
+
+interface ICheckValues {
+  value: any;
+  label: string;
+  type: IType;
+  required?: boolean;
+  allowZero?: boolean;
+}
 
 const labelToDisplay: { [key in IType]: string } = {
   string: 'Texto',
@@ -16,7 +40,10 @@ const labelToDisplay: { [key in IType]: string } = {
   CEP: 'CEP',
   CPF: 'CPF',
   CNPJ: 'CNPJ',
-  PIN: 'PIN',
+  urlString: 'Texto',
+  username: 'Nome de usuário',
+  stringNumbers: 'Texto numérico',
+  phone: 'Telefone/Celular',
 };
 
 function invalidType({ label, type }: { label: string; type: IType }) {
@@ -46,6 +73,12 @@ function invalidTime(time: string) {
     }
   }
   return false;
+}
+
+function checkString({ label, value }: { label: string; value: any }) {
+  if (typeof value !== 'string') {
+    invalidType({ label, type: 'string' });
+  }
 }
 
 export function checkValues(values: ICheckValues[]) {
@@ -130,6 +163,7 @@ export function checkValues(values: ICheckValues[]) {
             message: `A informação ${label} deve ser menor que 31/12/9999`,
           });
         }
+
         break;
       }
 
@@ -149,21 +183,25 @@ export function checkValues(values: ICheckValues[]) {
         if (required && !value.length) {
           throw new ServerMessage({
             statusCode: 400,
-            message: `Verifique o valor da informação ${label} e tente novamente.`,
+            message: `A informação ${label} requer pelo menos um valor.`,
           });
         }
         break;
 
       case 'time':
+        checkString({ label, value });
+
         if (!invalidTime(value)) {
           invalidType({ label, type });
         }
         break;
 
       case 'email': {
+        checkString({ label, value });
+
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
-        if (value && !emailRegex.test(value)) {
+        if (!emailRegex.test(value)) {
           throw new ServerMessage({
             statusCode: 400,
             message: `O ${label} deve possuir o formato email@example.com`,
@@ -173,6 +211,8 @@ export function checkValues(values: ICheckValues[]) {
       }
 
       case 'CEP': {
+        checkString({ label, value });
+
         const CEPRegex = /^\d{8}$|^\d{5}-\d{3}$/;
 
         if (!CEPRegex.test(value)) {
@@ -181,10 +221,13 @@ export function checkValues(values: ICheckValues[]) {
             message: `O ${label} deve possuir o formato 00000-000`,
           });
         }
+
         break;
       }
 
       case 'CPF': {
+        checkString({ label, value });
+
         const CPFRegex = /^(?:\d{3}\.?\d{3}\.?\d{3}-?\d{2})$/;
 
         if (!CPFRegex.test(value)) {
@@ -195,8 +238,9 @@ export function checkValues(values: ICheckValues[]) {
         }
         break;
       }
-
       case 'CNPJ': {
+        checkString({ label, value });
+
         const CNPJRegex = /^(\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}|\d{14})$/;
 
         if (!CNPJRegex.test(value)) {
@@ -208,13 +252,54 @@ export function checkValues(values: ICheckValues[]) {
         break;
       }
 
-      case 'PIN': {
-        const PINRegex = /^[0-9]{4}$/;
+      case 'urlString': {
+        checkString({ label, value });
 
-        if (!PINRegex.test(value)) {
+        const urlStringRegex = /^[a-zA-ZÀ-ÖØ-öø-ÿ0-9~\s\\[\]]+$/;
+
+        if (!urlStringRegex.test(value)) {
           throw new ServerMessage({
             statusCode: 400,
-            message: `O ${label} deve possuir o formato 0000`,
+            message: `A informação ${label} não deve possuir caracteres especiais.`,
+          });
+        }
+        break;
+      }
+
+      case 'username': {
+        checkString({ label, value });
+
+        const usernameRegex = /^(?=.{3,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/;
+
+        if (!usernameRegex.test(value)) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: `A informação ${label} não deve possuir caracteres especiais e deve conter de 3 a 20 caracteres`,
+          });
+        }
+        break;
+      }
+
+      case 'stringNumbers': {
+        checkString({ label, value });
+
+        const stringNumbersRegex = /^\d+$/;
+
+        if (!stringNumbersRegex.test(value)) {
+          invalidType({ label, type });
+        }
+        break;
+      }
+
+      case 'phone': {
+        checkString({ label, value });
+
+        const phoneRegex = /^(\([1-9]{2}\) ?|[1-9]{2} ?)?(?:[2-8]|9[1-9])[0-9]{3,4}-?[0-9]{4}$/;
+
+        if (!phoneRegex.test(value)) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: `O ${label} deve possuir o formato (00) 90000-0000`,
           });
         }
         break;

@@ -58,7 +58,8 @@ export class AuthServices {
                 createdAt: true,
                 image: true,
                 isBlocked: true,
-                supportLink: true,
+                ticketInfo: true,
+                ticketType: true,
               },
             },
           },
@@ -105,7 +106,8 @@ export class AuthServices {
                 createdAt: true,
                 image: true,
                 isBlocked: true,
-                supportLink: true,
+                ticketInfo: true,
+                ticketType: true,
                 UserCompanies: {
                   select: {
                     User: {
@@ -169,7 +171,8 @@ export class AuthServices {
                 CPF: true,
                 createdAt: true,
                 image: true,
-                supportLink: true,
+                ticketInfo: true,
+                ticketType: true,
                 UserCompanies: {
                   select: {
                     User: {

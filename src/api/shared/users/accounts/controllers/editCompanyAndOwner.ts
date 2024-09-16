@@ -7,6 +7,8 @@ import { Validator } from '../../../../../utils/validator/validator';
 import { SharedCompanyServices } from '../services/sharedCompanyServices';
 import { IEditCompanyBody } from './types';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+import { unmask } from '../../../../../utils/dataHandler';
+import { checkValues } from '../../../../../utils/newValidator';
 
 const userServices = new UserServices();
 const validator = new Validator();
@@ -23,11 +25,12 @@ export async function sharedEditCompanyAndOwner({
     companyName,
     password,
     isNotifyingOnceAWeek,
-    supportLink,
     canAccessChecklists,
     canAccessTickets,
     receiveDailyDueReports,
     receivePreviousMonthReports,
+    ticketInfo,
+    ticketType,
   },
   userId,
   companyId,
@@ -49,6 +52,14 @@ export async function sharedEditCompanyAndOwner({
     });
   }
 
+  if (ticketType === 'whatsapp') {
+    checkValues([{ label: 'Informação para o chamado', type: 'phone', value: ticketInfo }]);
+  }
+
+  if (ticketType === 'email') {
+    checkValues([{ label: 'Informação para o chamado', type: 'email', value: ticketInfo }]);
+  }
+
   await userServices.findByEmailForEdit({
     email,
     userId,
@@ -60,6 +71,8 @@ export async function sharedEditCompanyAndOwner({
     email,
   });
 
+  const lowerCaseTicketInfo = ticketInfo ? ticketInfo.toLowerCase() : null;
+
   await sharedCompanyServices.edit({
     CNPJ,
     companyId,
@@ -68,11 +81,15 @@ export async function sharedEditCompanyAndOwner({
     image,
     name: companyName,
     isNotifyingOnceAWeek,
-    supportLink,
     canAccessChecklists,
     canAccessTickets,
     receiveDailyDueReports,
     receivePreviousMonthReports,
+    ticketInfo:
+      lowerCaseTicketInfo && ticketType === 'whatsapp'
+        ? unmask(lowerCaseTicketInfo)
+        : lowerCaseTicketInfo || null,
+    ticketType,
   });
 
   if (password) {
