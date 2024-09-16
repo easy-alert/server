@@ -17,7 +17,8 @@ type IType =
   | 'urlString'
   | 'username'
   | 'stringNumbers'
-  | 'phone';
+  | 'phone'
+  | 'PIN';
 
 interface ICheckValues {
   value: any;
@@ -44,6 +45,7 @@ const labelToDisplay: { [key in IType]: string } = {
   username: 'Nome de usuário',
   stringNumbers: 'Texto numérico',
   phone: 'Telefone/Celular',
+  PIN: 'PIN',
 };
 
 function invalidType({ label, type }: { label: string; type: IType }) {
@@ -300,6 +302,18 @@ export function checkValues(values: ICheckValues[]) {
           throw new ServerMessage({
             statusCode: 400,
             message: `O ${label} deve possuir o formato (00) 90000-0000`,
+          });
+        }
+        break;
+      }
+
+      case 'PIN': {
+        const PINRegex = /^[0-9]{4}$/;
+
+        if (!PINRegex.test(value)) {
+          throw new ServerMessage({
+            statusCode: 400,
+            message: `O ${label} deve possuir o formato 0000`,
           });
         }
         break;
