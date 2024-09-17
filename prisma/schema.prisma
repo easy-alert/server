@@ -474,6 +474,7 @@ model Building {
   keepNotificationAfterWarrantyEnds Boolean
   mandatoryReportProof              Boolean  @default(false)
   isActivityLogPublic               Boolean  @default(false)
+  guestCanCompleteMaintenance       Boolean  @default(false)
 
   residentPassword String?
   syndicPassword   String?

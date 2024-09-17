@@ -103,6 +103,11 @@ export async function createBuilding(req: Request, res: Response) {
       variable: data.mandatoryReportProof,
     },
     {
+      label: 'Convidado pode concluir manutenção',
+      type: 'boolean',
+      variable: data.guestCanCompleteMaintenance,
+    },
+    {
       label: 'Tipo da criação da próxima manutenção',
       type: 'string',
       variable: data.nextMaintenanceCreationBasis,

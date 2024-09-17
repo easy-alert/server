@@ -12,6 +12,7 @@ export interface ICreateBuilding {
     deliveryDate: Date;
     warrantyExpiration: Date;
     keepNotificationAfterWarrantyEnds: boolean;
+    guestCanCompleteMaintenance: boolean;
   };
 }
 
@@ -28,6 +29,7 @@ export interface IEditBuilding {
     area: string;
     warrantyExpiration: Date;
     keepNotificationAfterWarrantyEnds: boolean;
+    guestCanCompleteMaintenance: boolean;
   };
 }
 

@@ -327,6 +327,7 @@ export class BuildingServices {
         residentPassword: true,
         nextMaintenanceCreationBasis: true,
         isActivityLogPublic: true,
+        guestCanCompleteMaintenance: true,
 
         Company: {
           select: {

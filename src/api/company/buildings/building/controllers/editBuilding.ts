@@ -90,6 +90,11 @@ export async function editBuilding(req: Request, res: Response) {
       variable: data.mandatoryReportProof,
     },
     {
+      label: 'Convidado pode concluir manutenção',
+      type: 'boolean',
+      variable: data.guestCanCompleteMaintenance,
+    },
+    {
       label: 'Próxima manutenção baseada em',
       type: 'string',
       variable: data.nextMaintenanceCreationBasis,

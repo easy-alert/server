@@ -143,6 +143,7 @@ export class SharedMaintenanceReportsServices {
           select: {
             name: true,
             id: true,
+            guestCanCompleteMaintenance: true,
           },
         },
 

@@ -169,6 +169,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
       syndicPassword: BuildingDetails.syndicPassword,
       nextMaintenanceCreationBasis: BuildingDetails.nextMaintenanceCreationBasis,
       isActivityLogPublic: BuildingDetails.isActivityLogPublic,
+      guestCanCompleteMaintenance: BuildingDetails.guestCanCompleteMaintenance,
 
       // @ts-ignore
       Folders:
