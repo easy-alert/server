@@ -553,6 +553,7 @@ async function PDFService({
           marginRight: 12,
           fontSize: 12,
           bold: true,
+          noWrap: true,
         });
 
         if (status === 'overdue') {
@@ -561,6 +562,7 @@ async function PDFService({
             background: getStatusBackgroundColor('completed'),
             color: '#FFFFFF',
             marginRight: 12,
+            noWrap: true,
           });
         }
 
@@ -569,6 +571,7 @@ async function PDFService({
           background: getStatusBackgroundColor(status),
           color: '#FFFFFF',
           marginRight: 12,
+          noWrap: true,
         });
 
         if (type === 'occasional') {
@@ -577,6 +580,7 @@ async function PDFService({
             background: getStatusBackgroundColor('occasional'),
             color: '#FFFFFF',
             marginRight: 12,
+            noWrap: true,
           });
         } else {
           tags.push({
@@ -584,6 +588,7 @@ async function PDFService({
             background: getStatusBackgroundColor('common'),
             color: '#FFFFFF',
             marginRight: 12,
+            noWrap: true,
           });
         }
 
@@ -593,6 +598,7 @@ async function PDFService({
             background: getStatusBackgroundColor('inProgress'),
             color: '#FFFFFF',
             marginRight: 12,
+            noWrap: true,
           });
         }
 

@@ -14,11 +14,12 @@ export class SharedCompanyServices {
     image,
     companyId,
     isNotifyingOnceAWeek,
-    supportLink,
     canAccessChecklists,
     canAccessTickets,
     receiveDailyDueReports,
     receivePreviousMonthReports,
+    ticketInfo,
+    ticketType,
   }: IEditCompany) {
     await this.findById({ companyId });
 
@@ -30,11 +31,12 @@ export class SharedCompanyServices {
         contactNumber,
         image,
         isNotifyingOnceAWeek,
-        supportLink,
         canAccessChecklists,
         canAccessTickets,
         receiveDailyDueReports,
         receivePreviousMonthReports,
+        ticketInfo,
+        ticketType,
       },
       where: { id: companyId },
     });

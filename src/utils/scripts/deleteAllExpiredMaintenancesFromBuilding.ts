@@ -55,11 +55,7 @@ export async function deleteAllExpiredMaintenancesFromBuilding(req: Request, res
     await emailTransporter.sendDeleteMaintenanceScriptUsed({
       data: idsToDelete,
       route: 'todas manutenções expiradas',
-      toEmail: [
-        'jorgeluiz112233@gmail.com',
-        'yan.fagundes@adasoftwarehouse.com',
-        'mandelli.augusto@gmail.com',
-      ],
+      toEmail: ['mandelli.augusto@gmail.com'],
       buildingName: building.name,
     });
   } else {

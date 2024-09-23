@@ -574,6 +574,72 @@ class SupplierServices {
       orderBy: { label: 'asc' },
     });
   }
+
+  async findMaintenanceHistory({ supplierId }: { supplierId: string }) {
+    return prisma.maintenanceHistory.findMany({
+      select: {
+        id: true,
+        notificationDate: true,
+        resolutionDate: true,
+        inProgress: true,
+        dueDate: true,
+
+        MaintenanceReport: {
+          select: {
+            observation: true,
+            cost: true,
+
+            ReportAnnexes: {
+              select: {
+                url: true,
+                name: true,
+              },
+            },
+
+            ReportImages: {
+              select: {
+                url: true,
+              },
+            },
+          },
+        },
+        MaintenancesStatus: {
+          select: {
+            name: true,
+          },
+        },
+
+        Building: {
+          select: {
+            name: true,
+          },
+        },
+        Maintenance: {
+          select: {
+            element: true,
+            activity: true,
+            Category: {
+              select: {
+                name: true,
+              },
+            },
+            source: true,
+            responsible: true,
+            observation: true,
+            MaintenanceType: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { notificationDate: 'desc' },
+      where: {
+        suppliers: { some: { supplierId } },
+      },
+    });
+  }
 }
 
 export const supplierServices = new SupplierServices();

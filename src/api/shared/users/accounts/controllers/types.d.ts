@@ -1,3 +1,5 @@
+import { CompanyTicketType } from '@prisma/client';
+
 export interface IEditCompanyBody {
   userId: string;
   companyId: string;
@@ -11,10 +13,11 @@ export interface IEditCompanyBody {
     companyName: string;
     password: string;
     isNotifyingOnceAWeek: boolean;
-    supportLink: string;
     canAccessChecklists: boolean;
     canAccessTickets: boolean;
     receivePreviousMonthReports: boolean;
     receiveDailyDueReports: boolean;
+    ticketInfo: string | null;
+    ticketType: CompanyTicketType;
   };
 }

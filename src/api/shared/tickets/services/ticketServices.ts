@@ -308,6 +308,13 @@ class TicketServices {
             name: true,
             url: true,
           },
+          where: {
+            OR: [
+              { url: { endsWith: '.png' } },
+              { url: { endsWith: '.jpg' } },
+              { url: { endsWith: '.jpeg' } },
+            ],
+          },
         },
         place: {
           select: {
