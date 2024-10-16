@@ -186,4 +186,48 @@ export class CategoryServices {
 
     return categories;
   }
+
+  async listByCompanyId(companyId: string) {
+    const [defaultCategories, companyCategories] = await prisma.$transaction([
+      prisma.category.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+        where: {
+          ownerCompanyId: null,
+
+          NOT: {
+            CategoryType: {
+              name: 'occasional',
+            },
+          },
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      }),
+
+      prisma.category.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+        where: {
+          ownerCompanyId: companyId,
+
+          NOT: {
+            CategoryType: {
+              name: 'occasional',
+            },
+          },
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      }),
+    ]);
+
+    return { defaultCategories, companyCategories };
+  }
 }
