@@ -15,7 +15,7 @@ interface IBody {
   phone?: string | null;
   email?: string | null;
 
-  areaOfActivityLabels: string[];
+  categoriesIds: string[];
 
   maintenanceHistoryId: string;
 }
@@ -32,7 +32,7 @@ export async function createAndLinkSupplier(req: Request, res: Response) {
     email,
     phone,
     cnpj,
-    areaOfActivityLabels,
+    categoriesIds,
     maintenanceHistoryId,
   }: IBody = req.body;
 
@@ -46,19 +46,12 @@ export async function createAndLinkSupplier(req: Request, res: Response) {
     { label: 'Telefone/Celular', type: 'string', value: phone, required: false },
     { label: 'Email', type: 'email', value: email, required: false },
     { label: 'CNPJ', type: 'CNPJ', value: cnpj, required: false },
-
-    { label: 'Área de atuação', type: 'array', value: areaOfActivityLabels },
+    { label: 'Categorias', type: 'array', value: categoriesIds },
   ]);
 
   // Para adicionar fornecedor como sugerido pra manutenção
   const { Maintenance, Company } = await sharedMaintenanceServices.findHistoryById({
     maintenanceHistoryId,
-  });
-
-  const { areaOfActivities } = supplierServices.createOrConnectAreaOfActivityService({
-    isUpdate: false,
-    areaOfActivityLabels,
-    companyId: Company.id,
   });
 
   const supplier = await supplierServices.create({
@@ -72,8 +65,6 @@ export async function createAndLinkSupplier(req: Request, res: Response) {
       email: email ? email.toLowerCase() : null,
       phone: phone ? unmask(phone) : null,
       companyId: Company.id,
-
-      areaOfActivities,
     },
   });
 
