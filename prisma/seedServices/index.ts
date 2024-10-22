@@ -292,23 +292,4 @@ export class SeedServices {
 
     console.log('Ticket status upserted.');
   }
-
-  async createSupplierAreaOfActivities() {
-    const allData = [
-      { label: 'Hidráulica' },
-      { label: 'Elétrica' },
-      { label: 'Pintura' },
-      { label: 'Mecânica' },
-      { label: 'Portas e janelas' },
-      { label: 'Gás' },
-      { label: 'Acabamentos' },
-      { label: 'Outros' },
-    ];
-
-    await prisma.areaOfActivity.createMany({
-      data: allData,
-    });
-
-    console.log('Area of activities created.');
-  }
 }
