@@ -1,4 +1,10 @@
-export function mask({ type, value }: { type: 'CPF' | 'CNPJ' | 'TEL' | 'CEP' | 'BRL' | 'NUM' | 'DEC'; value: string }) {
+export function mask({
+  type,
+  value,
+}: {
+  type: 'CPF' | 'CNPJ' | 'TEL' | 'CEP' | 'BRL' | 'NUM' | 'DEC';
+  value: string;
+}) {
   let formattedValue = '';
 
   switch (type) {
