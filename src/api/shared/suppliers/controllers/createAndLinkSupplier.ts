@@ -65,6 +65,10 @@ export async function createAndLinkSupplier(req: Request, res: Response) {
       email: email ? email.toLowerCase() : null,
       phone: phone ? unmask(phone) : null,
       companyId: Company.id,
+
+      categories: {
+        createMany: { data: categoriesIds.map((categoryId) => ({ categoryId })) },
+      },
     },
   });
 
