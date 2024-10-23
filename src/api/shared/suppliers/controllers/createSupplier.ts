@@ -14,12 +14,11 @@ interface IBody {
   phone?: string | null;
   email?: string | null;
 
-  areaOfActivityLabels: string[];
+  categoriesIds: string[];
 }
 
 export async function createSupplier(req: Request, res: Response) {
-  const { city, image, link, name, state, email, phone, cnpj, areaOfActivityLabels }: IBody =
-    req.body;
+  const { city, image, link, name, state, email, phone, cnpj, categoriesIds }: IBody = req.body;
 
   checkValues([
     { label: 'Nome', type: 'string', value: name },
@@ -31,14 +30,8 @@ export async function createSupplier(req: Request, res: Response) {
     { label: 'Email', type: 'email', value: email, required: false },
     { label: 'CNPJ', type: 'CNPJ', value: cnpj, required: false },
 
-    { label: 'Área de atuação', type: 'array', value: areaOfActivityLabels },
+    { label: 'Categorias', type: 'array', value: categoriesIds },
   ]);
-
-  const { areaOfActivities } = supplierServices.createOrConnectAreaOfActivityService({
-    isUpdate: false,
-    areaOfActivityLabels,
-    companyId: req.Company.id,
-  });
 
   await supplierServices.create({
     data: {
@@ -51,7 +44,10 @@ export async function createSupplier(req: Request, res: Response) {
       email: email ? email.toLowerCase() : null,
       phone: phone ? unmask(phone) : null,
       companyId: req.Company.id,
-      areaOfActivities,
+
+      categories: {
+        createMany: { data: categoriesIds.map((categoryId) => ({ categoryId })) },
+      },
     },
   });
 

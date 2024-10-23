@@ -9,9 +9,6 @@ interface SupplierWithSelection {
   isSelected: boolean;
   id: string;
   name: string;
-  areaOfActivities: {
-    areaOfActivity: { label: string };
-  }[];
 }
 
 const sharedMaintenanceServices = new SharedMaintenanceServices();
@@ -23,11 +20,17 @@ export async function findManySuppliersToSelectByMaintenanceHistoryId(req: Reque
     { label: 'ID do histórico de manutenção', type: 'string', variable: maintenanceHistoryId },
   ]);
 
-  const { Company } = await sharedMaintenanceServices.findHistoryById({ maintenanceHistoryId });
+  const {
+    Company,
+    Maintenance: {
+      Category: { id: categoryId },
+    },
+  } = await sharedMaintenanceServices.findHistoryById({ maintenanceHistoryId });
 
   const { remainingSuppliers, suggestedSuppliers } =
     await supplierServices.findToSelectByMaintenanceHistoryId({
       maintenanceHistoryId,
+      categoryId,
       companyId: Company.id,
     });
 

@@ -10,7 +10,6 @@ import { linkSupplierToMaintenanceHistory } from '../../shared/suppliers/control
 import { unlinkSupplierToMaintenanceHistory } from '../../shared/suppliers/controllers/unlinkSupplierToMaintenanceHistory';
 import { updateSupplier } from '../../shared/suppliers/controllers/updateSupplier';
 import { unlinkSupplierToMaintenance } from '../../shared/suppliers/controllers/unlinkSupplierToMaintenance';
-import { findManyAreaOfActivities } from '../../shared/suppliers/controllers/findManyAreaOfActivities';
 import { findSupplierMaintenanceHistory } from '../../shared/suppliers/controllers/findSupplierMaintenanceHistory';
 
 export const supplierRouter = Router();
@@ -20,7 +19,6 @@ supplierRouter.delete('/:supplierId', deleteSupplier);
 supplierRouter.get('/', findManySuppliers);
 supplierRouter.get('/:supplierId', findSupplierById);
 supplierRouter.get('/:supplierId/maintenance-history', findSupplierMaintenanceHistory);
-supplierRouter.get('/extras/area-of-activities', findManyAreaOfActivities);
 supplierRouter.get('/selected/:maintenanceHistoryId', findLinkedSuppliersByMaintenanceHistoryId);
 supplierRouter.get(
   '/to-select/:maintenanceHistoryId',

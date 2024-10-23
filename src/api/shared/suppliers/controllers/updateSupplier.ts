@@ -14,12 +14,12 @@ interface IBody {
   cnpj?: string | null;
   phone?: string | null;
   email?: string | null;
-  areaOfActivityLabels: string[];
+
+  categoriesIds: string[];
 }
 
 export async function updateSupplier(req: Request, res: Response) {
-  const { city, image, link, name, state, email, phone, cnpj, id, areaOfActivityLabels }: IBody =
-    req.body;
+  const { city, image, link, name, state, email, phone, cnpj, id, categoriesIds }: IBody = req.body;
 
   checkValues([
     { label: 'ID', type: 'string', value: id },
@@ -31,14 +31,9 @@ export async function updateSupplier(req: Request, res: Response) {
     { label: 'Telefone/Celular', type: 'string', value: phone, required: false },
     { label: 'Email', type: 'email', value: email, required: false },
     { label: 'CNPJ', type: 'CNPJ', value: cnpj, required: false },
-    { label: 'Área de atuação', type: 'array', value: areaOfActivityLabels },
-  ]);
 
-  const { areaOfActivities } = supplierServices.createOrConnectAreaOfActivityService({
-    isUpdate: true,
-    areaOfActivityLabels,
-    companyId: req.Company.id,
-  });
+    { label: 'Categorias', type: 'array', value: categoriesIds },
+  ]);
 
   await supplierServices.update({
     data: {
@@ -50,7 +45,11 @@ export async function updateSupplier(req: Request, res: Response) {
       state,
       email: email ? email.toLowerCase() : null,
       phone: phone ? unmask(phone) : null,
-      areaOfActivities,
+
+      categories: {
+        deleteMany: {},
+        createMany: { data: categoriesIds.map((categoryId) => ({ categoryId })) },
+      },
     },
     where: {
       id,

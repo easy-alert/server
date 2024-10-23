@@ -297,17 +297,14 @@ export class ClientBuildingServices {
       let period = null;
       let canReportDate = null;
 
-      // ARRAY ORDENADO POR DATA DE CRIAÇÃO, LOGO SE TIVER UMA PENDENTE, ELA SERÁ A PRIMEIRA POSIÇÃO
-      const history = await sharedMaintenanceServices.findHistoryByBuildingId({
-        buildingId: maintenance.Building.id,
-        maintenanceId: maintenance.Maintenance.id,
-      });
-
-      const historyPeriod =
-        history[0].Maintenance.period * history[0].Maintenance.PeriodTimeInterval.unitTime;
-
       switch (maintenance.MaintenancesStatus.name) {
-        case 'pending':
+        case 'pending': {
+          // ARRAY ORDENADO POR DATA DE CRIAÇÃO, LOGO SE TIVER UMA PENDENTE, ELA SERÁ A PRIMEIRA POSIÇÃO
+          const history = await sharedMaintenanceServices.findHistoryByBuildingId({
+            buildingId: maintenance.Building.id,
+            maintenanceId: maintenance.Maintenance.id,
+          });
+
           period =
             maintenance.Maintenance.period * maintenance.Maintenance.PeriodTimeInterval.unitTime;
 
@@ -356,8 +353,18 @@ export class ClientBuildingServices {
           }
 
           break;
+        }
 
         case 'expired': {
+          // ARRAY ORDENADO POR DATA DE CRIAÇÃO, LOGO SE TIVER UMA PENDENTE, ELA SERÁ A PRIMEIRA POSIÇÃO
+          const history = await sharedMaintenanceServices.findHistoryByBuildingId({
+            buildingId: maintenance.Building.id,
+            maintenanceId: maintenance.Maintenance.id,
+          });
+
+          const historyPeriod =
+            history[0].Maintenance.period * history[0].Maintenance.PeriodTimeInterval.unitTime;
+
           auxiliaryData = Math.floor(
             (today.getTime() - maintenance.dueDate.getTime()) / (1000 * 60 * 60 * 24),
           );

@@ -191,4 +191,70 @@ export class SharedCategoryServices {
       where: { id: categoryId },
     });
   }
+
+  async listByCompanyId(companyId: string) {
+    const defaultCategories = await prisma.category.findMany({
+      where: {
+        ownerCompanyId: null,
+
+        NOT: {
+          CategoryType: {
+            name: 'occasional',
+          },
+        },
+      },
+    });
+
+    const companyCategories = await prisma.category.findMany({
+      where: {
+        ownerCompanyId: companyId,
+
+        CategoryType: {
+          name: {
+            not: 'occasional',
+          },
+        },
+      },
+    });
+
+    return { defaultCategories, companyCategories };
+  }
+
+  async listByNanoId(nanoId: string) {
+    const defaultCategories = await prisma.category.findMany({
+      where: {
+        ownerCompanyId: null,
+
+        NOT: {
+          CategoryType: {
+            name: 'occasional',
+          },
+        },
+      },
+    });
+
+    const companyCategories = await prisma.category.findMany({
+      where: {
+        OwnerCompany: {
+          Buildings: {
+            some: {
+              nanoId,
+            },
+          },
+        },
+
+        NOT: {
+          ownerCompanyId: null,
+        },
+
+        CategoryType: {
+          name: {
+            not: 'occasional',
+          },
+        },
+      },
+    });
+
+    return { defaultCategories, companyCategories };
+  }
 }

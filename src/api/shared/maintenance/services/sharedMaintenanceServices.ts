@@ -483,6 +483,8 @@ export class SharedMaintenanceServices {
         createdAt: 'desc',
       },
 
+      take: 3,
+
       where: {
         buildingId,
         maintenanceId,
