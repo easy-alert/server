@@ -11,7 +11,6 @@ datasource db {
 }
 
 //VALIDATIONS TOKENS
-
 model ValidationToken {
   id      String  @id @unique @default(uuid())
   token   String  @unique
@@ -82,7 +81,6 @@ model Permission {
 }
 
 //COMPANY
-
 model Company {
   id                   String            @id @unique @default(uuid())
   name                 String
@@ -112,7 +110,6 @@ model Company {
   MaintenancesHistory MaintenanceHistory[]
   suppliers           Supplier[]
   reportPdfs          MaintenanceReportPdf[]
-  areaOfActivities    AreaOfActivity[]
 
   @@map("companies")
 }
@@ -156,10 +153,27 @@ model Category {
   Maintenances            Maintenance[]
   Buildings               BuildingCategory[]
   DefaultTemplateCategory DefaultTemplateCategory[]
+  suppliers               CategorySupplier[]
 
   CategoryType CategoryAndMaintenanceTypes? @relation(fields: [categoryTypeId], references: [id])
 
   @@map("categories")
+}
+
+model CategorySupplier {
+  id String @id @default(uuid())
+
+  categoryId String
+  supplierId String
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([categoryId, supplierId])
+  @@map("categorySuppliers")
 }
 
 // MAINTENANCES
@@ -437,7 +451,6 @@ model MaintenancesStatus {
 }
 
 //BUILDINGS
-
 model BuildingType {
   id   String @id @unique @default(uuid())
   name String @unique
@@ -678,37 +691,12 @@ model Supplier {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  areaOfActivities SupplierAreaOfActivity[]
-
   company             Company                      @relation(fields: [companyId], references: [id], onDelete: Cascade)
   maintenances        MaintenanceSupplier[]
   maintenancesHistory MaintenanceHistorySupplier[]
+  categories          CategorySupplier[]
 
   @@map("suppliers")
-}
-
-model SupplierAreaOfActivity {
-  supplierId       String
-  areaOfActivityId String
-
-  supplier       Supplier       @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  areaOfActivity AreaOfActivity @relation(fields: [areaOfActivityId], references: [id])
-
-  @@id([supplierId, areaOfActivityId])
-  @@map("supplierAreaOfActivities")
-}
-
-model AreaOfActivity {
-  id        String  @id @default(uuid())
-  label     String
-  companyId String?
-
-  company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
-
-  suppliers SupplierAreaOfActivity[]
-
-  @@unique([label, companyId])
-  @@map("areaOfActivities")
 }
 
 // DEFAULT TEMPLATE MAINTENANCES

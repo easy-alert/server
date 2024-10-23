@@ -46,6 +46,7 @@ import { maintenanceHistoryActivitiesRouter } from '../shared/maintenanceHistory
 import { findManyBuildingsBySyndicNanoId } from './building/controllers/findManyBuildingsBySyndicNanoId';
 import { deleteBuildingBanner } from '../company/buildings/buildingBanners/controllers/deleteBuildingBanner';
 import { updateBuildingBanner } from '../company/buildings/buildingBanners/controllers/updateBuildingBanner';
+import { sharedListCategoriesByNanoId } from '../shared/categories/controllers/sharedListCategoriesByNanoId';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -151,3 +152,5 @@ clientRouter.get(
   '/find-buildings-by-syndic-nano-id/:syndicNanoId',
   findManyBuildingsBySyndicNanoId,
 );
+
+clientRouter.get('/categories/listByNanoId/:nanoId', sharedListCategoriesByNanoId);

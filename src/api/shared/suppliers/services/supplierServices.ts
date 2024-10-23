@@ -1,7 +1,5 @@
 import { prisma, prismaTypes } from '../../../../../prisma';
-import { capitalizeFirstLetter } from '../../../../utils/dataHandler';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
-import { checkValues } from '../../../../utils/newValidator';
 import { Validator } from '../../../../utils/validator/validator';
 
 const validator = new Validator();
@@ -27,12 +25,6 @@ interface IFindManyByBuildingNanoId {
   filter?: IParsedFilter;
 }
 
-interface ICreateOrConnectServiceTypesService {
-  areaOfActivityLabels: string[];
-  isUpdate: boolean;
-  companyId: string;
-}
-
 class SupplierServices {
   async create(args: prismaTypes.SupplierCreateArgs) {
     return prisma.supplier.create(args);
@@ -55,10 +47,10 @@ class SupplierServices {
       }
 
       if (filter.serviceTypeLabel) {
-        where.areaOfActivities = {
+        where.categories = {
           some: {
-            areaOfActivity: {
-              label: {
+            category: {
+              id: {
                 equals: filter.serviceTypeLabel,
                 mode: 'insensitive',
               },
@@ -87,16 +79,18 @@ class SupplierServices {
         city: true,
         cnpj: true,
         state: true,
-        areaOfActivities: {
+        categories: {
           select: {
-            areaOfActivity: {
+            category: {
               select: {
-                label: true,
+                id: true,
+                name: true,
               },
             },
           },
+
           orderBy: {
-            areaOfActivity: { label: 'asc' },
+            category: { name: 'asc' },
           },
         },
       },
@@ -143,10 +137,10 @@ class SupplierServices {
       }
 
       if (filter.serviceTypeLabel) {
-        where.areaOfActivities = {
+        where.categories = {
           some: {
-            areaOfActivity: {
-              label: {
+            category: {
+              id: {
                 equals: filter.serviceTypeLabel,
                 mode: 'insensitive',
               },
@@ -176,16 +170,18 @@ class SupplierServices {
           city: true,
           cnpj: true,
           state: true,
-          areaOfActivities: {
+          categories: {
             select: {
-              areaOfActivity: {
+              category: {
                 select: {
-                  label: true,
+                  id: true,
+                  name: true,
                 },
               },
             },
+
             orderBy: {
-              areaOfActivity: { label: 'asc' },
+              category: { name: 'asc' },
             },
           },
         },
@@ -217,16 +213,19 @@ class SupplierServices {
         city: true,
         cnpj: true,
         state: true,
-        areaOfActivities: {
+
+        categories: {
           select: {
-            areaOfActivity: {
+            category: {
               select: {
-                label: true,
+                id: true,
+                name: true,
               },
             },
           },
+
           orderBy: {
-            areaOfActivity: { label: 'asc' },
+            category: { name: 'asc' },
           },
         },
 
@@ -278,39 +277,6 @@ class SupplierServices {
     return prisma.supplier.delete({ where: { id } });
   }
 
-  createOrConnectAreaOfActivityService({
-    areaOfActivityLabels,
-    isUpdate,
-    companyId,
-  }: ICreateOrConnectServiceTypesService) {
-    areaOfActivityLabels.forEach((tag) => {
-      checkValues([{ label: 'Tag', type: 'string', value: tag }]);
-    });
-
-    const uniqueLabels = [
-      ...new Set(areaOfActivityLabels.map((label) => capitalizeFirstLetter(label.trim()))),
-    ];
-
-    const areaOfActivities = {
-      create: uniqueLabels.map((label) => ({
-        areaOfActivity: {
-          connectOrCreate: {
-            create: { label, companyId },
-            where: {
-              label_companyId: { companyId, label },
-            },
-          },
-        },
-      })),
-    };
-
-    if (isUpdate) {
-      return { areaOfActivities: { deleteMany: {}, ...areaOfActivities } };
-    }
-
-    return { areaOfActivities };
-  }
-
   async findManyByMaintenanceHistoryId(maintenanceHistoryId: string) {
     return prisma.supplier.findMany({
       select: {
@@ -319,18 +285,6 @@ class SupplierServices {
         name: true,
         phone: true,
         email: true,
-        areaOfActivities: {
-          select: {
-            areaOfActivity: {
-              select: {
-                label: true,
-              },
-            },
-          },
-          orderBy: {
-            areaOfActivity: { label: 'asc' },
-          },
-        },
       },
       where: {
         maintenancesHistory: {
@@ -346,9 +300,11 @@ class SupplierServices {
 
   async findToSelectByMaintenanceHistoryId({
     companyId,
+    categoryId,
     maintenanceHistoryId,
   }: {
     maintenanceHistoryId: string;
+    categoryId: string;
     companyId: string;
   }) {
     const [suggestedSuppliers, remainingSuppliers] = await prisma.$transaction([
@@ -356,64 +312,94 @@ class SupplierServices {
         select: {
           id: true,
           name: true,
-          areaOfActivities: {
+
+          categories: {
             select: {
-              areaOfActivity: {
+              category: {
                 select: {
-                  label: true,
+                  id: true,
+                  name: true,
                 },
               },
-            },
-            orderBy: {
-              areaOfActivity: { label: 'asc' },
             },
           },
         },
         where: {
-          maintenances: {
-            some: {
-              maintenance: {
-                Category: {
-                  Maintenances: {
-                    some: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } },
+          OR: [
+            {
+              maintenances: {
+                some: {
+                  maintenance: {
+                    Category: {
+                      Maintenances: {
+                        some: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } },
+                      },
+                    },
                   },
                 },
               },
             },
-          },
+
+            {
+              categories: {
+                some: {
+                  category: {
+                    id: categoryId,
+                  },
+                },
+              },
+            },
+          ],
+
           companyId,
         },
+
         orderBy: { name: 'asc' },
       }),
+
       prisma.supplier.findMany({
         select: {
           id: true,
           name: true,
-          areaOfActivities: {
+
+          categories: {
             select: {
-              areaOfActivity: {
+              category: {
                 select: {
-                  label: true,
+                  id: true,
+                  name: true,
                 },
               },
-            },
-            orderBy: {
-              areaOfActivity: { label: 'asc' },
             },
           },
         },
         where: {
-          maintenances: {
-            none: {
-              maintenance: {
-                Category: {
-                  Maintenances: {
-                    some: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } },
+          AND: [
+            {
+              maintenances: {
+                none: {
+                  maintenance: {
+                    Category: {
+                      Maintenances: {
+                        some: { MaintenancesHistory: { some: { id: maintenanceHistoryId } } },
+                      },
+                    },
                   },
                 },
               },
             },
-          },
+
+            {
+              categories: {
+                none: {
+                  category: {
+                    id: categoryId,
+                  },
+                },
+              },
+            },
+          ],
+
           companyId,
         },
         orderBy: { name: 'asc' },
@@ -559,19 +545,6 @@ class SupplierServices {
           supplierId,
         },
       },
-    });
-  }
-
-  async findAreaOfActivities({ companyId }: { companyId: string | undefined }) {
-    return prisma.areaOfActivity.findMany({
-      select: {
-        id: true,
-        label: true,
-      },
-      where: {
-        OR: [{ companyId: null }, { companyId }],
-      },
-      orderBy: { label: 'asc' },
     });
   }
 
