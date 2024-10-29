@@ -64,7 +64,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
     { label: 'Nome da categoria', variable: categoryData.name, type: 'string' },
     { label: 'Nome da manutenção', variable: maintenanceData.element, type: 'string' },
     { label: 'Atividade da manutenção', variable: maintenanceData.activity, type: 'string' },
-    { label: 'Reponsável da manutenção', variable: maintenanceData.responsible, type: 'string' },
+    { label: 'Responsável da manutenção', variable: maintenanceData.responsible, type: 'string' },
     { label: 'Data', variable: executionDate, type: 'string' },
     { label: 'Origem', variable: origin, type: 'string' },
     { label: 'Execução', variable: inProgress, type: 'boolean', isOptional: true },
@@ -76,6 +76,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
   const defaultPeriod = 365 * 100;
 
   let syndicData = null;
+
   if (responsibleSyndicId) {
     syndicData = await sharedBuildingNotificationConfigurationServices.findByNanoId({
       syndicNanoId: responsibleSyndicId,
@@ -279,5 +280,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
       }
     }
   }
+
+  return maintenance;
   // #endregion
 }
