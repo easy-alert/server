@@ -2,7 +2,7 @@
 import { sharedCreateCategory } from '../categories/controllers/sharedCreateCategory';
 import { Validator } from '../../../utils/validator/validator';
 import { sharedCreateMaintenance } from '../maintenance/controllers/sharedCreateMaintenance';
-import { ICreateOccassionalMaintenanceReport } from './types';
+import { ICreateOccasionalMaintenanceReport } from './types';
 import { ServerMessage } from '../../../utils/messages/serverMessage';
 import { TimeIntervalServices } from '../timeInterval/services/timeIntervalServices';
 import { SharedMaintenanceServices } from '../maintenance/services/sharedMaintenanceServices';
@@ -30,7 +30,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
   body,
 }: {
   companyId: string;
-  body: ICreateOccassionalMaintenanceReport;
+  body: ICreateOccasionalMaintenanceReport;
 }) {
   const {
     buildingId,
@@ -42,7 +42,8 @@ export async function sharedCreateOccasionalMaintenanceReport({
     reportData,
     inProgress,
     ticketIds,
-  }: ICreateOccassionalMaintenanceReport = body;
+    occasionalMaintenanceType,
+  }: ICreateOccasionalMaintenanceReport = body;
 
   // #region VALIDATIONS
   if (!categoryData) {
@@ -76,6 +77,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
   const defaultPeriod = 365 * 100;
 
   let syndicData = null;
+  let returningMaintenance = null;
 
   if (responsibleSyndicId) {
     syndicData = await sharedBuildingNotificationConfigurationServices.findByNanoId({
@@ -138,10 +140,12 @@ export async function sharedCreateOccasionalMaintenanceReport({
   // #endregion
 
   // #region REPORT
+
   const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
 
-  if (new Date(executionDate) > new Date()) {
+  if (occasionalMaintenanceType === 'pending') {
     // PENDENTE
+
     const newPending = await sharedMaintenanceServices.createOneHistory({
       data: {
         ownerCompanyId: companyId,
@@ -169,6 +173,8 @@ export async function sharedCreateOccasionalMaintenanceReport({
         },
       });
     }
+
+    returningMaintenance = newPending;
   } else {
     // CONCLUÍDA
     // se inProgress for true, é pra criar ela pendente na data escolhida, que anteriormente seria concluida E se for in progress, não criar relato
@@ -202,6 +208,8 @@ export async function sharedCreateOccasionalMaintenanceReport({
           },
         });
       }
+
+      returningMaintenance = pendingInProgress;
     } else {
       const maintenanceHistory = await sharedMaintenanceServices.createHistoryAndReport({
         data: {
@@ -278,9 +286,11 @@ export async function sharedCreateOccasionalMaintenanceReport({
 
         ticketServices.sendFinishedTicketEmails({ ticketIds });
       }
+
+      returningMaintenance = maintenanceHistory;
     }
   }
 
-  return maintenance;
+  return returningMaintenance;
   // #endregion
 }
