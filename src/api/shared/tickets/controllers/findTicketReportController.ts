@@ -51,26 +51,26 @@ interface ISeparateByMonth {
   residentApartment: string;
 }
 
-function separateByMonth(array: ISeparateByMonth[]) {
-  const separatedByMonth: { [key: string]: ISeparateByMonth[] } = {};
+// function separateByMonth(array: ISeparateByMonth[]) {
+//   const separatedByMonth: { [key: string]: ISeparateByMonth[] } = {};
 
-  array.forEach((data) => {
-    const monthYear = `${data.createdAt.getMonth() + 1}-${data.createdAt.getFullYear()}`;
+//   array.forEach((data) => {
+//     const monthYear = `${data.createdAt.getMonth() + 1}-${data.createdAt.getFullYear()}`;
 
-    if (!separatedByMonth[monthYear]) {
-      separatedByMonth[monthYear] = [];
-    }
+//     if (!separatedByMonth[monthYear]) {
+//       separatedByMonth[monthYear] = [];
+//     }
 
-    separatedByMonth[monthYear].push(data);
-  });
+//     separatedByMonth[monthYear].push(data);
+//   });
 
-  const result = Object.keys(separatedByMonth).map((key) => ({
-    month: formatMonthYear(key),
-    data: separatedByMonth[key],
-  }));
+//   const result = Object.keys(separatedByMonth).map((key) => ({
+//     month: formatMonthYear(key),
+//     data: separatedByMonth[key],
+//   }));
 
-  return result;
-}
+//   return result;
+// }
 
 export async function findTicketReportController(req: Request, res: Response) {
   const companyId = req.Company.id;
@@ -98,11 +98,18 @@ export async function findTicketReportController(req: Request, res: Response) {
     endDate: setToUTCLastMinuteOfDay(new Date(parsedFilters.endDate)),
   });
 
+  console.log('🚀 ~ findTicketReportController ~ tickets:', tickets);
+
   const openCount = tickets.filter((e) => e.status.name === 'open').length;
   const finishedCount = tickets.filter((e) => e.status.name === 'finished').length;
   const awaitingToFinishCount = tickets.filter((e) => e.status.name === 'awaitingToFinish').length;
 
-  const ticketsForPDF = separateByMonth(tickets);
+  // const ticketsForPDF = separateByMonth(tickets);
+
+  const ticketsForPDF = {
+    month: 'Junho 2021',
+    data: [],
+  };
 
   return res
     .status(200)

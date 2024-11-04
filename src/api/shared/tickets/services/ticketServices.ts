@@ -45,7 +45,7 @@ class TicketServices {
             type: true,
           },
           orderBy: {
-            type: { label: 'asc' },
+            type: { singularLabel: 'asc' },
           },
         },
         building: {
@@ -94,7 +94,7 @@ class TicketServices {
               type: true,
             },
             orderBy: {
-              type: { label: 'asc' },
+              type: { singularLabel: 'asc' },
             },
           },
         },
@@ -150,7 +150,7 @@ class TicketServices {
       }),
       prisma.serviceType.findMany({
         orderBy: {
-          label: 'asc',
+          singularLabel: 'asc',
         },
       }),
     ]);
@@ -325,12 +325,12 @@ class TicketServices {
           select: {
             type: {
               select: {
-                label: true,
+                singularLabel: true,
               },
             },
           },
           orderBy: {
-            type: { label: 'asc' },
+            type: { singularLabel: 'asc' },
           },
         },
         status: true,
