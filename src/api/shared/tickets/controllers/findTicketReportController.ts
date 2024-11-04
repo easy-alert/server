@@ -1,7 +1,7 @@
 import { Response, Request } from 'express';
 import { TicketStatusName } from '@prisma/client';
 import {
-  formatMonthYear,
+  // formatMonthYear,
   setToUTCLastMinuteOfDay,
   setToUTCMidnight,
 } from '../../../../utils/dateTime';
@@ -15,41 +15,42 @@ export interface IParsedFilters {
   endDate: string;
 }
 
-interface Building {
-  name: string;
-}
+// interface Building {
+//   name: string;
+// }
 
-interface Image {
-  name: string;
-  url: string;
-}
+// interface Image {
+//   name: string;
+//   url: string;
+// }
 
-interface Place {
-  label: string;
-}
-interface Type {
-  type: Place;
-}
+// interface Place {
+//   label: string;
+// }
 
-interface Status {
-  name: TicketStatusName;
-  label: string;
-  color: string;
-  backgroundColor: string;
-}
+// interface Type {
+//   type: Place;
+// }
 
-interface ISeparateByMonth {
-  id: string;
-  building: Building;
-  description: string;
-  images: Image[];
-  place: Place;
-  types: Type[];
-  status: Status;
-  createdAt: Date;
-  residentName: string;
-  residentApartment: string;
-}
+// interface Status {
+//   name: TicketStatusName;
+//   label: string;
+//   color: string;
+//   backgroundColor: string;
+// }
+
+// interface ISeparateByMonth {
+//   id: string;
+//   building: Building;
+//   description: string;
+//   images: Image[];
+//   place: Place;
+//   types: Type[];
+//   status: Status;
+//   createdAt: Date;
+//   residentName: string;
+//   residentApartment: string;
+// }
 
 // function separateByMonth(array: ISeparateByMonth[]) {
 //   const separatedByMonth: { [key: string]: ISeparateByMonth[] } = {};
