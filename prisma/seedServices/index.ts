@@ -232,26 +232,74 @@ export class SeedServices {
   }
 
   async upsertTicketServiceTypes() {
-    const allData = [
-      { label: 'Hidráulica' },
-      { label: 'Elétrica' },
-      { label: 'Pintura' },
-      { label: 'Mecânica' },
-      { label: 'Portas e janelas' },
-      { label: 'Gás' },
-      { label: 'Acabamentos' },
-      { label: 'Outros' },
+    const ticketServiceTypes = [
+      {
+        name: 'hydraulics',
+        singularLabel: 'Hidráulica',
+        pluralLabel: 'Hidráulicas',
+        color: '#FFFFFF',
+        backgroundColor: '#087EB4',
+      },
+      {
+        name: 'electrical',
+        singularLabel: 'Elétrica',
+        pluralLabel: 'Elétricas',
+        color: '#FFFFFF',
+        backgroundColor: '#FFDE08',
+      },
+      {
+        name: 'painting',
+        singularLabel: 'Pintura',
+        pluralLabel: 'Pinturas',
+        color: '#FFFFFF',
+        backgroundColor: '#07D918',
+      },
+      {
+        name: 'mechanical',
+        singularLabel: 'Mecânica',
+        pluralLabel: 'Mecânicas',
+        color: '#FFFFFF',
+        backgroundColor: '#D90707',
+      },
+      {
+        name: 'doorsAndWindows',
+        singularLabel: 'Portas e janelas',
+        pluralLabel: 'Portas e janelas',
+        color: '#FFFFFF',
+        backgroundColor: '#D207d9',
+      },
+      {
+        name: 'gas',
+        singularLabel: 'Gás',
+        pluralLabel: 'Gás',
+        color: '#FFFFFF',
+        backgroundColor: '#9E590E',
+      },
+      {
+        name: 'finishing',
+        singularLabel: 'Acabamentos',
+        pluralLabel: 'Acabamentos',
+        color: '#FFFFFF',
+        backgroundColor: '#0BD6CF',
+      },
+      {
+        name: 'others',
+        singularLabel: 'Outros',
+        pluralLabel: 'Outros',
+        color: '#FFFFFF',
+        backgroundColor: '#8C9191',
+      },
     ];
 
-    for (let i = 0; i < allData.length; i++) {
-      const data = allData[i];
-
+    ticketServiceTypes.forEach(async (ticketServiceType) => {
       await prisma.serviceType.upsert({
-        create: data,
+        create: ticketServiceType,
         update: {},
-        where: data,
+        where: {
+          name: ticketServiceType.name,
+        },
       });
-    }
+    });
 
     console.log('Ticket service types upserted.');
   }
