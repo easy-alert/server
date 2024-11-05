@@ -883,8 +883,9 @@ model ServiceType {
   id String @id @default(uuid())
 
   name          String? @unique
-  singularLabel String @default("Serviço")
-  pluralLabel   String @default("Serviços")
+  singularLabel String  @default("Serviço")
+  label         String  @unique @default("Serviços")
+  pluralLabel   String  @default("Serviços")
 
   color           String @default("#000000")
   backgroundColor String @default("#FFFFFF")

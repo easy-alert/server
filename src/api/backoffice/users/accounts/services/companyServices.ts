@@ -33,6 +33,16 @@ export class CompanyServices {
       canAccessTickets,
     };
 
+    if (CPF) {
+      return prisma.company.upsert({
+        create: companyData,
+        update: companyData,
+        where: {
+          CPF,
+        },
+      });
+    }
+
     if (CNPJ) {
       return prisma.company.upsert({
         create: companyData,
@@ -44,7 +54,16 @@ export class CompanyServices {
     }
 
     return prisma.company.create({
-      data: companyData,
+      data: {
+        name,
+        CNPJ,
+        CPF,
+        contactNumber,
+        image,
+        isNotifyingOnceAWeek,
+        canAccessChecklists,
+        canAccessTickets,
+      },
     });
   }
 

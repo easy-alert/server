@@ -315,6 +315,7 @@ export class SeedServices {
       {
         name: 'hydraulics',
         label: 'Hidráulica',
+        singularLabel: 'Hidráulica',
         pluralLabel: 'Hidráulicas',
         color: '#FFFFFF',
         backgroundColor: '#087EB4',
@@ -322,6 +323,7 @@ export class SeedServices {
       {
         name: 'electrical',
         label: 'Elétrica',
+        singularLabel: 'Elétrica',
         pluralLabel: 'Elétricas',
         color: '#FFFFFF',
         backgroundColor: '#FFDE08',
@@ -329,6 +331,7 @@ export class SeedServices {
       {
         name: 'painting',
         label: 'Pintura',
+        singularLabel: 'Pintura',
         pluralLabel: 'Pinturas',
         color: '#FFFFFF',
         backgroundColor: '#07D918',
@@ -336,6 +339,7 @@ export class SeedServices {
       {
         name: 'mechanical',
         label: 'Mecânica',
+        singularLabel: 'Mecânica',
         pluralLabel: 'Mecânicas',
         color: '#FFFFFF',
         backgroundColor: '#D90707',
@@ -343,6 +347,7 @@ export class SeedServices {
       {
         name: 'doorsAndWindows',
         label: 'Portas e janelas',
+        singularLabel: 'Portas e janelas',
         pluralLabel: 'Portas e janelas',
         color: '#FFFFFF',
         backgroundColor: '#D207d9',
@@ -350,6 +355,7 @@ export class SeedServices {
       {
         name: 'gas',
         label: 'Gás',
+        singularLabel: 'Gás',
         pluralLabel: 'Gás',
         color: '#FFFFFF',
         backgroundColor: '#9E590E',
@@ -357,6 +363,7 @@ export class SeedServices {
       {
         name: 'finishing',
         label: 'Acabamentos',
+        singularLabel: 'Acabamento',
         pluralLabel: 'Acabamentos',
         color: '#FFFFFF',
         backgroundColor: '#0BD6CF',
@@ -364,6 +371,7 @@ export class SeedServices {
       {
         name: 'others',
         label: 'Outros',
+        singularLabel: 'Outro',
         pluralLabel: 'Outros',
         color: '#FFFFFF',
         backgroundColor: '#8C9191',
@@ -375,7 +383,7 @@ export class SeedServices {
         create: ticketServiceType,
         update: ticketServiceType,
         where: {
-          name: ticketServiceType.name,
+          label: ticketServiceType.label,
         },
       });
     });
