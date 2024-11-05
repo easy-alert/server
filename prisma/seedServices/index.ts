@@ -27,21 +27,33 @@ export class SeedServices {
     ];
 
     for (const permission of permissions) {
-      await prisma.permission.create({
-        data: permission,
+      await prisma.permission.upsert({
+        create: permission,
+        update: permission,
+        where: {
+          name: permission.name,
+        },
       });
       console.log('permission ', permission.name, ' inserted.');
     }
+
+    console.log('Permissions upserted.');
   }
 
   async createAdminBackoffice() {
     console.log('\n\nstarting Admin creation ...');
 
-    const backoffice = await prisma.user.create({
-      data: {
-        name: 'Backoffice',
-        email: 'backoffice@gmail.com',
-        passwordHash: hashSync('123123123', 12),
+    const backofficeData = {
+      name: 'Backoffice',
+      email: 'backoffice@gmail.com',
+      passwordHash: hashSync('123123123', 12),
+    };
+
+    const backoffice = await prisma.user.upsert({
+      create: backofficeData,
+      update: backofficeData,
+      where: {
+        email: backofficeData.email,
       },
     });
 
@@ -62,18 +74,27 @@ export class SeedServices {
           permissionId: permissionData!.id,
         },
       });
+
       console.log('permission ', permissionData!.name, ' inserted in Admin.');
     }
+
+    console.log('Backoffice admin created.');
   }
 
   async createAdminCompany() {
     console.log('\n\nstarting Company creation ...');
 
-    const backoffice = await prisma.user.create({
-      data: {
-        name: 'Company',
-        email: 'company@gmail.com',
-        passwordHash: hashSync('123123123', 12),
+    const companyData = {
+      name: 'Company',
+      email: 'company@gmail.com',
+      passwordHash: hashSync('123123123', 12),
+    };
+
+    const backoffice = await prisma.user.upsert({
+      create: companyData,
+      update: companyData,
+      where: {
+        email: companyData.email,
       },
     });
 
@@ -113,12 +134,16 @@ export class SeedServices {
           permissionId: permissionData!.id,
         },
       });
+
       console.log('permission ', permissionData!.name, ' inserted in Company.');
     }
+
+    console.log('Company admin created.');
   }
 
   async createTimeIntervals() {
     console.log('\n\nstarting timeIntervals creation ...');
+
     const timeIntervals: Prisma.TimeIntervalCreateInput[] = [
       {
         name: 'Day',
@@ -147,11 +172,18 @@ export class SeedServices {
     ];
 
     for (const timeInterval of timeIntervals) {
-      await prisma.timeInterval.create({
-        data: timeInterval,
+      await prisma.timeInterval.upsert({
+        create: timeInterval,
+        update: timeInterval,
+        where: {
+          name: timeInterval.name,
+        },
       });
+
       console.log('timeIntervals ', timeInterval.name, ' inserted.');
     }
+
+    console.log('TimeIntervals upserted.');
   }
 
   async createBuildingsTypes() {
@@ -166,98 +198,203 @@ export class SeedServices {
       { name: 'outro' },
     ];
 
-    await prisma.buildingType.createMany({
-      data: buildingsTypes,
-    });
+    for (const buildingType of buildingsTypes) {
+      await prisma.buildingType.upsert({
+        create: buildingType,
+        update: buildingType,
+        where: {
+          name: buildingType.name,
+        },
+      });
+
+      console.log('buildingType ', buildingType.name, ' inserted.');
+    }
+
+    console.log('Building Types upserted.');
   }
 
   async createMaintenancesStatus() {
-    await prisma.maintenancesStatus.createMany({
-      data: [
-        {
-          name: 'expired',
-          singularLabel: 'vencida',
-          pluralLabel: 'vencidas',
+    console.log('\n\nstarting Maintenances Status creation ...');
+
+    const maintenancesStatus = [
+      {
+        name: 'expired',
+        singularLabel: 'vencida',
+        pluralLabel: 'vencidas',
+      },
+      {
+        name: 'pending',
+        singularLabel: 'pendente',
+        pluralLabel: 'pendentes',
+      },
+      {
+        name: 'completed',
+        singularLabel: 'concluída',
+        pluralLabel: 'concluídas',
+      },
+      {
+        name: 'overdue',
+        singularLabel: 'feita em atraso',
+        pluralLabel: 'feitas em atraso',
+      },
+    ];
+
+    for (const maintenanceStatus of maintenancesStatus) {
+      await prisma.maintenancesStatus.upsert({
+        create: maintenanceStatus,
+        update: maintenanceStatus,
+        where: {
+          name: maintenanceStatus.name,
         },
-        {
-          name: 'pending',
-          singularLabel: 'pendente',
-          pluralLabel: 'pendentes',
-        },
-        {
-          name: 'completed',
-          singularLabel: 'concluída',
-          pluralLabel: 'concluídas',
-        },
-        {
-          name: 'overdue',
-          singularLabel: 'feita em atraso',
-          pluralLabel: 'feitas em atraso',
-        },
-      ],
-    });
+      });
+
+      console.log('maintenanceStatus ', maintenanceStatus.name, ' inserted.');
+    }
+
+    console.log('Maintenances Status upserted.');
   }
 
   async createCategoryAndMaintenanceTypes() {
-    await prisma.categoryAndMaintenanceTypes.createMany({
-      data: [
-        {
-          name: 'occasional',
-          singularLabel: 'avulsa',
-          pluralLabel: 'avulsas',
+    console.log('\n\nstarting Category And Maintenance Types creation ...');
+
+    const categoryAndMaintenanceTypes = [
+      {
+        name: 'occasional',
+        singularLabel: 'avulsa',
+        pluralLabel: 'avulsas',
+      },
+      {
+        name: 'common',
+        singularLabel: 'comum',
+        pluralLabel: 'comuns',
+      },
+    ];
+
+    for (const categoryAndMaintenanceType of categoryAndMaintenanceTypes) {
+      await prisma.categoryAndMaintenanceTypes.upsert({
+        create: categoryAndMaintenanceType,
+        update: categoryAndMaintenanceType,
+        where: {
+          name: categoryAndMaintenanceType.name,
         },
-        {
-          name: 'common',
-          singularLabel: 'comum',
-          pluralLabel: 'comuns',
-        },
-      ],
-    });
+      });
+
+      console.log('categoryAndMaintenanceType ', categoryAndMaintenanceType.name, ' inserted.');
+    }
+
+    console.log('Category And Maintenance Types upserted.');
   }
 
   async upsertTicketPlaces() {
-    const allData = [{ label: 'Área comum' }, { label: 'Meu apartamento' }];
+    console.log('\n\nstarting Ticket Places creation ...');
 
-    for (let i = 0; i < allData.length; i++) {
-      const data = allData[i];
+    const ticketPlaces = [
+      {
+        label: 'Área comum',
+      },
+      {
+        label: 'Meu apartamento',
+      },
+    ];
 
+    for (const ticketPlace of ticketPlaces) {
       await prisma.ticketPlace.upsert({
-        create: data,
-        update: {},
-        where: data,
+        create: ticketPlace,
+        update: ticketPlace,
+        where: ticketPlace,
       });
+
+      console.log('ticketPlace ', ticketPlace.label, ' inserted.');
     }
 
-    console.log('Ticket places upserted.');
+    console.log('Ticket Places upserted.');
   }
 
   async upsertTicketServiceTypes() {
-    const allData = [
-      { label: 'Hidráulica' },
-      { label: 'Elétrica' },
-      { label: 'Pintura' },
-      { label: 'Mecânica' },
-      { label: 'Portas e janelas' },
-      { label: 'Gás' },
-      { label: 'Acabamentos' },
-      { label: 'Outros' },
+    const ticketServiceTypes = [
+      {
+        name: 'hydraulics',
+        label: 'Hidráulica',
+        singularLabel: 'Hidráulica',
+        pluralLabel: 'Hidráulicas',
+        color: '#FFFFFF',
+        backgroundColor: '#087EB4',
+      },
+      {
+        name: 'electrical',
+        label: 'Elétrica',
+        singularLabel: 'Elétrica',
+        pluralLabel: 'Elétricas',
+        color: '#FFFFFF',
+        backgroundColor: '#FFDE08',
+      },
+      {
+        name: 'painting',
+        label: 'Pintura',
+        singularLabel: 'Pintura',
+        pluralLabel: 'Pinturas',
+        color: '#FFFFFF',
+        backgroundColor: '#07D918',
+      },
+      {
+        name: 'mechanical',
+        label: 'Mecânica',
+        singularLabel: 'Mecânica',
+        pluralLabel: 'Mecânicas',
+        color: '#FFFFFF',
+        backgroundColor: '#D90707',
+      },
+      {
+        name: 'doorsAndWindows',
+        label: 'Portas e janelas',
+        singularLabel: 'Portas e janelas',
+        pluralLabel: 'Portas e janelas',
+        color: '#FFFFFF',
+        backgroundColor: '#D207d9',
+      },
+      {
+        name: 'gas',
+        label: 'Gás',
+        singularLabel: 'Gás',
+        pluralLabel: 'Gás',
+        color: '#FFFFFF',
+        backgroundColor: '#9E590E',
+      },
+      {
+        name: 'finishing',
+        label: 'Acabamentos',
+        singularLabel: 'Acabamento',
+        pluralLabel: 'Acabamentos',
+        color: '#FFFFFF',
+        backgroundColor: '#0BD6CF',
+      },
+      {
+        name: 'others',
+        label: 'Outros',
+        singularLabel: 'Outro',
+        pluralLabel: 'Outros',
+        color: '#FFFFFF',
+        backgroundColor: '#8C9191',
+      },
     ];
 
-    for (let i = 0; i < allData.length; i++) {
-      const data = allData[i];
-
+    ticketServiceTypes.forEach(async (ticketServiceType) => {
       await prisma.serviceType.upsert({
-        create: data,
-        update: {},
-        where: data,
+        create: ticketServiceType,
+        update: ticketServiceType,
+        where: {
+          label: ticketServiceType.label,
+        },
       });
-    }
+    });
 
     console.log('Ticket service types upserted.');
   }
 
   async upsertTicketStatus() {
-    const allData = [
+    console.log('\n\nstarting Ticket Status creation ...  ');
+
+    const ticketsStatus = [
       {
         name: TicketStatusName.open,
         label: 'Aberto',
@@ -278,18 +415,18 @@ export class SeedServices {
       },
     ];
 
-    for (let i = 0; i < allData.length; i++) {
-      const data = allData[i];
-
+    for (const ticketStatus of ticketsStatus) {
       await prisma.ticketStatus.upsert({
-        create: data,
+        create: ticketStatus,
         update: {},
         where: {
-          name: data.name,
+          name: ticketStatus.name,
         },
       });
+
+      console.log('ticketStatus ', ticketStatus.name, ' inserted.');
     }
 
-    console.log('Ticket status upserted.');
+    console.log('Ticket Status upserted.');
   }
 }
