@@ -19,6 +19,7 @@ staging_migrate:
     - yarn add prisma --dev
     - yarn
     - yarn prisma migrate deploy
+    - yarn prisma db seed
   only:
     - develop
 
@@ -29,6 +30,7 @@ production_migrate:
     - yarn add prisma --dev
     - yarn
     - yarn prisma migrate deploy
+    - yarn prisma db seed
   only:
     - master
 
