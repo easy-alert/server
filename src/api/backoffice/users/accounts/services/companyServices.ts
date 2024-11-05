@@ -22,6 +22,37 @@ export class CompanyServices {
     canAccessChecklists,
     canAccessTickets,
   }: ICreateCompany) {
+    const companyData = {
+      name,
+      CNPJ,
+      CPF,
+      contactNumber,
+      image,
+      isNotifyingOnceAWeek,
+      canAccessChecklists,
+      canAccessTickets,
+    };
+
+    if (CPF) {
+      return prisma.company.upsert({
+        create: companyData,
+        update: companyData,
+        where: {
+          CPF,
+        },
+      });
+    }
+
+    if (CNPJ) {
+      return prisma.company.upsert({
+        create: companyData,
+        update: companyData,
+        where: {
+          CNPJ,
+        },
+      });
+    }
+
     return prisma.company.create({
       data: {
         name,
