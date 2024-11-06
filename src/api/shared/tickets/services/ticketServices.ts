@@ -9,12 +9,14 @@ const validator = new Validator();
 const emailTransporter = new EmailTransporterServices();
 
 interface IFindMany {
-  page: number;
-  take: number;
   buildingNanoId: string;
-  initialCreatedAt?: Date;
-  finalCreatedAt?: Date;
-  statusName?: TicketStatusName;
+  statusName?: string;
+  startDate?: Date;
+  endDate?: Date;
+  placeId?: string;
+  typeId?: string;
+  page?: number;
+  take?: number;
 }
 
 interface IFindManyForReport {
@@ -77,68 +79,93 @@ class TicketServices {
 
   async findMany({
     buildingNanoId,
-    page,
-    take,
-    finalCreatedAt,
-    initialCreatedAt,
     statusName,
-  }: IFindMany) {
-    const [tickets, ticketsCount, status] = await prisma.$transaction([
+    startDate,
+    endDate,
+    placeId,
+    typeId,
+  }: // page,
+  // take,
+  IFindMany) {
+    // if (page) {
+    //   const pagePrisma = page - 1;
+    // }
+
+    // if (take) {
+    //   const takePrisma = take;
+    // }
+
+    const [tickets, ticketsByYear] = await prisma.$transaction([
       prisma.ticket.findMany({
-        include: {
-          images: true,
+        select: {
+          id: true,
           status: true,
-          place: true,
+          description: true,
+          createdAt: true,
+          ticketNumber: true,
+          residentName: true,
+          place: {
+            select: {
+              label: true,
+            },
+          },
           types: {
             select: {
               type: true,
             },
-            orderBy: {
-              type: { singularLabel: 'asc' },
-            },
           },
         },
-
-        take,
-        skip: (page - 1) * take,
 
         where: {
           building: {
             nanoId: buildingNanoId,
           },
 
-          createdAt: {
-            gte: initialCreatedAt,
-            lte: finalCreatedAt,
+          status: {
+            label: statusName,
           },
 
-          statusName,
+          types: {
+            some: {
+              type: {
+                id: typeId,
+              },
+            },
+          },
+
+          place: {
+            id: placeId,
+          },
+
+          createdAt: {
+            gte: startDate,
+            lte: endDate,
+          },
         },
 
         orderBy: [{ status: { label: 'asc' } }, { createdAt: 'asc' }],
       }),
-      prisma.ticket.count({
+
+      prisma.ticket.findMany({
+        select: {
+          createdAt: true,
+        },
         where: {
           building: {
             nanoId: buildingNanoId,
           },
-
-          createdAt: {
-            gte: initialCreatedAt,
-            lte: finalCreatedAt,
-          },
-
-          statusName,
         },
-      }),
-      prisma.ticketStatus.findMany({
         orderBy: {
-          label: 'asc',
+          createdAt: 'asc',
         },
       }),
     ]);
 
-    return { tickets, ticketsCount, status };
+    const formattedYears = [
+      ...new Set(ticketsByYear.map((ticket) => ticket.createdAt.getFullYear().toString())),
+    ];
+
+    return { tickets, years: formattedYears };
   }
 
   async findAuxiliaryData() {
