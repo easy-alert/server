@@ -4,11 +4,12 @@ interface IAnnexesAndImages {
   url: string;
 }
 
-export interface ICreateOccassionalMaintenanceReport {
+export interface ICreateOccasionalMaintenanceReport {
   buildingId: string;
   executionDate: string;
   responsibleSyndicId: string;
   origin: 'Company' | 'Backoffice' | 'Client';
+  occasionalMaintenanceType: 'finished' | 'pending';
 
   maintenanceData: {
     id: string;
