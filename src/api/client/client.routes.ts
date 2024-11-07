@@ -48,6 +48,7 @@ import { deleteBuildingBanner } from '../company/buildings/buildingBanners/contr
 import { updateBuildingBanner } from '../company/buildings/buildingBanners/controllers/updateBuildingBanner';
 import { sharedListCategoriesByNanoId } from '../shared/categories/controllers/sharedListCategoriesByNanoId';
 import { serviceTypesRouter } from './serviceTypes/serviceTypes.routes';
+import { ticketHistoryActivitiesRouter } from './ticketHistoryActivities/ticketHistoryActivities.routes';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -157,3 +158,5 @@ clientRouter.get(
 clientRouter.get('/categories/listByNanoId/:nanoId', sharedListCategoriesByNanoId);
 
 clientRouter.use('/serviceTypes', serviceTypesRouter);
+
+clientRouter.use('/ticketHistoryActivities', ticketHistoryActivitiesRouter);
