@@ -386,6 +386,8 @@ export class SeedServices {
           label: ticketServiceType.label,
         },
       });
+
+      console.log('ticketServiceType ', ticketServiceType.label, ' inserted.');
     });
 
     console.log('Ticket service types upserted.');
@@ -399,7 +401,13 @@ export class SeedServices {
         name: TicketStatusName.open,
         label: 'Aberto',
         color: '#FFFFFF',
-        backgroundColor: '#B21D1D',
+        backgroundColor: '#FFFFFF',
+      },
+      {
+        name: TicketStatusName.awaitingToFinish,
+        label: 'Aguardando finalização',
+        color: '#FFFFFF',
+        backgroundColor: '#FFB200',
       },
       {
         name: TicketStatusName.finished,
@@ -408,17 +416,17 @@ export class SeedServices {
         backgroundColor: '#34B53A',
       },
       {
-        name: TicketStatusName.awaitingToFinish,
-        label: 'Aguardando finalização',
+        name: TicketStatusName.dismissed,
+        label: 'Indeferido',
         color: '#FFFFFF',
-        backgroundColor: '#FFB200',
+        backgroundColor: '#B21D1D',
       },
     ];
 
     for (const ticketStatus of ticketsStatus) {
       await prisma.ticketStatus.upsert({
         create: ticketStatus,
-        update: {},
+        update: ticketStatus,
         where: {
           name: ticketStatus.name,
         },
