@@ -817,20 +817,22 @@ model Ticket {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  building           Building            @relation(fields: [buildingId], references: [id], onDelete: Cascade)
-  status             TicketStatus        @relation(fields: [statusName], references: [name])
-  place              TicketPlace         @relation(fields: [placeId], references: [id])
-  images             TicketImage[]
-  types              TicketServiceType[]
-  maintenanceHistory MaintenanceHistory? @relation(fields: [maintenanceHistoryId], references: [id], onDelete: SetNull)
+  building                Building                  @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  status                  TicketStatus              @relation(fields: [statusName], references: [name])
+  place                   TicketPlace               @relation(fields: [placeId], references: [id])
+  images                  TicketImage[]
+  types                   TicketServiceType[]
+  maintenanceHistory      MaintenanceHistory?       @relation(fields: [maintenanceHistoryId], references: [id], onDelete: SetNull)
+  TicketHistoryActivities TicketHistoryActivities[]
 
   @@map("tickets")
 }
 
 enum TicketStatusName {
   open
-  finished
   awaitingToFinish
+  finished
+  dismissed
 }
 
 model TicketStatus {
@@ -877,6 +879,43 @@ model TicketServiceType {
 
   @@id([ticketId, serviceTypeId])
   @@map("ticketServiceTypes")
+}
+
+enum TicketHistoryActivityType {
+  comment
+  notification
+}
+
+model TicketHistoryActivities {
+  id String @id @default(uuid())
+
+  ticketId String
+  type     TicketHistoryActivityType
+  title    String
+  content  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ticket Ticket                        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  images TicketHistoryActivityImages[]
+
+  @@map("ticketHistoryActivities")
+}
+
+model TicketHistoryActivityImages {
+  id String @id @default(uuid())
+
+  activityId String
+  name       String
+  url        String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  activity TicketHistoryActivities @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@map("ticketHistoryActivityImages")
 }
 
 model ServiceType {
