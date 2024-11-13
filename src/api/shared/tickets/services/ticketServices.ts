@@ -1,4 +1,4 @@
-import { TicketStatusName } from '@prisma/client';
+import { Ticket, TicketStatusName } from '@prisma/client';
 import { prisma, prismaTypes } from '../../../../../prisma';
 import { Validator } from '../../../../utils/validator/validator';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
@@ -9,12 +9,15 @@ const validator = new Validator();
 const emailTransporter = new EmailTransporterServices();
 
 interface IFindMany {
-  page: number;
-  take: number;
   buildingNanoId: string;
-  initialCreatedAt?: Date;
-  finalCreatedAt?: Date;
-  statusName?: TicketStatusName;
+  statusName?: string;
+  startDate?: Date;
+  endDate?: Date;
+  placeId?: string;
+  serviceTypeId?: string;
+  seen?: boolean;
+  page?: number;
+  take?: number;
 }
 
 interface IFindManyForReport {
@@ -23,6 +26,16 @@ interface IFindManyForReport {
   statusNames?: TicketStatusName[];
   startDate: Date;
   endDate: Date;
+}
+
+interface IUpdateOneTicketInput {
+  ticketId: string;
+  updatedTicket: Ticket;
+}
+
+async function sleep(ms: number) {
+  // eslint-disable-next-line no-promise-executor-return
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 class TicketServices {
@@ -40,12 +53,18 @@ class TicketServices {
         images: true,
         status: true,
         place: true,
+        dismissReasons: true,
+        dismissedBy: {
+          select: {
+            name: true,
+          },
+        },
         types: {
           select: {
             type: true,
           },
           orderBy: {
-            type: { label: 'asc' },
+            type: { singularLabel: 'asc' },
           },
         },
         building: {
@@ -77,68 +96,88 @@ class TicketServices {
 
   async findMany({
     buildingNanoId,
-    page,
-    take,
-    finalCreatedAt,
-    initialCreatedAt,
     statusName,
+    startDate,
+    endDate,
+    placeId,
+    serviceTypeId,
+    seen,
   }: IFindMany) {
-    const [tickets, ticketsCount, status] = await prisma.$transaction([
+    const [tickets, ticketsByYear] = await prisma.$transaction([
       prisma.ticket.findMany({
-        include: {
-          images: true,
+        select: {
+          id: true,
           status: true,
-          place: true,
+          description: true,
+          createdAt: true,
+          updatedAt: true,
+          ticketNumber: true,
+          residentName: true,
+          seen: true,
+          place: {
+            select: {
+              label: true,
+            },
+          },
           types: {
             select: {
               type: true,
             },
-            orderBy: {
-              type: { label: 'asc' },
-            },
           },
         },
-
-        take,
-        skip: (page - 1) * take,
 
         where: {
           building: {
             nanoId: buildingNanoId,
           },
 
-          createdAt: {
-            gte: initialCreatedAt,
-            lte: finalCreatedAt,
+          status: {
+            label: statusName,
           },
 
-          statusName,
+          types: {
+            some: {
+              type: {
+                id: serviceTypeId,
+              },
+            },
+          },
+
+          place: {
+            id: placeId,
+          },
+
+          seen,
+
+          createdAt: {
+            gte: startDate,
+            lte: endDate,
+          },
         },
 
         orderBy: [{ status: { label: 'asc' } }, { createdAt: 'asc' }],
       }),
-      prisma.ticket.count({
+
+      prisma.ticket.findMany({
+        select: {
+          createdAt: true,
+        },
         where: {
           building: {
             nanoId: buildingNanoId,
           },
-
-          createdAt: {
-            gte: initialCreatedAt,
-            lte: finalCreatedAt,
-          },
-
-          statusName,
         },
-      }),
-      prisma.ticketStatus.findMany({
         orderBy: {
-          label: 'asc',
+          createdAt: 'asc',
         },
       }),
     ]);
 
-    return { tickets, ticketsCount, status };
+    const formattedYears = [
+      ...new Set(ticketsByYear.map((ticket) => ticket.createdAt.getFullYear().toString())),
+    ];
+
+    return { tickets, years: formattedYears };
   }
 
   async findAuxiliaryData() {
@@ -150,7 +189,7 @@ class TicketServices {
       }),
       prisma.serviceType.findMany({
         orderBy: {
-          label: 'asc',
+          singularLabel: 'asc',
         },
       }),
     ]);
@@ -244,6 +283,89 @@ class TicketServices {
     });
   }
 
+  async sendCreatedTicketEmails({ ticketIds }: { ticketIds: string[] }) {
+    const emails = await prisma.ticket.findMany({
+      select: {
+        residentEmail: true,
+        ticketNumber: true,
+        residentName: true,
+        building: { select: { name: true, NotificationsConfigurations: true } },
+      },
+      where: { id: { in: ticketIds } },
+    });
+
+    const filteredEmails = emails.filter((e) => e.residentEmail);
+
+    for (let index = 0; index < filteredEmails.length; index++) {
+      const { residentEmail, ticketNumber, residentName, building } = filteredEmails[index];
+
+      // Teoricamente o filter ali de cima já era pra validar o email, mas não quer.
+      if (residentEmail) {
+        emailTransporter.sendTicketCreated({
+          toEmail: residentEmail,
+          buildingName: building.name,
+          residentName,
+          ticketNumber,
+          toWhom: 'resident',
+        });
+
+        await sleep(6000);
+      }
+    }
+
+    emails.forEach(async (email) => {
+      email.building.NotificationsConfigurations.forEach(async (config) => {
+        if (config.email && config.emailIsConfirmed) {
+          emailTransporter.sendTicketCreated({
+            toEmail: config.email,
+            buildingName: email.building.name,
+            responsibleName: config.name,
+            ticketNumber: email.ticketNumber,
+            toWhom: 'responsible',
+          });
+
+          await sleep(6000);
+        }
+      });
+    });
+  }
+
+  async sendStatusChangedEmails({ ticketIds }: { ticketIds: string[] }) {
+    const emails = await prisma.ticket.findMany({
+      select: {
+        residentEmail: true,
+        ticketNumber: true,
+        residentName: true,
+        status: {
+          select: {
+            label: true,
+          },
+        },
+        building: { select: { name: true } },
+      },
+      where: { id: { in: ticketIds } },
+    });
+
+    const filteredEmails = emails.filter((e) => e.residentEmail);
+
+    for (let index = 0; index < filteredEmails.length; index++) {
+      const { residentEmail, ticketNumber, residentName, status, building } = filteredEmails[index];
+
+      // Teoricamente o filter ali de cima já era pra validar o email, mas não quer.
+      if (residentEmail) {
+        emailTransporter.sendTicketStatusChanged({
+          toEmail: residentEmail,
+          residentName,
+          ticketNumber,
+          buildingName: building.name,
+          statusName: status.label,
+        });
+
+        await sleep(6000);
+      }
+    }
+  }
+
   async sendFinishedTicketEmails({ ticketIds }: { ticketIds: string[] }) {
     const emails = await prisma.ticket.findMany({
       select: { residentEmail: true, ticketNumber: true, residentName: true },
@@ -251,11 +373,6 @@ class TicketServices {
     });
 
     const filteredEmails = emails.filter((e) => e.residentEmail);
-
-    async function sleep(ms: number) {
-      // eslint-disable-next-line no-promise-executor-return
-      return new Promise((resolve) => setTimeout(resolve, ms));
-    }
 
     for (let index = 0; index < filteredEmails.length; index++) {
       const { residentEmail, ticketNumber, residentName } = filteredEmails[index];
@@ -266,6 +383,56 @@ class TicketServices {
           residentName,
           ticketNumber,
           toEmail: residentEmail,
+        });
+
+        await sleep(6000);
+      }
+    }
+  }
+
+  async sendDismissedTicketEmails({ ticketIds }: { ticketIds: string[] }) {
+    const emails = await prisma.ticket.findMany({
+      select: {
+        residentEmail: true,
+        ticketNumber: true,
+        residentName: true,
+        dismissReasons: { select: { label: true } },
+        dismissObservation: true,
+        dismissedBy: true,
+      },
+      where: { id: { in: ticketIds } },
+    });
+
+    const filteredEmails = emails.filter((e) => e.residentEmail);
+
+    for (let index = 0; index < filteredEmails.length; index++) {
+      const {
+        residentEmail,
+        ticketNumber,
+        residentName,
+        dismissReasons,
+        dismissObservation,
+        // dismissedBy,
+      } = filteredEmails[index];
+
+      const syndic = await prisma.buildingNotificationConfiguration.findUnique({
+        select: {
+          name: true,
+        },
+        where: {
+          id: '',
+        },
+      });
+
+      // Teoricamente o filter ali de cima já era pra validar o email, mas não quer.
+      if (residentEmail) {
+        emailTransporter.sendTicketDismissed({
+          toEmail: residentEmail,
+          ticketNumber,
+          residentName,
+          dismissReason: dismissReasons?.label || '',
+          dismissObservation: dismissObservation || '',
+          dismissedBy: syndic?.name || '',
         });
 
         await sleep(6000);
@@ -325,12 +492,12 @@ class TicketServices {
           select: {
             type: {
               select: {
-                label: true,
+                singularLabel: true,
               },
             },
           },
           orderBy: {
-            type: { label: 'asc' },
+            type: { singularLabel: 'asc' },
           },
         },
         status: true,
@@ -342,6 +509,25 @@ class TicketServices {
 
       orderBy: {
         createdAt: 'asc',
+      },
+    });
+  }
+
+  async updateOneTicket({ ticketId, updatedTicket }: IUpdateOneTicketInput) {
+    const syndicData = await prisma.buildingNotificationConfiguration.findUnique({
+      where: {
+        nanoId: updatedTicket.dismissedById || '',
+      },
+    });
+
+    await prisma.ticket.update({
+      data: {
+        ...updatedTicket,
+        dismissedById: syndicData?.id,
+      },
+
+      where: {
+        id: ticketId,
       },
     });
   }
