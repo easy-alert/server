@@ -5,6 +5,6 @@ import { createTicketHistoryActivity } from '../../shared/ticketHistoryActivitie
 
 export const ticketHistoryActivitiesRouter: Router = Router();
 
-ticketHistoryActivitiesRouter.get('/:ticketId', findTicketHistoryActivitiesById);
-
 ticketHistoryActivitiesRouter.post('/', createTicketHistoryActivity);
+
+ticketHistoryActivitiesRouter.get('/:ticketId', findTicketHistoryActivitiesById);
