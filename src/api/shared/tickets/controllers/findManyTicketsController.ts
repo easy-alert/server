@@ -1,93 +1,51 @@
 import { Response, Request } from 'express';
+import { TicketStatusName } from '@prisma/client';
+import { checkDateRanges, checkValues } from '../../../../utils/newValidator';
 import { ticketServices } from '../services/ticketServices';
+import { handleQueryPage, handleQueryTake } from '../../../../utils/dataHandler';
+import { setToFilterStartDate, setToFilterEndDate } from '../../../../utils/dateTime';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
-import { changeTime } from '../../../../utils/dateTime/changeTime';
-import { checkValues } from '../../../../utils/newValidator';
-import getMonths from '../../../../utils/constants/months';
+
+type TQuery = string | undefined;
+
+interface IQuery {
+  page: TQuery;
+  take: TQuery;
+  initialCreatedAt: TQuery;
+  finalCreatedAt: TQuery;
+  statusName?: TicketStatusName;
+}
 
 export async function findManyTicketsController(req: Request, res: Response) {
   const { buildingNanoId } = req.params as any as { buildingNanoId: string };
-  const { year, month, status, placeId, serviceTypeId, seen, page, take, count } = req.query;
+  const { page, take, statusName } = req.query as any as IQuery;
+  let { initialCreatedAt, finalCreatedAt } = req.query as any as IQuery;
 
-  const monthFilter = month === '' ? undefined : String(month);
-  const statusFilter = status === '' ? undefined : String(status);
-  const placeIdFilter = placeId === '' ? undefined : String(placeId);
-  const serviceTypeIdFilter = serviceTypeId === '' ? undefined : String(serviceTypeId);
-  const seenFilter = seen === '' || seen === undefined ? undefined : seen === 'true';
+  initialCreatedAt = initialCreatedAt || undefined;
+  finalCreatedAt = finalCreatedAt || undefined;
 
-  const startDate =
-    year === ''
-      ? changeTime({
-          date: new Date(`${monthFilter ?? '01'}/01/${String(new Date().getFullYear() - 100)}`),
-          time: {
-            h: 0,
-            m: 0,
-            ms: 0,
-            s: 0,
-          },
-        })
-      : changeTime({
-          date: new Date(`${monthFilter ?? '01'}/01/${String(year)}`),
-          time: {
-            h: 0,
-            m: 0,
-            ms: 0,
-            s: 0,
-          },
-        });
+  checkValues([
+    { label: 'ID da edificação', type: 'string', value: buildingNanoId },
+    { label: 'Data inicial', type: 'date', value: initialCreatedAt, required: false },
+    { label: 'Data final', type: 'date', value: finalCreatedAt, required: false },
+  ]);
 
-  const endDate =
-    year === ''
-      ? changeTime({
-          date: new Date(`${monthFilter ?? '12'}/31/${String(new Date().getFullYear() + 100)}`),
-          time: {
-            h: 0,
-            m: 0,
-            ms: 0,
-            s: 0,
-          },
-        })
-      : changeTime({
-          date: new Date(`${monthFilter ?? '12'}/31/${String(year)}`),
-          time: {
-            h: 0,
-            m: 0,
-            ms: 0,
-            s: 0,
-          },
-        });
-
-  checkValues([{ label: 'ID da edificação', type: 'string', value: buildingNanoId }]);
+  checkDateRanges([
+    { label: 'Data de criação', startDate: initialCreatedAt, endDate: finalCreatedAt },
+  ]);
 
   await ticketServices.checkAccess({ buildingNanoId });
 
-  const buildingName = (await buildingServices.findByNanoId({ buildingNanoId })).name;
-
-  const months = getMonths();
-
-  const findManyTickets = await ticketServices.findMany({
+  const { status, ticketsCount, tickets } = await ticketServices.findMany({
     buildingNanoId,
-    statusName: statusFilter,
-    startDate,
-    endDate,
-    placeId: placeIdFilter,
-    serviceTypeId: serviceTypeIdFilter,
-    seen: seenFilter,
-    page: Number(page),
-    take: Number(take),
+    page: handleQueryPage(page),
+    take: handleQueryTake(take),
+    initialCreatedAt: setToFilterStartDate(initialCreatedAt),
+    finalCreatedAt: setToFilterEndDate(finalCreatedAt),
+    statusName: statusName || undefined,
   });
 
-  const filterOptions = {
-    years: findManyTickets.years,
-    months,
-  };
+  const buildingName = (await buildingServices.findByNanoId({ buildingNanoId })).name;
 
-  if (count === 'true') {
-    return res.status(200).json({
-      buildingName,
-      ticketsCount: findManyTickets.tickets.length,
-    });
-  }
-
-  return res.status(200).json({ buildingName, tickets: findManyTickets.tickets, filterOptions });
+  return res.status(200).json({ tickets, ticketsCount, buildingName, status });
 }

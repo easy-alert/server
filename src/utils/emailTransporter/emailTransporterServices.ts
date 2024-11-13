@@ -8,9 +8,7 @@ import {
   ISendConfirmEmail,
   ISendProofOfReport,
   ISendRecoveryPassword,
-  ITicketChangedStatus,
   ITicketCreated,
-  ITicketDismissed,
   ITicketFinished,
 } from './types';
 
@@ -195,70 +193,15 @@ export class EmailTransporterServices {
     });
   }
 
-  sendTicketCreated({
-    toEmail,
-    buildingName,
-    residentName,
-    responsibleName,
-    ticketNumber,
-    toWhom,
-  }: ITicketCreated) {
-    const sendEmail = {
+  sendTicketCreated({ toEmail, buildingName, residentName, ticketNumber }: ITicketCreated) {
+    const mail = {
       from: `Chamado aberto <${process.env.EMAIL_USERNAME}>`,
       to: toEmail,
       subject: `Easy Alert - Chamado aberto`,
       html: emailTemplates.ticketCreated({
         buildingName,
         residentName,
-        responsibleName,
         ticketNumber,
-        toWhom,
-      }),
-    };
-
-    transporter.sendMail(sendEmail);
-  }
-
-  sendTicketStatusChanged({
-    toEmail,
-    ticketNumber,
-    residentName,
-    buildingName,
-    statusName,
-  }: ITicketChangedStatus) {
-    const mail = {
-      from: `Chamado atualizado <${process.env.EMAIL_USERNAME}>`,
-      to: toEmail,
-      subject: `Easy Alert - Chamado atualizado`,
-      html: emailTemplates.ticketChangedStatus({
-        residentName,
-        ticketNumber,
-        buildingName,
-        statusName,
-      }),
-    };
-
-    transporter.sendMail(mail);
-  }
-
-  sendTicketDismissed({
-    toEmail,
-    residentName,
-    ticketNumber,
-    dismissObservation,
-    dismissReason,
-    dismissedBy,
-  }: ITicketDismissed) {
-    const mail = {
-      from: `Chamado indeferido <${process.env.EMAIL_USERNAME}>`,
-      to: toEmail,
-      subject: `Easy Alert - Chamado indeferido`,
-      html: emailTemplates.ticketDismissed({
-        residentName,
-        ticketNumber,
-        dismissReason,
-        dismissObservation,
-        dismissedBy,
       }),
     };
 

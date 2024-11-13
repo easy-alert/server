@@ -1,7 +1,7 @@
 import { Response, Request } from 'express';
 import { TicketStatusName } from '@prisma/client';
 import {
-  // formatMonthYear,
+  formatMonthYear,
   setToUTCLastMinuteOfDay,
   setToUTCMidnight,
 } from '../../../../utils/dateTime';
@@ -15,63 +15,62 @@ export interface IParsedFilters {
   endDate: string;
 }
 
-// interface Building {
-//   name: string;
-// }
+interface Building {
+  name: string;
+}
 
-// interface Image {
-//   name: string;
-//   url: string;
-// }
+interface Image {
+  name: string;
+  url: string;
+}
 
-// interface Place {
-//   label: string;
-// }
+interface Place {
+  label: string;
+}
+interface Type {
+  type: Place;
+}
 
-// interface Type {
-//   type: Place;
-// }
+interface Status {
+  name: TicketStatusName;
+  label: string;
+  color: string;
+  backgroundColor: string;
+}
 
-// interface Status {
-//   name: TicketStatusName;
-//   label: string;
-//   color: string;
-//   backgroundColor: string;
-// }
+interface ISeparateByMonth {
+  id: string;
+  building: Building;
+  description: string;
+  images: Image[];
+  place: Place;
+  types: Type[];
+  status: Status;
+  createdAt: Date;
+  residentName: string;
+  residentApartment: string;
+}
 
-// interface ISeparateByMonth {
-//   id: string;
-//   building: Building;
-//   description: string;
-//   images: Image[];
-//   place: Place;
-//   types: Type[];
-//   status: Status;
-//   createdAt: Date;
-//   residentName: string;
-//   residentApartment: string;
-// }
+function separateByMonth(array: ISeparateByMonth[]) {
+  const separatedByMonth: { [key: string]: ISeparateByMonth[] } = {};
 
-// function separateByMonth(array: ISeparateByMonth[]) {
-//   const separatedByMonth: { [key: string]: ISeparateByMonth[] } = {};
+  array.forEach((data) => {
+    const monthYear = `${data.createdAt.getMonth() + 1}-${data.createdAt.getFullYear()}`;
 
-//   array.forEach((data) => {
-//     const monthYear = `${data.createdAt.getMonth() + 1}-${data.createdAt.getFullYear()}`;
+    if (!separatedByMonth[monthYear]) {
+      separatedByMonth[monthYear] = [];
+    }
 
-//     if (!separatedByMonth[monthYear]) {
-//       separatedByMonth[monthYear] = [];
-//     }
+    separatedByMonth[monthYear].push(data);
+  });
 
-//     separatedByMonth[monthYear].push(data);
-//   });
+  const result = Object.keys(separatedByMonth).map((key) => ({
+    month: formatMonthYear(key),
+    data: separatedByMonth[key],
+  }));
 
-//   const result = Object.keys(separatedByMonth).map((key) => ({
-//     month: formatMonthYear(key),
-//     data: separatedByMonth[key],
-//   }));
-
-//   return result;
-// }
+  return result;
+}
 
 export async function findTicketReportController(req: Request, res: Response) {
   const companyId = req.Company.id;
@@ -99,18 +98,11 @@ export async function findTicketReportController(req: Request, res: Response) {
     endDate: setToUTCLastMinuteOfDay(new Date(parsedFilters.endDate)),
   });
 
-  console.log('🚀 ~ findTicketReportController ~ tickets:', tickets);
-
   const openCount = tickets.filter((e) => e.status.name === 'open').length;
   const finishedCount = tickets.filter((e) => e.status.name === 'finished').length;
   const awaitingToFinishCount = tickets.filter((e) => e.status.name === 'awaitingToFinish').length;
 
-  // const ticketsForPDF = separateByMonth(tickets);
-
-  const ticketsForPDF = {
-    month: 'Junho 2021',
-    data: [],
-  };
+  const ticketsForPDF = separateByMonth(tickets);
 
   return res
     .status(200)
