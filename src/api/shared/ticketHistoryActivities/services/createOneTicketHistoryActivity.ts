@@ -19,6 +19,7 @@ interface ICreateOneTicketHistoryActivity {
   userId: string | undefined;
   activityContent: string;
   activityImages: IImage[] | undefined;
+  type?: 'comment' | 'notification';
 }
 
 export async function createOneTicketHistoryActivity({
@@ -27,6 +28,7 @@ export async function createOneTicketHistoryActivity({
   userId,
   activityContent,
   activityImages,
+  type = 'comment',
 }: ICreateOneTicketHistoryActivity) {
   let author: string = 'Convidado';
 
@@ -40,12 +42,15 @@ export async function createOneTicketHistoryActivity({
     author = (await userServices.findById({ userId })).name;
   }
 
+  const title =
+    type === 'comment' ? `Nova atividade de ${author}` : `Nova notificação de ${author}`;
+
   return prisma.ticketHistoryActivities.create({
     data: {
       ticketId,
-      title: `Nova atividade de ${author}`,
+      title,
       content: activityContent?.trim() ? activityContent : null,
-      type: 'comment',
+      type,
 
       images: {
         createMany: {
