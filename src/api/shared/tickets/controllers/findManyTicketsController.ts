@@ -7,12 +7,13 @@ import getMonths from '../../../../utils/constants/months';
 
 export async function findManyTicketsController(req: Request, res: Response) {
   const { buildingNanoId } = req.params as any as { buildingNanoId: string };
-  const { year, month, status, placeId, typeId, page, take } = req.query;
+  const { year, month, status, placeId, serviceTypeId, seen, page, take, count } = req.query;
 
   const monthFilter = month === '' ? undefined : String(month);
   const statusFilter = status === '' ? undefined : String(status);
   const placeIdFilter = placeId === '' ? undefined : String(placeId);
-  const typeIdFilter = typeId === '' ? undefined : String(typeId);
+  const serviceTypeIdFilter = serviceTypeId === '' ? undefined : String(serviceTypeId);
+  const seenFilter = seen === '' || seen === undefined ? undefined : seen === 'true';
 
   const startDate =
     year === ''
@@ -70,7 +71,8 @@ export async function findManyTicketsController(req: Request, res: Response) {
     startDate,
     endDate,
     placeId: placeIdFilter,
-    typeId: typeIdFilter,
+    serviceTypeId: serviceTypeIdFilter,
+    seen: seenFilter,
     page: Number(page),
     take: Number(take),
   });
@@ -79,6 +81,13 @@ export async function findManyTicketsController(req: Request, res: Response) {
     years: findManyTickets.years,
     months,
   };
+
+  if (count === 'true') {
+    return res.status(200).json({
+      buildingName,
+      ticketsCount: findManyTickets.tickets.length,
+    });
+  }
 
   return res.status(200).json({ buildingName, tickets: findManyTickets.tickets, filterOptions });
 }
