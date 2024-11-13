@@ -2,6 +2,7 @@ import { Response, Request } from 'express';
 import { ticketServices } from '../services/ticketServices';
 import { checkValues } from '../../../../utils/newValidator';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
+import { EmailTransporterServices } from '../../../../utils/emailTransporter/emailTransporterServices';
 
 interface IBody {
   residentName: string;
@@ -18,6 +19,8 @@ interface IBody {
 
   types: { serviceTypeId: string }[];
 }
+
+const emailTransporter = new EmailTransporterServices();
 
 export async function createTicketController(req: Request, res: Response) {
   const {
@@ -83,9 +86,14 @@ export async function createTicketController(req: Request, res: Response) {
     },
   });
 
-  ticketServices.sendCreatedTicketEmails({
-    ticketIds: [ticket.id],
-  });
+  if (lowerCaseEmail) {
+    emailTransporter.sendTicketCreated({
+      toEmail: lowerCaseEmail,
+      buildingName: building.name,
+      residentName,
+      ticketNumber: ticket.ticketNumber,
+    });
+  }
 
   return res.status(201).json({ ServerMessage: { message: 'Chamado aberto com sucesso.' } });
 }

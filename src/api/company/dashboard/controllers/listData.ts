@@ -272,7 +272,7 @@ export async function listData(req: Request, res: Response) {
   };
 
   ticketServiceTypesCount.forEach(({ _count, serviceTypeId }) => {
-    const typeLabel = serviceTypes.find(({ id }) => id === serviceTypeId)?.singularLabel;
+    const typeLabel = serviceTypes.find(({ id }) => id === serviceTypeId)?.label;
 
     if (typeLabel) {
       ticketTypes.data.push(_count.ticketId);

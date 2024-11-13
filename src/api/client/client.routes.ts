@@ -47,9 +47,6 @@ import { findManyBuildingsBySyndicNanoId } from './building/controllers/findMany
 import { deleteBuildingBanner } from '../company/buildings/buildingBanners/controllers/deleteBuildingBanner';
 import { updateBuildingBanner } from '../company/buildings/buildingBanners/controllers/updateBuildingBanner';
 import { sharedListCategoriesByNanoId } from '../shared/categories/controllers/sharedListCategoriesByNanoId';
-import { serviceTypesRouter } from './serviceTypes/serviceTypes.routes';
-import { ticketHistoryActivitiesRouter } from './ticketHistoryActivities/ticketHistoryActivities.routes';
-import { ticketDismissReasonsRouter } from './ticketDismissReasons/ticketDismissReasons.routes';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -157,9 +154,3 @@ clientRouter.get(
 );
 
 clientRouter.get('/categories/listByNanoId/:nanoId', sharedListCategoriesByNanoId);
-
-clientRouter.use('/serviceTypes', serviceTypesRouter);
-
-clientRouter.use('/ticketHistoryActivities', ticketHistoryActivitiesRouter);
-
-clientRouter.use('/ticketDismissReasons', ticketDismissReasonsRouter);

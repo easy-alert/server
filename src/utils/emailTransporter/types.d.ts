@@ -52,27 +52,8 @@ export interface ISendProofOfReport {
 export interface ITicketCreated {
   toEmail?: string;
   buildingName: string;
-  residentName?: string;
-  responsibleName?: string;
-  ticketNumber: number;
-  toWhom: 'resident' | 'responsible';
-}
-
-export interface ITicketChangedStatus {
-  toEmail?: string;
-  ticketNumber: number;
   residentName: string;
-  buildingName: string;
-  statusName: string;
-}
-
-export interface ITicketDismissed {
-  toEmail?: string;
   ticketNumber: number;
-  residentName: string;
-  dismissReason: string;
-  dismissObservation: string;
-  dismissedBy: string;
 }
 
 export interface ITicketFinished {
