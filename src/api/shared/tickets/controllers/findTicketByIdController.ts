@@ -10,7 +10,7 @@ export async function findTicketByIdController(req: Request, res: Response) {
 
   const ticket = await ticketServices.findById(ticketId);
 
-  if (!ticket.building.Company?.canAccessTickets) {
+  if (!ticket.building?.Company?.canAccessTickets) {
     throw new ServerMessage({
       statusCode: 403,
       message: `Sua empresa não possui acesso a este módulo.`,
