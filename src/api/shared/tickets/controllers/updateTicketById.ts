@@ -80,6 +80,7 @@ export async function updateTicketById(req: Request, res: Response) {
   if (updatedTicket.statusName === 'dismissed') {
     ticketServices.sendDismissedTicketEmails({
       ticketIds: [ticketId],
+      userId,
     });
   }
 
