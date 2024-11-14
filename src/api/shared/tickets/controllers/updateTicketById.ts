@@ -8,10 +8,14 @@ import { createOneTicketHistoryActivity } from '../../ticketHistoryActivities/se
 import { checkValues } from '../../../../utils/newValidator';
 
 interface IBody {
-  updatedTicket: Ticket;
+  updatedTicket: Ticket & { userId?: string };
 }
 
-const handleCreateOneTicketHistoryActivity = async (ticketId: string, updatedTicket: Ticket) => {
+const handleCreateOneTicketHistoryActivity = async (
+  ticketId: string,
+  updatedTicket: Ticket,
+  userId?: string,
+) => {
   let activityContent = '';
 
   switch (updatedTicket.statusName) {
@@ -38,7 +42,7 @@ const handleCreateOneTicketHistoryActivity = async (ticketId: string, updatedTic
     ticketId,
     syndicNanoId: updatedTicket.dismissedById || '',
     activityContent,
-    userId: '',
+    userId,
     activityImages: [],
     type: 'notification',
   });
@@ -48,6 +52,10 @@ export async function updateTicketById(req: Request, res: Response) {
   const { ticketId } = req.params;
   const { updatedTicket } = req.body as IBody;
 
+  const { userId } = updatedTicket;
+
+  delete updatedTicket.userId;
+
   checkValues([{ value: ticketId, label: 'Ticket ID', type: 'string', required: true }]);
 
   await ticketServices.updateOneTicket({
@@ -55,7 +63,7 @@ export async function updateTicketById(req: Request, res: Response) {
     updatedTicket,
   });
 
-  handleCreateOneTicketHistoryActivity(ticketId, updatedTicket);
+  handleCreateOneTicketHistoryActivity(ticketId, updatedTicket, userId);
 
   if (updatedTicket.statusName === 'open' || updatedTicket.statusName === 'awaitingToFinish') {
     ticketServices.sendStatusChangedEmails({

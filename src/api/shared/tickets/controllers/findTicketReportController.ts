@@ -99,8 +99,6 @@ export async function findTicketReportController(req: Request, res: Response) {
     endDate: setToUTCLastMinuteOfDay(new Date(parsedFilters.endDate)),
   });
 
-  console.log('🚀 ~ findTicketReportController ~ tickets:', tickets);
-
   const openCount = tickets.filter((e) => e.status.name === 'open').length;
   const finishedCount = tickets.filter((e) => e.status.name === 'finished').length;
   const awaitingToFinishCount = tickets.filter((e) => e.status.name === 'awaitingToFinish').length;
