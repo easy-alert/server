@@ -9,7 +9,8 @@ const validator = new Validator();
 const emailTransporter = new EmailTransporterServices();
 
 interface IFindMany {
-  buildingNanoId: string;
+  buildingNanoId: string | undefined;
+  companyId: string | undefined;
   statusName?: string;
   startDate?: Date;
   endDate?: Date;
@@ -96,6 +97,7 @@ class TicketServices {
 
   async findMany({
     buildingNanoId,
+    companyId,
     statusName,
     startDate,
     endDate,
@@ -129,6 +131,7 @@ class TicketServices {
         where: {
           building: {
             nanoId: buildingNanoId,
+            companyId,
           },
 
           status: {
