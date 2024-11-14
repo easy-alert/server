@@ -6,6 +6,8 @@ import {
   INewBuildingCreated,
   ITicketCreated,
   ITicketFinished,
+  ITicketChangedStatus,
+  ITicketDismissed,
 } from '../types';
 
 export class EmailTemplates {
@@ -517,8 +519,15 @@ export class EmailTemplates {
     `;
   }
 
-  ticketCreated({ buildingName, ticketNumber, residentName }: ITicketCreated) {
-    return `<div
+  ticketCreated({
+    buildingName,
+    ticketNumber,
+    residentName,
+    responsibleName,
+    toWhom,
+  }: ITicketCreated) {
+    if (toWhom === 'resident') {
+      return `<div
       style='
         background-size: cover;
         background: #EDEDED;
@@ -581,6 +590,248 @@ export class EmailTemplates {
           >
           Olá, <strong>${residentName}</strong>! Você abriu o chamado <strong>#${ticketNumber}</strong> em <strong>${buildingName}</strong>. Assim que o chamado for finalizado, você será notificado.
           </p>
+
+        </div>
+      </div>
+      </div>
+    `;
+    }
+
+    return `<div
+      style='
+        background-size: cover;
+        background: #EDEDED;
+        padding: 24px;
+        '
+      >
+      <div
+        style='
+          width: 500px;
+            margin: auto;
+            background: white;
+            border-radius: 32px;
+            padding: 24px 0;
+        '
+      >
+
+        <img
+          src="https://larguei.s3.us-west-2.amazonaws.com/logoTextBlack-1669059871498.svg"
+          alt=''
+          style='
+              margin: 0 auto;
+              display: block;
+              height: 87px;
+          '
+        />
+
+        <div
+          style='
+              width: 328px;
+              margin: 0 auto;
+          '
+        >
+
+          <h3
+            style='
+                color:#000000;
+                margin: 40px 0 16px;
+                text-align: center;
+                font-weight: 400;
+            '
+          >
+          Chamado aberto com sucesso!
+          </h3>
+
+          <img
+          src="https://larguei.s3.us-west-2.amazonaws.com/siren-1712858703294.png"
+          alt=''
+          style='
+              margin: 0 auto;
+              height: 64px;
+              display: block;
+          '
+        />
+
+          <p
+            style='
+                color:#000000;
+                text-align: center;
+            '
+          >
+          Olá, <strong>${responsibleName}</strong>! O chamado <strong>#${ticketNumber}</strong> foi aberto em <strong>${buildingName}</strong>.
+          </p>
+
+        </div>
+      </div>
+      </div>
+    `;
+  }
+
+  ticketChangedStatus({
+    ticketNumber,
+    residentName,
+    buildingName,
+    statusName,
+  }: ITicketChangedStatus) {
+    return `<div
+      style='
+        background-size: cover;
+        background: #EDEDED;
+        padding: 24px;
+        '
+      >
+      <div
+        style='
+          width: 500px;
+            margin: auto;
+            background: white;
+            border-radius: 32px;
+            padding: 24px 0;
+        '
+      >
+
+        <img
+          src="https://larguei.s3.us-west-2.amazonaws.com/logoTextBlack-1669059871498.svg"
+          alt=''
+          style='
+              margin: 0 auto;
+              display: block;
+              height: 87px;
+          '
+        />
+
+        <div
+          style='
+              width: 328px;
+              margin: 0 auto;
+          '
+        >
+
+          <h3
+            style='
+                color:#000000;
+                margin: 40px 0 16px;
+                text-align: center;
+                font-weight: 400;
+            '
+          >
+          Chamado #${ticketNumber} foi atualizado!
+          </h3>
+
+          <img
+          src="https://larguei.s3.us-west-2.amazonaws.com/siren-1712858703294.png"
+          alt=''
+          style='
+              margin: 0 auto;
+              height: 64px;
+              display: block;
+          '
+        />
+
+          <p
+            style='
+                color:#000000;
+                text-align: center;
+            '
+          >
+          Olá, <strong>${residentName}</strong>! O chamado <strong>#${ticketNumber}</strong> foi atualizado para o status <strong>${statusName}</strong> em <strong>${buildingName}</strong>.
+          </p>
+
+        </div>
+      </div>
+      </div>
+    `;
+  }
+
+  ticketDismissed({
+    ticketNumber,
+    residentName,
+    dismissReason,
+    dismissObservation,
+    dismissedBy,
+  }: ITicketDismissed) {
+    return `<div
+      style='
+        background-size: cover;
+        background: #EDEDED;
+        padding: 24px;
+        '
+      >
+      <div
+        style='
+          width: 500px;
+            margin: auto;
+            background: white;
+            border-radius: 32px;
+            padding: 24px 0;
+        '
+      >
+
+        <img
+          src="https://larguei.s3.us-west-2.amazonaws.com/logoTextBlack-1669059871498.svg"
+          alt=''
+          style='
+              margin: 0 auto;
+              display: block;
+              height: 87px;
+          '
+        />
+
+        <div
+          style='
+              width: 328px;
+              margin: 0 auto;
+          '
+        >
+
+          <h3
+            style='
+                color:#000000;
+                margin: 40px 0 16px;
+                text-align: center;
+                font-weight: 400;
+            '
+          >
+          Chamado indeferido!
+          </h3>
+
+          <img
+          src="https://larguei.s3.us-west-2.amazonaws.com/siren-1712858703294.png"
+          alt=''
+          style='
+              margin: 0 auto;
+              height: 64px;
+              display: block;
+          '
+        />
+
+          <p
+            style='
+                color:#000000;
+                text-align: center;
+            '
+          >
+          Olá, <strong>${residentName}</strong>! O chamado <strong>#${ticketNumber}</strong> foi indeferido por ${dismissedBy} com o seguinte motivo.
+          </p>
+
+          <p
+            style='
+                color:#000000;
+                text-align: center;
+            '
+          >
+          <strong>Motivo: </strong>${dismissReason}
+          </p>
+
+          <p
+            style='
+                color:#000000;
+                text-align: center;
+            '
+          >
+          <strong>Observação: </strong>${dismissObservation}
+          </p>
+
 
         </div>
       </div>

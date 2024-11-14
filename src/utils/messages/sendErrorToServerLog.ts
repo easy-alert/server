@@ -10,7 +10,7 @@ export async function sendErrorToServerLog({ stack, extraInfo }: ISendErrorToSer
   const lowerCaseEnvironment = String(process.env?.ENVIRONMENT).toLowerCase();
 
   if (lowerCaseEnvironment.includes('sandbox') || lowerCaseEnvironment.includes('production')) {
-    axios.post('https://ada-logs.herokuapp.com/api/errors/create', {
+    axios.post('https://ada-logs.herokuapp.com/api/easy-alert/errors/create', {
       projectName: 'Easy Alert',
       environment: process.env.ENVIRONMENT,
       side: 'Server',

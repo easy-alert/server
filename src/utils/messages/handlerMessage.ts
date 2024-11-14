@@ -27,7 +27,7 @@ export const handlerMessage = async (
     process.env.DATABASE_URL?.includes('sandbox') ||
     process.env.DATABASE_URL?.includes('production')
   ) {
-    axios.post('https://ada-logs.herokuapp.com/api/errors/create', {
+    axios.post('https://ada-logs.herokuapp.com/api/easy-alert/errors/create', {
       projectName: 'Easy Alert',
       environment: process.env.DATABASE_URL?.includes('sandbox') ? 'Sandbox' : 'Production',
       side: 'Server',

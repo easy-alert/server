@@ -28,6 +28,8 @@ import { checklistRouter } from './checklists/checklist.routes';
 import { ticketRouter } from './tickets/ticket.routes';
 import { supplierRouter } from './suppliers/supplier.routes';
 import { maintenanceHistoryActivitiesRouter } from '../shared/maintenanceHistoryActivities/maintenanceHistoryActivities.routes';
+import { ticketHistoryActivitiesRouter } from './ticketHistoryActivities/ticketHistoryActivities.routes';
+import { ticketDismissReasonsRouter } from './ticketDismissReasons/ticketDismissReasons.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -81,3 +83,12 @@ companyRouter.use(
   isCompany,
   maintenanceHistoryActivitiesRouter,
 );
+
+companyRouter.use(
+  '/ticketHistoryActivities',
+  authMiddleware,
+  isCompany,
+  ticketHistoryActivitiesRouter,
+);
+
+companyRouter.use('/ticketDismissReasons', authMiddleware, isCompany, ticketDismissReasonsRouter);

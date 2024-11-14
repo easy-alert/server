@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { Prisma, TicketStatusName } from '@prisma/client';
+import { Prisma, TicketDismissReasonsName, TicketStatusName } from '@prisma/client';
 import { hashSync } from 'bcrypt';
 
 // CLASS
@@ -386,6 +386,8 @@ export class SeedServices {
           label: ticketServiceType.label,
         },
       });
+
+      console.log('ticketServiceType ', ticketServiceType.label, ' inserted.');
     });
 
     console.log('Ticket service types upserted.');
@@ -398,8 +400,14 @@ export class SeedServices {
       {
         name: TicketStatusName.open,
         label: 'Aberto',
+        color: '#000000',
+        backgroundColor: '#FFFFFF',
+      },
+      {
+        name: TicketStatusName.awaitingToFinish,
+        label: 'Aguardando finalização',
         color: '#FFFFFF',
-        backgroundColor: '#B21D1D',
+        backgroundColor: '#FFB200',
       },
       {
         name: TicketStatusName.finished,
@@ -408,17 +416,17 @@ export class SeedServices {
         backgroundColor: '#34B53A',
       },
       {
-        name: TicketStatusName.awaitingToFinish,
-        label: 'Aguardando finalização',
+        name: TicketStatusName.dismissed,
+        label: 'Indeferido',
         color: '#FFFFFF',
-        backgroundColor: '#FFB200',
+        backgroundColor: '#B21D1D',
       },
     ];
 
     for (const ticketStatus of ticketsStatus) {
       await prisma.ticketStatus.upsert({
         create: ticketStatus,
-        update: {},
+        update: ticketStatus,
         where: {
           name: ticketStatus.name,
         },
@@ -428,5 +436,63 @@ export class SeedServices {
     }
 
     console.log('Ticket Status upserted.');
+  }
+
+  async upsertTicketDismissReasons() {
+    console.log('\n\nstarting Ticket Reasons creation ...');
+
+    const ticketReasons = [
+      {
+        name: TicketDismissReasonsName.outOfWarranty,
+        label: 'Fora de garantia',
+        color: '#FFFFFF',
+        backgroundColor: '#000000',
+      },
+      {
+        name: TicketDismissReasonsName.outOfResponsibility,
+        label: 'Fora da responsabilidade',
+        color: '#FFFFFF',
+        backgroundColor: '#000000',
+      },
+
+      {
+        name: TicketDismissReasonsName.lackOfInformation,
+        label: 'Falta de informações/entendimento',
+        color: '#FFFFFF',
+        backgroundColor: '#000000',
+      },
+      {
+        name: TicketDismissReasonsName.lackOfResources,
+        label: 'Falta de recursos',
+        color: '#FFFFFF',
+        backgroundColor: '#000000',
+      },
+      {
+        name: TicketDismissReasonsName.lackOfApproval,
+        label: 'Falta de aprovação',
+        color: '#FFFFFF',
+        backgroundColor: '#000000',
+      },
+      {
+        name: TicketDismissReasonsName.other,
+        label: 'Outro',
+        color: '#FFFFFF',
+        backgroundColor: '#000000',
+      },
+    ];
+
+    for (const ticketReason of ticketReasons) {
+      await prisma.ticketDismissReasons.upsert({
+        create: ticketReason,
+        update: ticketReason,
+        where: {
+          name: ticketReason.name,
+        },
+      });
+
+      console.log('ticketReason ', ticketReason.name, ' inserted.');
+    }
+
+    console.log('Ticket Reasons upserted.');
   }
 }

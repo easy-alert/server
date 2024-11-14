@@ -1,51 +1,101 @@
 import { Response, Request } from 'express';
-import { TicketStatusName } from '@prisma/client';
-import { checkDateRanges, checkValues } from '../../../../utils/newValidator';
 import { ticketServices } from '../services/ticketServices';
-import { handleQueryPage, handleQueryTake } from '../../../../utils/dataHandler';
-import { setToFilterStartDate, setToFilterEndDate } from '../../../../utils/dateTime';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
-
-type TQuery = string | undefined;
-
-interface IQuery {
-  page: TQuery;
-  take: TQuery;
-  initialCreatedAt: TQuery;
-  finalCreatedAt: TQuery;
-  statusName?: TicketStatusName;
-}
+import { changeTime } from '../../../../utils/dateTime/changeTime';
+import { checkValues } from '../../../../utils/newValidator';
+import getMonths from '../../../../utils/constants/months';
 
 export async function findManyTicketsController(req: Request, res: Response) {
+  const { Company } = req;
   const { buildingNanoId } = req.params as any as { buildingNanoId: string };
-  const { page, take, statusName } = req.query as any as IQuery;
-  let { initialCreatedAt, finalCreatedAt } = req.query as any as IQuery;
+  const { year, month, status, placeId, serviceTypeId, seen, page, take, count } = req.query;
 
-  initialCreatedAt = initialCreatedAt || undefined;
-  finalCreatedAt = finalCreatedAt || undefined;
+  let buildingName = '';
 
-  checkValues([
-    { label: 'ID da edificação', type: 'string', value: buildingNanoId },
-    { label: 'Data inicial', type: 'date', value: initialCreatedAt, required: false },
-    { label: 'Data final', type: 'date', value: finalCreatedAt, required: false },
-  ]);
+  const monthFilter = month === '' ? undefined : String(month);
+  const statusFilter = status === '' ? undefined : String(status);
+  const placeIdFilter = placeId === '' ? undefined : String(placeId);
+  const serviceTypeIdFilter = serviceTypeId === '' ? undefined : String(serviceTypeId);
+  const seenFilter = seen === '' || seen === undefined ? undefined : seen === 'true';
+  const buildingNanoIdFilter = buildingNanoId === 'all' ? undefined : buildingNanoId;
+  const companyIdFilter = Company ? Company.id : undefined;
 
-  checkDateRanges([
-    { label: 'Data de criação', startDate: initialCreatedAt, endDate: finalCreatedAt },
-  ]);
+  const startDate =
+    year === ''
+      ? changeTime({
+          date: new Date(`${monthFilter ?? '01'}/01/${String(new Date().getFullYear() - 100)}`),
+          time: {
+            h: 0,
+            m: 0,
+            ms: 0,
+            s: 0,
+          },
+        })
+      : changeTime({
+          date: new Date(`${monthFilter ?? '01'}/01/${String(year)}`),
+          time: {
+            h: 0,
+            m: 0,
+            ms: 0,
+            s: 0,
+          },
+        });
 
-  await ticketServices.checkAccess({ buildingNanoId });
+  const endDate =
+    year === ''
+      ? changeTime({
+          date: new Date(`${monthFilter ?? '12'}/31/${String(new Date().getFullYear() + 100)}`),
+          time: {
+            h: 0,
+            m: 0,
+            ms: 0,
+            s: 0,
+          },
+        })
+      : changeTime({
+          date: new Date(`${monthFilter ?? '12'}/31/${String(year)}`),
+          time: {
+            h: 0,
+            m: 0,
+            ms: 0,
+            s: 0,
+          },
+        });
 
-  const { status, ticketsCount, tickets } = await ticketServices.findMany({
-    buildingNanoId,
-    page: handleQueryPage(page),
-    take: handleQueryTake(take),
-    initialCreatedAt: setToFilterStartDate(initialCreatedAt),
-    finalCreatedAt: setToFilterEndDate(finalCreatedAt),
-    statusName: statusName || undefined,
+  checkValues([{ label: 'ID da edificação', type: 'string', value: buildingNanoId }]);
+
+  if (buildingNanoIdFilter !== undefined) {
+    await ticketServices.checkAccess({ buildingNanoId });
+
+    buildingName = (await buildingServices.findByNanoId({ buildingNanoId })).name;
+  }
+
+  const months = getMonths();
+
+  const findManyTickets = await ticketServices.findMany({
+    buildingNanoId: buildingNanoIdFilter,
+    companyId: companyIdFilter,
+    statusName: statusFilter,
+    startDate,
+    endDate,
+    placeId: placeIdFilter,
+    serviceTypeId: serviceTypeIdFilter,
+    seen: seenFilter,
+    page: Number(page),
+    take: Number(take),
   });
 
-  const buildingName = (await buildingServices.findByNanoId({ buildingNanoId })).name;
+  const filterOptions = {
+    years: findManyTickets.years,
+    months,
+  };
 
-  return res.status(200).json({ tickets, ticketsCount, buildingName, status });
+  if (count === 'true') {
+    return res.status(200).json({
+      buildingName,
+      ticketsCount: findManyTickets.tickets.length,
+    });
+  }
+
+  return res.status(200).json({ buildingName, tickets: findManyTickets.tickets, filterOptions });
 }
