@@ -5,20 +5,23 @@ import { findTicketsAuxiliaryDataController } from '../../shared/tickets/control
 import { findOccasionalMaintenancesForTicketsController } from '../../shared/tickets/controllers/findOccasionalMaintenancesForTicketsController';
 import { connectTicketsToExistingMaintenancesController } from '../../shared/tickets/controllers/connectTicketsToExistingMaintenancesController';
 import { deleteTicketController } from '../../shared/tickets/controllers/deleteTicketController';
-import { findTicketReportController } from '../../shared/tickets/controllers/findTicketReportController';
+import { createTicketController } from '../../shared/tickets/controllers/createTicketController';
+import { updateTicketById } from '../../shared/tickets/controllers/updateTicketById';
 
 export const ticketRouter: Router = Router();
 
-ticketRouter.get('/reports', findTicketReportController);
-ticketRouter.get('/buildings/:buildingNanoId', findManyTicketsController);
+ticketRouter.post('/', createTicketController);
+
 ticketRouter.get('/:ticketId', findTicketByIdController);
+ticketRouter.put('/:ticketId', updateTicketById);
+ticketRouter.delete('/:ticketId', deleteTicketController);
+
+ticketRouter.get('/buildings/:buildingNanoId', findManyTicketsController);
+
 ticketRouter.get('/extras/auxiliary-data', findTicketsAuxiliaryDataController);
 ticketRouter.get(
   '/extras/occasional-maintenances/:buildingNanoId',
   findOccasionalMaintenancesForTicketsController,
 );
 
-// ticketRouter.post('/', createTicketController);
 ticketRouter.post('/connect-to-maintenance', connectTicketsToExistingMaintenancesController);
-
-ticketRouter.delete('/:ticketId', deleteTicketController);

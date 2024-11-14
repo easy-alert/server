@@ -400,7 +400,7 @@ export class SeedServices {
       {
         name: TicketStatusName.open,
         label: 'Aberto',
-        color: '#FFFFFF',
+        color: '#000000',
         backgroundColor: '#FFFFFF',
       },
       {

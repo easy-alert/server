@@ -6,14 +6,19 @@ import { checkValues } from '../../../../utils/newValidator';
 import getMonths from '../../../../utils/constants/months';
 
 export async function findManyTicketsController(req: Request, res: Response) {
+  const { Company } = req;
   const { buildingNanoId } = req.params as any as { buildingNanoId: string };
   const { year, month, status, placeId, serviceTypeId, seen, page, take, count } = req.query;
+
+  let buildingName = '';
 
   const monthFilter = month === '' ? undefined : String(month);
   const statusFilter = status === '' ? undefined : String(status);
   const placeIdFilter = placeId === '' ? undefined : String(placeId);
   const serviceTypeIdFilter = serviceTypeId === '' ? undefined : String(serviceTypeId);
   const seenFilter = seen === '' || seen === undefined ? undefined : seen === 'true';
+  const buildingNanoIdFilter = buildingNanoId === 'all' ? undefined : buildingNanoId;
+  const companyIdFilter = Company ? Company.id : undefined;
 
   const startDate =
     year === ''
@@ -59,14 +64,17 @@ export async function findManyTicketsController(req: Request, res: Response) {
 
   checkValues([{ label: 'ID da edificação', type: 'string', value: buildingNanoId }]);
 
-  await ticketServices.checkAccess({ buildingNanoId });
+  if (buildingNanoIdFilter !== undefined) {
+    await ticketServices.checkAccess({ buildingNanoId });
 
-  const buildingName = (await buildingServices.findByNanoId({ buildingNanoId })).name;
+    buildingName = (await buildingServices.findByNanoId({ buildingNanoId })).name;
+  }
 
   const months = getMonths();
 
   const findManyTickets = await ticketServices.findMany({
-    buildingNanoId,
+    buildingNanoId: buildingNanoIdFilter,
+    companyId: companyIdFilter,
     statusName: statusFilter,
     startDate,
     endDate,
