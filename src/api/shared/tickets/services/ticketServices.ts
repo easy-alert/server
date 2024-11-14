@@ -393,7 +393,7 @@ class TicketServices {
     }
   }
 
-  async sendDismissedTicketEmails({ ticketIds }: { ticketIds: string[] }) {
+  async sendDismissedTicketEmails({ ticketIds, userId }: { ticketIds: string[]; userId?: string }) {
     const emails = await prisma.ticket.findMany({
       select: {
         residentEmail: true,
@@ -401,12 +401,22 @@ class TicketServices {
         residentName: true,
         dismissReasons: { select: { label: true } },
         dismissObservation: true,
-        dismissedBy: true,
+        dismissedById: true,
       },
       where: { id: { in: ticketIds } },
     });
 
     const filteredEmails = emails.filter((e) => e.residentEmail);
+
+    const userData = await prisma.buildingNotificationConfiguration.findUnique({
+      select: {
+        name: true,
+      },
+
+      where: {
+        nanoId: userId,
+      },
+    });
 
     for (let index = 0; index < filteredEmails.length; index++) {
       const {
@@ -415,7 +425,7 @@ class TicketServices {
         residentName,
         dismissReasons,
         dismissObservation,
-        // dismissedBy,
+        dismissedById,
       } = filteredEmails[index];
 
       const syndic = await prisma.buildingNotificationConfiguration.findUnique({
@@ -423,7 +433,7 @@ class TicketServices {
           name: true,
         },
         where: {
-          id: '',
+          id: dismissedById || '',
         },
       });
 
@@ -435,7 +445,7 @@ class TicketServices {
           residentName,
           dismissReason: dismissReasons?.label || '',
           dismissObservation: dismissObservation || '',
-          dismissedBy: syndic?.name || '',
+          dismissedBy: userData?.name || syndic?.name || '',
         });
 
         await sleep(6000);
