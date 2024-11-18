@@ -1,5 +1,10 @@
 /* eslint-disable no-console */
-import { Prisma, TicketDismissReasonsName, TicketStatusName } from '@prisma/client';
+import {
+  Prisma,
+  TicketDismissReasonsName,
+  TicketStatusName,
+  MaintenancePriorityName,
+} from '@prisma/client';
 import { hashSync } from 'bcrypt';
 
 // CLASS
@@ -494,5 +499,44 @@ export class SeedServices {
     }
 
     console.log('Ticket Reasons upserted.');
+  }
+
+  async upsertMaintenancePriorities() {
+    console.log('\n\nstarting Maintenance Priorities creation ...');
+
+    const maintenancePriorities = [
+      {
+        name: MaintenancePriorityName.low,
+        label: 'Baixa',
+        color: '#FFFFFF',
+        backgroundColor: '#34B53A',
+      },
+      {
+        name: MaintenancePriorityName.medium,
+        label: 'Média',
+        color: '#FFFFFF',
+        backgroundColor: '#FFB200',
+      },
+      {
+        name: MaintenancePriorityName.high,
+        label: 'Alta',
+        color: '#FFFFFF',
+        backgroundColor: '#FF0000',
+      },
+    ];
+
+    for (const maintenancePriority of maintenancePriorities) {
+      await prisma.maintenancePriority.upsert({
+        create: maintenancePriority,
+        update: maintenancePriority,
+        where: {
+          name: maintenancePriority.name,
+        },
+      });
+
+      console.log('maintenancePriority ', maintenancePriority.name, ' inserted.');
+    }
+
+    console.log('Maintenance Priorities upserted.');
   }
 }
