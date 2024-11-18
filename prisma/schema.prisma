@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//VALIDATIONS TOKENS
+// VALIDATIONS TOKENS
 model ValidationToken {
   id      String  @id @unique @default(uuid())
   token   String  @unique
@@ -22,7 +22,7 @@ model ValidationToken {
   @@map("validationsTokens")
 }
 
-//USER
+// USER
 model User {
   id           String    @id @unique @default(uuid())
   name         String
@@ -55,7 +55,7 @@ model UserPermissions {
 }
 
 model UserCompanies {
-  id        String  @id @unique @default(uuid())
+  id        String  @id @default(uuid())
   userId    String
   companyId String
   owner     Boolean @default(false)
@@ -66,6 +66,7 @@ model UserCompanies {
   User    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   Company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, companyId])
   @@map("userCompanies")
 }
 
@@ -80,7 +81,7 @@ model Permission {
   @@map("permissions")
 }
 
-//COMPANY
+// COMPANY
 model Company {
   id                   String            @id @unique @default(uuid())
   name                 String
@@ -122,7 +123,7 @@ enum CompanyTicketType {
   platform
 }
 
-//CATEGORIES AND MAINTENANCES TYPES
+// CATEGORIES AND MAINTENANCES TYPES
 model CategoryAndMaintenanceTypes {
   id            String @id @unique @default(uuid())
   name          String @unique
@@ -138,7 +139,7 @@ model CategoryAndMaintenanceTypes {
   @@map("categoryAndMaintenanceTypes")
 }
 
-//CATEGORIES
+// CATEGORIES
 
 model Category {
   id             String  @id @unique @default(uuid())
@@ -450,7 +451,7 @@ model MaintenancesStatus {
   @@map("maintenancesStatus")
 }
 
-//BUILDINGS
+// BUILDINGS
 model BuildingType {
   id   String @id @unique @default(uuid())
   name String @unique

@@ -76,11 +76,18 @@ export class CompanyServices {
     companyId: string;
     owner?: boolean;
   }) {
-    return prisma.userCompanies.create({
-      data: {
-        companyId,
+    return prisma.userCompanies.upsert({
+      create: {
         userId,
+        companyId,
         owner,
+      },
+      update: {},
+      where: {
+        userId_companyId: {
+          companyId,
+          userId,
+        },
       },
     });
   }
