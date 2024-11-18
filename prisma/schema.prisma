@@ -419,6 +419,22 @@ model MaintenanceReportImagesProgress {
   @@map("maintenanceReportImagesProgresses")
 }
 
+enum MaintenancePriorityName {
+  low
+  medium
+  high
+}
+
+model MaintenancePriority {
+  name MaintenancePriorityName @id
+
+  label           String @unique
+  color           String
+  backgroundColor String
+
+  @@map("maintenancePriorities")
+}
+
 model TimeInterval {
   id            String @id @unique @default(uuid())
   name          String @unique
