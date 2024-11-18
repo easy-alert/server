@@ -116,6 +116,12 @@ class TicketServices {
           ticketNumber: true,
           residentName: true,
           seen: true,
+          building: {
+            select: {
+              nanoId: true,
+              name: true,
+            },
+          },
           place: {
             select: {
               label: true,
@@ -394,6 +400,8 @@ class TicketServices {
   }
 
   async sendDismissedTicketEmails({ ticketIds, userId }: { ticketIds: string[]; userId?: string }) {
+    let userName = '';
+
     const emails = await prisma.ticket.findMany({
       select: {
         residentEmail: true,
@@ -408,15 +416,19 @@ class TicketServices {
 
     const filteredEmails = emails.filter((e) => e.residentEmail);
 
-    const userData = await prisma.buildingNotificationConfiguration.findUnique({
-      select: {
-        name: true,
-      },
+    if (userId) {
+      const userData = await prisma.buildingNotificationConfiguration.findUnique({
+        select: {
+          name: true,
+        },
 
-      where: {
-        nanoId: userId,
-      },
-    });
+        where: {
+          nanoId: userId,
+        },
+      });
+
+      userName = userData?.name || '';
+    }
 
     for (let index = 0; index < filteredEmails.length; index++) {
       const {
@@ -437,6 +449,8 @@ class TicketServices {
         },
       });
 
+      userName = syndic?.name || userName;
+
       // Teoricamente o filter ali de cima já era pra validar o email, mas não quer.
       if (residentEmail) {
         emailTransporter.sendTicketDismissed({
@@ -445,7 +459,7 @@ class TicketServices {
           residentName,
           dismissReason: dismissReasons?.label || '',
           dismissObservation: dismissObservation || '',
-          dismissedBy: userData?.name || syndic?.name || '',
+          dismissedBy: userName,
         });
 
         await sleep(6000);
