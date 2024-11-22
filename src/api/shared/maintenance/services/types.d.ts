@@ -51,6 +51,7 @@ export interface ICreateMaintenance {
   observation: string | null;
   maintenanceTypeId: string;
   instructions: { url: string; name: string }[];
+  priorityName: MaintenancePriorityName;
 }
 
 export interface IMaintenanceHistory {

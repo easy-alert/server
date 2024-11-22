@@ -1,3 +1,5 @@
+import type { MaintenancePriorityName } from '@prisma/client';
+
 interface MaintenanceBody {
   element: string;
   activity: string;
@@ -10,6 +12,7 @@ interface MaintenanceBody {
   delay: number;
   delayTimeIntervalId: string;
   observation: string;
+  priorityName: MaintenancePriorityName;
 }
 
 export interface ICreateMaintenanceBody extends MaintenanceBody {

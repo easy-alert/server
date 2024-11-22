@@ -29,6 +29,7 @@ export class SharedMaintenanceServices {
     observation,
     maintenanceTypeId,
     instructions,
+    priorityName,
   }: ICreateMaintenance) {
     return prisma.maintenance.create({
       data: {
@@ -46,6 +47,7 @@ export class SharedMaintenanceServices {
         delayTimeIntervalId,
         observation,
         maintenanceTypeId,
+        priorityName,
         instructions: { createMany: { data: instructions } },
       },
     });
