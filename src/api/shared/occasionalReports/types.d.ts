@@ -1,3 +1,5 @@
+import type { MaintenancePriorityName } from '@prisma/client';
+
 interface IAnnexesAndImages {
   name: string;
   originalName: string;
@@ -10,6 +12,7 @@ export interface ICreateOccasionalMaintenanceReport {
   responsibleSyndicId: string;
   origin: 'Company' | 'Backoffice' | 'Client';
   occasionalMaintenanceType: 'finished' | 'pending';
+  priorityName: MaintenancePriorityName;
 
   maintenanceData: {
     id: string;
