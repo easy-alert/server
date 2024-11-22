@@ -343,6 +343,9 @@ export class ClientBuildingServices {
               element: maintenance.Maintenance.element,
               activity: maintenance.Maintenance.activity,
               status: maintenance.MaintenancesStatus.name,
+              priorityLabel: maintenance.priority.label,
+              priorityColor: maintenance.priority.color,
+              priorityBackgroundColor: maintenance.priority.backgroundColor,
               // para ordenação
               date: maintenance.notificationDate,
               dueDate: maintenance.dueDate,
@@ -381,6 +384,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            priorityLabel: maintenance.priority.label,
+            priorityColor: maintenance.priority.color,
+            priorityBackgroundColor: maintenance.priority.backgroundColor,
             // não pode reportar a vencida, se a pendente já está liberada.
             cantReportExpired:
               canReportHistoryPending ||
@@ -402,6 +408,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            priorityLabel: maintenance.priority.label,
+            priorityColor: maintenance.priority.color,
+            priorityBackgroundColor: maintenance.priority.backgroundColor,
             // para ordenação
             date: maintenance.resolutionDate,
             dueDate: maintenance.dueDate,
@@ -422,6 +431,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            priorityLabel: maintenance.priority.label,
+            priorityColor: maintenance.priority.color,
+            priorityBackgroundColor: maintenance.priority.backgroundColor,
             // para ordenação
             date: maintenance.resolutionDate,
             dueDate: maintenance.dueDate,
@@ -680,6 +692,7 @@ export class ClientBuildingServices {
           dueDate: true,
           inProgress: true,
           daysInAdvance: true,
+          priority: true,
 
           Building: {
             select: {
@@ -696,6 +709,7 @@ export class ClientBuildingServices {
               },
             },
           },
+
           Maintenance: {
             select: {
               id: true,
