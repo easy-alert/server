@@ -76,6 +76,7 @@ export class SharedCalendarServices {
           notificationDate: true,
           resolutionDate: true,
           inProgress: true,
+          priority: true,
 
           Building: {
             select: {
