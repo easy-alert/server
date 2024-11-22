@@ -97,6 +97,8 @@ model Company {
   canAccessChecklists Boolean @default(false)
   canAccessTickets    Boolean @default(false)
 
+  showMaintenancePriority Boolean @default(false)
+
   receivePreviousMonthReports Boolean @default(false)
   receiveDailyDueReports      Boolean @default(false)
 
@@ -195,6 +197,7 @@ model Maintenance {
   delay                   Int
   delayTimeIntervalId     String
   observation             String?
+  priorityName            MaintenancePriorityName @default(low)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -213,6 +216,8 @@ model Maintenance {
   MaintenanceType    CategoryAndMaintenanceTypes? @relation(fields: [maintenanceTypeId], references: [id])
   suggestedSuppliers MaintenanceSupplier[]
   instructions       MaintenanceInstruction[]
+
+  priority MaintenancePriority @relation(fields: [priorityName], references: [name])
 
   @@map("maintenances")
 }
@@ -243,6 +248,8 @@ model MaintenanceHistory {
   inProgress       Boolean   @default(false)
   daysInAdvance    Int       @default(0)
 
+  priorityName MaintenancePriorityName @default(low)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -257,6 +264,8 @@ model MaintenanceHistory {
   tickets                   Ticket[]
   suppliers                 MaintenanceHistorySupplier[]
   activities                MaintenanceHistoryActivity[]
+
+  priority MaintenancePriority @relation(fields: [priorityName], references: [name])
 
   @@map("maintenancesHistory")
 }
@@ -431,6 +440,9 @@ model MaintenancePriority {
   label           String @unique
   color           String
   backgroundColor String
+
+  Maintenance        Maintenance[]
+  MaintenanceHistory MaintenanceHistory[]
 
   @@map("maintenancePriorities")
 }
