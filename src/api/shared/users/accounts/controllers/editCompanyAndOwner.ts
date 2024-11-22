@@ -31,6 +31,7 @@ export async function sharedEditCompanyAndOwner({
     receivePreviousMonthReports,
     ticketInfo,
     ticketType,
+    showMaintenancePriority,
   },
   userId,
   companyId,
@@ -85,6 +86,7 @@ export async function sharedEditCompanyAndOwner({
     canAccessTickets,
     receiveDailyDueReports,
     receivePreviousMonthReports,
+    showMaintenancePriority,
     ticketInfo:
       lowerCaseTicketInfo && ticketType === 'whatsapp'
         ? unmask(lowerCaseTicketInfo)

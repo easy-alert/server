@@ -14,4 +14,5 @@ export interface IEditCompany {
   receiveDailyDueReports: boolean;
   ticketInfo: string | null;
   ticketType: CompanyTicketType;
+  showMaintenancePriority: boolean;
 }

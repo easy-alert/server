@@ -20,6 +20,7 @@ export class SharedCompanyServices {
     receivePreviousMonthReports,
     ticketInfo,
     ticketType,
+    showMaintenancePriority,
   }: IEditCompany) {
     await this.findById({ companyId });
 
@@ -37,6 +38,7 @@ export class SharedCompanyServices {
         receivePreviousMonthReports,
         ticketInfo,
         ticketType,
+        showMaintenancePriority,
       },
       where: { id: companyId },
     });
