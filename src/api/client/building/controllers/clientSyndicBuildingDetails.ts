@@ -193,8 +193,28 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   // Pendente
   kanban[1].maintenances.sort((a: any, b: any) => (a.dueDate > b.dueDate ? 1 : -1));
 
+  if (company?.showMaintenancePriority) {
+    kanban[1].maintenances.sort((a: any, b: any) => {
+      const priorityOrder = { Alta: 3, Média: 2, Baixa: 1 };
+      const getPriorityValue = (priorityLabel: string) =>
+        priorityOrder[priorityLabel as keyof typeof priorityOrder] || 0;
+
+      return getPriorityValue(b.priorityLabel) - getPriorityValue(a.priorityLabel);
+    });
+  }
+
   // Em execução (Vencida + Pendente)
   kanban[2].maintenances.sort((a: any, b: any) => (a.date > b.date ? 1 : -1));
+
+  if (company?.showMaintenancePriority) {
+    kanban[2].maintenances.sort((a: any, b: any) => {
+      const priorityOrder = { Alta: 3, Média: 2, Baixa: 1 };
+      const getPriorityValue = (priorityLabel: string) =>
+        priorityOrder[priorityLabel as keyof typeof priorityOrder] || 0;
+
+      return getPriorityValue(b.priorityLabel) - getPriorityValue(a.priorityLabel);
+    });
+  }
 
   // Concluída e Feita em atraso
   kanban[3].maintenances.sort((a: any, b: any) => (a.date < b.date ? 1 : -1));
