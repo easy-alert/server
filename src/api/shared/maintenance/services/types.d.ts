@@ -1,3 +1,5 @@
+import { MaintenancePriorityName } from '@prisma/client';
+
 interface IMaintenance {
   ownerCompanyId: string | null;
   element: string;
@@ -29,6 +31,7 @@ export interface IEditMaintenance {
   delayTimeIntervalId: string;
   observation: string | null;
   instructions: { url: string; name: string }[];
+  priorityName: MaintenancePriorityName;
 }
 
 export interface ICreateMaintenance {
