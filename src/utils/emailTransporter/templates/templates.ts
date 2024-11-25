@@ -525,6 +525,7 @@ export class EmailTemplates {
     residentName,
     responsibleName,
     toWhom,
+    link,
   }: ITicketCreated) {
     if (toWhom === 'resident') {
       return `<div
@@ -590,6 +591,59 @@ export class EmailTemplates {
           >
           Olá, <strong>${residentName}</strong>! Você abriu o chamado <strong>#${ticketNumber}</strong> em <strong>${buildingName}</strong>. Assim que o chamado for finalizado, você será notificado.
           </p>
+
+        <div
+          style='
+              margin: 24px auto;
+              width: 328px;
+          '
+        >
+
+          <a
+            href='${link}'
+            target='__blank'
+            style='
+              max-width: 328px;
+              text-align: center;
+              cursor: pointer;
+              background: #B21D1D;
+              border: none;
+              color:white;
+              display: block;
+              width: 100%;
+              height: 40px;
+              border-radius: 4px;
+              text-decoration: none;
+              line-height: 40px;
+            '
+          >
+            Confirmar
+          </a>
+
+          <p
+            style='
+                color: #000000;
+                text-align: center;
+            '
+          >
+            (Se o botão não funcionar acesse o link abaixo)
+          </p>
+
+          <a
+            href='${link}'
+            style='
+              color:#B21D1D;
+              width: 328px;
+              cursor: pointer;
+              margin: 8px 0 0 0;
+              word-break: break-all;
+            '
+          >
+            ${link}
+          </a>
+
+        </div>
+
 
         </div>
       </div>
