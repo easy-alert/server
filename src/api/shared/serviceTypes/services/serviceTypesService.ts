@@ -33,6 +33,17 @@ class ServiceTypesService {
           },
         },
       },
+
+      orderBy: {
+        label: 'asc',
+      },
+    });
+
+    // Custom sorting to place 'other' label at the end
+    serviceTypes.sort((a, b) => {
+      if (a.label === 'Outros') return 1;
+      if (b.label === 'Outros') return -1;
+      return a.label.localeCompare(b.label);
     });
 
     return serviceTypes;
