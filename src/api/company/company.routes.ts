@@ -31,6 +31,7 @@ import { maintenanceHistoryActivitiesRouter } from '../shared/maintenanceHistory
 import { ticketHistoryActivitiesRouter } from './ticketHistoryActivities/ticketHistoryActivities.routes';
 import { ticketDismissReasonsRouter } from './ticketDismissReasons/ticketDismissReasons.routes';
 import { findManyServiceTypes } from '../shared/serviceTypes/controllers/findManyServiceTypes';
+import { findAllMaintenancePriority } from '../shared/maintenancePriority/controllers/findAllMaintenancePriority';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -95,3 +96,5 @@ companyRouter.use(
 companyRouter.use('/ticketDismissReasons', authMiddleware, isCompany, ticketDismissReasonsRouter);
 
 companyRouter.get('/serviceTypes', authMiddleware, isCompany, findManyServiceTypes);
+
+companyRouter.get('/priority', authMiddleware, isCompany, findAllMaintenancePriority);
