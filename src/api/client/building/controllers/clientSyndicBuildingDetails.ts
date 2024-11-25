@@ -23,14 +23,15 @@ const validator = new Validator();
 
 export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   const { syndicNanoId } = req.params;
-
   const { year, month, status, categoryId, priorityName } = req.query;
 
-  const monthFilter = month === '' ? undefined : String(month);
-  const statusFilter = status === '' ? undefined : String(status);
-  const categoryIdFilter = categoryId === '' ? undefined : String(categoryId);
+  const monthFilter = month ? String(month) : undefined;
+  const statusFilter = status ? String(status) : undefined;
+  const categoryIdFilter = categoryId ? String(categoryId) : undefined;
   const priorityFilter =
-    priorityName === '' ? undefined : (String(priorityName) as MaintenancePriorityName);
+    !priorityName || priorityName === 'undefined'
+      ? undefined
+      : (String(priorityName) as MaintenancePriorityName);
 
   const startDate =
     year === ''
@@ -221,6 +222,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
 
   return res.status(200).json({
     buildingName: buildingNotificationConfig.Building.name,
+    showPriority: company?.showMaintenancePriority,
     kanban,
     Filters,
   });

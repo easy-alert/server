@@ -30,7 +30,7 @@ export async function findManyTicketsController(req: Request, res: Response) {
       ? (status.split(',') as TicketStatusName[])
       : undefined;
 
-  const seenFilter = seen === '' || seen === undefined ? undefined : seen === 'true';
+  const seenFilter = seen ? seen === 'true' : undefined;
 
   const startDateFilter = startDate
     ? changeUTCTime(new Date(String(startDate)), 0, 0, 0, 0)
@@ -41,11 +41,7 @@ export async function findManyTicketsController(req: Request, res: Response) {
 
   checkValues([{ label: 'ID da edificação', type: 'string', value: buildingsNanoId }]);
 
-  if (
-    !Array.isArray(buildingsNanoIdFilter) &&
-    buildingsNanoIdFilter !== undefined &&
-    buildingsNanoId !== 'all'
-  ) {
+  if (buildingsNanoIdFilter?.length === 1 && buildingsNanoId !== 'all') {
     await ticketServices.checkAccess({ buildingNanoId: buildingsNanoId });
 
     buildingName = (await buildingServices.findByNanoId({ buildingNanoId: buildingsNanoId })).name;
