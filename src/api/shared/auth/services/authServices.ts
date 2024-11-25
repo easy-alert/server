@@ -108,6 +108,7 @@ export class AuthServices {
                 isBlocked: true,
                 ticketInfo: true,
                 ticketType: true,
+                showMaintenancePriority: true,
                 UserCompanies: {
                   select: {
                     User: {
@@ -173,6 +174,7 @@ export class AuthServices {
                 image: true,
                 ticketInfo: true,
                 ticketType: true,
+                showMaintenancePriority: true,
                 UserCompanies: {
                   select: {
                     User: {

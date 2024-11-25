@@ -8,12 +8,13 @@ import { authMiddleware } from '../../middlewares/auth';
 import { isBackoffice } from '../../middlewares/permissions/isBackoffice';
 import { uploadRouter } from '../shared/upload/upload.routes';
 
-// CHIELD ROUTES
+// CHILDREN ROUTES
 import { authRouter } from './auth/auth.routes';
 import { categoryRouter } from './categories/category/category.routes';
 import { maintenanceRouter } from './categories/maintenance/maintenance.routes';
 import { companyRouter } from './users/accounts/company.routes';
 import { listTimeIntervals } from '../shared/timeInterval/controllers/listTimeIntervals';
+import { findAllMaintenancePriority } from '../shared/maintenancePriority/controllers/findAllMaintenancePriority';
 
 // ROUTES
 export const backofficeRouter: Router = Router();
@@ -32,3 +33,5 @@ backofficeRouter.use('/maintenances', authMiddleware, isBackoffice, maintenanceR
 backofficeRouter.use('/companies', authMiddleware, isBackoffice, companyRouter);
 
 backofficeRouter.get('/timeinterval/list', listTimeIntervals);
+
+backofficeRouter.get('/maintenancePriority', findAllMaintenancePriority);

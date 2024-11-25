@@ -1,10 +1,16 @@
 // # region IMPORTS
 import { Request, Response } from 'express';
+
+import type { MaintenancePriorityName } from '@prisma/client';
+
 import { changeTime } from '../../../../utils/dateTime/changeTime';
 import { Validator } from '../../../../utils/validator/validator';
-import { SharedBuildingNotificationConfigurationServices } from '../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
+
 import { ClientBuildingServices } from '../services/clientBuildingServices';
+
+import { SharedBuildingNotificationConfigurationServices } from '../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { SharedCategoryServices } from '../../../shared/categories/services/sharedCategoryServices';
+import { findCompany } from '../../../shared/company/services/findCompany';
 
 // CLASS
 const clientBuildingServices = new ClientBuildingServices();
@@ -18,11 +24,13 @@ const validator = new Validator();
 export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   const { syndicNanoId } = req.params;
 
-  const { year, month, status, categoryId } = req.query;
+  const { year, month, status, categoryId, priorityName } = req.query;
 
   const monthFilter = month === '' ? undefined : String(month);
   const statusFilter = status === '' ? undefined : String(status);
   const categoryIdFilter = categoryId === '' ? undefined : String(categoryId);
+  const priorityFilter =
+    priorityName === '' ? undefined : (String(priorityName) as MaintenancePriorityName);
 
   const startDate =
     year === ''
@@ -81,15 +89,21 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
       syndicNanoId,
     });
 
+  const company = await findCompany({
+    buildingId: buildingNotificationConfig?.Building.id,
+  });
+
   // #endregion
 
   const { MaintenancesForFilter, MaintenancesHistory } =
     await clientBuildingServices.findSyndicMaintenanceHistory({
       buildingId: buildingNotificationConfig?.Building.id,
       status: statusFilter,
+      showMaintenancePriority: company?.showMaintenancePriority,
       startDate,
       endDate,
       categoryIdFilter,
+      priorityFilter,
     });
 
   // #region MOUNTING FILTERS
@@ -179,8 +193,28 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   // Pendente
   kanban[1].maintenances.sort((a: any, b: any) => (a.dueDate > b.dueDate ? 1 : -1));
 
+  if (company?.showMaintenancePriority) {
+    kanban[1].maintenances.sort((a: any, b: any) => {
+      const priorityOrder = { Alta: 3, Média: 2, Baixa: 1 };
+      const getPriorityValue = (priorityLabel: string) =>
+        priorityOrder[priorityLabel as keyof typeof priorityOrder] || 0;
+
+      return getPriorityValue(b.priorityLabel) - getPriorityValue(a.priorityLabel);
+    });
+  }
+
   // Em execução (Vencida + Pendente)
   kanban[2].maintenances.sort((a: any, b: any) => (a.date > b.date ? 1 : -1));
+
+  if (company?.showMaintenancePriority) {
+    kanban[2].maintenances.sort((a: any, b: any) => {
+      const priorityOrder = { Alta: 3, Média: 2, Baixa: 1 };
+      const getPriorityValue = (priorityLabel: string) =>
+        priorityOrder[priorityLabel as keyof typeof priorityOrder] || 0;
+
+      return getPriorityValue(b.priorityLabel) - getPriorityValue(a.priorityLabel);
+    });
+  }
 
   // Concluída e Feita em atraso
   kanban[3].maintenances.sort((a: any, b: any) => (a.date < b.date ? 1 : -1));

@@ -20,6 +20,7 @@ export class CategoryServices {
             observation: true,
             ownerCompanyId: true,
             instructions: true,
+            priorityName: true,
 
             FrequencyTimeInterval: {
               select: {

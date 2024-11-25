@@ -34,6 +34,7 @@ export async function deleteAllExpiredMaintenancesFromBuilding(req: Request, res
     startDate: new Date('1900-01-01'),
     endDate: new Date('2200-01-01'),
     categoryIdFilter: undefined,
+    priorityFilter: undefined,
   });
 
   const kanban = await clientBuildingServices.syndicSeparePerStatus({ data: MaintenancesHistory });

@@ -28,6 +28,7 @@ export async function sharedCreateMaintenance({
     delayTimeIntervalId,
     observation,
     instructions,
+    priorityName,
   },
 }: {
   ownerCompanyId: string | null;
@@ -109,6 +110,7 @@ export async function sharedCreateMaintenance({
     observation,
     maintenanceTypeId: maintenanceType.id,
     instructions,
+    priorityName,
   });
 
   return {

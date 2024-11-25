@@ -12,11 +12,11 @@ export async function createOccasionalReport(req: Request, res: Response) {
   const building = await buildingServices.findByNanoId({ buildingNanoId: buildingId });
 
   const maintenance = await sharedCreateOccasionalMaintenanceReport({
+    companyId: building.companyId,
     body: {
       ...req.body,
       buildingId: building.id,
     },
-    companyId: building.companyId,
   });
 
   return res.status(200).json({

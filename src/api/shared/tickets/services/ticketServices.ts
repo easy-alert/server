@@ -9,13 +9,13 @@ const validator = new Validator();
 const emailTransporter = new EmailTransporterServices();
 
 interface IFindMany {
-  buildingNanoId: string | undefined;
+  buildingNanoId: string[] | undefined;
+  statusName?: TicketStatusName[];
+  placeId?: string[];
+  serviceTypeId?: string[];
   companyId: string | undefined;
-  statusName?: string;
   startDate?: Date;
   endDate?: Date;
-  placeId?: string;
-  serviceTypeId?: string;
   seen?: boolean;
   page?: number;
   take?: number;
@@ -136,24 +136,32 @@ class TicketServices {
 
         where: {
           building: {
-            nanoId: buildingNanoId,
             companyId,
+            nanoId: {
+              in: buildingNanoId,
+            },
           },
 
           status: {
-            label: statusName,
+            name: {
+              in: statusName,
+            },
           },
 
           types: {
             some: {
               type: {
-                id: serviceTypeId,
+                id: {
+                  in: serviceTypeId,
+                },
               },
             },
           },
 
           place: {
-            id: placeId,
+            id: {
+              in: placeId,
+            },
           },
 
           seen,
@@ -173,7 +181,9 @@ class TicketServices {
         },
         where: {
           building: {
-            nanoId: buildingNanoId,
+            nanoId: {
+              in: buildingNanoId,
+            },
           },
         },
         orderBy: {

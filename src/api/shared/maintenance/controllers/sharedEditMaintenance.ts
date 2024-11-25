@@ -26,6 +26,7 @@ export async function sharedEditMaintenance({
     delayTimeIntervalId,
     observation,
     instructions,
+    priorityName,
   },
 }: {
   ownerCompanyId: string | null;
@@ -62,6 +63,11 @@ export async function sharedEditMaintenance({
       variable: observation,
       type: 'string',
       isOptional: true,
+    },
+    {
+      label: 'Nível de prioridade',
+      variable: priorityName,
+      type: 'string',
     },
   ]);
 
@@ -109,7 +115,11 @@ export async function sharedEditMaintenance({
     delayTimeIntervalId,
     observation,
     instructions,
+
+    priorityName,
   });
+
+  console.log('🚀 ~ maintenance:', maintenance);
 
   return {
     ...maintenance,

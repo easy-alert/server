@@ -50,6 +50,7 @@ import { sharedListCategoriesByNanoId } from '../shared/categories/controllers/s
 import { serviceTypesRouter } from './serviceTypes/serviceTypes.routes';
 import { ticketHistoryActivitiesRouter } from './ticketHistoryActivities/ticketHistoryActivities.routes';
 import { ticketDismissReasonsRouter } from './ticketDismissReasons/ticketDismissReasons.routes';
+import { findAllMaintenancePriority } from '../shared/maintenancePriority/controllers/findAllMaintenancePriority';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -163,3 +164,5 @@ clientRouter.use('/serviceTypes', serviceTypesRouter);
 clientRouter.use('/ticketHistoryActivities', ticketHistoryActivitiesRouter);
 
 clientRouter.use('/ticketDismissReasons', ticketDismissReasonsRouter);
+
+clientRouter.get('/priority', findAllMaintenancePriority);

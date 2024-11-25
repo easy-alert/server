@@ -30,6 +30,7 @@ import { supplierRouter } from './suppliers/supplier.routes';
 import { maintenanceHistoryActivitiesRouter } from '../shared/maintenanceHistoryActivities/maintenanceHistoryActivities.routes';
 import { ticketHistoryActivitiesRouter } from './ticketHistoryActivities/ticketHistoryActivities.routes';
 import { ticketDismissReasonsRouter } from './ticketDismissReasons/ticketDismissReasons.routes';
+import { findManyServiceTypes } from '../shared/serviceTypes/controllers/findManyServiceTypes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -92,3 +93,5 @@ companyRouter.use(
 );
 
 companyRouter.use('/ticketDismissReasons', authMiddleware, isCompany, ticketDismissReasonsRouter);
+
+companyRouter.get('/serviceTypes', authMiddleware, isCompany, findManyServiceTypes);

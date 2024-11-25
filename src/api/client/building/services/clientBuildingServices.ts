@@ -1,9 +1,13 @@
+import type { MaintenancePriorityName } from '@prisma/client';
+
 import { prisma } from '../../../../../prisma';
+
+import { SharedMaintenanceServices } from '../../../shared/maintenance/services/sharedMaintenanceServices';
+
 import { removeDays } from '../../../../utils/dateTime';
 import { getDateInfos } from '../../../../utils/dateTime/getDateInfos';
 import { changeTime } from '../../../../utils/dateTime/changeTime';
 import { Validator } from '../../../../utils/validator/validator';
-import { SharedMaintenanceServices } from '../../../shared/maintenance/services/sharedMaintenanceServices';
 
 const validator = new Validator();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
@@ -343,6 +347,9 @@ export class ClientBuildingServices {
               element: maintenance.Maintenance.element,
               activity: maintenance.Maintenance.activity,
               status: maintenance.MaintenancesStatus.name,
+              priorityLabel: maintenance.priority?.label,
+              priorityColor: maintenance.priority?.color,
+              priorityBackgroundColor: maintenance.priority?.backgroundColor,
               // para ordenação
               date: maintenance.notificationDate,
               dueDate: maintenance.dueDate,
@@ -381,6 +388,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            priorityLabel: maintenance.priority?.label,
+            priorityColor: maintenance.priority?.color,
+            priorityBackgroundColor: maintenance.priority?.backgroundColor,
             // não pode reportar a vencida, se a pendente já está liberada.
             cantReportExpired:
               canReportHistoryPending ||
@@ -402,6 +412,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            priorityLabel: maintenance.priority?.label,
+            priorityColor: maintenance.priority?.color,
+            priorityBackgroundColor: maintenance.priority?.backgroundColor,
             // para ordenação
             date: maintenance.resolutionDate,
             dueDate: maintenance.dueDate,
@@ -422,6 +435,9 @@ export class ClientBuildingServices {
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
+            priorityLabel: maintenance.priority?.label,
+            priorityColor: maintenance.priority?.color,
+            priorityBackgroundColor: maintenance.priority?.backgroundColor,
             // para ordenação
             date: maintenance.resolutionDate,
             dueDate: maintenance.dueDate,
@@ -643,16 +659,20 @@ export class ClientBuildingServices {
 
   async findSyndicMaintenanceHistory({
     buildingId,
+    status,
+    showMaintenancePriority,
     startDate,
     endDate,
-    status,
     categoryIdFilter,
+    priorityFilter,
   }: {
     buildingId: string;
+    status: string | undefined;
+    showMaintenancePriority?: boolean | undefined;
     startDate: Date | undefined;
     endDate: Date | undefined;
-    status: string | undefined;
     categoryIdFilter: string | undefined;
+    priorityFilter: MaintenancePriorityName | undefined;
   }) {
     const [MaintenancesForFilter, MaintenancesHistory] = await prisma.$transaction([
       prisma.maintenanceHistory.findMany({
@@ -680,6 +700,7 @@ export class ClientBuildingServices {
           dueDate: true,
           inProgress: true,
           daysInAdvance: true,
+          priority: showMaintenancePriority,
 
           Building: {
             select: {
@@ -696,6 +717,7 @@ export class ClientBuildingServices {
               },
             },
           },
+
           Maintenance: {
             select: {
               id: true,
@@ -725,6 +747,7 @@ export class ClientBuildingServices {
               },
             },
           },
+
           MaintenancesStatus: {
             select: {
               name: true,
@@ -735,11 +758,14 @@ export class ClientBuildingServices {
         },
         where: {
           buildingId,
+          priorityName: priorityFilter,
+
           MaintenancesStatus: {
             name: {
               in: status,
             },
           },
+
           Maintenance: {
             categoryId: categoryIdFilter,
           },
@@ -758,6 +784,7 @@ export class ClientBuildingServices {
         variable: MaintenancesHistory,
       },
     ]);
+
     validator.needExist([
       {
         label: 'histórico de manutenção',

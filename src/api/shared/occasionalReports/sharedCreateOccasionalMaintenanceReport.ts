@@ -43,6 +43,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
     inProgress,
     ticketIds,
     occasionalMaintenanceType,
+    priorityName,
   }: ICreateOccasionalMaintenanceReport = body;
 
   // #region VALIDATIONS
@@ -118,6 +119,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
       responsible: maintenanceData.responsible,
       source: 'Manutenção avulsa',
       instructions: [],
+      priorityName,
     },
   });
 
@@ -153,6 +155,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
         maintenanceId: maintenance.id,
         maintenanceStatusId: pendingStatus.id,
         notificationDate: new Date(executionDate),
+        priorityName,
         dueDate: noWeekendTimeDate({
           date: addDays({ date: new Date(executionDate), days: defaultPeriod }),
           interval: 2,
@@ -188,6 +191,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
           buildingId,
           maintenanceId: maintenance.id,
           maintenanceStatusId: pendingStatus.id,
+          priorityName,
           notificationDate: new Date(executionDate),
           dueDate: noWeekendTimeDate({
             date: addDays({ date: new Date(executionDate), days: defaultPeriod }),

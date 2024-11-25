@@ -29,6 +29,7 @@ export class SharedMaintenanceServices {
     observation,
     maintenanceTypeId,
     instructions,
+    priorityName,
   }: ICreateMaintenance) {
     return prisma.maintenance.create({
       data: {
@@ -46,6 +47,7 @@ export class SharedMaintenanceServices {
         delayTimeIntervalId,
         observation,
         maintenanceTypeId,
+        priorityName,
         instructions: { createMany: { data: instructions } },
       },
     });
@@ -99,6 +101,7 @@ export class SharedMaintenanceServices {
     delayTimeIntervalId,
     observation,
     instructions,
+    priorityName,
   }: IEditMaintenance) {
     await this.findById({ maintenanceId });
 
@@ -115,6 +118,7 @@ export class SharedMaintenanceServices {
         delay,
         delayTimeIntervalId,
         observation,
+        priorityName,
         instructions: {
           deleteMany: {},
           createMany: { data: instructions || [] },
@@ -466,6 +470,7 @@ export class SharedMaintenanceServices {
         notificationDate: true,
         maintenanceId: true,
         wasNotified: true,
+        priority: true,
         Maintenance: {
           select: {
             period: true,

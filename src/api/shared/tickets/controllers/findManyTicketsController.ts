@@ -1,85 +1,66 @@
 import { Response, Request } from 'express';
+
+import type { TicketStatusName } from '@prisma/client';
+
 import { ticketServices } from '../services/ticketServices';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
-import { changeTime } from '../../../../utils/dateTime/changeTime';
 import { checkValues } from '../../../../utils/newValidator';
 import getMonths from '../../../../utils/constants/months';
+import { changeUTCTime } from '../../../../utils/dateTime';
 
 export async function findManyTicketsController(req: Request, res: Response) {
   const { Company } = req;
-  const { buildingNanoId } = req.params as any as { buildingNanoId: string };
-  const { year, month, status, placeId, serviceTypeId, seen, page, take, count } = req.query;
+  const { buildingsNanoId } = req.params as any as { buildingsNanoId: string };
+  const { placesId, serviceTypesId, status, startDate, endDate, seen, page, take, count } =
+    req.query;
 
   let buildingName = '';
 
-  const monthFilter = month === '' ? undefined : String(month);
-  const statusFilter = status === '' ? undefined : String(status);
-  const placeIdFilter = placeId === '' ? undefined : String(placeId);
-  const serviceTypeIdFilter = serviceTypeId === '' ? undefined : String(serviceTypeId);
-  const seenFilter = seen === '' || seen === undefined ? undefined : seen === 'true';
-  const buildingNanoIdFilter = buildingNanoId === 'all' ? undefined : buildingNanoId;
   const companyIdFilter = Company ? Company.id : undefined;
 
-  const startDate =
-    year === ''
-      ? changeTime({
-          date: new Date(`${monthFilter ?? '01'}/01/${String(new Date().getFullYear() - 100)}`),
-          time: {
-            h: 0,
-            m: 0,
-            ms: 0,
-            s: 0,
-          },
-        })
-      : changeTime({
-          date: new Date(`${monthFilter ?? '01'}/01/${String(year)}`),
-          time: {
-            h: 0,
-            m: 0,
-            ms: 0,
-            s: 0,
-          },
-        });
+  const buildingsNanoIdFilter = buildingsNanoId === 'all' ? undefined : buildingsNanoId.split(',');
+  const placeIdFilter =
+    typeof placesId === 'string' && placesId !== '' ? placesId.split(',') : undefined;
+  const serviceTypeIdFilter =
+    typeof serviceTypesId === 'string' && serviceTypesId !== ''
+      ? serviceTypesId.split(',')
+      : undefined;
+  const statusFilter =
+    typeof status === 'string' && status !== ''
+      ? (status.split(',') as TicketStatusName[])
+      : undefined;
 
-  const endDate =
-    year === ''
-      ? changeTime({
-          date: new Date(`${monthFilter ?? '12'}/31/${String(new Date().getFullYear() + 100)}`),
-          time: {
-            h: 0,
-            m: 0,
-            ms: 0,
-            s: 0,
-          },
-        })
-      : changeTime({
-          date: new Date(`${monthFilter ?? '12'}/31/${String(year)}`),
-          time: {
-            h: 0,
-            m: 0,
-            ms: 0,
-            s: 0,
-          },
-        });
+  const seenFilter = seen === '' || seen === undefined ? undefined : seen === 'true';
 
-  checkValues([{ label: 'ID da edificação', type: 'string', value: buildingNanoId }]);
+  const startDateFilter = startDate
+    ? changeUTCTime(new Date(String(startDate)), 0, 0, 0, 0)
+    : undefined;
+  const endDateFilter = endDate
+    ? changeUTCTime(new Date(String(endDate)), 23, 59, 59, 999)
+    : undefined;
 
-  if (buildingNanoIdFilter !== undefined) {
-    await ticketServices.checkAccess({ buildingNanoId });
+  checkValues([{ label: 'ID da edificação', type: 'string', value: buildingsNanoId }]);
 
-    buildingName = (await buildingServices.findByNanoId({ buildingNanoId })).name;
+  if (
+    !Array.isArray(buildingsNanoIdFilter) &&
+    buildingsNanoIdFilter !== undefined &&
+    buildingsNanoId !== 'all'
+  ) {
+    await ticketServices.checkAccess({ buildingNanoId: buildingsNanoId });
+
+    buildingName = (await buildingServices.findByNanoId({ buildingNanoId: buildingsNanoId })).name;
   }
 
   const months = getMonths();
 
   const findManyTickets = await ticketServices.findMany({
-    buildingNanoId: buildingNanoIdFilter,
+    buildingNanoId: buildingsNanoIdFilter,
     companyId: companyIdFilter,
     statusName: statusFilter,
-    startDate,
-    endDate,
     placeId: placeIdFilter,
     serviceTypeId: serviceTypeIdFilter,
+    startDate: startDateFilter,
+    endDate: endDateFilter,
     seen: seenFilter,
     page: Number(page),
     take: Number(take),
