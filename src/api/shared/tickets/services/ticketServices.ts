@@ -305,6 +305,7 @@ class TicketServices {
   async sendCreatedTicketEmails({ ticketIds }: { ticketIds: string[] }) {
     const emails = await prisma.ticket.findMany({
       select: {
+        id: true,
         residentEmail: true,
         ticketNumber: true,
         residentName: true,
@@ -316,7 +317,7 @@ class TicketServices {
     const filteredEmails = emails.filter((e) => e.residentEmail);
 
     for (let index = 0; index < filteredEmails.length; index++) {
-      const { residentEmail, ticketNumber, residentName, building } = filteredEmails[index];
+      const { id, residentEmail, ticketNumber, residentName, building } = filteredEmails[index];
 
       // Teoricamente o filter ali de cima já era pra validar o email, mas não quer.
       if (residentEmail) {
@@ -326,6 +327,7 @@ class TicketServices {
           residentName,
           ticketNumber,
           toWhom: 'resident',
+          link: `https://public.easyalert.com.br/guest-ticket/${id}`,
         });
 
         await sleep(6000);
