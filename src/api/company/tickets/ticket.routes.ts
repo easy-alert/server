@@ -1,4 +1,5 @@
 import { Router } from 'express';
+
 import { findManyTicketsController } from '../../shared/tickets/controllers/findManyTicketsController';
 import { findTicketByIdController } from '../../shared/tickets/controllers/findTicketByIdController';
 import { findTicketsAuxiliaryDataController } from '../../shared/tickets/controllers/findTicketsAuxiliaryDataController';
@@ -7,6 +8,8 @@ import { connectTicketsToExistingMaintenancesController } from '../../shared/tic
 import { deleteTicketController } from '../../shared/tickets/controllers/deleteTicketController';
 import { createTicketController } from '../../shared/tickets/controllers/createTicketController';
 import { updateTicketById } from '../../shared/tickets/controllers/updateTicketById';
+import { findAllTicketPlaces } from '../../shared/ticketPlaces/controllers/findAllTicketPlaces';
+import { findAllStatus } from '../../shared/ticketStatus/controllers/findAllStatus';
 
 export const ticketRouter: Router = Router();
 
@@ -16,7 +19,11 @@ ticketRouter.get('/:ticketId', findTicketByIdController);
 ticketRouter.put('/:ticketId', updateTicketById);
 ticketRouter.delete('/:ticketId', deleteTicketController);
 
-ticketRouter.get('/buildings/:buildingNanoId', findManyTicketsController);
+ticketRouter.get('/places/:placeId', findAllTicketPlaces);
+
+ticketRouter.get('/status/:statusId', findAllStatus);
+
+ticketRouter.get('/buildings/:buildingsNanoId', findManyTicketsController);
 
 ticketRouter.get('/extras/auxiliary-data', findTicketsAuxiliaryDataController);
 ticketRouter.get(
