@@ -1,24 +1,36 @@
 import { Response, Request } from 'express';
+
+import type { TicketStatusName } from '@prisma/client';
+
 import { ticketServices } from '../services/ticketServices';
-import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
+// import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
 import { changeTime } from '../../../../utils/dateTime/changeTime';
-import { checkValues } from '../../../../utils/newValidator';
+// import { checkValues } from '../../../../utils/newValidator';
 import getMonths from '../../../../utils/constants/months';
 
 export async function findManyTicketsController(req: Request, res: Response) {
   const { Company } = req;
-  const { buildingNanoId } = req.params as any as { buildingNanoId: string };
-  const { year, month, status, placeId, serviceTypeId, seen, page, take, count } = req.query;
+  const { buildingsNanoId } = req.params as any as { buildingsNanoId: string };
+  const { placesId, serviceTypesId, status, year, month, seen, page, take, count } = req.query;
 
-  let buildingName = '';
+  const buildingName = '';
+
+  const companyIdFilter = Company ? Company.id : undefined;
+
+  const buildingsNanoIdFilter = buildingsNanoId === 'all' ? undefined : buildingsNanoId.split(',');
+  const placeIdFilter =
+    typeof placesId === 'string' && placesId !== '' ? placesId.split(',') : undefined;
+  const serviceTypeIdFilter =
+    typeof serviceTypesId === 'string' && serviceTypesId !== ''
+      ? serviceTypesId.split(',')
+      : undefined;
+  const statusFilter =
+    typeof status === 'string' && status !== ''
+      ? (status.split(',') as TicketStatusName[])
+      : undefined;
 
   const monthFilter = month === '' ? undefined : String(month);
-  const statusFilter = status === '' ? undefined : String(status);
-  const placeIdFilter = placeId === '' ? undefined : String(placeId);
-  const serviceTypeIdFilter = serviceTypeId === '' ? undefined : String(serviceTypeId);
   const seenFilter = seen === '' || seen === undefined ? undefined : seen === 'true';
-  const buildingNanoIdFilter = buildingNanoId === 'all' ? undefined : buildingNanoId;
-  const companyIdFilter = Company ? Company.id : undefined;
 
   const startDate =
     year === ''
@@ -62,18 +74,18 @@ export async function findManyTicketsController(req: Request, res: Response) {
           },
         });
 
-  checkValues([{ label: 'ID da edificação', type: 'string', value: buildingNanoId }]);
+  // checkValues([{ label: 'ID da edificação', type: 'string', value: buildingsNanoIdFilter }]);
 
-  if (buildingNanoIdFilter !== undefined) {
-    await ticketServices.checkAccess({ buildingNanoId });
+  // if (buildingsNanoIdFilter !== undefined) {
+  //   await ticketServices.checkAccess({ buildingsNanoIdFilter });
 
-    buildingName = (await buildingServices.findByNanoId({ buildingNanoId })).name;
-  }
+  //   buildingName = (await buildingServices.findByNanoId({ buildingsNanoIdFilter })).name;
+  // }
 
   const months = getMonths();
 
   const findManyTickets = await ticketServices.findMany({
-    buildingNanoId: buildingNanoIdFilter,
+    buildingNanoId: buildingsNanoIdFilter,
     companyId: companyIdFilter,
     statusName: statusFilter,
     startDate,
