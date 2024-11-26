@@ -1,5 +1,6 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
+import type { MaintenancePriorityName } from '@prisma/client';
 import { Validator } from '../../../../utils/validator/validator';
 import { SharedMaintenanceReportProgressesServices } from '../services/SharedMaintenanceReportProgressesServices';
 import { createMaintenanceHistoryActivityCommentService } from '../../maintenanceHistoryActivities/services';
@@ -13,6 +14,7 @@ export interface IBody {
   maintenanceHistoryId: string;
   cost: number;
   observation: string;
+  maintenancePriorityName: MaintenancePriorityName;
 
   ReportImages: {
     name: string;
@@ -28,7 +30,14 @@ export interface IBody {
 }
 
 export async function sharedCreateReportProgress(req: Request, res: Response) {
-  const { cost, maintenanceHistoryId, observation, ReportAnnexes, ReportImages }: IBody = req.body;
+  const {
+    cost,
+    maintenanceHistoryId,
+    maintenancePriorityName,
+    observation,
+    ReportAnnexes,
+    ReportImages,
+  }: IBody = req.body;
   const { syndicNanoId } = req.query as any as { syndicNanoId: string };
 
   // #region VALIDATIONS
