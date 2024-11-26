@@ -327,7 +327,7 @@ class TicketServices {
           residentName,
           ticketNumber,
           toWhom: 'resident',
-          link: `https://public.easyalert.com.br/guest-ticket/${id}`,
+          link: `${process.env.BASE_CLIENT_URL}/guest-ticket/${id}`,
         });
 
         await sleep(6000);
