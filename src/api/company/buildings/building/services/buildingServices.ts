@@ -497,6 +497,7 @@ export class BuildingServices {
                 source: true,
                 observation: true,
                 ownerCompanyId: true,
+                priorityName: true,
                 FrequencyTimeInterval: {
                   select: {
                     id: true,
