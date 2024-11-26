@@ -33,6 +33,7 @@ export class CategoryServices {
             source: true,
             observation: true,
             ownerCompanyId: true,
+            priorityName: true,
 
             FrequencyTimeInterval: {
               select: {
