@@ -617,7 +617,7 @@ export class EmailTemplates {
               line-height: 40px;
             '
           >
-            Confirmar
+            Acessar
           </a>
 
           <p
