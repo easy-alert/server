@@ -1,8 +1,10 @@
 import { Response, Request } from 'express';
+
 import { findManyMaintenanceHistoryActivitiesService } from '../services';
+import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
+
 import { checkValues } from '../../../../utils/newValidator';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
-import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
 
 export async function findManyMaintenanceHistoryActivitiesController(req: Request, res: Response) {
   const { maintenanceHistoryId } = req.params as any as { maintenanceHistoryId: string };
@@ -16,7 +18,7 @@ export async function findManyMaintenanceHistoryActivitiesController(req: Reques
     maintenanceHistoryId,
   });
 
-  if (!syndicNanoId && !isActivityLogPublic && !req.Company) {
+  if (!isActivityLogPublic && !syndicNanoId && !req.Company) {
     throw new ServerMessage({
       statusCode: 400,
       message: `Você não tem permissão para acessar as atividades.`,
