@@ -202,6 +202,7 @@ export class EmailTransporterServices {
     responsibleName,
     ticketNumber,
     toWhom,
+    link,
   }: ITicketCreated) {
     const sendEmail = {
       from: `Chamado aberto <${process.env.EMAIL_USERNAME}>`,
@@ -213,6 +214,7 @@ export class EmailTransporterServices {
         responsibleName,
         ticketNumber,
         toWhom,
+        link,
       }),
     };
 

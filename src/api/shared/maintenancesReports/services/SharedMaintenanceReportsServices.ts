@@ -111,6 +111,30 @@ export class SharedMaintenanceReportsServices {
         priorityName: true,
         priority: true,
 
+        MaintenanceReportProgress: {
+          select: {
+            id: true,
+            cost: true,
+            observation: true,
+
+            ReportImagesProgress: {
+              select: {
+                name: true,
+                originalName: true,
+                url: true,
+              },
+            },
+
+            ReportAnnexesProgress: {
+              select: {
+                name: true,
+                originalName: true,
+                url: true,
+              },
+            },
+          },
+        },
+
         MaintenanceReport: {
           select: {
             id: true,

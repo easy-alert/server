@@ -56,6 +56,7 @@ export interface ITicketCreated {
   responsibleName?: string;
   ticketNumber: number;
   toWhom: 'resident' | 'responsible';
+  link?: string;
 }
 
 export interface ITicketChangedStatus {

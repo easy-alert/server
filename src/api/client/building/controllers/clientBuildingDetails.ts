@@ -42,9 +42,15 @@ export async function clientBuildingDetails(req: Request, res: Response) {
       // year: String(year),
     });
 
+  const showToResidentTicket = await clientBuildingServices.findShowToResidentTickets({
+    buildingId: building.id,
+  });
+
   // #region PROCESS DATA
 
   const maintenances = [];
+
+  maintenances.push(...showToResidentTicket);
 
   const maintenancesHistoryWithType = MaintenancesHistory.map((maintenance) => ({
     ...maintenance,
@@ -88,7 +94,9 @@ export async function clientBuildingDetails(req: Request, res: Response) {
     }
   }
 
-  const months = clientBuildingServices.separePerMonth({ data: maintenances });
+  const months = clientBuildingServices.separePerMonth({
+    data: maintenances,
+  });
 
   // #region MOUNT FILTER
   let yearsFiltered: string[] = [];
