@@ -30,14 +30,7 @@ export interface IBody {
 }
 
 export async function sharedCreateReportProgress(req: Request, res: Response) {
-  const {
-    cost,
-    maintenanceHistoryId,
-    maintenancePriorityName,
-    observation,
-    ReportAnnexes,
-    ReportImages,
-  }: IBody = req.body;
+  const { cost, maintenanceHistoryId, observation, ReportAnnexes, ReportImages }: IBody = req.body;
   const { syndicNanoId } = req.query as any as { syndicNanoId: string };
 
   // #region VALIDATIONS
