@@ -80,179 +80,89 @@ export class ClientBuildingServices {
     data.forEach((maintenance: any) => {
       let maintenanceDate = null;
 
-      if (maintenance.resolutionDate) maintenanceDate = maintenance.resolutionDate;
-      else maintenanceDate = maintenance.notificationDate;
+      if (maintenance.resolutionDate)
+        maintenanceDate = maintenance.resolutionDate || maintenance.createdAt;
+      else maintenanceDate = maintenance.notificationDate || maintenance.createdAt;
 
       const dateInfos = getDateInfos(maintenanceDate);
+
+      let formattedMaintenance = {};
+
+      if (Object.keys(maintenance).includes('ticketNumber')) {
+        let maintenanceTypes = '';
+
+        maintenance.types.forEach((activityType: any, i: number) => {
+          if (i !== 0)
+            maintenanceTypes = `${maintenanceTypes}, ${activityType.type.label.toLowerCase()}`;
+          else maintenanceTypes = activityType.type.label;
+        });
+
+        formattedMaintenance = {
+          id: maintenance.id,
+          element: `${maintenance.residentName} - ${maintenance.residentApartment}`,
+          activity: maintenanceTypes,
+          status: maintenance.status.name,
+          statusLabel: maintenance.status.label,
+          statusColor: maintenance.status.color,
+          statusBgColor: maintenance.status.backgroundColor,
+          isFuture: false,
+          expectedNotificationDate: '',
+          expectedDueDate: '',
+          dateInfos,
+          type: 'ticket',
+          inProgress: maintenance.status.name === 'awaitingToFinish',
+        };
+      } else {
+        formattedMaintenance = {
+          id: maintenance.id,
+          element: maintenance.Maintenance.element,
+          activity: maintenance.Maintenance.activity,
+          status: maintenance.MaintenancesStatus.name,
+          isFuture: maintenance.isFuture ?? false,
+          expectedNotificationDate: maintenance.expectedNotificationDate,
+          expectedDueDate: maintenance.expectedDueDate,
+          dateInfos,
+          type: maintenance.type ?? null,
+          inProgress: maintenance.inProgress ?? false,
+        };
+      }
+
       switch (maintenanceDate.getMonth()) {
         case 0:
-          months[0].dates.push({
-            id: maintenance.id,
-            element: maintenance.Maintenance.element,
-            activity: maintenance.Maintenance.activity,
-            status: maintenance.MaintenancesStatus.name,
-            isFuture: maintenance.isFuture ?? false,
-            expectedNotificationDate: maintenance.expectedNotificationDate,
-            expectedDueDate: maintenance.expectedDueDate,
-            dateInfos,
-            type: maintenance.type ?? null,
-            inProgress: maintenance.inProgress,
-          });
+          months[0].dates.push(formattedMaintenance);
           break;
-
         case 1:
-          months[1].dates.push({
-            id: maintenance.id,
-            element: maintenance.Maintenance.element,
-            activity: maintenance.Maintenance.activity,
-            status: maintenance.MaintenancesStatus.name,
-            isFuture: maintenance.isFuture ?? false,
-            expectedNotificationDate: maintenance.expectedNotificationDate,
-            expectedDueDate: maintenance.expectedDueDate,
-            dateInfos,
-            type: maintenance.type ?? null,
-            inProgress: maintenance.inProgress,
-          });
+          months[1].dates.push(formattedMaintenance);
           break;
         case 2:
-          months[2].dates.push({
-            id: maintenance.id,
-            element: maintenance.Maintenance.element,
-            activity: maintenance.Maintenance.activity,
-            status: maintenance.MaintenancesStatus.name,
-            isFuture: maintenance.isFuture ?? false,
-            expectedNotificationDate: maintenance.expectedNotificationDate,
-            expectedDueDate: maintenance.expectedDueDate,
-            dateInfos,
-            type: maintenance.type ?? null,
-            inProgress: maintenance.inProgress,
-          });
+          months[2].dates.push(formattedMaintenance);
           break;
         case 3:
-          months[3].dates.push({
-            id: maintenance.id,
-            element: maintenance.Maintenance.element,
-            activity: maintenance.Maintenance.activity,
-            status: maintenance.MaintenancesStatus.name,
-            isFuture: maintenance.isFuture ?? false,
-            expectedNotificationDate: maintenance.expectedNotificationDate,
-            expectedDueDate: maintenance.expectedDueDate,
-            dateInfos,
-            type: maintenance.type ?? null,
-            inProgress: maintenance.inProgress,
-          });
+          months[3].dates.push(formattedMaintenance);
           break;
         case 4:
-          months[4].dates.push({
-            id: maintenance.id,
-            element: maintenance.Maintenance.element,
-            activity: maintenance.Maintenance.activity,
-            status: maintenance.MaintenancesStatus.name,
-            isFuture: maintenance.isFuture ?? false,
-            expectedNotificationDate: maintenance.expectedNotificationDate,
-            expectedDueDate: maintenance.expectedDueDate,
-            dateInfos,
-            type: maintenance.type ?? null,
-            inProgress: maintenance.inProgress,
-          });
+          months[4].dates.push(formattedMaintenance);
           break;
         case 5:
-          months[5].dates.push({
-            id: maintenance.id,
-            element: maintenance.Maintenance.element,
-            activity: maintenance.Maintenance.activity,
-            status: maintenance.MaintenancesStatus.name,
-            isFuture: maintenance.isFuture ?? false,
-            expectedNotificationDate: maintenance.expectedNotificationDate,
-            expectedDueDate: maintenance.expectedDueDate,
-            dateInfos,
-            type: maintenance.type ?? null,
-            inProgress: maintenance.inProgress,
-          });
+          months[5].dates.push(formattedMaintenance);
           break;
         case 6:
-          months[6].dates.push({
-            id: maintenance.id,
-            element: maintenance.Maintenance.element,
-            activity: maintenance.Maintenance.activity,
-            status: maintenance.MaintenancesStatus.name,
-            isFuture: maintenance.isFuture ?? false,
-            expectedNotificationDate: maintenance.expectedNotificationDate,
-            expectedDueDate: maintenance.expectedDueDate,
-            dateInfos,
-            type: maintenance.type ?? null,
-            inProgress: maintenance.inProgress,
-          });
+          months[6].dates.push(formattedMaintenance);
           break;
         case 7:
-          months[7].dates.push({
-            id: maintenance.id,
-            element: maintenance.Maintenance.element,
-            activity: maintenance.Maintenance.activity,
-            status: maintenance.MaintenancesStatus.name,
-            isFuture: maintenance.isFuture ?? false,
-            expectedNotificationDate: maintenance.expectedNotificationDate,
-            expectedDueDate: maintenance.expectedDueDate,
-            dateInfos,
-            type: maintenance.type ?? null,
-            inProgress: maintenance.inProgress,
-          });
+          months[7].dates.push(formattedMaintenance);
           break;
         case 8:
-          months[8].dates.push({
-            id: maintenance.id,
-            element: maintenance.Maintenance.element,
-            activity: maintenance.Maintenance.activity,
-            status: maintenance.MaintenancesStatus.name,
-            isFuture: maintenance.isFuture ?? false,
-            expectedNotificationDate: maintenance.expectedNotificationDate,
-            expectedDueDate: maintenance.expectedDueDate,
-            dateInfos,
-            type: maintenance.type ?? null,
-            inProgress: maintenance.inProgress,
-          });
+          months[8].dates.push(formattedMaintenance);
           break;
         case 9:
-          months[9].dates.push({
-            id: maintenance.id,
-            element: maintenance.Maintenance.element,
-            activity: maintenance.Maintenance.activity,
-            status: maintenance.MaintenancesStatus.name,
-            isFuture: maintenance.isFuture ?? false,
-            expectedNotificationDate: maintenance.expectedNotificationDate,
-            expectedDueDate: maintenance.expectedDueDate,
-            dateInfos,
-            type: maintenance.type ?? null,
-            inProgress: maintenance.inProgress,
-          });
+          months[9].dates.push(formattedMaintenance);
           break;
         case 10:
-          months[10].dates.push({
-            id: maintenance.id,
-            element: maintenance.Maintenance.element,
-            activity: maintenance.Maintenance.activity,
-            status: maintenance.MaintenancesStatus.name,
-            isFuture: maintenance.isFuture ?? false,
-            expectedNotificationDate: maintenance.expectedNotificationDate,
-            expectedDueDate: maintenance.expectedDueDate,
-            dateInfos,
-            type: maintenance.type ?? null,
-            inProgress: maintenance.inProgress,
-          });
+          months[10].dates.push(formattedMaintenance);
           break;
         case 11:
-          months[11].dates.push({
-            id: maintenance.id,
-            element: maintenance.Maintenance.element,
-            activity: maintenance.Maintenance.activity,
-            status: maintenance.MaintenancesStatus.name,
-            isFuture: maintenance.isFuture ?? false,
-            expectedNotificationDate: maintenance.expectedNotificationDate,
-            expectedDueDate: maintenance.expectedDueDate,
-            dateInfos,
-            type: maintenance.type ?? null,
-            inProgress: maintenance.inProgress,
-          });
+          months[11].dates.push(formattedMaintenance);
           break;
 
         default:
@@ -1033,5 +943,25 @@ export class ClientBuildingServices {
     validator.needExist([{ label: 'Anexos', variable: Annexes }]);
 
     return Annexes;
+  }
+
+  async findShowToResidentTickets({ buildingId }: { buildingId: string }) {
+    const showToResidentTicket = await prisma.ticket.findMany({
+      include: {
+        status: true,
+        place: true,
+        types: {
+          select: {
+            type: true,
+          },
+        },
+      },
+      where: {
+        buildingId,
+        showToResident: true,
+      },
+    });
+
+    return showToResidentTicket;
   }
 }
