@@ -10,6 +10,7 @@ import { createTicketController } from '../../shared/tickets/controllers/createT
 import { updateTicketById } from '../../shared/tickets/controllers/updateTicketById';
 import { findAllTicketPlaces } from '../../shared/ticketPlaces/controllers/findAllTicketPlaces';
 import { findAllStatus } from '../../shared/ticketStatus/controllers/findAllStatus';
+import { createTicketReportPDF } from '../reports/controllers/createTicketReportPDF';
 
 export const ticketRouter: Router = Router();
 
@@ -24,6 +25,8 @@ ticketRouter.get('/places/:placeId', findAllTicketPlaces);
 ticketRouter.get('/status/:statusId', findAllStatus);
 
 ticketRouter.get('/buildings/:buildingsNanoId', findManyTicketsController);
+
+ticketRouter.post('/report/pdf', createTicketReportPDF);
 
 ticketRouter.get('/extras/auxiliary-data', findTicketsAuxiliaryDataController);
 ticketRouter.get(
