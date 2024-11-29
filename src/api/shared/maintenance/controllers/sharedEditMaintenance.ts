@@ -119,8 +119,6 @@ export async function sharedEditMaintenance({
     priorityName,
   });
 
-  console.log('🚀 ~ maintenance:', maintenance);
-
   return {
     ...maintenance,
     FrequencyTimeInterval: frequencyData,
