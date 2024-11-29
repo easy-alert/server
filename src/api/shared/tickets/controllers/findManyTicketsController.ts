@@ -7,7 +7,7 @@ import { buildingServices } from '../../../company/buildings/building/services/b
 import getMonths from '../../../../utils/constants/months';
 import { changeUTCTime } from '../../../../utils/dateTime';
 
-export async function findManyTicketsController(req: Request, res: Response, raw = false) {
+export async function findManyTicketsController(req: Request, res: Response) {
   const { Company } = req;
   const { buildingsNanoId } = req.params as any as { buildingsNanoId: string };
   const {
@@ -81,10 +81,6 @@ export async function findManyTicketsController(req: Request, res: Response, raw
       buildingName,
       ticketsCount: findManyTickets.tickets.length,
     });
-  }
-
-  if (raw) {
-    return { buildingName, tickets: findManyTickets.tickets, filterOptions };
   }
 
   return res.status(200).json({ buildingName, tickets: findManyTickets.tickets, filterOptions });
