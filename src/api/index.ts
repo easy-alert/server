@@ -11,6 +11,7 @@ import { externalRouter } from './external/external.routes';
 
 import { findOldBuildingId } from './company/buildings/building/controllers';
 import { scriptRouter } from '../utils/scripts/scripts.routes';
+import { mobileRoutes } from './mobile/mobile.routes';
 
 // ROUTES
 export const routes: Router = Router();
@@ -20,6 +21,7 @@ routes.use('/company', companyRouter);
 routes.use('/client', clientRouter);
 routes.use('/external', externalRouter);
 routes.use('/scripts', scriptRouter);
+routes.use('/mobile', mobileRoutes);
 
 // URL FOR REDIRECT USER TO NEW CLIENT
 routes.use('/integration/docs', swaggerUi.serve, (_req: any, res: any) => {
