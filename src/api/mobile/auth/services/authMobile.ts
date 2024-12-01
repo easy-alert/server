@@ -2,39 +2,29 @@ import { prisma } from '../../../../../prisma';
 
 export class AuthMobile {
   async listBuildings({ phoneNumber }: { phoneNumber: string }) {
-    const buildings = await prisma.building.findMany({
+    const buildings = await prisma.buildingNotificationConfiguration.findMany({
       where: {
-        NotificationsConfigurations: {
-          some: {
-            contactNumber: phoneNumber,
-          },
-        },
+        contactNumber: phoneNumber, 
       },
       select: {
         nanoId: true,
-        name: true,
-        NotificationsConfigurations: {
+        contactNumber: true,
+        email: true,
+        Building: {
           select: {
             nanoId: true,
-            contactNumber: true,
-            email: true,
+            name: true,
           },
         },
       },
     });
 
-    // Mapeia os dados no formato desejado
-    return buildings.flatMap((building: any) =>
-      building.NotificationsConfigurations.map(
-        (config: { nanoId: string; contactNumber: string; email: string }) => ({
-          buildingNanoId: building.nanoId,
-          buildingName: building.name,
-          syndicNanoId: config.nanoId,
-          contactNumber: config.contactNumber,
-          email: config.email,
-        }),
-      ),
-    );
+    return buildings.map((building: any) => ({
+      syndicNanoId: building.nanoId,
+      contactNumber: building.contactNumber,
+      email: building.email,
+      buildingNanoId: building.Building?.nanoId,
+      buildingName: building.Building?.name,
+    }));
   }
 }
-
