@@ -2,10 +2,23 @@ import { Request, Response } from 'express';
 
 import { findFirstTicketReportPDF } from '../services/findFirstTicketReportPDF';
 import { findManyTicketsForReportPDF } from '../services/findManyTicketsForReportPDF';
+import { createTicketReportPDF } from '../services/createTicketReportPDF';
 
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { handleTicketsFilters } from '../../../../utils/filters/handleTicketsFilters';
-import { createTicketReportPDF } from '../services/createTicketReportPDF';
+import {
+  dateFormatter,
+  setToUTCLastMinuteOfDay,
+  setToUTCMidnight,
+} from '../../../../utils/dateTime';
+
+export interface IFilterOptions {
+  buildingsNames: string;
+  placesNames: string;
+  serviceTypesNames: string;
+  statusNames: string;
+  interval: string;
+}
 
 export async function generateTicketReportPDF(req: Request, res: Response) {
   const previousTicket = await findFirstTicketReportPDF({ userId: req.userId, orderBy: 'desc' });
@@ -19,9 +32,13 @@ export async function generateTicketReportPDF(req: Request, res: Response) {
 
   const {
     buildingsNanoId,
+    buildingsNames,
     placesId,
+    placesNames,
     serviceTypesId,
+    serviceTypesNames,
     status,
+    statusNames,
     startDate,
     endDate,
     seen,
@@ -76,12 +93,22 @@ export async function generateTicketReportPDF(req: Request, res: Response) {
     });
   }
 
-  const createTicketReportPDFResponse = await createTicketReportPDF({
+  const formattedStartDate = dateFormatter(setToUTCMidnight(startDate));
+  const formattedEndDate = dateFormatter(setToUTCLastMinuteOfDay(endDate));
+
+  const filterOptions: IFilterOptions = {
+    buildingsNames,
+    placesNames,
+    serviceTypesNames,
+    statusNames,
+    interval: `De ${formattedStartDate} a ${formattedEndDate}`,
+  };
+
+  await createTicketReportPDF({
     userId: req.userId,
     companyId: req.Company.id,
     dataForPDF,
-    startDate,
-    endDate,
+    filterOptions,
   });
 
   return res.status(200).json({ ServerMessage: { message: 'Geração de PDF em andamento.' } });
