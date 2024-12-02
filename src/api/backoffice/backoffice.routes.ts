@@ -15,6 +15,7 @@ import { maintenanceRouter } from './categories/maintenance/maintenance.routes';
 import { companyRouter } from './users/accounts/company.routes';
 import { listTimeIntervals } from '../shared/timeInterval/controllers/listTimeIntervals';
 import { findAllMaintenancePriority } from '../shared/maintenancePriority/controllers/findAllMaintenancePriority';
+import { tutorialsRoutes } from './tutorials/tutorials.routes';
 
 // ROUTES
 export const backofficeRouter: Router = Router();
@@ -35,3 +36,5 @@ backofficeRouter.use('/companies', authMiddleware, isBackoffice, companyRouter);
 backofficeRouter.get('/timeinterval/list', listTimeIntervals);
 
 backofficeRouter.get('/maintenancePriority', findAllMaintenancePriority);
+
+backofficeRouter.use('/tutorials', authMiddleware, isBackoffice, tutorialsRoutes);
