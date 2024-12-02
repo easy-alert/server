@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 
-import { v4 as uuidv4 } from 'uuid';
 import PDFPrinter from 'pdfmake';
 import sharp from 'sharp';
 
@@ -10,20 +9,22 @@ import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3
 import type { Readable } from 'stream';
 import type { Content, TDocumentDefinitions } from 'pdfmake/interfaces';
 
-import { dateFormatter, formatMonthYear } from '../../../../utils/dateTime';
-import { sendErrorToServerLog } from '../../../../utils/messages/sendErrorToServerLog';
+import { updateTicketReportPDF } from './updateTicketReportPDF';
 
-import type { IDataForPDF } from './createTicketReportPDF';
 import { simplifyNameForURL } from '../../../../utils/dataHandler';
 import { createFolder } from '../../../../utils/fs/createFolder';
 import { deleteFolder } from '../../../../utils/fs/deleteFolder';
-import { updateTicketReportPDF } from './updateTicketReportPDF';
+import { formatMonthYear } from '../../../../utils/dateTime';
+import { sendErrorToServerLog } from '../../../../utils/messages/sendErrorToServerLog';
+
+import type { IDataForPDF } from './createTicketReportPDF';
+import type { IFilterOptions } from '../controllers/generateTicketReportPDF';
 
 interface ITicketPDFService {
   reportId: string;
-  reportName: string;
   companyImage?: string;
   dataForPDF: IDataForPDF;
+  filterOptions: IFilterOptions;
 }
 
 function capitalizeFirstLetter(string: string): string {
@@ -156,11 +157,10 @@ function separateByMonth(tickets: IDataForPDF['tickets']) {
 
 export async function ticketPDFService({
   reportId,
-  reportName,
   companyImage,
   dataForPDF,
+  filterOptions,
 }: ITicketPDFService) {
-  const pdfId = uuidv4().substring(0, 10);
   const folderName = `Folder-${Date.now()}`;
 
   try {
@@ -267,15 +267,15 @@ export async function ticketPDFService({
 
     contentData.push(countData);
 
-    ticketsForPdf.forEach(async ({ data, month }, monthIndex) => {
+    for (const { data, month } of ticketsForPdf) {
       contentData.push({
         text: month,
         fontSize: 14,
-        marginTop: monthIndex > 0 ? 8 : 0,
+        marginTop: contentData.length > 0 ? 8 : 0,
         marginBottom: 4,
       });
 
-      data.forEach(async (ticket, dataIndex) => {
+      for (const ticket of data) {
         const {
           createdAt,
           description,
@@ -289,18 +289,25 @@ export async function ticketPDFService({
           residentApartment,
         } = ticket;
 
-        if (dataIndex >= 1) {
+        if (contentData.length > 0) {
           contentData.push({ text: ' ' });
         }
 
         const imagesForPDF: Content = [];
 
-        images.forEach(async ({ name, url }, imageIndex) => {
-          imagesForPDF.push({
-            text: `${name}${images.length === imageIndex + 1 ? '.' : ', '}`,
-            link: url,
-          });
-        });
+        await Promise.all(
+          images.slice(0, 4).map(async ({ url }) => {
+            const imageStream = await getImageStreamFromS3(url);
+            const base64Image = await processImageToBase64(imageStream);
+
+            imagesForPDF.push({
+              image: base64Image,
+              width: 50,
+              height: 50,
+              link: url,
+            });
+          }),
+        );
 
         const tags: Content = [];
 
@@ -352,7 +359,7 @@ export async function ticketPDFService({
             },
             {
               table: {
-                widths: [1, '*', '*', '*'],
+                widths: [1, '*', 'auto', '*'],
                 body: [
                   [
                     {
@@ -413,8 +420,9 @@ export async function ticketPDFService({
                       marginLeft: 8,
                     },
                     {
-                      stack: imagesForPDF,
+                      columns: imagesForPDF,
                       marginLeft: 8,
+                      columnGap: 8,
                     },
                   ],
                   [
@@ -441,8 +449,8 @@ export async function ticketPDFService({
           ],
           unbreakable: true,
         });
-      });
-    });
+      }
+    }
 
     const docDefinitions: TDocumentDefinitions = {
       pageOrientation: 'landscape',
@@ -479,11 +487,27 @@ export async function ticketPDFService({
             { text: ' ', width: 8 },
             [
               {
-                text: [{ text: 'Edificação:', bold: true }, { text: ' ' }, { text: 'Todas' }],
+                text: [
+                  { text: 'Edificação:', bold: true },
+                  { text: ' ' },
+                  { text: filterOptions.buildingsNames },
+                ],
                 fontSize: 12,
               },
               {
-                text: [{ text: 'Categoria:', bold: true }, { text: ' ' }, { text: 'Todas' }],
+                text: [
+                  { text: 'Local:', bold: true },
+                  { text: ' ' },
+                  { text: filterOptions.placesNames },
+                ],
+                fontSize: 12,
+              },
+              {
+                text: [
+                  { text: 'Tipo de serviço:', bold: true },
+                  { text: ' ' },
+                  { text: filterOptions.serviceTypesNames },
+                ],
                 fontSize: 12,
               },
               {
@@ -491,20 +515,7 @@ export async function ticketPDFService({
                   { text: 'Status:', bold: true },
                   { text: ' ' },
                   {
-                    text: 'Todos',
-                  },
-                ],
-                fontSize: 12,
-              },
-              {
-                text: [
-                  {
-                    text: 'Período:',
-                    bold: true,
-                  },
-                  { text: ' ' },
-                  {
-                    text: reportName,
+                    text: filterOptions.statusNames,
                   },
                 ],
                 fontSize: 12,
@@ -516,7 +527,21 @@ export async function ticketPDFService({
                   { text: 'ID:', bold: true },
                   { text: ' ' },
                   {
-                    text: pdfId,
+                    text: reportId,
+                  },
+                ],
+                alignment: 'right',
+                fontSize: 12,
+              },
+              {
+                text: [
+                  {
+                    text: 'Período:',
+                    bold: true,
+                  },
+                  { text: ' ' },
+                  {
+                    text: filterOptions.interval,
                   },
                 ],
                 alignment: 'right',
