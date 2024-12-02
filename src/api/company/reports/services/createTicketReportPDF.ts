@@ -3,15 +3,15 @@ import type {
   TicketHistoryActivities,
   TicketImage,
   TicketPlace,
-  TicketServiceType,
   TicketStatus,
 } from '@prisma/client';
 import { prisma } from '../../../../../prisma';
 
 import { ticketPDFService } from './ticketPDFService';
 
-import { dateFormatter } from '../../../../utils/dateTime';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
+
+import type { IFilterOptions } from '../controllers/generateTicketReportPDF';
 
 export interface IDataForPDF {
   tickets: (Ticket & {
@@ -39,46 +39,23 @@ interface ICreateTicketReportPDF {
   userId: string;
   companyId: string;
   dataForPDF: IDataForPDF;
-  startDate?: string;
-  endDate?: string;
+  filterOptions: IFilterOptions;
 }
 
 export async function createTicketReportPDF({
   userId,
   companyId,
   dataForPDF,
-  startDate,
-  endDate,
+  filterOptions,
 }: ICreateTicketReportPDF) {
-  const formattedStartDate = dateFormatter(startDate);
-  const formattedEndDate = dateFormatter(endDate);
-
-  let reportName = '';
-
-  if (formattedStartDate && formattedEndDate) {
-    reportName = `Período de notificação de ${formattedStartDate} a ${formattedEndDate}`;
-  }
-
-  if (formattedStartDate && !formattedEndDate) {
-    reportName = `Período de notificação desde ${formattedStartDate}`;
-  }
-
-  if (!formattedStartDate && formattedEndDate) {
-    reportName = `Período de notificação até ${formattedEndDate}`;
-  }
-
-  if (!formattedStartDate && !formattedEndDate) {
-    reportName = 'Relatório geral de tickets';
-  }
-
   const company = await prisma.company.findUnique({
     where: { id: companyId },
     select: { image: true },
   });
 
-  const { id, name } = await prisma.ticketReportPDF.create({
+  const { id } = await prisma.ticketReportPDF.create({
     data: {
-      name: reportName,
+      name: filterOptions.interval,
       authorId: userId,
       authorCompanyId: companyId,
     },
@@ -91,7 +68,10 @@ export async function createTicketReportPDF({
     });
   }
 
-  ticketPDFService({ reportId: id, reportName: name, companyImage: company?.image, dataForPDF });
-
-  return { id };
+  ticketPDFService({
+    reportId: id,
+    companyImage: company?.image,
+    dataForPDF,
+    filterOptions,
+  });
 }
