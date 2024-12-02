@@ -4,21 +4,32 @@ import type { TicketStatusName } from '@prisma/client';
 
 import { ticketServices } from '../services/ticketServices';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
-import { checkValues } from '../../../../utils/newValidator';
 import getMonths from '../../../../utils/constants/months';
 import { changeUTCTime } from '../../../../utils/dateTime';
 
 export async function findManyTicketsController(req: Request, res: Response) {
   const { Company } = req;
   const { buildingsNanoId } = req.params as any as { buildingsNanoId: string };
-  const { placesId, serviceTypesId, status, startDate, endDate, seen, page, take, count } =
-    req.query;
+  const {
+    buildingsNanoIdBody,
+    placesId,
+    serviceTypesId,
+    status,
+    startDate,
+    endDate,
+    seen,
+    page,
+    take,
+    count,
+  } = req.query;
 
+  const buildingsIds = buildingsNanoId ?? buildingsNanoIdBody;
   let buildingName = '';
 
   const companyIdFilter = Company ? Company.id : undefined;
 
-  const buildingsNanoIdFilter = buildingsNanoId === 'all' ? undefined : buildingsNanoId.split(',');
+  const buildingsNanoIdFilter =
+    buildingsIds === 'all' || !buildingsIds ? undefined : buildingsIds.split(',');
   const placeIdFilter =
     typeof placesId === 'string' && placesId !== '' ? placesId.split(',') : undefined;
   const serviceTypeIdFilter =
@@ -38,8 +49,6 @@ export async function findManyTicketsController(req: Request, res: Response) {
   const endDateFilter = endDate
     ? changeUTCTime(new Date(String(endDate)), 23, 59, 59, 999)
     : undefined;
-
-  checkValues([{ label: 'ID da edificação', type: 'string', value: buildingsNanoId }]);
 
   if (buildingsNanoIdFilter?.length === 1 && buildingsNanoId !== 'all') {
     await ticketServices.checkAccess({ buildingNanoId: buildingsNanoId });

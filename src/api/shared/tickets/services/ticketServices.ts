@@ -172,7 +172,7 @@ class TicketServices {
           },
         },
 
-        orderBy: [{ status: { label: 'asc' } }, { createdAt: 'asc' }],
+        orderBy: [{ createdAt: 'asc' }, { status: { label: 'asc' } }],
       }),
 
       prisma.ticket.findMany({

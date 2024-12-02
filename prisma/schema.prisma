@@ -34,9 +34,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Permissions UserPermissions[]
-  Companies   UserCompanies[]
-  reportPdfs  MaintenanceReportPdf[]
+  Permissions     UserPermissions[]
+  Companies       UserCompanies[]
+  reportPdfs      MaintenanceReportPdf[]
+  TicketReportPDF TicketReportPDF[]
 
   @@map("users")
 }
@@ -113,6 +114,7 @@ model Company {
   MaintenancesHistory MaintenanceHistory[]
   suppliers           Supplier[]
   reportPdfs          MaintenanceReportPdf[]
+  TicketReportPDF     TicketReportPDF[]
 
   @@map("companies")
 }
@@ -830,7 +832,7 @@ model ChecklistDetailImage {
   @@map("checklistDetailImages")
 }
 
-// TICKETS
+// region TICKETS
 model Ticket {
   id String @id @default(uuid())
 
@@ -979,6 +981,30 @@ model TicketHistoryActivityImages {
   activity TicketHistoryActivities @relation(fields: [activityId], references: [id], onDelete: Cascade)
 
   @@map("ticketHistoryActivityImages")
+}
+
+enum ReportPDFStatusName {
+  pending
+  finished
+  failed
+}
+
+model TicketReportPDF {
+  id String @id @default(uuid())
+
+  name            String
+  url             String?
+  authorId        String
+  authorCompanyId String
+  status          ReportPDFStatusName @default(pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author        User    @relation(fields: [authorId], references: [id])
+  authorCompany Company @relation(fields: [authorCompanyId], references: [id])
+
+  @@map("ticketReportPdfs")
 }
 
 model ServiceType {
