@@ -13,4 +13,3 @@ mobileRoutes.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
 });
 
 mobileRoutes.get('/auth', listBuildingsFromResponsible);
-

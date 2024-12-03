@@ -443,7 +443,6 @@ async function PDFService({
         table: {
           widths: ['auto', 'auto', 'auto', '*'],
           body: [
-            [{ text: '' }, { text: '' }, { text: '' }, { text: '' }],
             [
               {
                 text: counts.completed,
@@ -480,16 +479,18 @@ async function PDFService({
               },
               { text: '' },
             ],
-            [{ text: '' }, { text: '' }, { text: '' }, { text: '' }],
           ],
         },
         layout: 'noBorders',
-        marginTop: 24,
+        marginTop: 0,
         marginLeft: 40,
+        marginBottom: 20,
         unbreakable: true,
         fillColor: '#E6E6E6',
       },
     ];
+
+    contentData.push(countData);
 
     for (let i = 0; i < maintenancesForPDF.length; i++) {
       const { data, month } = maintenancesForPDF[i];
@@ -829,7 +830,6 @@ async function PDFService({
       }
     }
 
-    contentData.push(countData);
     const docDefinitions: TDocumentDefinitions = {
       pageOrientation: 'landscape',
       defaultStyle: { font: 'Arial', lineHeight: 1.1, fontSize: 10 },

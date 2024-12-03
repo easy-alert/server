@@ -271,6 +271,7 @@ export class BuildingServices {
           name: true,
           neighborhood: true,
           city: true,
+          nanoId: true,
 
           MaintenancesHistory: {
             select: {

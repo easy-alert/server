@@ -92,6 +92,7 @@ export async function listBuilding(req: Request, res: Response) {
 
     Buildings[i] = {
       id: Buildings[i].id,
+      nanoId: Buildings[i].nanoId,
       name: Buildings[i].name,
       city: Buildings[i].city,
       neighborhood: Buildings[i].neighborhood,
