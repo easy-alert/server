@@ -8,7 +8,7 @@ import swaggerFile from '../../docs/companyDocs.json';
 import { authMiddleware } from '../../middlewares/auth';
 import { uploadRouter } from '../shared/upload/upload.routes';
 
-// CHIELD ROUTES
+// CHILD ROUTES
 import { authRouter } from './auth/auth.routes';
 import { isCompany } from '../../middlewares/permissions/isCompany';
 import { accountRouter } from './account/account.routes';
@@ -32,6 +32,7 @@ import { ticketHistoryActivitiesRouter } from './ticketHistoryActivities/ticketH
 import { ticketDismissReasonsRouter } from './ticketDismissReasons/ticketDismissReasons.routes';
 import { findManyServiceTypes } from '../shared/serviceTypes/controllers/findManyServiceTypes';
 import { findAllMaintenancePriority } from '../shared/maintenancePriority/controllers/findAllMaintenancePriority';
+import { tutorialsRouter } from './tutorials/tutorials.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -98,3 +99,5 @@ companyRouter.use('/ticketDismissReasons', authMiddleware, isCompany, ticketDism
 companyRouter.get('/serviceTypes', authMiddleware, isCompany, findManyServiceTypes);
 
 companyRouter.get('/priority', authMiddleware, isCompany, findAllMaintenancePriority);
+
+companyRouter.use('/tutorials', authMiddleware, isCompany, tutorialsRouter);

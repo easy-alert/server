@@ -1114,3 +1114,21 @@ model MaintenanceReportPdf {
 
   @@map("maintenanceReportPdfs")
 }
+
+// YouTube tutorials
+model Tutorial {
+  id String @id @default(uuid())
+
+  title String
+  url   String
+  type  String
+  order Int
+
+  description String?
+  thumbnail   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tutorials")
+}
