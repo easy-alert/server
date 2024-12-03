@@ -4,7 +4,7 @@ export class AuthMobile {
   async listBuildings({ phoneNumber }: { phoneNumber: string }) {
     const buildings = await prisma.buildingNotificationConfiguration.findMany({
       where: {
-        contactNumber: phoneNumber, 
+        contactNumber: phoneNumber,
       },
       select: {
         nanoId: true,
