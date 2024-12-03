@@ -2,11 +2,15 @@
 import { Router } from 'express';
 
 // CONTROLLERS
-import { getTutorials } from './controllers/getTutorials';
-import { postTutorial } from './controllers/postTutorial';
+import { getTutorials } from '../../shared/tutorials/controllers/getTutorials';
+import { postTutorial } from '../../shared/tutorials/controllers/postTutorial';
+import { putTutorial } from '../../shared/tutorials/controllers/putTutorial';
+import { deleteTutorial } from '../../shared/tutorials/controllers/deleteTutorial';
 
 // ROUTES
-export const tutorialsRoutes = Router();
+export const tutorialsRouter = Router();
 
-tutorialsRoutes.get('/', getTutorials);
-tutorialsRoutes.post('/', postTutorial);
+tutorialsRouter.get('/', getTutorials);
+tutorialsRouter.post('/', postTutorial);
+tutorialsRouter.put('/:id', putTutorial);
+tutorialsRouter.delete('/:id', deleteTutorial);
