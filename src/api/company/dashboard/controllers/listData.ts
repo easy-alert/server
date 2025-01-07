@@ -18,7 +18,7 @@ interface ISeries {
 export interface IDashboardFilter {
   buildings: { in: string[] } | undefined;
   categories: { in: string[] } | undefined;
-  responsibles: IResponsible | undefined;
+  responsible: IResponsible | undefined;
   period: { gte: Date; lte: Date };
   companyId: string;
 }
@@ -76,7 +76,7 @@ export async function listData(req: Request, res: Response) {
             in: JSON.parse(String(categories)),
           }
         : undefined,
-    responsibles:
+    responsible:
       responsibles && JSON.parse(String(responsibles))?.length > 0
         ? {
             some: {
