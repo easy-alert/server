@@ -1,9 +1,23 @@
+interface IResponsible {
+  some: {
+    name: { in: string[] };
+  };
+}
+
 interface IHandleDashboardFilter {
   buildings: string | string[];
   categories: string | string[];
   responsible: string | string[];
   startDate: Date;
   endDate: Date;
+  companyId: string;
+}
+
+export interface IDashboardFilter {
+  buildings: { in: string[] } | undefined;
+  categories: { in: string[] } | undefined;
+  responsible: IResponsible | undefined;
+  period: { gte: Date; lte: Date };
   companyId: string;
 }
 
@@ -14,7 +28,6 @@ export function handleDashboardFilter({
   startDate,
   endDate,
   companyId,
-  maintenanceType,
 }: IHandleDashboardFilter) {
   const dashboardFilter = {
     period: { lte: endDate, gte: startDate },
@@ -42,5 +55,5 @@ export function handleDashboardFilter({
     companyId,
   };
 
-  return dashboardFilter;
+  return dashboardFilter as IDashboardFilter;
 }
