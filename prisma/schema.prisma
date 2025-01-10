@@ -43,11 +43,13 @@ model User {
 }
 
 model UserPermissions {
-  id           String   @id @unique @default(uuid())
+  id String @id @unique @default(uuid())
+
   userId       String
   permissionId String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   User       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   Permission Permission @relation(fields: [permissionId], references: [id])
@@ -72,8 +74,12 @@ model UserCompanies {
 }
 
 model Permission {
-  id        String   @id @unique @default(uuid())
-  name      String   @unique
+  id String @id @unique @default(uuid())
+
+  name       String @unique
+  label      String @unique
+  moduleName String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
