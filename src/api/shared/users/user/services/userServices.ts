@@ -70,7 +70,6 @@ export class UserServices {
   // #endregion
 
   // #region find
-
   async findByEmail({ email }: { email: string }) {
     const user = await prisma.user.findUnique({
       select: {
@@ -141,6 +140,8 @@ export class UserServices {
         email: true,
 
         isBlocked: true,
+
+        lastAccess: true,
         updatedAt: true,
         createdAt: true,
       },
