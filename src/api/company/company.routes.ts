@@ -33,6 +33,7 @@ import { ticketDismissReasonsRouter } from './ticketDismissReasons/ticketDismiss
 import { findManyServiceTypes } from '../shared/serviceTypes/controllers/findManyServiceTypes';
 import { findAllMaintenancePriority } from '../shared/maintenancePriority/controllers/findAllMaintenancePriority';
 import { tutorialsRouter } from './tutorials/tutorials.routes';
+import { usersRouter } from './users/users.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -59,6 +60,8 @@ companyRouter.get('/timeinterval/list', listTimeIntervals);
 companyRouter.use('/upload', uploadRouter);
 
 companyRouter.use('/account', authMiddleware, isCompany, accountRouter);
+
+companyRouter.use('/users', authMiddleware, isCompany, usersRouter);
 
 companyRouter.use('/categories', authMiddleware, isCompany, categoryRouter);
 
