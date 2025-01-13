@@ -21,14 +21,17 @@ export class PermissionServices {
     return permission;
   }
 
-  async checkPermission({ UserPermissions, permission }: ICheckPermission) {
-    let isPermited = false;
+  async checkPermission({ UserPermissions, permissions }: ICheckPermission) {
+    let isPermitted = false;
 
-    for (const element of UserPermissions) {
-      if (element.Permission.name === permission) isPermited = true;
+    for (const permission of permissions) {
+      if (UserPermissions.some((userPermission) => userPermission.Permission.name === permission)) {
+        isPermitted = true;
+        break;
+      }
     }
 
-    if (!isPermited) {
+    if (!isPermitted) {
       throw new ServerMessage({
         statusCode: 400,
         message: 'Você não possui permissão de acesso.',

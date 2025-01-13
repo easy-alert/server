@@ -28,7 +28,7 @@ export const authBackoffice = async (req: Request, res: Response) => {
 
   await permissionServices.checkPermission({
     UserPermissions: user.Permissions,
-    permission: 'Backoffice',
+    permissions: ['admin:backoffice', 'access:backoffice'],
   });
 
   await userServices.updateLastAccess({ userId: user.id! });

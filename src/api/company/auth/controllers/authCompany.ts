@@ -27,7 +27,7 @@ export const authCompany = async (req: Request, res: Response) => {
 
   await permissionServices.checkPermission({
     UserPermissions: user.Permissions,
-    permission: 'Company',
+    permissions: ['admin:company', 'access:company'],
   });
 
   await userServices.updateLastAccess({ userId: user.id! });

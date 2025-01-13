@@ -11,7 +11,7 @@ export const isCompany = async (req: Request, _res: Response, next: NextFunction
 
   await permissionServices.checkPermission({
     UserPermissions: permissions,
-    permission: 'Company',
+    permissions: ['admin:company', 'access:company'],
   });
 
   next();

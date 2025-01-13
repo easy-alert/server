@@ -28,7 +28,7 @@ export const authBackofficeCompany = async (req: Request, res: Response) => {
 
   await permissionServices.checkPermission({
     UserPermissions: user.Permissions,
-    permission: 'Company',
+    permissions: ['admin:company', 'access:company'],
   });
 
   const token = tokenServices.generate({

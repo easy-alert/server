@@ -11,7 +11,7 @@ export const isBackoffice = async (req: Request, _res: Response, next: NextFunct
 
   await permissionServices.checkPermission({
     UserPermissions: permissions,
-    permission: 'Backoffice',
+    permissions: ['admin:backoffice', 'access:backoffice'],
   });
 
   next();
