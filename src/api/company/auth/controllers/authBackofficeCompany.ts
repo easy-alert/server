@@ -31,6 +31,11 @@ export const authBackofficeCompany = async (req: Request, res: Response) => {
     permissions: ['admin:company', 'access:company'],
   });
 
+  const isCompanyOwner = await authServices.isCompanyOwner({
+    userId,
+    companyId: user.Companies[0].Company.id,
+  });
+
   const token = tokenServices.generate({
     tokenData: {
       userId: user.id,
@@ -48,6 +53,7 @@ export const authBackofficeCompany = async (req: Request, res: Response) => {
         name: user.name,
         email: user.email,
         lastAccess: user.lastAccess,
+        isCompanyOwner,
         createdAt: user.createdAt,
         Permissions: user.Permissions,
         BuildingsPermissions: user.UserBuildingsPermissions,

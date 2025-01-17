@@ -32,6 +32,11 @@ export const authCompany = async (req: Request, res: Response) => {
 
   await userServices.updateLastAccess({ userId: user.id! });
 
+  const isCompanyOwner = await authServices.isCompanyOwner({
+    userId: user.id,
+    companyId: user.Companies[0].Company.id,
+  });
+
   const token = tokenServices.generate({
     tokenData: {
       userId: user.id,
@@ -49,6 +54,7 @@ export const authCompany = async (req: Request, res: Response) => {
         name: user.name,
         email: user.email,
         lastAccess: user.lastAccess,
+        isCompanyOwner,
         createdAt: user.createdAt,
         Permissions: user.Permissions,
         BuildingsPermissions: user.UserBuildingsPermissions,
