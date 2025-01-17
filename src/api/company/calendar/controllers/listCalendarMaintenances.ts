@@ -11,11 +11,13 @@ const sharedCalendarServices = new SharedCalendarServices();
 // #endregion
 
 export async function listCalendarMaintenances(req: Request, res: Response) {
-  const YEARFORSUM = 5;
-
   const { year } = req.params;
   const filter = req.query;
-  const buildingId = filter.buildingId ? String(filter.buildingId) : undefined;
+
+  const permittedBuildings = req.BuildingsPermissions.map((b: any) => b.Building.id);
+  const buildingId = filter.buildingId ? [String(filter.buildingId)] : permittedBuildings;
+
+  const YEARFORSUM = 5;
 
   // #region GENERATE HISTORY MAINTENANCES
   const { Filter, Maintenances, MaintenancesPending } =
