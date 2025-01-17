@@ -55,7 +55,7 @@ export class SharedCalendarServices {
     endDate,
   }: {
     companyId: string;
-    buildingId: string | undefined;
+    buildingId: string[];
     startDate: Date;
     endDate: Date;
   }) {
@@ -67,6 +67,9 @@ export class SharedCalendarServices {
         },
         where: {
           companyId,
+          id: {
+            in: buildingId,
+          },
         },
       }),
 
@@ -113,7 +116,9 @@ export class SharedCalendarServices {
         },
         where: {
           ownerCompanyId: companyId,
-          buildingId,
+          buildingId: {
+            in: buildingId,
+          },
           MaintenancesStatus: {
             NOT: {
               name: 'pending',
@@ -178,8 +183,9 @@ export class SharedCalendarServices {
         },
         where: {
           ownerCompanyId: companyId,
-          buildingId,
-
+          buildingId: {
+            in: buildingId,
+          },
           MaintenancesStatus: {
             name: 'pending',
           },
