@@ -6,11 +6,11 @@ import {
   MaintenancePriorityName,
 } from '@prisma/client';
 import { hashSync } from 'bcrypt';
-
-// CLASS
 import { prisma } from '..';
-import { PermissionServices } from '../../src/api/shared/permission/services/permissionServices';
+
+// SERVICES
 import { CompanyServices } from '../../src/api/backoffice/users/accounts/services/companyServices';
+import { PermissionServices } from '../../src/api/shared/permissions/permission/services/permissionServices';
 
 // PERMISSIONS
 import {
