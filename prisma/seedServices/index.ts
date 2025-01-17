@@ -8,69 +8,40 @@ import {
 import { hashSync } from 'bcrypt';
 
 // CLASS
+import { prisma } from '..';
 import { PermissionServices } from '../../src/api/shared/permission/services/permissionServices';
 import { CompanyServices } from '../../src/api/backoffice/users/accounts/services/companyServices';
-import { prisma } from '..';
 
-import type { TModulesNames } from '../../src/types/TModulesNames';
-import type { TPermissionsNames } from '../../src/types/TPermissionsNames';
+// PERMISSIONS
+import {
+  IPermissionUpsert,
+  accessPermissions,
+  adminPermissions,
+  buildingsPermissions,
+  maintenancesPermissions,
+  ticketsPermissions,
+} from './permissionsUpsert';
 
 const permissionServices = new PermissionServices();
 const companyServices = new CompanyServices();
 
 export class SeedServices {
-  // async createPermissions() {
-  //   console.log('\n\nstarting permissions creation ...');
-
-  //   const permissions: Prisma.PermissionCreateInput[] = [
-  //     {
-  //       name: 'Backoffice',
-  //     },
-  //     {
-  //       name: 'Company',
-  //     },
-  //     {
-  //       name: 'BuildingManager',
-  //     },
-  //   ];
-
-  //   for (const permission of permissions) {
-  //     await prisma.permission.upsert({
-  //       create: permission,
-  //       update: permission,
-  //       where: {
-  //         name: permission.name,
-  //       },
-  //     });
-  //     console.log('permission ', permission.name, ' inserted.');
-  //   }
-
-  //   console.log('Permissions upserted.');
-  // }
-
   async upsertPermissions() {
-    const modulePermissions: {
-      moduleName: TModulesNames;
-      name: TPermissionsNames;
-      label: string;
-    }[] = [
-      { moduleName: 'admin', name: 'admin:backoffice', label: 'Backoffice' },
-      { moduleName: 'admin', name: 'admin:company', label: 'Company' },
-      { moduleName: 'admin', name: 'admin:client', label: 'Client' },
+    const modulePermissions: IPermissionUpsert[] = [
+      // admin permissions
+      ...adminPermissions,
 
       // access permissions
-      { moduleName: 'access', name: 'access:backoffice', label: 'Backoffice' },
-      { moduleName: 'access', name: 'access:company', label: 'Company' },
-      { moduleName: 'access', name: 'access:client', label: 'Client' },
-      // { moduleName: 'access', name: 'access:dashboard', label: 'Dashboard' },
-      // { moduleName: 'access', name: 'access:calendar', label: 'Calendário' },
-      // { moduleName: 'access', name: 'access:buildings', label: 'Edifícios' },
-      // { moduleName: 'access', name: 'access:checklist', label: 'Checklist' },
-      // { moduleName: 'access', name: 'access:tickets', label: 'Chamados' },
-      // { moduleName: 'access', name: 'access:reports', label: 'Relatórios' },
-      // { moduleName: 'access', name: 'access:suppliers', label: 'Fornecedores' },
-      // { moduleName: 'access', name: 'access:tutorials', label: 'Tutorials' },
-      // { moduleName: 'access', name: 'access:account', label: 'Conta' },
+      ...accessPermissions,
+
+      // buildings permissions
+      ...buildingsPermissions,
+
+      // tickets permissions
+      ...ticketsPermissions,
+
+      // maintenance permissions
+      ...maintenancesPermissions,
     ];
 
     for (const modulePermission of modulePermissions) {
