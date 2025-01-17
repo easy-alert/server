@@ -68,6 +68,17 @@ export class AuthServices {
         Permissions: {
           select: { Permission: { select: { name: true } } },
         },
+
+        UserBuildingsPermissions: {
+          select: {
+            Building: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
 
       where: { email: email.toLowerCase() },
@@ -135,6 +146,17 @@ export class AuthServices {
         Permissions: {
           select: { Permission: { select: { name: true } } },
         },
+
+        UserBuildingsPermissions: {
+          select: {
+            Building: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
 
       where: { id: userId },
@@ -200,6 +222,17 @@ export class AuthServices {
 
         Permissions: {
           select: { Permission: { select: { name: true } } },
+        },
+
+        UserBuildingsPermissions: {
+          select: {
+            Building: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
         },
       },
 

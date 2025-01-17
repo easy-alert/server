@@ -17,6 +17,7 @@ export const authValidateToken = async (req: Request, res: Response) => {
       lastAccess: user.lastAccess,
       createdAt: user.createdAt,
       Permissions: user.Permissions,
+      BuildingsPermissions: user.UserBuildingsPermissions,
     },
     Company: user.Companies.length > 0 ? user.Companies[0].Company : null,
   });
