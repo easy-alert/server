@@ -34,10 +34,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Permissions     UserPermissions[]
-  Companies       UserCompanies[]
-  reportPdfs      MaintenanceReportPdf[]
-  TicketReportPDF TicketReportPDF[]
+  Permissions              UserPermissions[]
+  Companies                UserCompanies[]
+  reportPdfs               MaintenanceReportPdf[]
+  TicketReportPDF          TicketReportPDF[]
+  UserBuildingsPermissions UserBuildingsPermissions[]
 
   @@map("users")
 }
@@ -45,14 +46,16 @@ model User {
 model Permission {
   id String @id @unique @default(uuid())
 
-  name       String @unique
-  label      String?
-  moduleName String?
+  name        String  @unique
+  label       String?
+  moduleName  String?
+  moduleLabel String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Permissions UserPermissions[]
+  Permissions              UserPermissions[]
+  UserBuildingsPermissions UserBuildingsPermissions[]
 
   @@map("permissions")
 }
@@ -71,6 +74,24 @@ model UserPermissions {
 
   @@unique([userId, permissionId])
   @@map("userPermissions")
+}
+
+model UserBuildingsPermissions {
+  id String @id @unique @default(uuid())
+
+  userId       String
+  buildingId   String
+  permissionId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Building   Building    @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  Permission Permission? @relation(fields: [permissionId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, buildingId])
+  @@map("userBuildingsPermissions")
 }
 
 model UserCompanies {
@@ -547,6 +568,7 @@ model Building {
   BuildingsAccessHistory      BuildingAccessHistory[]
   checklists                  Checklist[]
   tickets                     Ticket[]
+  UserBuildingsPermissions    UserBuildingsPermissions[]
 
   @@map("buildings")
 }
