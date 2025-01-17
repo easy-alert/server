@@ -6,6 +6,18 @@ import type { TPermissionsNames } from '../../types/TPermissionsNames';
 
 export function permCheck(permissionsToCheck: TPermissionsNames[]) {
   return async (req: Request, _res: Response, next: NextFunction) => {
+    const hasAdminPermission = req.Permissions.some(
+      ({ Permission }) =>
+        Permission.name === 'admin:company' ||
+        Permission.name === 'admin:backoffice' ||
+        Permission.name === 'admin:client',
+    );
+
+    if (hasAdminPermission) {
+      next();
+      return;
+    }
+
     const hasPermission = req.Permissions.some(({ Permission }) =>
       permissionsToCheck.includes(Permission.name as TPermissionsNames),
     );
