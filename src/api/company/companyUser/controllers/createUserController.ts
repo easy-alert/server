@@ -2,7 +2,7 @@ import { Response, Request } from 'express';
 import { cannotExist, checkPassword, checkValues } from '../../../../utils/newValidator';
 import { UserServices } from '../../../shared/users/user/services/userServices';
 import { UserPermissionServices } from '../../../shared/users/userPermission/services/userPermissionServices';
-import { PermissionServices } from '../../../shared/permission/services/permissionServices';
+import { PermissionServices } from '../../../shared/permissions/permission/services/permissionServices';
 import { CompanyUserServices } from '../services/companyServices';
 
 interface IBody {
@@ -38,7 +38,7 @@ export async function createUserController(req: Request, res: Response) {
     passwordHash: password,
   });
 
-  const permission = await permissionServices.findByName({ name: 'Company' });
+  const permission = await permissionServices.findByName({ name: 'access:company' });
 
   await userPermissionServices.createUserPermission({
     userId: user.id,

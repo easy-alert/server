@@ -8,7 +8,7 @@ import { Request, Response } from 'express';
 import { UserServices } from '../../../shared/users/user/services/userServices';
 import { Validator } from '../../../../utils/validator/validator';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
-import { PermissionServices } from '../../../shared/permission/services/permissionServices';
+import { PermissionServices } from '../../../shared/permissions/permission/services/permissionServices';
 import { UserPermissionServices } from '../../../shared/users/userPermission/services/userPermissionServices';
 
 import { CompanyUserServices } from '../services/companyServices';
