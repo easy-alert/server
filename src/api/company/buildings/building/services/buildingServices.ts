@@ -241,6 +241,7 @@ export class BuildingServices {
 
   async list({ take = 20, page, search = '', companyId }: IListBuildings) {
     const where: prismaTypes.BuildingWhereInput = {
+      companyId,
       OR: [
         {
           name: {
@@ -261,7 +262,6 @@ export class BuildingServices {
           },
         },
       ],
-      companyId,
     };
 
     const [Buildings, buildingsCount] = await prisma.$transaction([

@@ -9,13 +9,13 @@ const buildingServices = new BuildingServices();
 // #endregion
 
 export async function listBuilding(req: Request, res: Response) {
-  const { search, page } = req.query;
+  const { companyId, search, page } = req.query;
 
   const pagination = page ?? 1;
 
   const { Buildings, buildingsCount } = await buildingServices.list({
     search: search as string,
-    companyId: req.Company.id,
+    companyId: (req?.Company?.id || companyId) as string,
     page: Number(pagination),
   });
 
