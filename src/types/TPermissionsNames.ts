@@ -32,16 +32,23 @@ export type TPermissionsNames =
   | 'buildings:delete'
 
   // checklist permissions
-  | 'checklist:access'
+  | 'tickets:create'
+  | 'tickets:update'
+  | 'tickets:delete'
 
   // tickets permissions
-  | 'tickets:access'
 
   // reports permissions
-  | 'reports:access'
 
   // suppliers permissions
-  | 'suppliers:access'
 
   // account permissions
-  | 'account:edit';
+  | 'account:update'
+
+  // maintenances permissions
+  | 'maintenances:plan'
+  | 'maintenances:update'
+  | 'maintenances:updateDates'
+  | 'maintenances:delete'
+  | 'maintenances:createOccasional'
+  | 'maintenances:finish';
