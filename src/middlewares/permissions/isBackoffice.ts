@@ -2,7 +2,7 @@
 import { Response, Request, NextFunction } from 'express';
 
 // CLASS
-import { PermissionServices } from '../../api/shared/permission/services/permissionServices';
+import { PermissionServices } from '../../api/shared/permissions/permission/services/permissionServices';
 
 const permissionServices = new PermissionServices();
 
