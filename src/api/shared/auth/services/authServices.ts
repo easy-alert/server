@@ -74,6 +74,7 @@ export class AuthServices {
             Building: {
               select: {
                 id: true,
+                nanoId: true,
                 name: true,
               },
             },
@@ -105,6 +106,7 @@ export class AuthServices {
         passwordHash: true,
         updatedAt: true,
         isBlocked: true,
+
         Companies: {
           select: {
             Company: {
@@ -122,6 +124,7 @@ export class AuthServices {
                 showMaintenancePriority: true,
                 UserCompanies: {
                   select: {
+                    owner: true,
                     User: {
                       select: {
                         id: true,
@@ -152,6 +155,7 @@ export class AuthServices {
             Building: {
               select: {
                 id: true,
+                nanoId: true,
                 name: true,
               },
             },
@@ -183,6 +187,7 @@ export class AuthServices {
         passwordHash: true,
         updatedAt: true,
         isBlocked: true,
+
         Companies: {
           select: {
             Company: {
@@ -199,6 +204,7 @@ export class AuthServices {
                 showMaintenancePriority: true,
                 UserCompanies: {
                   select: {
+                    owner: true,
                     User: {
                       select: {
                         id: true,
@@ -229,6 +235,7 @@ export class AuthServices {
             Building: {
               select: {
                 id: true,
+                nanoId: true,
                 name: true,
               },
             },
@@ -242,5 +249,18 @@ export class AuthServices {
     validator.notNull([{ label: 'Usuário não encontrado.', variable: User }]);
 
     return User!;
+  }
+
+  async isCompanyOwner({ userId, companyId }: { userId: string; companyId: string }) {
+    if (!companyId) return false;
+
+    const owner = prisma.userCompanies
+      .findUnique({
+        where: { userId_companyId: { userId, companyId } },
+        select: { owner: true },
+      })
+      .then((userCompany) => userCompany?.owner ?? false);
+
+    return owner;
   }
 }
