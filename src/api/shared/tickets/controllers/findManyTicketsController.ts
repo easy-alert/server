@@ -24,12 +24,13 @@ export async function findManyTicketsController(req: Request, res: Response) {
   } = req.query;
 
   const buildingsIds = buildingsNanoId ?? buildingsNanoIdBody;
+  const permittedBuildingsNanoIds = req.BuildingsPermissions.map((b: any) => b.Building.nanoId);
   let buildingName = '';
 
   const companyIdFilter = Company ? Company.id : undefined;
 
   const buildingsNanoIdFilter =
-    buildingsIds === 'all' || !buildingsIds ? undefined : buildingsIds.split(',');
+    buildingsIds === 'all' || !buildingsIds ? permittedBuildingsNanoIds : buildingsIds.split(',');
   const placeIdFilter =
     typeof placesId === 'string' && placesId !== '' ? placesId.split(',') : undefined;
   const serviceTypeIdFilter =
