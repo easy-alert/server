@@ -6,7 +6,7 @@ import { TokenServices } from '../../../../utils/token/tokenServices';
 import { Validator } from '../../../../utils/validator/validator';
 import { UserServices } from '../../../shared/users/user/services/userServices';
 
-import { PermissionServices } from '../../../shared/permission/services/permissionServices';
+import { PermissionServices } from '../../../shared/permissions/permission/services/permissionServices';
 import { AuthServices } from '../../../shared/auth/services/authServices';
 
 const permissionServices = new PermissionServices();
@@ -36,6 +36,7 @@ export const authCompany = async (req: Request, res: Response) => {
     tokenData: {
       userId: user.id,
       Permissions: user.Permissions,
+      BuildingsPermissions: user.UserBuildingsPermissions,
       Company: user.Companies[0].Company,
     },
   });
@@ -50,6 +51,7 @@ export const authCompany = async (req: Request, res: Response) => {
         lastAccess: user.lastAccess,
         createdAt: user.createdAt,
         Permissions: user.Permissions,
+        BuildingsPermissions: user.UserBuildingsPermissions,
       },
       Company: user.Companies[0].Company,
     },
