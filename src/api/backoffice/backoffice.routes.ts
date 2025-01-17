@@ -6,7 +6,7 @@ import swaggerFile from '../../docs/backofficeDocs.json';
 // MIDDLEWARES
 import { authMiddleware } from '../../middlewares/auth';
 import { uploadRouter } from '../shared/upload/upload.routes';
-import { permCheck } from '../../middlewares/permissions/permCheck';
+import { handleBackofficePermCheck } from '../../middlewares/permissions/permCheck';
 
 // CHILDREN ROUTES
 import { authRouter } from './auth/auth.routes';
@@ -17,7 +17,7 @@ import { listTimeIntervals } from '../shared/timeInterval/controllers/listTimeIn
 import { findAllMaintenancePriority } from '../shared/maintenancePriority/controllers/findAllMaintenancePriority';
 import { tutorialsRouter } from './tutorials/tutorials.routes';
 import { permissionsRouter } from './permissions/permissions.routes';
-import { buildingRouter } from './buildings/buiding.routes';
+import { buildingRouter } from './buildings/building.routes';
 
 // TYPES
 import type { TPermissionsNames } from '../../types/TPermissionsNames';
@@ -26,9 +26,14 @@ import type { TPermissionsNames } from '../../types/TPermissionsNames';
 export const backofficeRouter: Router = Router();
 
 // PERMISSIONS
-const backofficePermissions = ['admin:backoffice', 'access:backoffice'] as TPermissionsNames[];
+const backofficePermissions = ['access:backoffice'] as TPermissionsNames[];
 
-backofficeRouter.use('/upload', authMiddleware, permCheck(backofficePermissions), uploadRouter);
+backofficeRouter.use(
+  '/upload',
+  authMiddleware,
+  handleBackofficePermCheck(backofficePermissions),
+  uploadRouter,
+);
 
 backofficeRouter.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
   const html = swaggerUi.generateHTML(swaggerFile);
@@ -40,16 +45,21 @@ backofficeRouter.use('/auth', authRouter);
 backofficeRouter.use(
   '/categories',
   authMiddleware,
-  permCheck(backofficePermissions),
+  handleBackofficePermCheck(backofficePermissions),
   categoryRouter,
 );
 backofficeRouter.use(
   '/maintenances',
   authMiddleware,
-  permCheck(backofficePermissions),
+  handleBackofficePermCheck(backofficePermissions),
   maintenanceRouter,
 );
-backofficeRouter.use('/companies', authMiddleware, permCheck(backofficePermissions), companyRouter);
+backofficeRouter.use(
+  '/companies',
+  authMiddleware,
+  handleBackofficePermCheck(backofficePermissions),
+  companyRouter,
+);
 
 backofficeRouter.get('/timeinterval/list', listTimeIntervals);
 
@@ -58,20 +68,20 @@ backofficeRouter.get('/maintenancePriority', findAllMaintenancePriority);
 backofficeRouter.use(
   '/tutorials',
   authMiddleware,
-  permCheck(backofficePermissions),
+  handleBackofficePermCheck(backofficePermissions),
   tutorialsRouter,
 );
 
 backofficeRouter.use(
   '/permissions',
   authMiddleware,
-  permCheck(backofficePermissions),
+  handleBackofficePermCheck(backofficePermissions),
   permissionsRouter,
 );
 
 backofficeRouter.use(
   '/buildings',
   authMiddleware,
-  permCheck(backofficePermissions),
+  handleBackofficePermCheck(backofficePermissions),
   buildingRouter,
 );
