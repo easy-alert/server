@@ -216,4 +216,17 @@ export class UserServices {
 
     return { users, usersCount };
   }
+
+  async findUserPermissions({ userId }: { userId: string }) {
+    const user = await prisma.user.findUnique({
+      select: {
+        id: true,
+      },
+      where: { id: userId },
+    });
+
+    validator.needExist([{ label: 'usuário', variable: user }]);
+
+    return user!;
+  }
 }
