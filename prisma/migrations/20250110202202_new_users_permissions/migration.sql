@@ -8,8 +8,10 @@
 ALTER TABLE "userPermissions" DROP CONSTRAINT "userPermissions_permissionId_fkey";
 
 -- AlterTable
-ALTER TABLE "permissions" ADD COLUMN     "label" TEXT,
-ADD COLUMN     "moduleName" TEXT;
+ALTER TABLE "permissions"
+ADD COLUMN     "label" TEXT,
+ADD COLUMN     "moduleName" TEXT,
+ADD COLUMN     "moduleLabel" TEXT;
 
 -- CreateIndex
 CREATE UNIQUE INDEX "userPermissions_userId_permissionId_key" ON "userPermissions"("userId", "permissionId");
