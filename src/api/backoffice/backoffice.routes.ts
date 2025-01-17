@@ -16,15 +16,17 @@ import { companyRouter } from './users/accounts/company.routes';
 import { listTimeIntervals } from '../shared/timeInterval/controllers/listTimeIntervals';
 import { findAllMaintenancePriority } from '../shared/maintenancePriority/controllers/findAllMaintenancePriority';
 import { tutorialsRouter } from './tutorials/tutorials.routes';
+import { permissionsRouter } from './permissions/permissions.routes';
+import { buildingRouter } from './buildings/buiding.routes';
 
 // TYPES
 import type { TPermissionsNames } from '../../types/TPermissionsNames';
 
-// PERMISSIONS
-const backofficePermissions = ['admin:backoffice', 'access:backoffice'] as TPermissionsNames[];
-
 // ROUTES
 export const backofficeRouter: Router = Router();
+
+// PERMISSIONS
+const backofficePermissions = ['admin:backoffice', 'access:backoffice'] as TPermissionsNames[];
 
 backofficeRouter.use('/upload', authMiddleware, permCheck(backofficePermissions), uploadRouter);
 
@@ -58,4 +60,18 @@ backofficeRouter.use(
   authMiddleware,
   permCheck(backofficePermissions),
   tutorialsRouter,
+);
+
+backofficeRouter.use(
+  '/permissions',
+  authMiddleware,
+  permCheck(backofficePermissions),
+  permissionsRouter,
+);
+
+backofficeRouter.use(
+  '/buildings',
+  authMiddleware,
+  permCheck(backofficePermissions),
+  buildingRouter,
 );
