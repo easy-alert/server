@@ -59,7 +59,7 @@ export class DashboardServices {
     permittedBuildings,
     companyId,
   }: {
-    permittedBuildings: string[];
+    permittedBuildings?: string[];
     companyId: string;
   }) {
     const [buildingsData, defaultCategories, companyCategories] = await prisma.$transaction([

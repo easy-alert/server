@@ -55,7 +55,7 @@ export class SharedCalendarServices {
     endDate,
   }: {
     companyId: string;
-    buildingId: string[];
+    buildingId?: string[];
     startDate: Date;
     endDate: Date;
   }) {

@@ -8,12 +8,16 @@ const buildingServices = new BuildingServices();
 // #endregion
 
 export async function listBuildingForSelect(req: Request, res: Response) {
+  const isAdmin = req.Permissions.some((permission) =>
+    permission.Permission.name.includes('admin'),
+  );
+
   const permittedBuildings = req.BuildingsPermissions.map(
     (BuildingPermissions) => BuildingPermissions.Building.id,
   );
 
   const BuildingsForSelect = await buildingServices.listForSelect({
-    permittedBuildings,
+    permittedBuildings: isAdmin ? undefined : permittedBuildings,
     companyId: req.Company.id,
   });
 

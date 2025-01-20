@@ -623,7 +623,7 @@ export class BuildingServices {
     permittedBuildings,
     companyId,
   }: {
-    permittedBuildings: string[];
+    permittedBuildings?: string[];
     companyId: string;
   }) {
     return prisma.building.findMany({

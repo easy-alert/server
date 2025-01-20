@@ -3,12 +3,16 @@ import { Request, Response } from 'express';
 import { dashboardServices } from '../services/dashboardServices';
 
 export async function dashboardFiltersController(req: Request, res: Response) {
+  const isAdmin = req.Permissions.some((permission) =>
+    permission.Permission.name.includes('admin'),
+  );
+
   const permittedBuildings = req.BuildingsPermissions.map(
     (BuildingPermissions) => BuildingPermissions.Building.id,
   );
 
   const { buildingsData, categoriesData } = await dashboardServices.dashboardFilters({
-    permittedBuildings,
+    permittedBuildings: isAdmin ? undefined : permittedBuildings,
     companyId: req.Company.id,
   });
 

@@ -83,7 +83,7 @@ export class BuildingReportsServices {
     permittedBuildings,
     companyId,
   }: {
-    permittedBuildings: string[];
+    permittedBuildings?: string[];
     companyId: string;
   }) {
     const [buildings, companyCategories, defaultCategories, status] = await prisma.$transaction([

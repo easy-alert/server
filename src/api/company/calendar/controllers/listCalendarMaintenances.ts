@@ -14,8 +14,15 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
   const { year } = req.params;
   const filter = req.query;
 
-  const permittedBuildings = req.BuildingsPermissions.map((b: any) => b.Building.id);
-  const buildingId = filter.buildingId ? [String(filter.buildingId)] : permittedBuildings;
+  const isAdmin = req.Permissions.some((permission) =>
+    permission.Permission.name.includes('admin'),
+  );
+
+  const permittedBuildings = req.BuildingsPermissions.map(
+    (BuildingPermissions) => BuildingPermissions.Building.id,
+  );
+  const formattedFilter = filter.filter ? [String(filter.filter)] : undefined;
+  const buildingId = isAdmin ? formattedFilter : permittedBuildings;
 
   const YEARFORSUM = 5;
 
