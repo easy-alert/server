@@ -8,7 +8,12 @@ const buildingReportsServices = new BuildingReportsServices();
 // #endregion
 
 export async function listForSelectBuildingReports(req: Request, res: Response) {
+  const permittedBuildings = req.BuildingsPermissions.map(
+    (BuildingPermissions) => BuildingPermissions.Building.id,
+  );
+
   const { filters } = await buildingReportsServices.findForSelectFilterOptions({
+    permittedBuildings,
     companyId: req.Company.id,
   });
 

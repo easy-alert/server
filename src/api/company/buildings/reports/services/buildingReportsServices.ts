@@ -79,7 +79,13 @@ export class BuildingReportsServices {
     return filter;
   }
 
-  async findForSelectFilterOptions({ companyId }: { companyId: string }) {
+  async findForSelectFilterOptions({
+    permittedBuildings,
+    companyId,
+  }: {
+    permittedBuildings: string[];
+    companyId: string;
+  }) {
     const [buildings, companyCategories, defaultCategories, status] = await prisma.$transaction([
       prisma.building.findMany({
         select: {
@@ -87,6 +93,9 @@ export class BuildingReportsServices {
           name: true,
         },
         where: {
+          id: {
+            in: permittedBuildings,
+          },
           companyId,
         },
         orderBy: {

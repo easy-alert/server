@@ -620,11 +620,11 @@ export class BuildingServices {
   }
 
   async listForSelect({
+    permittedBuildings,
     companyId,
-    buildingId,
   }: {
+    permittedBuildings: string[];
     companyId: string;
-    buildingId: string | undefined;
   }) {
     return prisma.building.findMany({
       select: {
@@ -633,10 +633,10 @@ export class BuildingServices {
         nanoId: true,
       },
       where: {
-        companyId,
-        NOT: {
-          id: buildingId,
+        id: {
+          in: permittedBuildings,
         },
+        companyId,
       },
       orderBy: {
         name: 'asc',

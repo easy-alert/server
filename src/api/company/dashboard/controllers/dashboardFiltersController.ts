@@ -3,9 +3,14 @@ import { Request, Response } from 'express';
 import { dashboardServices } from '../services/dashboardServices';
 
 export async function dashboardFiltersController(req: Request, res: Response) {
-  const { buildingsData, categoriesData } = await dashboardServices.dashboardFilters(
-    req.Company.id,
+  const permittedBuildings = req.BuildingsPermissions.map(
+    (BuildingPermissions) => BuildingPermissions.Building.id,
   );
+
+  const { buildingsData, categoriesData } = await dashboardServices.dashboardFilters({
+    permittedBuildings,
+    companyId: req.Company.id,
+  });
 
   let buildings: string[] = [];
   let responsible: string[] = [];
