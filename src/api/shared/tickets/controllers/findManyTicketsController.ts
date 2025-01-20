@@ -24,7 +24,7 @@ export async function findManyTicketsController(req: Request, res: Response) {
   } = req.query;
 
   const buildingsIds = buildingsNanoId ?? buildingsNanoIdBody;
-  const permittedBuildingsNanoIds = req.BuildingsPermissions.map((b: any) => b.Building.nanoId);
+  const permittedBuildingsNanoIds = req.BuildingsPermissions?.map((b: any) => b.Building.nanoId);
   let buildingName = '';
 
   const companyIdFilter = Company ? Company.id : undefined;
