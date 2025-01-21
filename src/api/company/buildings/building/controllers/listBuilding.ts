@@ -17,7 +17,7 @@ export async function listBuilding(req: Request, res: Response) {
   let permittedBuildings: string[] | undefined;
 
   if (parsedCheckPerms) {
-    permittedBuildings = req.BuildingsPermissions.map((b: any) => b.Building.id);
+    permittedBuildings = req.BuildingsPermissions?.map((b: any) => b.Building.id);
   }
 
   const { Buildings, buildingsCount } = await buildingServices.list({

@@ -18,7 +18,7 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
     permission.Permission.name.includes('admin'),
   );
 
-  const permittedBuildings = req.BuildingsPermissions.map(
+  const permittedBuildings = req.BuildingsPermissions?.map(
     (BuildingPermissions) => BuildingPermissions.Building.id,
   );
   const formattedFilter = filter.filter ? [String(filter.filter)] : undefined;

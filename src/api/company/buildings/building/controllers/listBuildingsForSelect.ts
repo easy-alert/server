@@ -12,7 +12,7 @@ export async function listBuildingForSelect(req: Request, res: Response) {
     permission.Permission.name.includes('admin'),
   );
 
-  const permittedBuildings = req.BuildingsPermissions.map(
+  const permittedBuildings = req.BuildingsPermissions?.map(
     (BuildingPermissions) => BuildingPermissions.Building.id,
   );
 
