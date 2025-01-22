@@ -239,8 +239,12 @@ export class BuildingServices {
     ]);
   }
 
-  async list({ take = 20, page, search = '', companyId }: IListBuildings) {
+  async list({ take = 20, page, search = '', companyId, buildingsIds }: IListBuildings) {
     const where: prismaTypes.BuildingWhereInput = {
+      id: {
+        in: buildingsIds,
+      },
+      companyId,
       OR: [
         {
           name: {
@@ -261,7 +265,6 @@ export class BuildingServices {
           },
         },
       ],
-      companyId,
     };
 
     const [Buildings, buildingsCount] = await prisma.$transaction([
@@ -617,11 +620,11 @@ export class BuildingServices {
   }
 
   async listForSelect({
+    permittedBuildings,
     companyId,
-    buildingId,
   }: {
+    permittedBuildings?: string[];
     companyId: string;
-    buildingId: string | undefined;
   }) {
     return prisma.building.findMany({
       select: {
@@ -630,10 +633,10 @@ export class BuildingServices {
         nanoId: true,
       },
       where: {
-        companyId,
-        NOT: {
-          id: buildingId,
+        id: {
+          in: permittedBuildings,
         },
+        companyId,
       },
       orderBy: {
         name: 'asc',

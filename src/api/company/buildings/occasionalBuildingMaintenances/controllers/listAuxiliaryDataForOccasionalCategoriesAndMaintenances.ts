@@ -16,7 +16,7 @@ export async function listAuxiliaryDataForOccasionalCategoriesAndMaintenances(
 ) {
   const Buildings = await buildingServices.listForSelect({
     companyId: req.Company.id,
-    buildingId: undefined,
+    permittedBuildings: undefined,
   });
 
   const CategoriesData = await sharedCategoryServices.listOccasionalForSelect({
