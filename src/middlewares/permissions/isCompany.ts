@@ -2,7 +2,7 @@
 import { Response, Request, NextFunction } from 'express';
 
 // CLASS
-import { PermissionServices } from '../../api/shared/permission/services/permissionServices';
+import { PermissionServices } from '../../api/shared/permissions/permission/services/permissionServices';
 
 const permissionServices = new PermissionServices();
 
@@ -11,7 +11,7 @@ export const isCompany = async (req: Request, _res: Response, next: NextFunction
 
   await permissionServices.checkPermission({
     UserPermissions: permissions,
-    permission: 'Company',
+    permissions: ['admin:company', 'access:company'],
   });
 
   next();

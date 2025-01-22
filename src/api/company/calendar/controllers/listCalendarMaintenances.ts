@@ -11,11 +11,20 @@ const sharedCalendarServices = new SharedCalendarServices();
 // #endregion
 
 export async function listCalendarMaintenances(req: Request, res: Response) {
-  const YEARFORSUM = 5;
-
   const { year } = req.params;
   const filter = req.query;
-  const buildingId = filter.buildingId ? String(filter.buildingId) : undefined;
+
+  const isAdmin = req.Permissions.some((permission) =>
+    permission.Permission.name.includes('admin'),
+  );
+
+  const permittedBuildings = req.BuildingsPermissions?.map(
+    (BuildingPermissions) => BuildingPermissions.Building.id,
+  );
+  const formattedFilter = filter.filter ? [String(filter.filter)] : undefined;
+  const buildingId = isAdmin ? formattedFilter : permittedBuildings;
+
+  const YEARFORSUM = 5;
 
   // #region GENERATE HISTORY MAINTENANCES
   const { Filter, Maintenances, MaintenancesPending } =

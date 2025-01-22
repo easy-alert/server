@@ -7,10 +7,10 @@ import swaggerFile from '../../docs/companyDocs.json';
 // MIDDLEWARES
 import { authMiddleware } from '../../middlewares/auth';
 import { uploadRouter } from '../shared/upload/upload.routes';
+import { handleCompanyPermCheck } from '../../middlewares/permissions/permCheck';
 
 // CHILD ROUTES
 import { authRouter } from './auth/auth.routes';
-import { isCompany } from '../../middlewares/permissions/isCompany';
 import { accountRouter } from './account/account.routes';
 import { categoryRouter } from './categories/category/category.routes';
 import { listTimeIntervals } from '../shared/timeInterval/controllers/listTimeIntervals';
@@ -33,6 +33,8 @@ import { ticketDismissReasonsRouter } from './ticketDismissReasons/ticketDismiss
 import { findManyServiceTypes } from '../shared/serviceTypes/controllers/findManyServiceTypes';
 import { findAllMaintenancePriority } from '../shared/maintenancePriority/controllers/findAllMaintenancePriority';
 import { tutorialsRouter } from './tutorials/tutorials.routes';
+import { usersRouter } from './users/users.routes';
+import { permissionsRouter } from './permissions/permissions.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -58,46 +60,125 @@ companyRouter.get('/timeinterval/list', listTimeIntervals);
 
 companyRouter.use('/upload', uploadRouter);
 
-companyRouter.use('/account', authMiddleware, isCompany, accountRouter);
+companyRouter.use(
+  '/account',
+  authMiddleware,
+  handleCompanyPermCheck(['access:account']),
+  accountRouter,
+);
 
-companyRouter.use('/categories', authMiddleware, isCompany, categoryRouter);
+companyRouter.use(
+  '/users',
+  authMiddleware,
+  handleCompanyPermCheck(['access:company']),
+  usersRouter,
+);
 
-companyRouter.use('/buildings', authMiddleware, isCompany, buildingRouter);
+companyRouter.use(
+  '/categories',
+  authMiddleware,
+  handleCompanyPermCheck(['access:company']),
+  categoryRouter,
+);
 
-companyRouter.use('/maintenances', authMiddleware, isCompany, maintenanceRouter);
+companyRouter.use(
+  '/buildings',
+  authMiddleware,
+  handleCompanyPermCheck(['access:buildings']),
+  buildingRouter,
+);
 
-companyRouter.use('/calendars', authMiddleware, isCompany, calendarRouter);
+companyRouter.use(
+  '/maintenances',
+  authMiddleware,
+  handleCompanyPermCheck(['access:company']),
+  maintenanceRouter,
+);
+
+companyRouter.use(
+  '/calendars',
+  authMiddleware,
+  handleCompanyPermCheck(['access:calendar']),
+  calendarRouter,
+);
 
 companyRouter.post('/passwordrecovery/sendemail', sendEmailForRecoveryPassword);
 
 companyRouter.put('/passwordrecovery/change', changePassword);
 
-companyRouter.use('/dashboard', authMiddleware, isCompany, dashboardRouter);
+companyRouter.use(
+  '/dashboard',
+  authMiddleware,
+  handleCompanyPermCheck(['access:dashboard']),
+  dashboardRouter,
+);
 
-companyRouter.use('/checklists', authMiddleware, isCompany, checklistRouter);
+companyRouter.use(
+  '/checklists',
+  authMiddleware,
+  handleCompanyPermCheck(['access:checklist']),
+  checklistRouter,
+);
 
-companyRouter.use('/tickets', authMiddleware, isCompany, ticketRouter);
+companyRouter.use(
+  '/tickets',
+  authMiddleware,
+  handleCompanyPermCheck(['access:tickets']),
+  ticketRouter,
+);
 
-companyRouter.use('/suppliers', authMiddleware, isCompany, supplierRouter);
+companyRouter.use(
+  '/suppliers',
+  authMiddleware,
+  handleCompanyPermCheck(['access:suppliers']),
+  supplierRouter,
+);
 
 companyRouter.use(
   '/maintenance-history-activities',
   authMiddleware,
-  isCompany,
+  handleCompanyPermCheck(['access:company']),
   maintenanceHistoryActivitiesRouter,
 );
 
 companyRouter.use(
   '/ticketHistoryActivities',
   authMiddleware,
-  isCompany,
+  handleCompanyPermCheck(['access:company']),
   ticketHistoryActivitiesRouter,
 );
 
-companyRouter.use('/ticketDismissReasons', authMiddleware, isCompany, ticketDismissReasonsRouter);
+companyRouter.use(
+  '/ticketDismissReasons',
+  authMiddleware,
+  handleCompanyPermCheck(['access:company']),
+  ticketDismissReasonsRouter,
+);
 
-companyRouter.get('/serviceTypes', authMiddleware, isCompany, findManyServiceTypes);
+companyRouter.get(
+  '/serviceTypes',
+  authMiddleware,
+  handleCompanyPermCheck(['access:company']),
+  findManyServiceTypes,
+);
 
-companyRouter.get('/priority', authMiddleware, isCompany, findAllMaintenancePriority);
+companyRouter.get(
+  '/priority',
+  authMiddleware,
+  handleCompanyPermCheck(['access:company']),
+  findAllMaintenancePriority,
+);
 
-companyRouter.use('/tutorials', authMiddleware, isCompany, tutorialsRouter);
+companyRouter.use(
+  '/tutorials',
+  authMiddleware,
+  handleCompanyPermCheck(['access:tutorials']),
+  tutorialsRouter,
+);
+
+companyRouter.use(
+  '/permissions',
+  authMiddleware,
+  handleCompanyPermCheck(['access:company']),
+  permissionsRouter,
+);

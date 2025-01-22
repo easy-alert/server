@@ -55,7 +55,13 @@ function customSort(array: IMaintenance[]) {
 }
 
 export class DashboardServices {
-  async dashboardFilters(companyId: string) {
+  async dashboardFilters({
+    permittedBuildings,
+    companyId,
+  }: {
+    permittedBuildings?: string[];
+    companyId: string;
+  }) {
     const [buildingsData, defaultCategories, companyCategories] = await prisma.$transaction([
       prisma.building.findMany({
         select: {
@@ -70,6 +76,9 @@ export class DashboardServices {
           name: 'asc',
         },
         where: {
+          id: {
+            in: permittedBuildings,
+          },
           companyId,
         },
       }),
