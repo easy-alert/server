@@ -1,5 +1,4 @@
 import { hyphenToSlash } from '../dataHandler';
-// import { changeTime } from './changeTime';
 
 export function setToUTCMidnight(date: Date | string) {
   let dateValue = date;
