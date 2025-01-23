@@ -352,12 +352,14 @@ export class BuildingServices {
             },
           },
         },
+
         BuildingType: {
           select: {
             id: true,
             name: true,
           },
         },
+
         NotificationsConfigurations: {
           select: {
             id: true,
@@ -374,6 +376,7 @@ export class BuildingServices {
 
           orderBy: [{ isMain: 'desc' }, { name: 'asc' }],
         },
+
         Annexes: {
           select: {
             id: true,
@@ -382,6 +385,7 @@ export class BuildingServices {
             url: true,
           },
         },
+
         Banners: {
           select: {
             originalName: true,
@@ -432,6 +436,17 @@ export class BuildingServices {
             BuildingFolder: {
               parentId: null,
             },
+          },
+        },
+
+        BuildingApartments: {
+          select: {
+            id: true,
+            number: true,
+            floor: true,
+          },
+          orderBy: {
+            number: 'asc',
           },
         },
       },
@@ -641,6 +656,51 @@ export class BuildingServices {
       orderBy: {
         name: 'asc',
       },
+    });
+  }
+
+  async listBuildingApartments({
+    companyId,
+    buildingId,
+  }: {
+    companyId: string;
+    buildingId: string;
+  }) {
+    return prisma.buildingApartment.findMany({
+      where: {
+        companyId,
+        buildingId,
+      },
+    });
+  }
+
+  async updateBuildingApartments({
+    companyId,
+    buildingId,
+    apartments,
+  }: {
+    companyId: string;
+    buildingId: string;
+    apartments: {
+      id?: string;
+      number: string;
+      floor?: string;
+    }[];
+  }) {
+    await prisma.buildingApartment.deleteMany({
+      where: {
+        companyId,
+        buildingId,
+      },
+    });
+
+    await prisma.buildingApartment.createMany({
+      data: apartments.map((apartment) => ({
+        companyId,
+        buildingId,
+        number: apartment.number,
+        floor: apartment.floor,
+      })),
     });
   }
 }
