@@ -11,6 +11,10 @@ const buildingServices = new BuildingServices();
 export async function listBuilding(req: Request, res: Response) {
   const { companyId, search, page, checkPerms } = req.query;
 
+  const isAdmin = req.Permissions.some((permission) =>
+    permission.Permission.name.includes('admin'),
+  );
+
   const parsedCheckPerms = checkPerms === 'true';
   const pagination = page ?? 1;
 
@@ -23,7 +27,7 @@ export async function listBuilding(req: Request, res: Response) {
   const { Buildings, buildingsCount } = await buildingServices.list({
     search: search as string,
     companyId: (req?.Company?.id || companyId) as string,
-    buildingsIds: permittedBuildings,
+    buildingsIds: isAdmin ? undefined : permittedBuildings,
     page: Number(pagination),
   });
 
