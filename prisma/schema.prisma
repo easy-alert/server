@@ -143,6 +143,7 @@ model Company {
   suppliers           Supplier[]
   reportPdfs          MaintenanceReportPdf[]
   TicketReportPDF     TicketReportPDF[]
+  BuildingApartment   BuildingApartment[]
 
   @@map("companies")
 }
@@ -556,8 +557,9 @@ model Building {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  BuildingType                BuildingType                        @relation(fields: [buildingTypeId], references: [id], onDelete: Cascade)
-  Company                     Company                             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  BuildingType BuildingType @relation(fields: [buildingTypeId], references: [id], onDelete: Cascade)
+  Company      Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
   NotificationsConfigurations BuildingNotificationConfiguration[]
   Categories                  BuildingCategory[]
   Annexes                     BuildingAnnexe[]
@@ -569,8 +571,27 @@ model Building {
   checklists                  Checklist[]
   tickets                     Ticket[]
   UserBuildingsPermissions    UserBuildingsPermissions[]
+  BuildingApartments          BuildingApartment[]
 
   @@map("buildings")
+}
+
+model BuildingApartment {
+  id String @id @unique @default(uuid())
+
+  companyId  String
+  buildingId String
+
+  number String
+  floor  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  Building Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+
+  @@map("buildingsApartments")
 }
 
 model BuildingNotificationConfiguration {
