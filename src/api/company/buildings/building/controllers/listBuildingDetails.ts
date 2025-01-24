@@ -28,6 +28,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
       variable: buildingId,
     },
   ]);
+
   await buildingServices.findById({ buildingId });
 
   // #endregion
@@ -177,6 +178,8 @@ export async function listBuildingDetails(req: Request, res: Response) {
           ? BuildingDetails.BuildingFolders[0].BuildingFolder
           : null,
       MaintenancesCount,
+
+      BuildingApartments: BuildingDetails.BuildingApartments,
     };
   }
 

@@ -51,6 +51,7 @@ import { serviceTypesRouter } from './serviceTypes/serviceTypes.routes';
 import { ticketHistoryActivitiesRouter } from './ticketHistoryActivities/ticketHistoryActivities.routes';
 import { ticketDismissReasonsRouter } from './ticketDismissReasons/ticketDismissReasons.routes';
 import { findAllMaintenancePriority } from '../shared/maintenancePriority/controllers/findAllMaintenancePriority';
+import { listBuildingApartmentsController } from './building/controllers/listBuildingApartmentsController';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -166,3 +167,6 @@ clientRouter.use('/ticketHistoryActivities', ticketHistoryActivitiesRouter);
 clientRouter.use('/ticketDismissReasons', ticketDismissReasonsRouter);
 
 clientRouter.get('/priority', findAllMaintenancePriority);
+
+// BUILDINGS APARTMENTS
+clientRouter.get('/buildings/apartments/:buildingId', listBuildingApartmentsController);
