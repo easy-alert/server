@@ -482,11 +482,55 @@ export class BuildingServices {
             name: true,
           },
         },
+
         Maintenances: {
           select: {
             daysToAnticipate: true,
             Maintenance: {
               select: {
+                id: true,
+                element: true,
+                activity: true,
+                frequency: true,
+                delay: true,
+                period: true,
+                responsible: true,
+                source: true,
+                observation: true,
+                ownerCompanyId: true,
+                priorityName: true,
+                instructions: { select: { name: true, url: true } },
+
+                FrequencyTimeInterval: {
+                  select: {
+                    id: true,
+                    name: true,
+                    pluralLabel: true,
+                    singularLabel: true,
+                    unitTime: true,
+                  },
+                },
+
+                DelayTimeInterval: {
+                  select: {
+                    id: true,
+                    name: true,
+                    pluralLabel: true,
+                    singularLabel: true,
+                    unitTime: true,
+                  },
+                },
+
+                PeriodTimeInterval: {
+                  select: {
+                    id: true,
+                    name: true,
+                    pluralLabel: true,
+                    singularLabel: true,
+                    unitTime: true,
+                  },
+                },
+
                 MaintenancesHistory: {
                   select: {
                     wasNotified: true,
@@ -506,45 +550,12 @@ export class BuildingServices {
                     createdAt: 'desc',
                   },
                 },
-                id: true,
-                element: true,
-                activity: true,
-                frequency: true,
-                delay: true,
-                period: true,
-                responsible: true,
-                source: true,
-                observation: true,
-                ownerCompanyId: true,
-                priorityName: true,
-                FrequencyTimeInterval: {
+
+                MaintenanceAdditionalInformation: {
                   select: {
-                    id: true,
-                    name: true,
-                    pluralLabel: true,
-                    singularLabel: true,
-                    unitTime: true,
+                    information: true,
                   },
                 },
-                DelayTimeInterval: {
-                  select: {
-                    id: true,
-                    name: true,
-                    pluralLabel: true,
-                    singularLabel: true,
-                    unitTime: true,
-                  },
-                },
-                PeriodTimeInterval: {
-                  select: {
-                    id: true,
-                    name: true,
-                    pluralLabel: true,
-                    singularLabel: true,
-                    unitTime: true,
-                  },
-                },
-                instructions: { select: { name: true, url: true } },
               },
             },
           },
