@@ -555,6 +555,10 @@ export class BuildingServices {
                   select: {
                     information: true,
                   },
+
+                  where: {
+                    buildingId,
+                  },
                 },
               },
             },
