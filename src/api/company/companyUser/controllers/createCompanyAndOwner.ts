@@ -8,7 +8,7 @@ import { Request, Response } from 'express';
 import { UserServices } from '../../../shared/users/user/services/userServices';
 import { Validator } from '../../../../utils/validator/validator';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
-import { PermissionServices } from '../../../shared/permission/services/permissionServices';
+import { PermissionServices } from '../../../shared/permissions/permission/services/permissionServices';
 import { UserPermissionServices } from '../../../shared/users/userPermission/services/userPermissionServices';
 
 import { CompanyUserServices } from '../services/companyServices';
@@ -48,10 +48,12 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
       message: `Informe um CNPJ ou CPF.`,
     });
   }
+
   if (CNPJ) {
     const checkCNPJ = await sharedCompanyServices.findByCNPJ({ CNPJ });
     validator.cannotExists([{ label: 'CNPJ', variable: checkCNPJ }]);
   }
+
   if (CPF) {
     const checkCPF = await sharedCompanyServices.findByCPF({ CPF });
     validator.cannotExists([{ label: 'CPF', variable: checkCPF }]);
@@ -63,7 +65,7 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     passwordHash: password,
   });
 
-  const permission = await permissionServices.findByName({ name: 'Company' });
+  const permission = await permissionServices.findByName({ name: 'admin:company' });
 
   await userPermissionServices.createUserPermission({
     userId: user.id,
@@ -113,6 +115,7 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
         lastAccess: createdUser.lastAccess,
         createdAt: createdUser.createdAt,
         Permissions: createdUser.Permissions,
+        BuildingsPermissions: createdUser.UserBuildingsPermissions,
       },
       Company: createdUser.Companies[0].Company,
     },

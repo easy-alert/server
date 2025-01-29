@@ -2,13 +2,7 @@
 declare namespace Express {
   export interface Request {
     userId: string;
-    Permissions: [
-      {
-        Permission: {
-          name: string;
-        };
-      },
-    ];
+
     Company: {
       id: string;
       name: string;
@@ -18,6 +12,21 @@ declare namespace Express {
       createdAt: Date;
       image: string;
     };
+
+    Permissions: [
+      {
+        Permission: {
+          name: string;
+        };
+      },
+    ];
+
+    BuildingsPermissions: {
+      Building: {
+        id: string;
+        name: string;
+      };
+    }[];
 
     iat: number;
     exp: number;

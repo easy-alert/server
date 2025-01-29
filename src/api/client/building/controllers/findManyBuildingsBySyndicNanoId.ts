@@ -12,6 +12,7 @@ interface IBuildingsBySyndic {
   buildingNanoId: string;
   companyName: string;
   label: string;
+  companyId: string;
 }
 
 export async function findManyBuildingsBySyndicNanoId(req: Request, res: Response) {
@@ -37,6 +38,7 @@ export async function findManyBuildingsBySyndicNanoId(req: Request, res: Respons
           nanoId: true,
           Company: {
             select: {
+              id: true,
               name: true,
             },
           },
@@ -64,6 +66,7 @@ export async function findManyBuildingsBySyndicNanoId(req: Request, res: Respons
       syndicNanoId: nanoId,
       companyName: Building.Company.name,
       syndicName: name,
+      companyId: Building.Company.id,
       label: hasDuplicatedBuilding ? `${`${Building.name} - ${name}`}` : Building.name,
     });
   });

@@ -14,6 +14,14 @@ const validator = new Validator();
 export async function listBuildingsAndTemplatesForSelect(req: Request, res: Response) {
   const { buildingId } = req.params;
 
+  const isAdmin = req.Permissions.some((permission) =>
+    permission.Permission.name.includes('admin'),
+  );
+
+  const permittedBuildings = req.BuildingsPermissions?.map(
+    (BuildingPermissions) => BuildingPermissions.Building.id,
+  );
+
   validator.check([
     {
       label: 'ID da edificação',
@@ -29,7 +37,7 @@ export async function listBuildingsAndTemplatesForSelect(req: Request, res: Resp
     name: string;
   }[] = await buildingServices.listForSelect({
     companyId: req.Company.id,
-    buildingId,
+    permittedBuildings: isAdmin ? undefined : permittedBuildings,
   });
 
   const templates = await defaultMaintenanceTemplateServices.listTemplatesForSelect();

@@ -183,6 +183,7 @@ export class CompanyServices {
                 lastAccess: true,
               },
             },
+            owner: true,
           },
         },
       },
