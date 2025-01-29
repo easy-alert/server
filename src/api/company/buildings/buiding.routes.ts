@@ -47,6 +47,7 @@ import { updateBuildingBanner } from './buildingBanners/controllers/updateBuildi
 import { deleteBuildingBanner } from './buildingBanners/controllers/deleteBuildingBanner';
 import { updateBuildingApartmentsController } from './building/controllers/updateBuildingApartmentsController';
 import { listBuildingApartmentsController } from './building/controllers/listBuildingApartmentsController';
+import { updateMaintenanceAdditionalInformationController } from './buildingMaintenances/controllers/updateMaintenanceAdditionalInformationController';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -129,3 +130,9 @@ buildingRouter.put('/client-passwords', updateClientPasswordController);
 buildingRouter.get('/apartments/:buildingId', listBuildingApartmentsController);
 
 buildingRouter.put('/apartments/:buildingId', updateBuildingApartmentsController);
+
+// BUILDING MAINTENANCES ADDITIONAL INFORMATION
+buildingRouter.put(
+  '/maintenance/additional-information',
+  updateMaintenanceAdditionalInformationController,
+);
