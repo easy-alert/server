@@ -23,8 +23,8 @@ export async function findManyTicketsController(req: Request, res: Response) {
     count,
   } = req.query;
 
-  const isAdmin = req.Permissions.some((permission) =>
-    permission.Permission.name.includes('admin'),
+  const isAdmin = req.Permissions?.some((permission) =>
+    permission?.Permission?.name?.includes('admin'),
   );
 
   const buildingsIds = buildingsNanoId ?? buildingsNanoIdBody;
