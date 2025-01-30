@@ -22,6 +22,7 @@ export interface IToken {
   BuildingsPermissions: {
     Building: {
       id: string;
+      nanoId: string;
       name: string;
     };
   }[];
