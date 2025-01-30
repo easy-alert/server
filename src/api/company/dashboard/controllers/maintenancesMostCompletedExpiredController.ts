@@ -10,12 +10,14 @@ export async function maintenancesMostCompletedExpiredController(req: Request, r
   const { startDate, endDate } = getPeriod(period as string | undefined);
 
   const dashboardFilter = handleDashboardFilter({
-    buildings: buildings as string | string[],
+    companyId: req.Company.id,
+    buildings: buildings as string[],
     categories: categories as string | string[],
     responsible: responsible as string | string[],
     startDate,
     endDate,
-    companyId: req.Company.id,
+    permissions: req.Permissions,
+    buildingsPermissions: req.BuildingsPermissions,
   });
 
   const { maintenancesData } = await dashboardServices.maintenancesMostCompletedExpired({

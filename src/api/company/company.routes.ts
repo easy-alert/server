@@ -35,6 +35,7 @@ import { findAllMaintenancePriority } from '../shared/maintenancePriority/contro
 import { tutorialsRouter } from './tutorials/tutorials.routes';
 import { usersRouter } from './users/users.routes';
 import { permissionsRouter } from './permissions/permissions.routes';
+import { listForSelectRouter } from './listForSelect/list.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -181,4 +182,11 @@ companyRouter.use(
   authMiddleware,
   handleCompanyPermCheck(['access:company']),
   permissionsRouter,
+);
+
+companyRouter.use(
+  '/list',
+  authMiddleware,
+  handleCompanyPermCheck(['access:company']),
+  listForSelectRouter,
 );
