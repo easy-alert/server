@@ -5,6 +5,8 @@ import { changeTime } from '../../../../utils/dateTime/changeTime';
 // CLASS
 import { SharedCalendarServices } from '../../../shared/calendar/services/SharedCalendarServices';
 import { buildingServices } from '../../buildings/building/services/buildingServices';
+import { hasAdminPermission } from '../../../../utils/permissions/hasAdminPermission';
+import { handlePermittedBuildings } from '../../../../utils/permissions/handlePermittedBuildings';
 
 const sharedCalendarServices = new SharedCalendarServices();
 
@@ -12,17 +14,18 @@ const sharedCalendarServices = new SharedCalendarServices();
 
 export async function listCalendarMaintenances(req: Request, res: Response) {
   const { year } = req.params;
-  const filter = req.query;
+  const filter = req.query as { buildingId: string };
 
-  const isAdmin = req.Permissions.some((permission) =>
-    permission.Permission.name.includes('admin'),
-  );
+  let buildingsArray: string[] | undefined = [];
 
-  const permittedBuildings = req.BuildingsPermissions?.map(
-    (BuildingPermissions) => BuildingPermissions.Building.id,
-  );
-  const formattedFilter = filter.filter ? [String(filter.filter)] : undefined;
-  const buildingId = isAdmin ? formattedFilter : permittedBuildings;
+  const isAdmin = hasAdminPermission(req.Permissions);
+  const permittedBuildings = handlePermittedBuildings(req.BuildingsPermissions, 'id');
+
+  if (!filter.buildingId) {
+    buildingsArray = isAdmin ? undefined : permittedBuildings;
+  } else {
+    buildingsArray = [filter.buildingId];
+  }
 
   const YEARFORSUM = 5;
 
@@ -32,7 +35,7 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
       companyId: req.Company.id,
       startDate: new Date(`01/01/${year}`),
       endDate: new Date(`12/31/${Number(year) + YEARFORSUM}`),
-      buildingId,
+      buildingId: buildingsArray,
     });
 
   const Dates = [];
