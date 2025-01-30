@@ -55,10 +55,12 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
       message: `Informe um CNPJ ou CPF.`,
     });
   }
+
   if (CNPJ) {
     const checkCNPJ = await sharedCompanyServices.findByCNPJ({ CNPJ });
     validator.cannotExists([{ label: 'CNPJ', variable: checkCNPJ }]);
   }
+
   if (CPF) {
     const checkCPF = await sharedCompanyServices.findByCPF({ CPF });
     validator.cannotExists([{ label: 'CPF', variable: checkCPF }]);
@@ -70,7 +72,7 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     passwordHash: password,
   });
 
-  const permission = await permissionServices.findByName({ name: 'Company' });
+  const permission = await permissionServices.findByName({ name: 'admin:company' });
 
   await userPermissionServices.createUserPermission({
     userId: user.id,
