@@ -239,8 +239,12 @@ export class BuildingServices {
     ]);
   }
 
-  async list({ take = 20, page, search = '', companyId }: IListBuildings) {
+  async list({ take = 20, page, search = '', companyId, buildingsIds }: IListBuildings) {
     const where: prismaTypes.BuildingWhereInput = {
+      id: {
+        in: buildingsIds,
+      },
+      companyId,
       OR: [
         {
           name: {
@@ -261,7 +265,6 @@ export class BuildingServices {
           },
         },
       ],
-      companyId,
     };
 
     const [Buildings, buildingsCount] = await prisma.$transaction([
@@ -349,12 +352,14 @@ export class BuildingServices {
             },
           },
         },
+
         BuildingType: {
           select: {
             id: true,
             name: true,
           },
         },
+
         NotificationsConfigurations: {
           select: {
             id: true,
@@ -371,6 +376,7 @@ export class BuildingServices {
 
           orderBy: [{ isMain: 'desc' }, { name: 'asc' }],
         },
+
         Annexes: {
           select: {
             id: true,
@@ -379,6 +385,7 @@ export class BuildingServices {
             url: true,
           },
         },
+
         Banners: {
           select: {
             originalName: true,
@@ -431,6 +438,17 @@ export class BuildingServices {
             },
           },
         },
+
+        BuildingApartments: {
+          select: {
+            id: true,
+            number: true,
+            floor: true,
+          },
+          orderBy: {
+            number: 'asc',
+          },
+        },
       },
       where: {
         id: buildingId,
@@ -464,11 +482,55 @@ export class BuildingServices {
             name: true,
           },
         },
+
         Maintenances: {
           select: {
             daysToAnticipate: true,
             Maintenance: {
               select: {
+                id: true,
+                element: true,
+                activity: true,
+                frequency: true,
+                delay: true,
+                period: true,
+                responsible: true,
+                source: true,
+                observation: true,
+                ownerCompanyId: true,
+                priorityName: true,
+                instructions: { select: { name: true, url: true } },
+
+                FrequencyTimeInterval: {
+                  select: {
+                    id: true,
+                    name: true,
+                    pluralLabel: true,
+                    singularLabel: true,
+                    unitTime: true,
+                  },
+                },
+
+                DelayTimeInterval: {
+                  select: {
+                    id: true,
+                    name: true,
+                    pluralLabel: true,
+                    singularLabel: true,
+                    unitTime: true,
+                  },
+                },
+
+                PeriodTimeInterval: {
+                  select: {
+                    id: true,
+                    name: true,
+                    pluralLabel: true,
+                    singularLabel: true,
+                    unitTime: true,
+                  },
+                },
+
                 MaintenancesHistory: {
                   select: {
                     wasNotified: true,
@@ -488,45 +550,16 @@ export class BuildingServices {
                     createdAt: 'desc',
                   },
                 },
-                id: true,
-                element: true,
-                activity: true,
-                frequency: true,
-                delay: true,
-                period: true,
-                responsible: true,
-                source: true,
-                observation: true,
-                ownerCompanyId: true,
-                priorityName: true,
-                FrequencyTimeInterval: {
+
+                MaintenanceAdditionalInformation: {
                   select: {
-                    id: true,
-                    name: true,
-                    pluralLabel: true,
-                    singularLabel: true,
-                    unitTime: true,
+                    information: true,
+                  },
+
+                  where: {
+                    buildingId,
                   },
                 },
-                DelayTimeInterval: {
-                  select: {
-                    id: true,
-                    name: true,
-                    pluralLabel: true,
-                    singularLabel: true,
-                    unitTime: true,
-                  },
-                },
-                PeriodTimeInterval: {
-                  select: {
-                    id: true,
-                    name: true,
-                    pluralLabel: true,
-                    singularLabel: true,
-                    unitTime: true,
-                  },
-                },
-                instructions: { select: { name: true, url: true } },
               },
             },
           },
@@ -617,11 +650,11 @@ export class BuildingServices {
   }
 
   async listForSelect({
+    permittedBuildings,
     companyId,
-    buildingId,
   }: {
+    permittedBuildings?: string[];
     companyId: string;
-    buildingId: string | undefined;
   }) {
     return prisma.building.findMany({
       select: {
@@ -630,14 +663,59 @@ export class BuildingServices {
         nanoId: true,
       },
       where: {
-        companyId,
-        NOT: {
-          id: buildingId,
+        id: {
+          in: permittedBuildings,
         },
+        companyId,
       },
       orderBy: {
         name: 'asc',
       },
+    });
+  }
+
+  async listBuildingApartments({
+    companyId,
+    buildingId,
+  }: {
+    companyId: string;
+    buildingId: string;
+  }) {
+    return prisma.buildingApartment.findMany({
+      where: {
+        companyId,
+        buildingId,
+      },
+    });
+  }
+
+  async updateBuildingApartments({
+    companyId,
+    buildingId,
+    apartments,
+  }: {
+    companyId: string;
+    buildingId: string;
+    apartments: {
+      id?: string;
+      number: string;
+      floor?: string;
+    }[];
+  }) {
+    await prisma.buildingApartment.deleteMany({
+      where: {
+        companyId,
+        buildingId,
+      },
+    });
+
+    await prisma.buildingApartment.createMany({
+      data: apartments.map((apartment) => ({
+        companyId,
+        buildingId,
+        number: apartment.number,
+        floor: apartment.floor,
+      })),
     });
   }
 }

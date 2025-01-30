@@ -45,6 +45,9 @@ import { generateMaintenanceReportPDF } from './reports/controllers/generateMain
 import { listReportPdfs } from './reports/controllers/listReportPdfs';
 import { updateBuildingBanner } from './buildingBanners/controllers/updateBuildingBanner';
 import { deleteBuildingBanner } from './buildingBanners/controllers/deleteBuildingBanner';
+import { updateBuildingApartmentsController } from './building/controllers/updateBuildingApartmentsController';
+import { listBuildingApartmentsController } from './building/controllers/listBuildingApartmentsController';
+import { updateMaintenanceAdditionalInformationController } from './buildingMaintenances/controllers/updateMaintenanceAdditionalInformationController';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -122,3 +125,14 @@ buildingRouter.use('/folders', foldersRouter);
 
 //
 buildingRouter.put('/client-passwords', updateClientPasswordController);
+
+// BUILDINGS APARTMENTS
+buildingRouter.get('/apartments/:buildingId', listBuildingApartmentsController);
+
+buildingRouter.put('/apartments/:buildingId', updateBuildingApartmentsController);
+
+// BUILDING MAINTENANCES ADDITIONAL INFORMATION
+buildingRouter.put(
+  '/maintenance/additional-information',
+  updateMaintenanceAdditionalInformationController,
+);

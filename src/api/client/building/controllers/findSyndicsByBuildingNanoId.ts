@@ -11,7 +11,7 @@ const buildingServices = new BuildingServices();
 export async function findSyndicsByBuildingNanoId(req: Request, res: Response) {
   const { buildingNanoId } = req.params;
 
-  validator.check([{ label: 'Id da edificaçao', type: 'string', variable: buildingNanoId }]);
+  validator.check([{ label: 'Id da edificação', type: 'string', variable: buildingNanoId }]);
 
   await buildingServices.findByNanoId({ buildingNanoId });
 

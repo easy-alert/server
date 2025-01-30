@@ -35,11 +35,14 @@ export async function listBuildingDetailsMaintenances(req: Request, res: Respons
     ...category,
     Maintenances: category.Maintenances.map((maintenance) => {
       const recentDates = handleMaintenanceRecentDates(maintenance);
+
       return {
         ...maintenance,
         Maintenance: {
           ...maintenance.Maintenance,
           ...recentDates,
+          MaintenanceAdditionalInformation:
+            maintenance.Maintenance.MaintenanceAdditionalInformation[0],
         },
       };
     }),

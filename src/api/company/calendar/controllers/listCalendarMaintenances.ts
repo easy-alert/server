@@ -5,17 +5,29 @@ import { changeTime } from '../../../../utils/dateTime/changeTime';
 // CLASS
 import { SharedCalendarServices } from '../../../shared/calendar/services/SharedCalendarServices';
 import { buildingServices } from '../../buildings/building/services/buildingServices';
+import { hasAdminPermission } from '../../../../utils/permissions/hasAdminPermission';
+import { handlePermittedBuildings } from '../../../../utils/permissions/handlePermittedBuildings';
 
 const sharedCalendarServices = new SharedCalendarServices();
 
 // #endregion
 
 export async function listCalendarMaintenances(req: Request, res: Response) {
-  const YEARFORSUM = 5;
-
   const { year } = req.params;
-  const filter = req.query;
-  const buildingId = filter.buildingId ? String(filter.buildingId) : undefined;
+  const filter = req.query as { buildingId: string };
+
+  let buildingsArray: string[] | undefined = [];
+
+  const isAdmin = hasAdminPermission(req.Permissions);
+  const permittedBuildings = handlePermittedBuildings(req.BuildingsPermissions, 'id');
+
+  if (!filter.buildingId) {
+    buildingsArray = isAdmin ? undefined : permittedBuildings;
+  } else {
+    buildingsArray = [filter.buildingId];
+  }
+
+  const YEARFORSUM = 5;
 
   // #region GENERATE HISTORY MAINTENANCES
   const { Filter, Maintenances, MaintenancesPending } =
@@ -23,7 +35,7 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
       companyId: req.Company.id,
       startDate: new Date(`01/01/${year}`),
       endDate: new Date(`12/31/${Number(year) + YEARFORSUM}`),
-      buildingId,
+      buildingId: buildingsArray,
     });
 
   const Dates = [];

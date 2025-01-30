@@ -1,0 +1,16 @@
+export type TModulesNames =
+  | 'admin'
+  | 'access'
+  | 'backoffice'
+  | 'company'
+  | 'client'
+  | 'dashboard'
+  | 'calendar'
+  | 'buildings'
+  | 'checklist'
+  | 'tickets'
+  | 'reports'
+  | 'suppliers'
+  | 'tutorials'
+  | 'account'
+  | 'maintenances';

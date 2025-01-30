@@ -6,7 +6,7 @@ import { AuthServices } from '../../../shared/auth/services/authServices';
 import { TokenServices } from '../../../../utils/token/tokenServices';
 import { Validator } from '../../../../utils/validator/validator';
 
-import { PermissionServices } from '../../../shared/permission/services/permissionServices';
+import { PermissionServices } from '../../../shared/permissions/permission/services/permissionServices';
 
 const permissionServices = new PermissionServices();
 const authServices = new AuthServices();
@@ -28,14 +28,20 @@ export const authBackofficeCompany = async (req: Request, res: Response) => {
 
   await permissionServices.checkPermission({
     UserPermissions: user.Permissions,
-    permission: 'Company',
+    permissions: ['admin:company', 'access:company'],
+  });
+
+  const isCompanyOwner = await authServices.isCompanyOwner({
+    userId,
+    companyId: user.Companies[0].Company.id,
   });
 
   const token = tokenServices.generate({
     tokenData: {
       userId: user.id,
-      Permissions: user.Permissions,
       Company: user.Companies[0].Company,
+      Permissions: user.Permissions,
+      BuildingsPermissions: user.UserBuildingsPermissions,
     },
   });
 
@@ -47,8 +53,10 @@ export const authBackofficeCompany = async (req: Request, res: Response) => {
         name: user.name,
         email: user.email,
         lastAccess: user.lastAccess,
+        isCompanyOwner,
         createdAt: user.createdAt,
         Permissions: user.Permissions,
+        BuildingsPermissions: user.UserBuildingsPermissions,
       },
       Company: user.Companies[0].Company,
     },
