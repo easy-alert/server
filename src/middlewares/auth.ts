@@ -4,7 +4,7 @@ import { verify } from 'jsonwebtoken';
 // CLASS
 import { NextFunction, Request, Response } from 'express';
 import { ServerMessage } from '../utils/messages/serverMessage';
-import { Itoken } from './types';
+import { IToken } from './types';
 import { UserServices } from '../api/shared/users/user/services/userServices';
 // TYPES
 
@@ -25,13 +25,14 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
     const secret: any = process.env.JWT_SECRET;
 
     const decoded = verify(token, secret);
-    const { userId, Permissions, Company } = decoded as Itoken;
+    const { userId, Company, Permissions, BuildingsPermissions } = decoded as IToken;
 
     await userServices.findById({ userId });
 
     req.userId = userId;
-    req.Permissions = Permissions;
     req.Company = Company;
+    req.Permissions = Permissions;
+    req.BuildingsPermissions = BuildingsPermissions;
 
     next();
   } catch (error) {

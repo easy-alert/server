@@ -7,6 +7,8 @@ import {
   setToUTCMidnight,
 } from '../../../../utils/dateTime';
 import { checkDateRanges, checkValues } from '../../../../utils/newValidator';
+import { hasAdminPermission } from '../../../../utils/permissions/hasAdminPermission';
+import { handlePermittedBuildings } from '../../../../utils/permissions/handlePermittedBuildings';
 
 export interface IParsedFilters {
   buildingNames?: string[];
@@ -76,6 +78,13 @@ export async function findChecklistReportController(req: Request, res: Response)
   ]);
 
   await checklistServices.checkAccessByCompany({ companyId });
+
+  const isAdmin = hasAdminPermission(req.Permissions);
+  const permittedBuildings = handlePermittedBuildings(req.BuildingsPermissions, 'name');
+
+  if (parsedFilters.buildingNames?.length === 0) {
+    parsedFilters.buildingNames = isAdmin ? undefined : permittedBuildings;
+  }
 
   const checklists = await checklistServices.findManyForReport({
     ...parsedFilters,

@@ -1,12 +1,5 @@
-export interface Itoken {
+export interface IToken {
   userId: string;
-  Permissions: [
-    {
-      Permission: {
-        name: string;
-      };
-    },
-  ];
 
   Company: {
     id: string;
@@ -17,6 +10,22 @@ export interface Itoken {
     createdAt: Date;
     image: string;
   };
+
+  Permissions: [
+    {
+      Permission: {
+        name: string;
+      };
+    },
+  ];
+
+  BuildingsPermissions: {
+    Building: {
+      id: string;
+      nanoId: string;
+      name: string;
+    };
+  }[];
 
   iat: number;
   exp: number;

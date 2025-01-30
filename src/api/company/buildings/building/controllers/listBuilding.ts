@@ -9,13 +9,25 @@ const buildingServices = new BuildingServices();
 // #endregion
 
 export async function listBuilding(req: Request, res: Response) {
-  const { search, page } = req.query;
+  const { companyId, search, page, checkPerms } = req.query;
 
+  const isAdmin = req.Permissions.some((permission) =>
+    permission.Permission.name.includes('admin'),
+  );
+
+  const parsedCheckPerms = checkPerms === 'true';
   const pagination = page ?? 1;
+
+  let permittedBuildings: string[] | undefined;
+
+  if (parsedCheckPerms) {
+    permittedBuildings = req.BuildingsPermissions?.map((b: any) => b.Building.id);
+  }
 
   const { Buildings, buildingsCount } = await buildingServices.list({
     search: search as string,
-    companyId: req.Company.id,
+    companyId: (req?.Company?.id || companyId) as string,
+    buildingsIds: isAdmin ? undefined : permittedBuildings,
     page: Number(pagination),
   });
 

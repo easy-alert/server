@@ -118,6 +118,7 @@ class TicketServices {
           seen: true,
           building: {
             select: {
+              id: true,
               nanoId: true,
               name: true,
             },

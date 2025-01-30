@@ -8,7 +8,9 @@ const seedServices = new SeedServices();
 async function main() {
   console.log('seed is running ...');
 
-  await seedServices.createPermissions();
+  // await seedServices.createPermissions();
+  await seedServices.upsertPermissions();
+
   await seedServices.createAdminBackoffice();
   await seedServices.createAdminCompany();
   await seedServices.createTimeIntervals();

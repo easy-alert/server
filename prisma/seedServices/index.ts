@@ -6,43 +6,55 @@ import {
   MaintenancePriorityName,
 } from '@prisma/client';
 import { hashSync } from 'bcrypt';
-
-// CLASS
-import { PermissionServices } from '../../src/api/shared/permission/services/permissionServices';
-import { CompanyServices } from '../../src/api/backoffice/users/accounts/services/companyServices';
 import { prisma } from '..';
+
+// SERVICES
+import { CompanyServices } from '../../src/api/backoffice/users/accounts/services/companyServices';
+import { PermissionServices } from '../../src/api/shared/permissions/permission/services/permissionServices';
+
+// PERMISSIONS
+import {
+  IPermissionUpsert,
+  accessPermissions,
+  adminPermissions,
+  buildingsPermissions,
+  maintenancesPermissions,
+  ticketsPermissions,
+} from './permissionsUpsert';
 
 const permissionServices = new PermissionServices();
 const companyServices = new CompanyServices();
 
 export class SeedServices {
-  async createPermissions() {
-    console.log('\n\nstarting permissions creation ...');
+  async upsertPermissions() {
+    const modulePermissions: IPermissionUpsert[] = [
+      // admin permissions
+      ...adminPermissions,
 
-    const permissions: Prisma.PermissionCreateInput[] = [
-      {
-        name: 'Backoffice',
-      },
-      {
-        name: 'Company',
-      },
-      {
-        name: 'BuildingManager',
-      },
+      // access permissions
+      ...accessPermissions,
+
+      // buildings permissions
+      ...buildingsPermissions,
+
+      // tickets permissions
+      ...ticketsPermissions,
+
+      // maintenance permissions
+      ...maintenancesPermissions,
     ];
 
-    for (const permission of permissions) {
+    for (const modulePermission of modulePermissions) {
       await prisma.permission.upsert({
-        create: permission,
-        update: permission,
+        create: modulePermission,
+        update: modulePermission,
         where: {
-          name: permission.name,
+          name: modulePermission.name,
         },
       });
-      console.log('permission ', permission.name, ' inserted.');
-    }
 
-    console.log('Permissions upserted.');
+      console.log('permission ', modulePermission.name, ' inserted.');
+    }
   }
 
   async createAdminBackoffice() {
@@ -64,7 +76,7 @@ export class SeedServices {
 
     const permissions = [
       {
-        name: 'Backoffice',
+        name: 'admin:backoffice',
       },
     ];
 
@@ -73,10 +85,20 @@ export class SeedServices {
         name: permission.name,
       });
 
-      await prisma.userPermissions.create({
-        data: {
+      await prisma.userPermissions.upsert({
+        create: {
           userId: backoffice.id,
           permissionId: permissionData!.id,
+        },
+        update: {
+          userId: backoffice.id,
+          permissionId: permissionData!.id,
+        },
+        where: {
+          userId_permissionId: {
+            userId: backoffice.id,
+            permissionId: permissionData!.id,
+          },
         },
       });
 
@@ -124,7 +146,7 @@ export class SeedServices {
 
     const permissions = [
       {
-        name: 'Company',
+        name: 'admin:company',
       },
     ];
 
@@ -133,10 +155,20 @@ export class SeedServices {
         name: permission.name,
       });
 
-      await prisma.userPermissions.create({
-        data: {
+      await prisma.userPermissions.upsert({
+        create: {
           userId: backoffice.id,
           permissionId: permissionData!.id,
+        },
+        update: {
+          userId: backoffice.id,
+          permissionId: permissionData!.id,
+        },
+        where: {
+          userId_permissionId: {
+            userId: backoffice.id,
+            permissionId: permissionData!.id,
+          },
         },
       });
 
