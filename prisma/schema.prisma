@@ -915,6 +915,8 @@ model Ticket {
   maintenanceHistoryId String?
   seen                 Boolean          @default(false)
   showToResident       Boolean          @default(false)
+  signature            String?
+  collaborator         String?
 
   dismissReasonName  TicketDismissReasonsName?
   dismissObservation String?
