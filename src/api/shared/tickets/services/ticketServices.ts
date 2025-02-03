@@ -560,7 +560,7 @@ class TicketServices {
       },
     });
 
-    await prisma.ticket.update({
+    return prisma.ticket.update({
       data: {
         ...updatedTicket,
         dismissedById: syndicData?.id,
