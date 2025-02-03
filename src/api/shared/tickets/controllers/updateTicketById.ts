@@ -58,7 +58,7 @@ export async function updateTicketById(req: Request, res: Response) {
 
   checkValues([{ value: ticketId, label: 'Ticket ID', type: 'string', required: true }]);
 
-  await ticketServices.updateOneTicket({
+  const ticket = await ticketServices.updateOneTicket({
     ticketId,
     updatedTicket,
   });
@@ -84,5 +84,7 @@ export async function updateTicketById(req: Request, res: Response) {
     });
   }
 
-  return res.status(200).json({ ServerMessage: { message: 'Ticket foi atualizado com sucesso' } });
+  return res
+    .status(200)
+    .json({ ticket, ServerMessage: { message: 'Ticket foi atualizado com sucesso' } });
 }
