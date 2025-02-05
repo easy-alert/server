@@ -904,20 +904,22 @@ model ChecklistDetailImage {
 model Ticket {
   id String @id @default(uuid())
 
-  ticketNumber         Int              @unique @default(autoincrement())
   buildingId           String
-  residentName         String
-  residentApartment    String
-  residentEmail        String?
-  residentCPF          String?
-  description          String
   placeId              String
-  statusName           TicketStatusName
   maintenanceHistoryId String?
-  seen                 Boolean          @default(false)
-  showToResident       Boolean          @default(false)
-  signature            String?
-  collaborator         String?
+
+  ticketNumber      Int              @unique @default(autoincrement())
+  residentName      String
+  residentPhone     String?
+  residentApartment String
+  residentEmail     String?
+  residentCPF       String?
+  description       String
+  statusName        TicketStatusName
+  signature         String?
+  collaborator      String?
+  seen              Boolean          @default(false)
+  showToResident    Boolean          @default(false)
 
   dismissReasonName  TicketDismissReasonsName?
   dismissObservation String?
