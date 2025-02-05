@@ -909,6 +909,7 @@ model Ticket {
   residentName         String
   residentApartment    String
   residentEmail        String?
+  residentCPF          String?
   description          String
   placeId              String
   statusName           TicketStatusName
