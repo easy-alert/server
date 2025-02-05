@@ -9,6 +9,7 @@ import { connectTicketsToExistingMaintenancesController } from '../../shared/tic
 import { updateTicketById } from '../../shared/tickets/controllers/updateTicketById';
 import { findAllTicketPlaces } from '../../shared/ticketPlaces/controllers/findAllTicketPlaces';
 import { findAllStatus } from '../../shared/ticketStatus/controllers/findAllStatus';
+import { findTicketApartmentsController } from '../../shared/tickets/controllers/findTicketApartmentsController';
 
 export const ticketRouter: Router = Router();
 
@@ -27,5 +28,7 @@ ticketRouter.get(
   '/extras/occasional-maintenances/:buildingNanoId',
   findOccasionalMaintenancesForTicketsController,
 );
+
+ticketRouter.get('/apartments/:buildingNanoId', findTicketApartmentsController);
 
 ticketRouter.post('/connect-to-maintenance', connectTicketsToExistingMaintenancesController);
