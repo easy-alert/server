@@ -104,7 +104,6 @@ class TicketServices {
     endDate,
     placeId,
     serviceTypeId,
-    apartmentsId,
     seen,
   }: IFindMany) {
     const [tickets, ticketsByYear] = await prisma.$transaction([
