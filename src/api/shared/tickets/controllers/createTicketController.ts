@@ -8,6 +8,7 @@ interface IBody {
   residentEmail?: string | null;
   residentApartment: string;
   residentCPF?: string;
+  residentPhone?: string;
   description: string;
   placeId: string;
   buildingNanoId: string;
@@ -28,6 +29,7 @@ export async function createTicketController(req: Request, res: Response) {
     residentApartment,
     residentName,
     residentEmail,
+    residentPhone,
     residentCPF,
     images,
     types,
@@ -41,6 +43,7 @@ export async function createTicketController(req: Request, res: Response) {
     { label: 'E-mail do morador', type: 'email', value: residentEmail, required: false },
     { label: 'Apartamento do morador', type: 'string', value: residentApartment },
     { label: 'CPF do morador', type: 'string', value: residentCPF, required: false },
+    { label: 'Telefone do morador', type: 'string', value: residentPhone, required: false },
     { label: 'Imagens', type: 'array', value: images },
     { label: 'Tipo de assistência', type: 'array', value: types },
   ]);
@@ -69,6 +72,7 @@ export async function createTicketController(req: Request, res: Response) {
       residentApartment,
       residentEmail: lowerCaseEmail,
       residentCPF,
+      residentPhone,
       placeId,
       description,
       statusName: 'open',
