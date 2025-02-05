@@ -5,7 +5,19 @@ import { ticketServices } from '../services/ticketServices';
 export async function findTicketApartmentsController(req: Request, res: Response) {
   const { buildingNanoId } = req.params;
 
-  const ticketApartments = await ticketServices.findManyTicketApartments({ buildingNanoId });
+  const buildingNanoIdArray = buildingNanoId.split(',');
 
-  return res.status(200).json(ticketApartments);
+  let ticketsApartmentsArray: any[] = [];
+
+  for (const element of buildingNanoIdArray) {
+    const ticketApartments = await ticketServices.findManyTicketApartments({
+      buildingNanoId: element,
+    });
+
+    if (ticketApartments) {
+      ticketsApartmentsArray = ticketsApartmentsArray.concat(Object.values(ticketApartments));
+    }
+  }
+
+  return res.status(200).json(ticketsApartmentsArray);
 }
