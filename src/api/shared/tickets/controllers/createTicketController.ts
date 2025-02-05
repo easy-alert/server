@@ -42,7 +42,7 @@ export async function createTicketController(req: Request, res: Response) {
     { label: 'Apartamento do morador', type: 'string', value: residentApartment },
     { label: 'CPF do morador', type: 'string', value: residentCPF, required: false },
     { label: 'Imagens', type: 'array', value: images },
-    { label: 'Tipo da manutenção', type: 'array', value: types },
+    { label: 'Tipo de assistência', type: 'array', value: types },
   ]);
 
   images?.forEach((data) => {
@@ -53,7 +53,7 @@ export async function createTicketController(req: Request, res: Response) {
   });
 
   types?.forEach((data) => {
-    checkValues([{ label: 'Tipo da manutenção', type: 'string', value: data.serviceTypeId }]);
+    checkValues([{ label: 'Tipo de assistência', type: 'string', value: data.serviceTypeId }]);
   });
 
   await ticketServices.checkAccess({ buildingNanoId });
