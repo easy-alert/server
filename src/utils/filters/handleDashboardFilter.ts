@@ -14,8 +14,8 @@ interface IHandleDashboardFilter {
   buildings: string | string[];
   categories: string | string[];
   responsible: string | string[];
-  startDate: Date;
-  endDate: Date;
+  startDate?: Date;
+  endDate?: Date;
 
   permissions: Request['Permissions'];
   buildingsPermissions: Request['BuildingsPermissions'];
