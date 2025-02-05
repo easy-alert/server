@@ -12,6 +12,7 @@ import { findAllTicketPlaces } from '../../shared/ticketPlaces/controllers/findA
 import { findAllStatus } from '../../shared/ticketStatus/controllers/findAllStatus';
 import { generateTicketReportPDF } from '../reports/controllers/generateTicketReportPDF';
 import { listTicketsByCompanyId } from '../reports/controllers/listTicketsByCompanyId';
+import { findTicketApartmentsController } from '../../shared/tickets/controllers/findTicketApartmentsController';
 
 export const ticketRouter: Router = Router();
 
@@ -35,5 +36,7 @@ ticketRouter.get(
   '/extras/occasional-maintenances/:buildingNanoId',
   findOccasionalMaintenancesForTicketsController,
 );
+
+ticketRouter.get('/apartments/:buildingNanoId', findTicketApartmentsController);
 
 ticketRouter.post('/connect-to-maintenance', connectTicketsToExistingMaintenancesController);
