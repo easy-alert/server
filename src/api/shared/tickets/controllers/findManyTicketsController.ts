@@ -14,7 +14,7 @@ export async function findManyTicketsController(req: Request, res: Response) {
     buildingsNanoIdBody,
     placesId,
     serviceTypesId,
-    apartmentsId,
+    apartmentsNames,
     status,
     startDate,
     endDate,
@@ -48,8 +48,10 @@ export async function findManyTicketsController(req: Request, res: Response) {
     typeof status === 'string' && status !== ''
       ? (status.split(',') as TicketStatusName[])
       : undefined;
-  const apartmentsIdFilter =
-    typeof apartmentsId === 'string' && apartmentsId !== '' ? apartmentsId.split(',') : undefined;
+  const apartmentsNamesFilter =
+    typeof apartmentsNames === 'string' && apartmentsNames !== ''
+      ? apartmentsNames.split(',')
+      : undefined;
 
   const seenFilter = seen ? seen === 'true' : undefined;
 
@@ -74,7 +76,7 @@ export async function findManyTicketsController(req: Request, res: Response) {
     statusName: statusFilter,
     placeId: placeIdFilter,
     serviceTypeId: serviceTypeIdFilter,
-    apartmentsId: apartmentsIdFilter,
+    apartmentsNames: apartmentsNamesFilter,
     startDate: startDateFilter,
     endDate: endDateFilter,
     seen: seenFilter,
