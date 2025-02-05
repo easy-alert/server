@@ -45,7 +45,9 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     { label: 'imagem', variable: image },
   ]);
 
-  const checkUser = await userServices.findEmailForCreate({ email });
+  const emailLowerCase = email.toLowerCase() as string;
+
+  const checkUser = await userServices.findEmailForCreate({ email: emailLowerCase });
 
   validator.cannotExists([{ label: 'e-mail', variable: checkUser }]);
 
@@ -68,7 +70,7 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
 
   const user = await userServices.create({
     name,
-    email,
+    email: emailLowerCase,
     passwordHash: password,
   });
 

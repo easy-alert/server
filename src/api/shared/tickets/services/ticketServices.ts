@@ -13,6 +13,7 @@ interface IFindMany {
   statusName?: TicketStatusName[];
   placeId?: string[];
   serviceTypeId?: string[];
+  apartmentsNames?: string[];
   companyId: string | undefined;
   startDate?: Date;
   endDate?: Date;
@@ -103,6 +104,7 @@ class TicketServices {
     endDate,
     placeId,
     serviceTypeId,
+    apartmentsNames,
     seen,
   }: IFindMany) {
     const [tickets, ticketsByYear] = await prisma.$transaction([
@@ -163,6 +165,10 @@ class TicketServices {
             id: {
               in: placeId,
             },
+          },
+
+          residentApartment: {
+            in: apartmentsNames,
           },
 
           seen,
@@ -560,7 +566,7 @@ class TicketServices {
       },
     });
 
-    await prisma.ticket.update({
+    return prisma.ticket.update({
       data: {
         ...updatedTicket,
         dismissedById: syndicData?.id,
@@ -570,6 +576,27 @@ class TicketServices {
         id: ticketId,
       },
     });
+  }
+
+  async findManyTicketApartments({ buildingNanoId }: { buildingNanoId: string }) {
+    const apartments = await prisma.building.findUnique({
+      select: {
+        BuildingApartments: {
+          select: {
+            id: true,
+            number: true,
+          },
+          orderBy: {
+            number: 'asc',
+          },
+        },
+      },
+      where: {
+        nanoId: buildingNanoId,
+      },
+    });
+
+    return apartments?.BuildingApartments;
   }
 }
 

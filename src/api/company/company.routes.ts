@@ -59,8 +59,6 @@ companyRouter.use('/usercompany', companyUserRouter);
 
 companyRouter.get('/timeinterval/list', listTimeIntervals);
 
-companyRouter.use('/upload', uploadRouter);
-
 companyRouter.use(
   '/account',
   authMiddleware,
@@ -190,3 +188,6 @@ companyRouter.use(
   handleCompanyPermCheck(['access:company']),
   listForSelectRouter,
 );
+
+// upload routes
+companyRouter.use('/upload', uploadRouter);
