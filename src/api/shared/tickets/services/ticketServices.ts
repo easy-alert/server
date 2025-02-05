@@ -13,7 +13,7 @@ interface IFindMany {
   statusName?: TicketStatusName[];
   placeId?: string[];
   serviceTypeId?: string[];
-  apartmentsId?: string[];
+  apartmentsNames?: string[];
   companyId: string | undefined;
   startDate?: Date;
   endDate?: Date;
@@ -104,6 +104,7 @@ class TicketServices {
     endDate,
     placeId,
     serviceTypeId,
+    apartmentsNames,
     seen,
   }: IFindMany) {
     const [tickets, ticketsByYear] = await prisma.$transaction([
@@ -164,6 +165,10 @@ class TicketServices {
             id: {
               in: placeId,
             },
+          },
+
+          residentApartment: {
+            in: apartmentsNames,
           },
 
           seen,
