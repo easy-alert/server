@@ -564,6 +564,7 @@ model Building {
   mandatoryReportProof              Boolean  @default(false)
   isActivityLogPublic               Boolean  @default(false)
   guestCanCompleteMaintenance       Boolean  @default(true)
+  image                             String?
 
   residentPassword String?
   syndicPassword   String?
