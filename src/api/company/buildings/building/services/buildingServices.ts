@@ -323,6 +323,7 @@ export class BuildingServices {
         neighborhood: true,
         streetName: true,
         area: true,
+        image: true,
         deliveryDate: true,
         warrantyExpiration: true,
         keepNotificationAfterWarrantyEnds: true,
