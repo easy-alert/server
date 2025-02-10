@@ -157,6 +157,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
       neighborhood: BuildingDetails.neighborhood,
       state: BuildingDetails.state,
       city: BuildingDetails.city,
+      image: BuildingDetails.image,
       deliveryDate: BuildingDetails.deliveryDate,
       keepNotificationAfterWarrantyEnds: BuildingDetails.keepNotificationAfterWarrantyEnds,
       streetName: BuildingDetails.streetName,
