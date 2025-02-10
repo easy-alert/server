@@ -170,7 +170,7 @@ export const maintenancesPermissions: IPermissionUpsert[] = [
   {
     moduleName: 'maintenances',
     moduleLabel: 'Manutenções',
-    name: 'maintenances:plan',
+    name: 'maintenances:finish',
     label: 'Finalizar Manutenção',
   },
 ];
