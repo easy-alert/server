@@ -4,10 +4,12 @@ export async function upsertMaintenanceAdditionalInformation({
   buildingId,
   maintenanceId,
   additionalInfo,
+  userResponsibleId,
 }: {
   buildingId: string;
   maintenanceId: string;
   additionalInfo: string;
+  userResponsibleId: string;
 }) {
   return prisma.maintenanceAdditionalInformation.upsert({
     where: {
@@ -18,11 +20,13 @@ export async function upsertMaintenanceAdditionalInformation({
     },
     update: {
       information: additionalInfo,
+      userId: userResponsibleId,
     },
     create: {
       buildingId,
       maintenanceId,
       information: additionalInfo,
+      userId: userResponsibleId,
     },
   });
 }
