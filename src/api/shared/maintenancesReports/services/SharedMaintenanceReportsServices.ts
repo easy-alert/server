@@ -228,6 +228,7 @@ export class SharedMaintenanceReportsServices {
     const additionalInfo = await prisma.maintenanceAdditionalInformation.findFirst({
       select: {
         information: true,
+        user: true,
       },
 
       where: {
@@ -239,6 +240,7 @@ export class SharedMaintenanceReportsServices {
     return {
       ...maintenanceHistory!,
       additionalInfo: additionalInfo?.information || '',
+      userResponsible: additionalInfo?.user || undefined,
     };
   }
 }
