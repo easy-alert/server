@@ -378,6 +378,35 @@ export class BuildingServices {
           orderBy: [{ isMain: 'desc' }, { name: 'asc' }],
         },
 
+        UserBuildingsPermissions: {
+          select: {
+            isMainContact: true,
+            showContact: true,
+
+            User: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                emailIsConfirmed: true,
+                phoneNumber: true,
+                phoneNumberIsConfirmed: true,
+                role: true,
+                isMainContact: true,
+                showContact: true,
+              },
+            },
+          },
+
+          where: {
+            buildingId,
+          },
+
+          orderBy: {
+            isMainContact: 'desc',
+          },
+        },
+
         Annexes: {
           select: {
             id: true,
@@ -555,6 +584,7 @@ export class BuildingServices {
                 MaintenanceAdditionalInformation: {
                   select: {
                     information: true,
+                    user: true,
                   },
 
                   where: {

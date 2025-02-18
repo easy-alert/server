@@ -4,23 +4,28 @@ import { UserServices } from '../../../shared/users/user/services/userServices';
 
 interface IBody {
   id: string;
+  image: string;
   name: string;
-  isBlocked: boolean;
+  role: string;
   email: string;
+  phoneNumber: string;
   password: string;
   confirmPassword: string;
+  isBlocked: boolean;
 }
 
 const userServices = new UserServices();
 
 export async function updateUserController(req: Request, res: Response) {
-  const { email, id, isBlocked, name, confirmPassword, password }: IBody = req.body;
+  const { id, image, name, role, email, phoneNumber, password, confirmPassword, isBlocked }: IBody =
+    req.body;
 
   checkValues([
     { label: 'ID do usuário', type: 'string', value: id },
     { label: 'Nome', type: 'string', value: name },
-    { label: 'Status', type: 'boolean', value: isBlocked },
     { label: 'Email', type: 'email', value: email },
+    { label: 'Telefone', type: 'string', value: phoneNumber },
+    { label: 'Status', type: 'boolean', value: isBlocked },
     { label: 'Senha', type: 'string', value: password, required: false },
     { label: 'Confirmação de senha', type: 'string', value: confirmPassword, required: false },
   ]);
@@ -34,8 +39,11 @@ export async function updateUserController(req: Request, res: Response) {
 
   await userServices.edit({
     userId: id,
+    image,
     name,
+    role,
     email,
+    phoneNumber,
     isBlocked,
   });
 

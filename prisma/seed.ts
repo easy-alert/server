@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
 import { prisma } from '.';
+import { migrateResponsibleToUser } from './scripts';
 import { SeedServices } from './seedServices';
 
 const seedServices = new SeedServices();
@@ -8,7 +9,6 @@ const seedServices = new SeedServices();
 async function main() {
   console.log('seed is running ...');
 
-  // await seedServices.createPermissions();
   await seedServices.upsertPermissions();
 
   await seedServices.createAdminBackoffice();
@@ -23,6 +23,8 @@ async function main() {
   await seedServices.upsertTicketServiceTypes();
   await seedServices.upsertTicketStatus();
   await seedServices.upsertTicketDismissReasons();
+
+  await migrateResponsibleToUser();
 }
 
 main()
