@@ -54,7 +54,7 @@ export async function updateTicketById(req: Request, res: Response) {
 
   const { userId } = updatedTicket;
 
-  delete updatedTicket.userId;
+  // delete updatedTicket.userId;
 
   checkValues([{ value: ticketId, label: 'Ticket ID', type: 'string', required: true }]);
 

@@ -166,6 +166,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
       Annexes: BuildingDetails.Annexes,
       BuildingType: BuildingDetails.BuildingType,
       NotificationsConfigurations: BuildingDetails.NotificationsConfigurations,
+      UserBuildingsPermissions: BuildingDetails.UserBuildingsPermissions,
       Banners: BuildingDetails.Banners,
       residentPassword: BuildingDetails.residentPassword,
       syndicPassword: BuildingDetails.syndicPassword,
