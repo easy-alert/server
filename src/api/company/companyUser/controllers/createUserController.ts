@@ -6,8 +6,11 @@ import { PermissionServices } from '../../../shared/permissions/permission/servi
 import { CompanyUserServices } from '../services/companyServices';
 
 interface IBody {
+  image: string;
   name: string;
+  role: string;
   email: string;
+  phoneNumber: string;
   password: string;
   confirmPassword: string;
 }
@@ -18,11 +21,12 @@ const companyUserServices = new CompanyUserServices();
 const userPermissionServices = new UserPermissionServices();
 
 export async function createUserController(req: Request, res: Response) {
-  const { email, name, confirmPassword, password }: IBody = req.body;
+  const { image, name, role, email, phoneNumber, password, confirmPassword }: IBody = req.body;
 
   checkValues([
     { label: 'Nome', type: 'string', value: name },
     { label: 'Email', type: 'email', value: email },
+    { label: 'Telefone', type: 'string', value: phoneNumber },
     { label: 'Senha', type: 'string', value: password, required: false },
     { label: 'Confirmação de senha', type: 'string', value: confirmPassword, required: false },
   ]);
@@ -33,8 +37,11 @@ export async function createUserController(req: Request, res: Response) {
   cannotExist([{ label: 'Email', variable: checkUser }]);
 
   const user = await userServices.create({
-    email,
+    image,
     name,
+    role,
+    email,
+    phoneNumber,
     passwordHash: password,
   });
 

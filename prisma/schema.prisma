@@ -24,22 +24,35 @@ model ValidationToken {
 
 // USER
 model User {
-  id           String    @id @unique @default(uuid())
-  name         String
-  email        String    @unique
-  isBlocked    Boolean   @default(false)
-  passwordHash String
-  lastAccess   DateTime?
+  id String @id @unique @default(uuid())
+
+  name                   String
+  email                  String    @unique
+  emailIsConfirmed       Boolean   @default(false)
+  phoneNumber            String?   @unique
+  phoneNumberIsConfirmed Boolean   @default(false)
+  passwordHash           String
+  role                   String?
+  image                  String?
+  isBlocked              Boolean   @default(false)
+  isMainContact          Boolean   @default(false)
+  showContact            Boolean   @default(false)
+  lastAccess             DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Permissions              UserPermissions[]
-  Companies                UserCompanies[]
-  reportPdfs               MaintenanceReportPdf[]
-  TicketReportPDF          TicketReportPDF[]
-  UserBuildingsPermissions UserBuildingsPermissions[]
+  Permissions                      UserPermissions[]
+  UserBuildingsPermissions         UserBuildingsPermissions[]
+  Companies                        UserCompanies[]
+  MaintenanceHistory               MaintenanceHistory[]
+  Ticket                           Ticket[]
+  TicketReportPDF                  TicketReportPDF[]
+  Checklist                        Checklist[]
+  reportPdfs                       MaintenanceReportPdf[]
+  MaintenanceAdditionalInformation MaintenanceAdditionalInformation[]
 
+  @@unique([email, phoneNumber])
   @@map("users")
 }
 
@@ -83,6 +96,9 @@ model UserBuildingsPermissions {
   buildingId   String
   permissionId String?
 
+  isMainContact Boolean @default(false)
+  showContact   Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -95,10 +111,11 @@ model UserBuildingsPermissions {
 }
 
 model UserCompanies {
-  id        String  @id @default(uuid())
+  id        String @id @default(uuid())
   userId    String
   companyId String
-  owner     Boolean @default(false)
+
+  owner Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -271,11 +288,13 @@ model MaintenanceAdditionalInformation {
 
   buildingId    String
   maintenanceId String
+  userId        String?
 
   information String
 
   maintenance Maintenance @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
   building    Building    @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@unique([buildingId, maintenanceId])
   @@map("maintenanceAdditionalInformations")
@@ -313,6 +332,8 @@ model MaintenanceHistory {
   activities                MaintenanceHistoryActivity[]
 
   priority MaintenancePriority @relation(fields: [priorityName], references: [name])
+  User     User?               @relation(fields: [userId], references: [id])
+  userId   String?
 
   @@map("maintenancesHistory")
 }
@@ -846,8 +867,10 @@ model DefaultTemplateMaintenance {
 model Checklist {
   id String @id @default(uuid())
 
-  buildingId              String
-  syndicId                String?
+  buildingId String
+  syndicId   String?
+  userId     String?
+
   name                    String
   description             String?
   date                    DateTime
@@ -862,6 +885,7 @@ model Checklist {
   updatedAt DateTime @updatedAt
 
   building              Building                           @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  user                  User?                              @relation(fields: [userId], references: [id])
   syndic                BuildingNotificationConfiguration? @relation(fields: [syndicId], references: [id], onDelete: SetNull)
   frequencyTimeInterval TimeInterval?                      @relation(fields: [frequencyTimeIntervalId], references: [id])
 
@@ -925,6 +949,7 @@ model Ticket {
   dismissReasonName  TicketDismissReasonsName?
   dismissObservation String?
   dismissedById      String?
+  dismissedByUserId  String?
   dismissedAt        DateTime?
 
   createdAt DateTime @default(now())
@@ -939,6 +964,7 @@ model Ticket {
   activities         TicketHistoryActivities[]
   dismissReasons     TicketDismissReasons?              @relation(fields: [dismissReasonName], references: [name])
   dismissedBy        BuildingNotificationConfiguration? @relation(fields: [dismissedById], references: [id], onDelete: SetNull)
+  dismissedByUser    User?                              @relation(fields: [dismissedByUserId], references: [id])
 
   @@map("tickets")
 }
