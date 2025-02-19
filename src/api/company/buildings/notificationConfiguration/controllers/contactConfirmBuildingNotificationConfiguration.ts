@@ -1,18 +1,14 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
+
+import { updateUser } from '../../../../shared/users/user/services/updateUser';
+
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 import { TokenServices } from '../../../../../utils/token/tokenServices';
 import { ITokenWhatsAppConfirmation } from '../../../../../utils/token/types';
+import { checkValues } from '../../../../../utils/newValidator';
 
-// CLASS
-import { Validator } from '../../../../../utils/validator/validator';
-import { SharedBuildingNotificationConfigurationServices } from '../../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
-
-const validator = new Validator();
 const tokenServices = new TokenServices();
-
-const buildingNotificationConfigurationServices =
-  new SharedBuildingNotificationConfigurationServices();
 
 // #endregion
 
@@ -20,11 +16,11 @@ export async function contactConfirmBuildingNotificationConfiguration(req: Reque
   const { token } = req.body;
 
   // #region VALIDATIONS
-  validator.check([
+  checkValues([
     {
       label: 'Token',
       type: 'string',
-      variable: token,
+      value: token,
     },
   ]);
 
@@ -32,20 +28,19 @@ export async function contactConfirmBuildingNotificationConfiguration(req: Reque
     token,
   });
 
-  const { id: buildingNotificationConfigurationId, confirmType } = tokenServices.decode({
+  const { id: userId, confirmType } = tokenServices.decode({
     token: foundToken.token,
   }) as ITokenWhatsAppConfirmation;
-
-  await buildingNotificationConfigurationServices.findById({
-    buildingNotificationConfigurationId,
-  });
 
   // #endregion
 
   switch (confirmType) {
     case 'whatsapp':
-      await buildingNotificationConfigurationServices.confirmContactNumber({
-        buildingNotificationConfigurationId,
+      await updateUser({
+        userId,
+        data: {
+          phoneNumberIsConfirmed: true,
+        },
       });
 
       await tokenServices.markAsUsed({ token: foundToken.token });
@@ -58,8 +53,11 @@ export async function contactConfirmBuildingNotificationConfiguration(req: Reque
       });
 
     case 'email':
-      await buildingNotificationConfigurationServices.confirmContactEmail({
-        buildingNotificationConfigurationId,
+      await updateUser({
+        userId,
+        data: {
+          emailIsConfirmed: true,
+        },
       });
 
       await tokenServices.markAsUsed({ token: foundToken.token });
