@@ -37,6 +37,7 @@ model User {
   isBlocked              Boolean   @default(false)
   isMainContact          Boolean   @default(false)
   showContact            Boolean   @default(false)
+  lastNotificationDate   DateTime  @default(now())
   lastAccess             DateTime?
 
   createdAt DateTime @default(now())

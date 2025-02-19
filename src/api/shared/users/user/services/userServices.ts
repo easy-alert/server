@@ -152,6 +152,7 @@ export class UserServices {
         id: true,
         name: true,
         email: true,
+        phoneNumber: true,
 
         isBlocked: true,
 
