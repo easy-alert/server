@@ -611,6 +611,7 @@ model Building {
   UserBuildingsPermissions         UserBuildingsPermissions[]
   BuildingApartments               BuildingApartment[]
   MaintenanceAdditionalInformation MaintenanceAdditionalInformation[]
+  ChecklistTemplate                ChecklistTemplate[]
 
   @@map("buildings")
 }
@@ -870,6 +871,7 @@ model Checklist {
   buildingId String
   syndicId   String?
   userId     String?
+  templateId String?
 
   name                    String
   description             String?
@@ -885,14 +887,67 @@ model Checklist {
   updatedAt DateTime @updatedAt
 
   building              Building                           @relation(fields: [buildingId], references: [id], onDelete: Cascade)
-  user                  User?                              @relation(fields: [userId], references: [id])
+  user                  User?                              @relation(fields: [userId], references: [id], onDelete: SetNull)
   syndic                BuildingNotificationConfiguration? @relation(fields: [syndicId], references: [id], onDelete: SetNull)
   frequencyTimeInterval TimeInterval?                      @relation(fields: [frequencyTimeIntervalId], references: [id])
+  template              ChecklistTemplate?                 @relation(fields: [templateId], references: [id], onDelete: SetNull)
 
-  images       ChecklistImage[]
-  detailImages ChecklistDetailImage[]
+  checklistItem ChecklistItem[]
+  images        ChecklistImage[]
+  detailImages  ChecklistDetailImage[]
 
   @@map("checklists")
+}
+
+model ChecklistItem {
+  id String @id @default(uuid())
+
+  checklistId String
+
+  name        String
+  description String?
+  status      ChecklistStatusName @default(pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  checklist Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+
+  @@map("checklistItems")
+}
+
+model ChecklistTemplate {
+  id String @id @default(uuid())
+
+  buildingId String
+
+  name        String
+  description String?
+  items       ChecklistTemplateItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  building Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+
+  Checklist Checklist[]
+
+  @@map("checklistTemplates")
+}
+
+model ChecklistTemplateItem {
+  id String @id @default(uuid())
+
+  templateId String
+
+  name String
+
+  checklistTemplate ChecklistTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("checklistTemplateItems")
 }
 
 // Essas são as imagens do "relato", Ficou com o nome ruim porque só depois que veio as imagens da checklist padrão.
@@ -910,6 +965,7 @@ model ChecklistImage {
 
 enum ChecklistStatusName {
   pending
+  inProgress
   completed
 }
 
