@@ -11,6 +11,7 @@ import { ClientBuildingServices } from '../services/clientBuildingServices';
 import { SharedBuildingNotificationConfigurationServices } from '../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { SharedCategoryServices } from '../../../shared/categories/services/sharedCategoryServices';
 import { findCompany } from '../../../shared/company/services/findCompany';
+import { getChecklists } from '../../../shared/checklists/services/getChecklists';
 
 // CLASS
 const clientBuildingServices = new ClientBuildingServices();
@@ -183,8 +184,13 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
     ],
     categories,
   };
-
   // #endregion
+
+  const defaultChecklistStyle = {
+    type: 'checklist',
+  };
+
+  const checklists = await getChecklists({ buildingId: buildingNotificationConfig.Building.id });
 
   const kanban = await clientBuildingServices.syndicSeparePerStatus({ data: MaintenancesHistory });
 
@@ -192,6 +198,26 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   kanban[0].maintenances.sort((a: any, b: any) => (a.date > b.date ? 1 : -1));
 
   // Pendente
+  checklists
+    .filter((checklist) => checklist.status === 'pending')
+    .forEach((checklist) => {
+      const totalItems = checklist.checklistItem.length;
+      const completedItems = checklist.checklistItem.filter(
+        (item) => item.status === 'completed',
+      ).length;
+      const checklistProgress = `${completedItems} de ${totalItems} itens concluídos`;
+
+      kanban[1].maintenances.push({
+        ...defaultChecklistStyle,
+        id: checklist.id,
+        name: checklist.name,
+        description: checklist.description,
+        date: checklist.date,
+        status: checklist.status,
+        checklistProgress,
+      });
+    });
+
   kanban[1].maintenances.sort((a: any, b: any) => (a.dueDate > b.dueDate ? 1 : -1));
 
   if (company?.showMaintenancePriority) {
@@ -205,6 +231,26 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   }
 
   // Em execução (Vencida + Pendente)
+  checklists
+    .filter((checklist) => checklist.status === 'inProgress')
+    .forEach((checklist) => {
+      const totalItems = checklist.checklistItem.length;
+      const completedItems = checklist.checklistItem.filter(
+        (item) => item.status === 'completed',
+      ).length;
+      const checklistProgress = `${completedItems} de ${totalItems} itens concluídos`;
+
+      kanban[2].maintenances.push({
+        ...defaultChecklistStyle,
+        id: checklist.id,
+        name: checklist.name,
+        description: checklist.description,
+        date: checklist.date,
+        status: checklist.status,
+        checklistProgress,
+      });
+    });
+
   kanban[2].maintenances.sort((a: any, b: any) => (a.date > b.date ? 1 : -1));
 
   if (company?.showMaintenancePriority) {
@@ -218,6 +264,19 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   }
 
   // Concluída e Feita em atraso
+  checklists
+    .filter((checklist) => checklist.status === 'completed')
+    .forEach((checklist) =>
+      kanban[3].maintenances.push({
+        ...defaultChecklistStyle,
+        id: checklist.id,
+        name: checklist.name,
+        description: checklist.description,
+        date: checklist.date,
+        status: checklist.status,
+      }),
+    );
+
   kanban[3].maintenances.sort((a: any, b: any) => (a.date < b.date ? 1 : -1));
 
   return res.status(200).json({
