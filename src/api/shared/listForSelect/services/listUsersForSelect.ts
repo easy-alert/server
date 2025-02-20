@@ -8,22 +8,18 @@ interface IListUsersForSelect {
 export async function listUsersForSelect({ companyId, buildingId }: IListUsersForSelect) {
   let building;
 
-  if (buildingId?.length === 12) {
+  if (buildingId && buildingId?.length === 12) {
     building = await prisma.building.findUnique({
       where: {
         nanoId: buildingId,
       },
     });
-  } else {
+  } else if (buildingId) {
     building = await prisma.building.findUnique({
       where: {
         id: buildingId,
       },
     });
-  }
-
-  if (!building) {
-    throw new Error('Edificação não encontrada.');
   }
 
   return prisma.user.findMany({
@@ -36,7 +32,8 @@ export async function listUsersForSelect({ companyId, buildingId }: IListUsersFo
       UserBuildingsPermissions: {
         some: {
           Building: {
-            id: building.id,
+            id: building?.id || undefined,
+
             Company: {
               id: companyId,
             },
