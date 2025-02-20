@@ -14,6 +14,7 @@ import { getChecklistsTemplatesController } from '../../shared/checklists/contro
 import { createChecklistController2 } from '../../shared/checklists/controllers/createChecklistController2';
 import { getChecklistsController } from '../../shared/checklists/controllers/getChecklistsController';
 import { deleteChecklistController2 } from '../../shared/checklists/controllers/deleteChecklistController2';
+import { getChecklistsByBuildingIdController } from '../../shared/checklists/controllers/getChecklistsByBuildingIdController';
 
 export const checklistRouter: Router = Router();
 
@@ -23,7 +24,8 @@ checklistRouter.post('/template/:buildingId', createChecklistTemplateController)
 checklistRouter.get('/templates/:buildingId', getChecklistsTemplatesController);
 
 // Checklist routes
-checklistRouter.get('/v2/:buildingId/:checklistId', getChecklistsController);
+checklistRouter.get('/v2/:checklistId', getChecklistsController);
+checklistRouter.get('/v2/:buildingId', getChecklistsByBuildingIdController);
 
 checklistRouter.post('/v2/', createChecklistController2);
 
