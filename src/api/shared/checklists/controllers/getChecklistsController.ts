@@ -5,14 +5,12 @@ import { getChecklists } from '../services/getChecklists';
 import { checkValues } from '../../../../utils/newValidator';
 
 export async function getChecklistsController(req: Request, res: Response) {
-  const { buildingId, checklistId } = req.params;
+  const { checklistId } = req.params;
+  const { Company } = req;
 
-  checkValues([
-    { label: 'ID da edificação', type: 'string', value: buildingId },
-    { label: 'ID do checklist', type: 'string', value: checklistId },
-  ]);
+  checkValues([{ label: 'ID do checklist', type: 'string', value: checklistId }]);
 
-  const checklists = await getChecklists({ buildingId, checklistId });
+  const checklists = await getChecklists({ companyId: Company.id, checklistId });
 
   return res.status(201).json(checklists);
 }

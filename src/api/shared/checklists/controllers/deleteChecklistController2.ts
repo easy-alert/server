@@ -9,13 +9,14 @@ type TDeleteMode = 'this' | 'all' | 'thisAndFollowing' | '';
 
 export async function deleteChecklistController2(req: Request, res: Response) {
   const { checklistId, mode } = req.params as any as { checklistId: string; mode: TDeleteMode };
+  const { Company } = req;
 
   checkValues([
     { label: 'ID da checklist', type: 'string', value: checklistId },
     { label: 'Tipo da exclusão', type: 'string', value: mode },
   ]);
 
-  const checklist = await getChecklists({ checklistId });
+  const checklist = await getChecklists({ companyId: Company.id, checklistId });
 
   if (!checklist.length) {
     return res.status(404).json({ ServerMessage: { message: 'Checklist não encontrado.' } });
