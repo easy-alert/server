@@ -59,6 +59,12 @@ export const accessPermissions: IPermissionUpsert[] = [
   {
     moduleName: 'access',
     moduleLabel: 'Acessos',
+    name: 'access:maintenances',
+    label: 'Acesso Manutenções',
+  },
+  {
+    moduleName: 'access',
+    moduleLabel: 'Acessos',
     name: 'access:checklist',
     label: 'Acesso Checklist',
   },
@@ -115,27 +121,6 @@ export const buildingsPermissions: IPermissionUpsert[] = [
   },
 ];
 
-export const ticketsPermissions: IPermissionUpsert[] = [
-  {
-    moduleName: 'tickets',
-    moduleLabel: 'Chamados',
-    name: 'tickets:create',
-    label: 'Criar Chamados',
-  },
-  {
-    moduleName: 'tickets',
-    moduleLabel: 'Chamados',
-    name: 'tickets:update',
-    label: 'Atualizar Chamados',
-  },
-  {
-    moduleName: 'tickets',
-    moduleLabel: 'Chamados',
-    name: 'tickets:delete',
-    label: 'Deletar Chamados',
-  },
-];
-
 export const maintenancesPermissions: IPermissionUpsert[] = [
   {
     moduleName: 'maintenances',
@@ -172,5 +157,47 @@ export const maintenancesPermissions: IPermissionUpsert[] = [
     moduleLabel: 'Manutenções',
     name: 'maintenances:finish',
     label: 'Finalizar Manutenção',
+  },
+];
+
+export const ticketsPermissions: IPermissionUpsert[] = [
+  {
+    moduleName: 'tickets',
+    moduleLabel: 'Chamados',
+    name: 'tickets:create',
+    label: 'Criar Chamados',
+  },
+  {
+    moduleName: 'tickets',
+    moduleLabel: 'Chamados',
+    name: 'tickets:update',
+    label: 'Atualizar Chamados',
+  },
+  {
+    moduleName: 'tickets',
+    moduleLabel: 'Chamados',
+    name: 'tickets:delete',
+    label: 'Deletar Chamados',
+  },
+];
+
+export const checklistPermissions: IPermissionUpsert[] = [
+  {
+    moduleName: 'checklist',
+    moduleLabel: 'Checklist',
+    name: 'checklist:create',
+    label: 'Criar Checklist',
+  },
+  {
+    moduleName: 'checklist',
+    moduleLabel: 'Checklist',
+    name: 'checklist:update',
+    label: 'Atualizar Checklist',
+  },
+  {
+    moduleName: 'checklist',
+    moduleLabel: 'Checklist',
+    name: 'checklist:delete',
+    label: 'Deletar Checklist',
   },
 ];

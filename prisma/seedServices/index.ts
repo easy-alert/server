@@ -18,6 +18,7 @@ import {
   accessPermissions,
   adminPermissions,
   buildingsPermissions,
+  checklistPermissions,
   maintenancesPermissions,
   ticketsPermissions,
 } from './permissionsUpsert';
@@ -39,6 +40,9 @@ export class SeedServices {
 
       // tickets permissions
       ...ticketsPermissions,
+
+      // checklists permissions
+      ...checklistPermissions,
 
       // maintenance permissions
       ...maintenancesPermissions,

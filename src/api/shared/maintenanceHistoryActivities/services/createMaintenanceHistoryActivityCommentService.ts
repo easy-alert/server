@@ -21,13 +21,14 @@ interface IData {
 }
 
 export async function createMaintenanceHistoryActivityCommentService({
-  content,
-  maintenanceHistoryId,
-  images,
-  syndicNanoId,
   userId,
+  syndicNanoId,
+  maintenanceHistoryId,
+  content,
+  images,
 }: IData) {
   let author: string = 'Convidado';
+
   // Gambiarra, ver lá na modal
   if (syndicNanoId && syndicNanoId !== 'guest') {
     author = (await sharedBuildingNotificationConfigurationServices.findByNanoId({ syndicNanoId }))
@@ -40,10 +41,10 @@ export async function createMaintenanceHistoryActivityCommentService({
 
   return prisma.maintenanceHistoryActivity.create({
     data: {
+      maintenanceHistoryId,
       content: content?.trim() ? content : null,
       title: `Nova atividade de ${author}`,
       type: 'comment',
-      maintenanceHistoryId,
 
       images: {
         createMany: {
