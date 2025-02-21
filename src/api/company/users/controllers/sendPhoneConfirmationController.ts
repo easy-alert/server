@@ -48,17 +48,17 @@ export async function sendPhoneConfirmationController(req: Request, res: Respons
 
   // #region AWAIT 5 MINUTES FOR SEND OTHER NOTIFICATION
 
-  const actualHoursInMs = new Date().getTime();
-  const notificationHoursInMs = new Date(user.lastNotificationDate).getTime();
+  // const actualHoursInMs = new Date().getTime();
+  // const notificationHoursInMs = new Date(user.lastNotificationDate).getTime();
 
-  const dateDiference = (actualHoursInMs - notificationHoursInMs) / 60000;
+  // const dateDiference = (actualHoursInMs - notificationHoursInMs) / 60000;
 
-  if (dateDiference <= 5) {
-    throw new ServerMessage({
-      statusCode: 400,
-      message: 'Aguarde ao menos 5 minutos para reenviar a confirmação.',
-    });
-  }
+  // if (dateDiference <= 5) {
+  //   throw new ServerMessage({
+  //     statusCode: 400,
+  //     message: 'Aguarde ao menos 5 minutos para reenviar a confirmação.',
+  //   });
+  // }
   // #endregion
 
   // #endregion
