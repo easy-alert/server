@@ -14,6 +14,8 @@ import { getChecklistsTemplatesController } from '../../shared/checklists/contro
 import { createChecklistController2 } from '../../shared/checklists/controllers/createChecklistController2';
 import { getChecklistsController } from '../../shared/checklists/controllers/getChecklistsController';
 import { deleteChecklistController2 } from '../../shared/checklists/controllers/deleteChecklistController2';
+import { getChecklistsByBuildingIdController } from '../../shared/checklists/controllers/getChecklistsByBuildingIdController';
+import { updateChecklistController2 } from '../../shared/checklists/controllers/updateChecklistController2';
 
 export const checklistRouter: Router = Router();
 
@@ -23,12 +25,14 @@ checklistRouter.post('/template/:buildingId', createChecklistTemplateController)
 checklistRouter.get('/templates/:buildingId', getChecklistsTemplatesController);
 
 // Checklist routes
-checklistRouter.get('/v2/:buildingId/:checklistId', getChecklistsController);
+checklistRouter.get('/v2/:checklistId', getChecklistsController);
+checklistRouter.get('/v2/:buildingId', getChecklistsByBuildingIdController);
 
 checklistRouter.post('/v2/', createChecklistController2);
 
 checklistRouter.post('/', createChecklistController);
 
+checklistRouter.put('/v2/:checklistId', updateChecklistController2);
 checklistRouter.delete('/v2/:checklistId/:mode', deleteChecklistController2);
 
 // Esse report é do relatório

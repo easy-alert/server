@@ -53,6 +53,9 @@ import { ticketDismissReasonsRouter } from './ticketDismissReasons/ticketDismiss
 import { findAllMaintenancePriority } from '../shared/maintenancePriority/controllers/findAllMaintenancePriority';
 import { listBuildingApartmentsController } from './building/controllers/listBuildingApartmentsController';
 import { listForSelectRouter } from './listForSelect/list.routes';
+import { getMaintenancesKanban } from './building/controllers/getMaintenancesKanban';
+import { userRouter } from './user/user.routes';
+import { findBuildingByIdController } from './building/controllers/findBuildingByIdController';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -65,6 +68,8 @@ clientRouter.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
 clientRouter.use('/upload', uploadRouter);
 
 clientRouter.get('/syndic/:syndicNanoId', clientSyndicBuildingDetails);
+
+clientRouter.get('/building/id/:buildingId', findBuildingByIdController);
 
 clientRouter.get('/building/:buildingNanoId', clientBuildingDetails);
 
@@ -168,6 +173,12 @@ clientRouter.use('/ticketHistoryActivities', ticketHistoryActivitiesRouter);
 clientRouter.use('/ticketDismissReasons', ticketDismissReasonsRouter);
 
 clientRouter.get('/priority', findAllMaintenancePriority);
+
+// # region user
+clientRouter.use('/user', userRouter);
+
+// MAINTENANCE KANBAN
+clientRouter.get('/buildings/maintenances', getMaintenancesKanban);
 
 // BUILDINGS APARTMENTS
 clientRouter.get('/buildings/apartments/:buildingId', listBuildingApartmentsController);

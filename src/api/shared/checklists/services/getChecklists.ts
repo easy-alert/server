@@ -1,27 +1,11 @@
 import { prisma } from '../../../../../prisma';
 
 interface IGetChecklists {
-  buildingId?: string;
-  checklistId?: string;
+  companyId: string;
+  checklistId: string;
 }
 
-export async function getChecklists({ buildingId, checklistId }: IGetChecklists) {
-  let building = null;
-
-  if (buildingId && buildingId?.length === 12) {
-    building = await prisma.building.findUnique({
-      where: {
-        nanoId: buildingId,
-      },
-    });
-  } else if (buildingId) {
-    building = await prisma.building.findUnique({
-      where: {
-        id: buildingId,
-      },
-    });
-  }
-
+export async function getChecklists({ companyId, checklistId }: IGetChecklists) {
   const checklistTemplates = await prisma.checklist.findMany({
     include: {
       checklistItem: true,
@@ -31,11 +15,9 @@ export async function getChecklists({ buildingId, checklistId }: IGetChecklists)
 
     where: {
       id: checklistId,
-      buildingId: building?.id ?? undefined,
-      checklistItem: {
-        some: {
-          checklistId,
-        },
+
+      building: {
+        companyId,
       },
     },
   });
