@@ -13,6 +13,7 @@ import { createChecklistController2 } from '../../shared/checklists/controllers/
 import { getChecklistsController } from '../../shared/checklists/controllers/getChecklistsController';
 import { deleteChecklistController2 } from '../../shared/checklists/controllers/deleteChecklistController2';
 import { updateChecklistController2 } from '../../shared/checklists/controllers/updateChecklistController2';
+import { getChecklistsByBuildingIdController } from '../../shared/checklists/controllers/getChecklistsByBuildingIdController';
 
 export const checklistRouter: Router = Router();
 
@@ -22,7 +23,8 @@ checklistRouter.post('/template/:buildingId', createChecklistTemplateController)
 checklistRouter.get('/templates/:buildingId', getChecklistsTemplatesController);
 
 // Checklist routes
-checklistRouter.get('/:buildingId/:checklistId', getChecklistsController);
+checklistRouter.get('/v2/:checklistId', getChecklistsController);
+checklistRouter.get('/v2/:buildingId', getChecklistsByBuildingIdController);
 
 checklistRouter.post('/', createChecklistController2);
 

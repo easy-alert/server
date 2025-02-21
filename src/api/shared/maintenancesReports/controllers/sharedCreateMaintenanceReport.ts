@@ -1,11 +1,11 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
+
 import { addDays, removeDays } from '../../../../utils/dateTime';
 import { changeTime } from '../../../../utils/dateTime/changeTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
 import { EmailTransporterServices } from '../../../../utils/emailTransporter/emailTransporterServices';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
-import { Validator } from '../../../../utils/validator/validator';
 import { SharedMaintenanceServices } from '../../maintenance/services/sharedMaintenanceServices';
 import { SharedMaintenanceStatusServices } from '../../maintenanceStatus/services/sharedMaintenanceStatusServices';
 import { SharedBuildingNotificationConfigurationServices } from '../../notificationConfiguration/services/buildingNotificationConfigurationServices';
@@ -14,10 +14,11 @@ import { IAttachments, ICreateAndEditMaintenanceReportsBody } from './types';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
 import { ticketServices } from '../../tickets/services/ticketServices';
 import { createMaintenanceHistoryActivityCommentService } from '../../maintenanceHistoryActivities/services';
+import { checkValues } from '../../../../utils/newValidator';
+import { findUserById } from '../../users/user/services/findUserById';
 
 // CLASS
 
-const validator = new Validator();
 const sharedMaintenanceReportsServices = new SharedMaintenanceReportsServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 const sharedMaintenanceStatusServices = new SharedMaintenanceStatusServices();
@@ -30,78 +31,86 @@ const sharedBuildingNotificationConfigurationServices =
 
 export async function sharedCreateMaintenanceReport(req: Request, res: Response) {
   const {
-    origin,
-    cost,
-    maintenanceHistoryId,
+    userId,
     responsibleSyndicId,
+    maintenanceHistoryId,
+    cost,
     observation,
+    origin,
     ReportAnnexes,
     ReportImages,
   }: ICreateAndEditMaintenanceReportsBody = req.body;
 
   // #region VALIDATIONS
-  validator.check([
+  checkValues([
     {
       label: 'Id do histórico de manutenção',
       type: 'string',
-      variable: maintenanceHistoryId,
+      value: maintenanceHistoryId,
     },
     {
       label: 'Custo da manutenção',
-      type: 'number',
-      variable: cost,
-      isOptional: true,
+      type: 'int',
+      value: cost,
+      required: false,
+      allowZero: true,
     },
     {
       label: 'Observação da manutenção',
       type: 'string',
-      variable: observation,
-      isOptional: true,
+      value: observation,
+      required: false,
     },
     {
       label: 'Id do síndico responsável',
       type: 'string',
-      variable: responsibleSyndicId,
-      isOptional: true,
+      value: responsibleSyndicId,
+      required: false,
     },
   ]);
 
   ReportAnnexes.forEach((annex) => {
-    validator.check([
+    checkValues([
       {
         label: 'nome do anexo',
-        variable: annex.name,
+        value: annex.name,
         type: 'string',
+        required: false,
       },
       {
         label: 'nome original do anexo',
-        variable: annex.originalName,
+        value: annex.originalName,
         type: 'string',
+        required: false,
       },
       {
         label: 'url do anexo',
-        variable: annex.url,
+        value: annex.url,
         type: 'string',
+        required: false,
       },
     ]);
   });
 
   ReportImages.forEach((annex) => {
-    validator.check([
+    checkValues([
       {
         label: 'nome da imagem',
-        variable: annex.name,
+        value: annex.name,
         type: 'string',
+        required: false,
       },
       {
         label: 'nome original da imagem',
-        variable: annex.originalName,
+        value: annex.originalName,
         type: 'string',
+        required: false,
       },
       {
         label: 'url da imagem',
-        variable: annex.url,
+        value: annex.url,
         type: 'string',
+        required: false,
       },
     ]);
   });
@@ -117,11 +126,16 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     });
   }
 
-  let syndicData = null;
+  let userData = null;
+  let responsibleData = null;
 
-  // GAMBIARRINHA por causa da tela de convidados do client
+  if (userId) {
+    userData = await findUserById(userId);
+  }
+
   if (responsibleSyndicId && responsibleSyndicId !== 'guest') {
-    syndicData = await sharedBuildingNotificationConfigurationServices.findByNanoId({
+    // GAMBIARRINHA por causa da tela de convidados do client
+    responsibleData = await sharedBuildingNotificationConfigurationServices.findByNanoId({
       syndicNanoId: responsibleSyndicId,
     });
   }
@@ -216,7 +230,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     maintenanceHistoryId,
     cost,
     observation,
-    responsibleSyndicId: syndicData?.id,
+    responsibleSyndicId: responsibleData?.id,
     ReportImages: {
       createMany: {
         data: ReportImages,
@@ -275,7 +289,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
           currency: 'BRL',
         });
 
-  if (syndicData && syndicData?.emailIsConfirmed && syndicData?.email) {
+  if (responsibleData && responsibleData?.emailIsConfirmed && responsibleData?.email) {
     await emailTransporter.sendProofOfReport({
       companyLogo: maintenanceHistory.Company.image,
       dueDate: new Date(maintenanceHistory.dueDate).toLocaleDateString('pt-BR'),
@@ -295,8 +309,32 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       reportObservation: data.observation && data.observation !== '' ? data.observation : '-',
       resolutionDate: new Date().toLocaleString('pt-BR'),
       subject: 'Comprovante de relato',
-      syndicName: syndicData.name,
-      toEmail: syndicData.email,
+      syndicName: responsibleData.name,
+      toEmail: responsibleData.email,
+      attachments,
+    });
+  } else if (userData && userData.email && userData.emailIsConfirmed) {
+    await emailTransporter.sendProofOfReport({
+      companyLogo: maintenanceHistory.Company.image,
+      dueDate: new Date(maintenanceHistory.dueDate).toLocaleDateString('pt-BR'),
+      notificationDate: new Date(maintenanceHistory.notificationDate).toLocaleDateString('pt-BR'),
+      buildingName: maintenanceHistory.Building.name,
+      activity: maintenanceHistory.Maintenance.activity,
+      categoryName: maintenanceHistory.Maintenance.Category.name,
+      element: maintenanceHistory.Maintenance.element,
+      responsible: maintenanceHistory.Maintenance.responsible,
+      source: maintenanceHistory.Maintenance.source,
+      maintenanceObservation:
+        maintenanceHistory.Maintenance.observation &&
+        maintenanceHistory.Maintenance.observation !== ''
+          ? maintenanceHistory.Maintenance.observation
+          : '-',
+      cost: maskeredCost,
+      reportObservation: data.observation && data.observation !== '' ? data.observation : '-',
+      resolutionDate: new Date().toLocaleString('pt-BR'),
+      subject: 'Comprovante de relato',
+      syndicName: userData.name,
+      toEmail: userData.email,
       attachments,
     });
   } else if (maintenanceHistory.Company.UserCompanies[0].User.email) {
@@ -357,10 +395,10 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   if (hasImages && hasAnnexes) complement = ' com imagens e anexos.';
 
   await createMaintenanceHistoryActivityCommentService({
-    userId: req.userId,
+    userId: userData?.id ?? userId,
     syndicNanoId: responsibleSyndicId,
     maintenanceHistoryId,
-    content: `A manutenção foi concluída${complement}`,
+    content: `A manutenção foi concluída ${complement}`,
   });
 
   if (maintenanceHistory.Maintenance.MaintenanceType?.name === 'occasional') {

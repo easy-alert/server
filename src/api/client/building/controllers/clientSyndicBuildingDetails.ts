@@ -11,7 +11,7 @@ import { ClientBuildingServices } from '../services/clientBuildingServices';
 import { SharedBuildingNotificationConfigurationServices } from '../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { SharedCategoryServices } from '../../../shared/categories/services/sharedCategoryServices';
 import { findCompany } from '../../../shared/company/services/findCompany';
-import { getChecklists } from '../../../shared/checklists/services/getChecklists';
+import { getChecklistsByBuildingId } from '../../../shared/checklists/services/getChecklistsByBuildingId';
 
 // CLASS
 const clientBuildingServices = new ClientBuildingServices();
@@ -190,7 +190,10 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
     type: 'checklist',
   };
 
-  const checklists = await getChecklists({ buildingId: buildingNotificationConfig.Building.id });
+  const checklists = await getChecklistsByBuildingId({
+    companyId: '',
+    buildingId: [buildingNotificationConfig.Building.id],
+  });
 
   const kanban = await clientBuildingServices.syndicSeparePerStatus({ data: MaintenancesHistory });
 
