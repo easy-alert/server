@@ -115,6 +115,7 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
           kanban[1].maintenances.push({
             ...defaultChecklistStyle,
             id: checklist.id,
+            buildingName: checklist.building.name,
             name: checklist.name,
             description: checklist.description,
             date: checklist.date,
