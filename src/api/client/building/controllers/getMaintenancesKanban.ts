@@ -6,11 +6,11 @@ import type { Company as TCompany, MaintenancePriorityName } from '@prisma/clien
 import { hasAdminPermission } from '../../../../utils/permissions/hasAdminPermission';
 import { handlePermittedBuildings } from '../../../../utils/permissions/handlePermittedBuildings';
 import { ClientBuildingServices } from '../../../client/building/services/clientBuildingServices';
-import { findMaintenanceHistory } from '../../../client/building/services/findMaintenanceHistory';
 import { changeUTCTime } from '../../../../utils/dateTime';
 import { getChecklistsByBuildingId } from '../../../shared/checklists/services/getChecklistsByBuildingId';
 import { findCompanyByUserId } from '../../../shared/company/services/findCompanyByUserId';
 import { findUserById } from '../../user/services/findUserById';
+import { findMaintenanceHistory } from '../services/findMaintenanceHistory';
 
 const clientBuildingServices = new ClientBuildingServices();
 
@@ -31,6 +31,7 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
   const { Company } = req;
 
   let permissionsForSelect: any;
+  let buildingsForSelect: any;
   let companyForSelect: TCompany | null = Company as TCompany;
 
   if (userId) {
@@ -41,12 +42,18 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
         name: permission.Permission.name,
       },
     }));
+
+    buildingsForSelect = userData?.UserBuildingsPermissions.map((building) => ({
+      Building: {
+        id: building.buildingId,
+      },
+    }));
   }
 
   const isAdmin = hasAdminPermission(permissionsForSelect);
   const permittedBuildingsIds = isAdmin
     ? undefined
-    : handlePermittedBuildings(req.BuildingsPermissions, 'id');
+    : handlePermittedBuildings(buildingsForSelect, 'id');
 
   const buildingsIdFilter = !buildingId ? permittedBuildingsIds : buildingId.split(',');
   const userIdFilter = !user ? undefined : user.split(',');
