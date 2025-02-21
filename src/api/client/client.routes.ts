@@ -55,6 +55,7 @@ import { listBuildingApartmentsController } from './building/controllers/listBui
 import { listForSelectRouter } from './listForSelect/list.routes';
 import { getMaintenancesKanban } from './building/controllers/getMaintenancesKanban';
 import { userRouter } from './user/user.routes';
+import { findBuildingByIdController } from './building/controllers/findBuildingByIdController';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -67,6 +68,8 @@ clientRouter.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
 clientRouter.use('/upload', uploadRouter);
 
 clientRouter.get('/syndic/:syndicNanoId', clientSyndicBuildingDetails);
+
+clientRouter.get('/building/id/:buildingId', findBuildingByIdController);
 
 clientRouter.get('/building/:buildingNanoId', clientBuildingDetails);
 
