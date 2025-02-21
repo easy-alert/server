@@ -12,6 +12,7 @@ export type TPermissionsNames =
   | 'access:dashboard'
   | 'access:calendar'
   | 'access:buildings'
+  | 'access:maintenances'
   | 'access:checklist'
   | 'access:tickets'
   | 'access:reports'
@@ -22,6 +23,7 @@ export type TPermissionsNames =
   // backoffice permissions
   // company permissions
   // client permissions
+
   // dashboard permissions
   // calendar permissions
   // tutorials permissions
@@ -32,11 +34,14 @@ export type TPermissionsNames =
   | 'buildings:delete'
 
   // checklist permissions
+  | 'checklist:create'
+  | 'checklist:update'
+  | 'checklist:delete'
+
+  // tickets permissions
   | 'tickets:create'
   | 'tickets:update'
   | 'tickets:delete'
-
-  // tickets permissions
 
   // reports permissions
 
