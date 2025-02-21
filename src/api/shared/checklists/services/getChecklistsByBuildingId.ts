@@ -13,8 +13,16 @@ export async function getChecklistsByBuildingId({
 }: IGetChecklistsByBuildingId) {
   const checklists = await prisma.checklist.findMany({
     include: {
-      checklistItem: true,
       user: true,
+
+      building: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+
+      checklistItem: true,
       images: true,
     },
 
