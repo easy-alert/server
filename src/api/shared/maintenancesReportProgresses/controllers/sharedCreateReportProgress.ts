@@ -1,16 +1,17 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
+
 import type { MaintenancePriorityName } from '@prisma/client';
-import { Validator } from '../../../../utils/validator/validator';
+
 import { SharedMaintenanceReportProgressesServices } from '../services/SharedMaintenanceReportProgressesServices';
 import { createMaintenanceHistoryActivityCommentService } from '../../maintenanceHistoryActivities/services';
+import { checkValues } from '../../../../utils/newValidator';
 
-const validator = new Validator();
 const sharedMaintenanceReportProgressesServices = new SharedMaintenanceReportProgressesServices();
-
 // #endregion
 
 export interface IBody {
+  userId: string;
   maintenanceHistoryId: string;
   cost: number;
   observation: string;
@@ -30,65 +31,66 @@ export interface IBody {
 }
 
 export async function sharedCreateReportProgress(req: Request, res: Response) {
-  const { cost, maintenanceHistoryId, observation, ReportAnnexes, ReportImages }: IBody = req.body;
   const { syndicNanoId } = req.query as any as { syndicNanoId: string };
+  const { userId, maintenanceHistoryId, cost, observation, ReportAnnexes, ReportImages }: IBody =
+    req.body;
 
   // #region VALIDATIONS
-  validator.check([
+  [
     {
       label: 'Id do histórico de manutenção',
       type: 'string',
-      variable: maintenanceHistoryId,
+      value: maintenanceHistoryId,
     },
     {
       label: 'Custo da manutenção',
-      type: 'number',
-      variable: cost,
-      isOptional: true,
+      type: 'int',
+      value: cost,
+      required: false,
     },
     {
       label: 'Observação da manutenção',
       type: 'string',
-      variable: observation,
-      isOptional: true,
+      value: observation,
+      required: false,
     },
-  ]);
+  ];
 
   ReportAnnexes?.forEach((annex) => {
-    validator.check([
+    checkValues([
       {
         label: 'nome do anexo',
-        variable: annex.name,
+        value: annex.name,
         type: 'string',
       },
       {
         label: 'nome original do anexo',
-        variable: annex.originalName,
+        value: annex.originalName,
         type: 'string',
       },
       {
         label: 'url do anexo',
-        variable: annex.url,
+        value: annex.url,
         type: 'string',
       },
     ]);
   });
 
   ReportImages?.forEach((annex) => {
-    validator.check([
+    checkValues([
       {
         label: 'nome da imagem',
-        variable: annex.name,
+        value: annex.name,
         type: 'string',
       },
       {
         label: 'nome original da imagem',
-        variable: annex.originalName,
+        value: annex.originalName,
         type: 'string',
       },
       {
         label: 'url da imagem',
-        variable: annex.url,
+        value: annex.url,
         type: 'string',
       },
     ]);
@@ -113,9 +115,6 @@ export async function sharedCreateReportProgress(req: Request, res: Response) {
     },
   });
 
-  // removido
-  // await sharedMaintenanceServices.updateMaintenanceHistoryToInProgress(maintenanceHistoryId);
-
   const annexesForActivity = Array.isArray(ReportAnnexes)
     ? ReportAnnexes.map(({ originalName, url }) => ({ originalName, url }))
     : [];
@@ -125,10 +124,10 @@ export async function sharedCreateReportProgress(req: Request, res: Response) {
     : [];
 
   await createMaintenanceHistoryActivityCommentService({
-    content: `O progresso foi salvo.`,
-    userId: req.userId,
+    userId,
     maintenanceHistoryId,
     syndicNanoId,
+    content: `O progresso foi salvo.`,
     images: [...annexesForActivity, ...imagesForActivity],
   });
 
