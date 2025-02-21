@@ -254,6 +254,7 @@ export class ClientBuildingServices {
 
             kanban[maintenance.inProgress ? 2 : 1].maintenances.push({
               id: maintenance.id,
+              buildingName: maintenance.Building.name,
               element: maintenance.Maintenance.element,
               activity: maintenance.Maintenance.activity,
               status: maintenance.MaintenancesStatus.name,
@@ -295,6 +296,7 @@ export class ClientBuildingServices {
 
           kanban[maintenance.inProgress ? 2 : 0].maintenances.push({
             id: maintenance.id,
+            buildingName: maintenance.Building.name,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
@@ -319,6 +321,7 @@ export class ClientBuildingServices {
         case 'completed':
           kanban[3].maintenances.push({
             id: maintenance.id,
+            buildingName: maintenance.Building.name,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
@@ -342,6 +345,7 @@ export class ClientBuildingServices {
 
           kanban[3].maintenances.push({
             id: maintenance.id,
+            buildingName: maintenance.Building.name,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
             status: maintenance.MaintenancesStatus.name,
