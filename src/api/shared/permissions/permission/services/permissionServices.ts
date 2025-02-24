@@ -34,7 +34,7 @@ export class PermissionServices {
     if (!isPermitted) {
       throw new ServerMessage({
         statusCode: 400,
-        message: 'Você não possui permissão de acesso.',
+        message: 'Você não possui as permissões necessárias, favor falar com seus administrador.',
       });
     }
   }
