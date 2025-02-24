@@ -24,7 +24,7 @@ export const authBackoffice = async (req: Request, res: Response) => {
     { label: 'senha', variable: password },
   ]);
 
-  const user = await authServices.canLogin({ email, password });
+  const user = await authServices.canLogin({ login: email, password });
 
   await permissionServices.checkPermission({
     UserPermissions: user.Permissions,
