@@ -88,66 +88,66 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
   // # endregion
 
   // # region checklists
-  const defaultChecklistStyle = {
-    type: 'checklist',
-  };
+  // const defaultChecklistStyle = {
+  //   type: 'checklist',
+  // };
 
-  const checklists = await getChecklistsByBuildingId({
-    companyId: companyIdFilter,
-    buildingId: buildingsIdFilter,
-    userId: userIdFilter,
-  });
+  // const checklists = await getChecklistsByBuildingId({
+  //   companyId: companyIdFilter,
+  //   buildingId: buildingsIdFilter,
+  //   userId: userIdFilter,
+  // });
   // # endregion
 
   const kanban = await clientBuildingServices.syndicSeparePerStatus({ data: maintenancesHistory });
 
-  checklists
-    .filter((checklist) => checklist.checklistItem.length > 0)
-    .forEach((checklist) => {
-      const totalItems = checklist.checklistItem.length;
-      const completedItems = checklist.checklistItem.filter(
-        (item) => item.status === 'completed',
-      ).length;
-      const checklistProgress = `${completedItems} de ${totalItems} itens concluídos`;
+  // checklists
+  //   .filter((checklist) => checklist.checklistItem.length > 0)
+  //   .forEach((checklist) => {
+  //     const totalItems = checklist.checklistItem.length;
+  //     const completedItems = checklist.checklistItem.filter(
+  //       (item) => item.status === 'completed',
+  //     ).length;
+  //     const checklistProgress = `${completedItems} de ${totalItems} itens concluídos`;
 
-      switch (checklist.status) {
-        case 'pending':
-          kanban[1].maintenances.push({
-            ...defaultChecklistStyle,
-            id: checklist.id,
-            buildingName: checklist.building.name,
-            name: checklist.name,
-            description: checklist.description,
-            date: checklist.date,
-            status: checklist.status,
-            checklistProgress,
-          });
-          break;
-        case 'inProgress':
-          kanban[2].maintenances.push({
-            ...defaultChecklistStyle,
-            id: checklist.id,
-            name: checklist.name,
-            description: checklist.description,
-            date: checklist.date,
-            status: checklist.status,
-            checklistProgress,
-          });
-          break;
-        case 'completed':
-          kanban[3].maintenances.push({
-            ...defaultChecklistStyle,
-            id: checklist.id,
-            name: checklist.name,
-            description: checklist.description,
-            date: checklist.date,
-            status: checklist.status,
-          });
-          break;
-        default:
-          break;
-      }
-    });
+  //     switch (checklist.status) {
+  //       case 'pending':
+  //         kanban[1].maintenances.push({
+  //           ...defaultChecklistStyle,
+  //           id: checklist.id,
+  //           buildingName: checklist.building.name,
+  //           name: checklist.name,
+  //           description: checklist.description,
+  //           date: checklist.date,
+  //           status: checklist.status,
+  //           checklistProgress,
+  //         });
+  //         break;
+  //       case 'inProgress':
+  //         kanban[2].maintenances.push({
+  //           ...defaultChecklistStyle,
+  //           id: checklist.id,
+  //           name: checklist.name,
+  //           description: checklist.description,
+  //           date: checklist.date,
+  //           status: checklist.status,
+  //           checklistProgress,
+  //         });
+  //         break;
+  //       case 'completed':
+  //         kanban[3].maintenances.push({
+  //           ...defaultChecklistStyle,
+  //           id: checklist.id,
+  //           name: checklist.name,
+  //           description: checklist.description,
+  //           date: checklist.date,
+  //           status: checklist.status,
+  //         });
+  //         break;
+  //       default:
+  //         break;
+  //     }
+  //   });
 
   // Vencida, SE ALTERAR A ORDEM DISSO, ALTERAR NO SCRIPT DE DELETAR AS EXPIRADAS
   kanban[0].maintenances.sort((a: any, b: any) => (a.date > b.date ? 1 : -1));
@@ -166,25 +166,25 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
   }
 
   // Em execução (Vencida + Pendente)
-  checklists
-    .filter((checklist) => checklist.status === 'inProgress')
-    .forEach((checklist) => {
-      const totalItems = checklist.checklistItem.length;
-      const completedItems = checklist.checklistItem.filter(
-        (item) => item.status === 'completed',
-      ).length;
-      const checklistProgress = `${completedItems} de ${totalItems} itens concluídos`;
+  // checklists
+  //   .filter((checklist) => checklist.status === 'inProgress')
+  //   .forEach((checklist) => {
+  //     const totalItems = checklist.checklistItem.length;
+  //     const completedItems = checklist.checklistItem.filter(
+  //       (item) => item.status === 'completed',
+  //     ).length;
+  //     const checklistProgress = `${completedItems} de ${totalItems} itens concluídos`;
 
-      kanban[2].maintenances.push({
-        ...defaultChecklistStyle,
-        id: checklist.id,
-        name: checklist.name,
-        description: checklist.description,
-        date: checklist.date,
-        status: checklist.status,
-        checklistProgress,
-      });
-    });
+  //     kanban[2].maintenances.push({
+  //       ...defaultChecklistStyle,
+  //       id: checklist.id,
+  //       name: checklist.name,
+  //       description: checklist.description,
+  //       date: checklist.date,
+  //       status: checklist.status,
+  //       checklistProgress,
+  //     });
+  //   });
 
   kanban[2].maintenances.sort((a: any, b: any) => (a.date > b.date ? 1 : -1));
 
@@ -199,18 +199,18 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
   }
 
   // Concluída e Feita em atraso
-  checklists
-    .filter((checklist) => checklist.status === 'completed')
-    .forEach((checklist) =>
-      kanban[3].maintenances.push({
-        ...defaultChecklistStyle,
-        id: checklist.id,
-        name: checklist.name,
-        description: checklist.description,
-        date: checklist.date,
-        status: checklist.status,
-      }),
-    );
+  // checklists
+  //   .filter((checklist) => checklist.status === 'completed')
+  //   .forEach((checklist) =>
+  //     kanban[3].maintenances.push({
+  //       ...defaultChecklistStyle,
+  //       id: checklist.id,
+  //       name: checklist.name,
+  //       description: checklist.description,
+  //       date: checklist.date,
+  //       status: checklist.status,
+  //     }),
+  //   );
 
   kanban[3].maintenances.sort((a: any, b: any) => (a.date < b.date ? 1 : -1));
 
