@@ -16,7 +16,7 @@ export async function deleteChecklistController2(req: Request, res: Response) {
     { label: 'Tipo da exclusão', type: 'string', value: mode },
   ]);
 
-  const checklist = await getChecklists({ companyId: Company.id, checklistId });
+  const checklist = await getChecklists({ companyId: Company?.id, checklistId });
 
   if (!checklist.length) {
     return res.status(404).json({ ServerMessage: { message: 'Checklist não encontrado.' } });
@@ -24,16 +24,29 @@ export async function deleteChecklistController2(req: Request, res: Response) {
 
   switch (mode) {
     case 'all':
-      await deleteChecklist({ where: { templateId: checklist[0].templateId } });
+      if (checklist[0].groupId) {
+        await deleteChecklist({ where: { groupId: checklist[0].groupId } });
+      } else {
+        await deleteChecklist({ where: { templateId: checklist[0].templateId } });
+      }
       break;
 
     case 'thisAndFollowing':
-      await deleteChecklist({
-        where: {
-          templateId: checklist[0].templateId,
-          date: { gte: checklist[0].date },
-        },
-      });
+      if (checklist[0].groupId) {
+        await deleteChecklist({
+          where: {
+            groupId: checklist[0].groupId,
+            date: { gte: checklist[0].date },
+          },
+        });
+      } else {
+        await deleteChecklist({
+          where: {
+            templateId: checklist[0].templateId,
+            date: { gte: checklist[0].date },
+          },
+        });
+      }
       break;
 
     default:
