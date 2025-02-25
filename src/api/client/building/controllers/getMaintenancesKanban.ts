@@ -7,7 +7,6 @@ import { hasAdminPermission } from '../../../../utils/permissions/hasAdminPermis
 import { handlePermittedBuildings } from '../../../../utils/permissions/handlePermittedBuildings';
 import { ClientBuildingServices } from '../../../client/building/services/clientBuildingServices';
 import { changeUTCTime } from '../../../../utils/dateTime';
-import { getChecklistsByBuildingId } from '../../../shared/checklists/services/getChecklistsByBuildingId';
 import { findCompanyByUserId } from '../../../shared/company/services/findCompanyByUserId';
 import { findUserById } from '../../user/services/findUserById';
 import { findMaintenanceHistory } from '../services/findMaintenanceHistory';

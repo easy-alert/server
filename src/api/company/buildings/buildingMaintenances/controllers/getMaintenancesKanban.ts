@@ -8,7 +8,6 @@ import { handlePermittedBuildings } from '../../../../../utils/permissions/handl
 import { findCompanyById } from '../../../../shared/company/services/findCompanyById';
 import { ClientBuildingServices } from '../../../../client/building/services/clientBuildingServices';
 import { changeUTCTime } from '../../../../../utils/dateTime';
-import { getChecklistsByBuildingId } from '../../../../shared/checklists/services/getChecklistsByBuildingId';
 import { findMaintenanceHistory } from '../../../../client/building/services/findMaintenanceHistory';
 
 const clientBuildingServices = new ClientBuildingServices();
