@@ -22,5 +22,9 @@ export async function listBuildingsForSelect({ companyId, buildingsIds }: IListB
         },
       },
     },
+
+    orderBy: {
+      name: 'asc',
+    },
   });
 }
