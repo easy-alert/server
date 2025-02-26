@@ -40,6 +40,8 @@ model User {
   lastNotificationDate   DateTime  @default(now())
   lastAccess             DateTime?
 
+  colorScheme String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
