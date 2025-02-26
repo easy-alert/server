@@ -39,15 +39,15 @@ export const authBackofficeCompany = async (req: Request, res: Response) => {
   const token = tokenServices.generate({
     tokenData: {
       userId: user.id,
-      Company: user.Companies[0].Company,
-      Permissions: user.Permissions,
-      BuildingsPermissions: user.UserBuildingsPermissions,
     },
   });
 
   return res.status(200).json({
+    token,
+
     Account: {
       origin: 'Backoffice',
+      Company: user.Companies[0].Company,
       User: {
         id: user.id,
         name: user.name,
@@ -58,8 +58,6 @@ export const authBackofficeCompany = async (req: Request, res: Response) => {
         Permissions: user.Permissions,
         BuildingsPermissions: user.UserBuildingsPermissions,
       },
-      Company: user.Companies[0].Company,
     },
-    token,
   });
 };
