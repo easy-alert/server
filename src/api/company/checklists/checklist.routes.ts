@@ -28,7 +28,7 @@ checklistRouter.get('/templates/:buildingId', getChecklistsTemplatesController);
 checklistRouter.get('/v2/:checklistId', getChecklistsController);
 checklistRouter.get('/v2/:buildingId', getChecklistsByBuildingIdController);
 
-checklistRouter.post('/v2/', createChecklistController2);
+checklistRouter.post('/v2', createChecklistController2);
 
 checklistRouter.post('/', createChecklistController);
 
