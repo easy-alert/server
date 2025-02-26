@@ -14,6 +14,7 @@ export async function findManyTicketsController(req: Request, res: Response) {
     buildingsNanoIdBody,
     placesId,
     serviceTypesId,
+    apartmentsNames,
     status,
     startDate,
     endDate,
@@ -23,8 +24,14 @@ export async function findManyTicketsController(req: Request, res: Response) {
     count,
   } = req.query;
 
+  const isAdmin = req.Permissions?.some((permission) =>
+    permission?.Permission?.name?.includes('admin'),
+  );
+
   const buildingsIds = buildingsNanoId ?? buildingsNanoIdBody;
-  const permittedBuildingsNanoIds = req.BuildingsPermissions?.map((b: any) => b.Building.nanoId);
+  const permittedBuildingsNanoIds = isAdmin
+    ? undefined
+    : req.BuildingsPermissions?.map((b: any) => b.Building.nanoId);
   let buildingName = '';
 
   const companyIdFilter = Company ? Company.id : undefined;
@@ -40,6 +47,10 @@ export async function findManyTicketsController(req: Request, res: Response) {
   const statusFilter =
     typeof status === 'string' && status !== ''
       ? (status.split(',') as TicketStatusName[])
+      : undefined;
+  const apartmentsNamesFilter =
+    typeof apartmentsNames === 'string' && apartmentsNames !== ''
+      ? apartmentsNames.split(',')
       : undefined;
 
   const seenFilter = seen ? seen === 'true' : undefined;
@@ -65,6 +76,7 @@ export async function findManyTicketsController(req: Request, res: Response) {
     statusName: statusFilter,
     placeId: placeIdFilter,
     serviceTypeId: serviceTypeIdFilter,
+    apartmentsNames: apartmentsNamesFilter,
     startDate: startDateFilter,
     endDate: endDateFilter,
     seen: seenFilter,

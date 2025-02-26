@@ -175,11 +175,6 @@ export class SharedMaintenanceReportsServices {
 
         Maintenance: {
           select: {
-            Category: {
-              select: {
-                name: true,
-              },
-            },
             id: true,
             element: true,
             activity: true,
@@ -188,23 +183,32 @@ export class SharedMaintenanceReportsServices {
             observation: true,
             period: true,
             frequency: true,
+            instructions: { select: { name: true, url: true } },
+
+            Category: {
+              select: {
+                name: true,
+              },
+            },
+
             FrequencyTimeInterval: {
               select: {
                 pluralLabel: true,
                 singularLabel: true,
               },
             },
+
             PeriodTimeInterval: {
               select: {
                 unitTime: true,
               },
             },
+
             MaintenanceType: {
               select: {
                 name: true,
               },
             },
-            instructions: { select: { name: true, url: true } },
           },
         },
       },
@@ -221,6 +225,22 @@ export class SharedMaintenanceReportsServices {
       },
     ]);
 
-    return maintenanceHistory!;
+    const additionalInfo = await prisma.maintenanceAdditionalInformation.findFirst({
+      select: {
+        information: true,
+        user: true,
+      },
+
+      where: {
+        buildingId: maintenanceHistory?.Building.id,
+        maintenanceId: maintenanceHistory?.Maintenance.id,
+      },
+    });
+
+    return {
+      ...maintenanceHistory!,
+      additionalInfo: additionalInfo?.information || '',
+      userResponsible: additionalInfo?.user || undefined,
+    };
   }
 }

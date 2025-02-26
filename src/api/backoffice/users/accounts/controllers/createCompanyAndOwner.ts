@@ -45,7 +45,9 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     { label: 'imagem', variable: image },
   ]);
 
-  const checkUser = await userServices.findEmailForCreate({ email });
+  const emailLowerCase = email.toLowerCase() as string;
+
+  const checkUser = await userServices.findEmailForCreate({ email: emailLowerCase });
 
   validator.cannotExists([{ label: 'e-mail', variable: checkUser }]);
 
@@ -55,10 +57,12 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
       message: `Informe um CNPJ ou CPF.`,
     });
   }
+
   if (CNPJ) {
     const checkCNPJ = await sharedCompanyServices.findByCNPJ({ CNPJ });
     validator.cannotExists([{ label: 'CNPJ', variable: checkCNPJ }]);
   }
+
   if (CPF) {
     const checkCPF = await sharedCompanyServices.findByCPF({ CPF });
     validator.cannotExists([{ label: 'CPF', variable: checkCPF }]);
@@ -66,11 +70,11 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
 
   const user = await userServices.create({
     name,
-    email,
+    email: emailLowerCase,
     passwordHash: password,
   });
 
-  const permission = await permissionServices.findByName({ name: 'Company' });
+  const permission = await permissionServices.findByName({ name: 'admin:company' });
 
   await userPermissionServices.createUserPermission({
     userId: user.id,

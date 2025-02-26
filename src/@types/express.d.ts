@@ -24,6 +24,7 @@ declare namespace Express {
     BuildingsPermissions: {
       Building: {
         id: string;
+        nanoId: string;
         name: string;
       };
     }[];

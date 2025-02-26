@@ -239,7 +239,7 @@ export class BuildingServices {
     ]);
   }
 
-  async list({ take = 20, page, search = '', companyId, buildingsIds }: IListBuildings) {
+  async list({ take = 100, page, search = '', companyId, buildingsIds }: IListBuildings) {
     const where: prismaTypes.BuildingWhereInput = {
       id: {
         in: buildingsIds,
@@ -323,6 +323,7 @@ export class BuildingServices {
         neighborhood: true,
         streetName: true,
         area: true,
+        image: true,
         deliveryDate: true,
         warrantyExpiration: true,
         keepNotificationAfterWarrantyEnds: true,
@@ -375,6 +376,35 @@ export class BuildingServices {
           },
 
           orderBy: [{ isMain: 'desc' }, { name: 'asc' }],
+        },
+
+        UserBuildingsPermissions: {
+          select: {
+            isMainContact: true,
+            showContact: true,
+
+            User: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                emailIsConfirmed: true,
+                phoneNumber: true,
+                phoneNumberIsConfirmed: true,
+                role: true,
+                isMainContact: true,
+                showContact: true,
+              },
+            },
+          },
+
+          where: {
+            buildingId,
+          },
+
+          orderBy: {
+            isMainContact: 'desc',
+          },
         },
 
         Annexes: {
@@ -482,11 +512,55 @@ export class BuildingServices {
             name: true,
           },
         },
+
         Maintenances: {
           select: {
             daysToAnticipate: true,
             Maintenance: {
               select: {
+                id: true,
+                element: true,
+                activity: true,
+                frequency: true,
+                delay: true,
+                period: true,
+                responsible: true,
+                source: true,
+                observation: true,
+                ownerCompanyId: true,
+                priorityName: true,
+                instructions: { select: { name: true, url: true } },
+
+                FrequencyTimeInterval: {
+                  select: {
+                    id: true,
+                    name: true,
+                    pluralLabel: true,
+                    singularLabel: true,
+                    unitTime: true,
+                  },
+                },
+
+                DelayTimeInterval: {
+                  select: {
+                    id: true,
+                    name: true,
+                    pluralLabel: true,
+                    singularLabel: true,
+                    unitTime: true,
+                  },
+                },
+
+                PeriodTimeInterval: {
+                  select: {
+                    id: true,
+                    name: true,
+                    pluralLabel: true,
+                    singularLabel: true,
+                    unitTime: true,
+                  },
+                },
+
                 MaintenancesHistory: {
                   select: {
                     wasNotified: true,
@@ -506,45 +580,17 @@ export class BuildingServices {
                     createdAt: 'desc',
                   },
                 },
-                id: true,
-                element: true,
-                activity: true,
-                frequency: true,
-                delay: true,
-                period: true,
-                responsible: true,
-                source: true,
-                observation: true,
-                ownerCompanyId: true,
-                priorityName: true,
-                FrequencyTimeInterval: {
+
+                MaintenanceAdditionalInformation: {
                   select: {
-                    id: true,
-                    name: true,
-                    pluralLabel: true,
-                    singularLabel: true,
-                    unitTime: true,
+                    information: true,
+                    user: true,
+                  },
+
+                  where: {
+                    buildingId,
                   },
                 },
-                DelayTimeInterval: {
-                  select: {
-                    id: true,
-                    name: true,
-                    pluralLabel: true,
-                    singularLabel: true,
-                    unitTime: true,
-                  },
-                },
-                PeriodTimeInterval: {
-                  select: {
-                    id: true,
-                    name: true,
-                    pluralLabel: true,
-                    singularLabel: true,
-                    unitTime: true,
-                  },
-                },
-                instructions: { select: { name: true, url: true } },
               },
             },
           },

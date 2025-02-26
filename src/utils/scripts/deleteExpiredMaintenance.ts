@@ -19,12 +19,12 @@ export async function deleteExpiredMaintenance(req: Request, res: Response) {
 
   const maintenanceHistory = await maintenanceServices.findHistoryById({ maintenanceHistoryId });
 
-  if (maintenanceHistory.MaintenancesStatus.name !== 'expired') {
-    throw new ServerMessage({
-      message: 'Você só pode excluir manutenções vencidas.',
-      statusCode: 400,
-    });
-  }
+  // if (maintenanceHistory.MaintenancesStatus.name !== 'expired') {
+  //   throw new ServerMessage({
+  //     message: 'Você só pode excluir manutenções vencidas.',
+  //     statusCode: 400,
+  //   });
+  // }
 
   await maintenanceServices.deleteHistory({ maintenanceHistoryId });
 

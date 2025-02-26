@@ -2,20 +2,24 @@ import { Request, Response } from 'express';
 
 import { dashboardServices } from '../services/dashboardServices';
 
-import { getPeriod } from '../../../../utils/dateTime/getPeriod';
 import { handleDashboardFilter } from '../../../../utils/filters/handleDashboardFilter';
+import { setToUTCMidnight } from '../../../../utils/dateTime';
 
 export async function maintenancesByStatusController(req: Request, res: Response) {
-  const { period, buildings, categories, responsible } = req.query;
-  const { startDate, endDate } = getPeriod(period as string | undefined);
+  const { buildings, categories, responsible, startDate, endDate } = req.query;
+
+  const startDateFormatted = startDate ? setToUTCMidnight(startDate as string) : undefined;
+  const endDateFormatted = endDate ? setToUTCMidnight(endDate as string) : undefined;
 
   const dashboardFilter = handleDashboardFilter({
-    buildings: buildings as string | string[],
+    companyId: req.Company.id,
+    buildings: buildings as string[],
     categories: categories as string | string[],
     responsible: responsible as string | string[],
-    startDate,
-    endDate,
-    companyId: req.Company.id,
+    startDate: startDateFormatted,
+    endDate: endDateFormatted,
+    permissions: req.Permissions,
+    buildingsPermissions: req.BuildingsPermissions,
   });
 
   const maintenances = await dashboardServices.maintenancesByStatus({

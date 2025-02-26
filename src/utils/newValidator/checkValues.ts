@@ -8,6 +8,7 @@ type IType =
   | 'boolean'
   | 'date'
   | 'json'
+  | 'object'
   | 'array'
   | 'time'
   | 'email'
@@ -46,6 +47,7 @@ const labelToDisplay: { [key in IType]: string } = {
   stringNumbers: 'Texto numérico',
   phone: 'Telefone/Celular',
   PIN: 'PIN',
+  object: 'Objeto',
 };
 
 function invalidType({ label, type }: { label: string; type: IType }) {
@@ -318,6 +320,12 @@ export function checkValues(values: ICheckValues[]) {
         }
         break;
       }
+
+      case 'object':
+        if (typeof value !== 'object') {
+          invalidType({ label, type });
+        }
+        break;
 
       default:
         break;

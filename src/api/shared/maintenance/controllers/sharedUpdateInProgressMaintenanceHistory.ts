@@ -1,20 +1,20 @@
 // CLASS
 import { Request, Response } from 'express';
-import { Validator } from '../../../../utils/validator/validator';
+
 import { SharedMaintenanceServices } from '../services/sharedMaintenanceServices';
+
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { createMaintenanceHistoryActivityCommentService } from '../../maintenanceHistoryActivities/services';
+import { checkValues } from '../../../../utils/newValidator';
 
 const sharedMaintenanceServices = new SharedMaintenanceServices();
-const validator = new Validator();
 
 export async function sharedUpdateInProgressMaintenanceHistory(req: Request, res: Response) {
-  const { maintenanceHistoryId, inProgressChange } = req.body;
-  const { syndicNanoId } = req.query as any as { syndicNanoId: string };
+  const { userId, syndicNanoId, maintenanceHistoryId, inProgressChange } = req.body;
 
-  validator.check([
-    { label: 'ID da manutenção', variable: maintenanceHistoryId, type: 'string' },
-    { label: 'Status da execução', variable: inProgressChange, type: 'boolean' },
+  checkValues([
+    { label: 'ID da manutenção', value: maintenanceHistoryId, type: 'string' },
+    { label: 'Status da execução', value: inProgressChange, type: 'boolean' },
   ]);
 
   const maintenanceHistory = await sharedMaintenanceServices.findHistoryById({
@@ -37,7 +37,7 @@ export async function sharedUpdateInProgressMaintenanceHistory(req: Request, res
   });
 
   await createMaintenanceHistoryActivityCommentService({
-    userId: req.userId,
+    userId,
     syndicNanoId,
     maintenanceHistoryId,
     content: inProgressChange

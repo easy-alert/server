@@ -21,6 +21,7 @@ import { buildingRouter } from './buildings/building.routes';
 
 // TYPES
 import type { TPermissionsNames } from '../../types/TPermissionsNames';
+import { listForSelectRouter } from './listForSelect/list.routes';
 
 // ROUTES
 export const backofficeRouter: Router = Router();
@@ -84,4 +85,12 @@ backofficeRouter.use(
   authMiddleware,
   handleBackofficePermCheck(backofficePermissions),
   buildingRouter,
+);
+
+// LIST FOR SELECT
+backofficeRouter.use(
+  '/list',
+  authMiddleware,
+  handleBackofficePermCheck(backofficePermissions),
+  listForSelectRouter,
 );

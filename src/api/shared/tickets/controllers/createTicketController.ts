@@ -7,6 +7,8 @@ interface IBody {
   residentName: string;
   residentEmail?: string | null;
   residentApartment: string;
+  residentCPF?: string;
+  residentPhone?: string;
   description: string;
   placeId: string;
   buildingNanoId: string;
@@ -27,6 +29,8 @@ export async function createTicketController(req: Request, res: Response) {
     residentApartment,
     residentName,
     residentEmail,
+    residentPhone,
+    residentCPF,
     images,
     types,
   }: IBody = req.body;
@@ -38,8 +42,10 @@ export async function createTicketController(req: Request, res: Response) {
     { label: 'Nome do morador', type: 'string', value: residentName },
     { label: 'E-mail do morador', type: 'email', value: residentEmail, required: false },
     { label: 'Apartamento do morador', type: 'string', value: residentApartment },
+    { label: 'CPF do morador', type: 'string', value: residentCPF, required: false },
+    { label: 'Telefone do morador', type: 'string', value: residentPhone, required: false },
     { label: 'Imagens', type: 'array', value: images },
-    { label: 'Tipo da manutenção', type: 'array', value: types },
+    { label: 'Tipo de assistência', type: 'array', value: types },
   ]);
 
   images?.forEach((data) => {
@@ -50,7 +56,7 @@ export async function createTicketController(req: Request, res: Response) {
   });
 
   types?.forEach((data) => {
-    checkValues([{ label: 'Tipo da manutenção', type: 'string', value: data.serviceTypeId }]);
+    checkValues([{ label: 'Tipo de assistência', type: 'string', value: data.serviceTypeId }]);
   });
 
   await ticketServices.checkAccess({ buildingNanoId });
@@ -65,6 +71,8 @@ export async function createTicketController(req: Request, res: Response) {
       residentName,
       residentApartment,
       residentEmail: lowerCaseEmail,
+      residentCPF,
+      residentPhone,
       placeId,
       description,
       statusName: 'open',

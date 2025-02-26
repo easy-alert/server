@@ -5,18 +5,21 @@ import { prisma } from '../../../../../../prisma';
 import { Validator } from '../../../../../utils/validator/validator';
 
 // TYPES
-import { IEditUser, IEditUserPassword, IListUser } from '../types';
+import { IEditUserPassword, IListUser } from '../types';
 
 // CLASS
 const validator = new Validator();
 
 export class UserServices {
   // #region create
-  async create({ name, email, passwordHash }: Prisma.UserCreateInput) {
+  async create({ image, name, role, email, phoneNumber, passwordHash }: Prisma.UserCreateInput) {
     return prisma.user.create({
       data: {
+        image,
         name,
+        role,
         email: email.toLowerCase(),
+        phoneNumber,
         passwordHash: hashSync(passwordHash, 12),
       },
     });
@@ -25,11 +28,22 @@ export class UserServices {
   // #endregion
 
   // #region edit
-  async edit({ userId, name, email, isBlocked }: IEditUser) {
+  async edit({
+    userId,
+    image,
+    name,
+    role,
+    email,
+    phoneNumber,
+    isBlocked,
+  }: Prisma.UserUpdateInput & { userId: string }) {
     await prisma.user.update({
       data: {
+        image,
         name,
+        role,
         email,
+        phoneNumber,
         isBlocked,
       },
       where: { id: userId },
@@ -138,6 +152,7 @@ export class UserServices {
         id: true,
         name: true,
         email: true,
+        phoneNumber: true,
 
         isBlocked: true,
 

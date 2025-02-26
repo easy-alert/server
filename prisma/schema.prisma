@@ -24,22 +24,36 @@ model ValidationToken {
 
 // USER
 model User {
-  id           String    @id @unique @default(uuid())
-  name         String
-  email        String    @unique
-  isBlocked    Boolean   @default(false)
-  passwordHash String
-  lastAccess   DateTime?
+  id String @id @unique @default(uuid())
+
+  name                   String
+  email                  String    @unique
+  emailIsConfirmed       Boolean   @default(false)
+  phoneNumber            String?   @unique
+  phoneNumberIsConfirmed Boolean   @default(false)
+  passwordHash           String
+  role                   String?
+  image                  String?
+  isBlocked              Boolean   @default(false)
+  isMainContact          Boolean   @default(false)
+  showContact            Boolean   @default(false)
+  lastNotificationDate   DateTime  @default(now())
+  lastAccess             DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Permissions              UserPermissions[]
-  Companies                UserCompanies[]
-  reportPdfs               MaintenanceReportPdf[]
-  TicketReportPDF          TicketReportPDF[]
-  UserBuildingsPermissions UserBuildingsPermissions[]
+  Permissions                      UserPermissions[]
+  UserBuildingsPermissions         UserBuildingsPermissions[]
+  Companies                        UserCompanies[]
+  MaintenanceHistory               MaintenanceHistory[]
+  Ticket                           Ticket[]
+  TicketReportPDF                  TicketReportPDF[]
+  Checklist                        Checklist[]
+  reportPdfs                       MaintenanceReportPdf[]
+  MaintenanceAdditionalInformation MaintenanceAdditionalInformation[]
 
+  @@unique([email, phoneNumber])
   @@map("users")
 }
 
@@ -83,6 +97,9 @@ model UserBuildingsPermissions {
   buildingId   String
   permissionId String?
 
+  isMainContact Boolean @default(false)
+  showContact   Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -95,10 +112,11 @@ model UserBuildingsPermissions {
 }
 
 model UserCompanies {
-  id        String  @id @default(uuid())
+  id        String @id @default(uuid())
   userId    String
   companyId String
-  owner     Boolean @default(false)
+
+  owner Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -248,7 +266,8 @@ model Maintenance {
   suggestedSuppliers MaintenanceSupplier[]
   instructions       MaintenanceInstruction[]
 
-  priority MaintenancePriority @relation(fields: [priorityName], references: [name])
+  priority                         MaintenancePriority                @relation(fields: [priorityName], references: [name])
+  MaintenanceAdditionalInformation MaintenanceAdditionalInformation[]
 
   @@map("maintenances")
 }
@@ -263,6 +282,23 @@ model MaintenanceInstruction {
   maintenance Maintenance @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
 
   @@map("maintenanceInstructions")
+}
+
+model MaintenanceAdditionalInformation {
+  id String @id @unique @default(uuid())
+
+  buildingId    String
+  maintenanceId String
+  userId        String?
+
+  information String
+
+  maintenance Maintenance @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+  building    Building    @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([buildingId, maintenanceId])
+  @@map("maintenanceAdditionalInformations")
 }
 
 model MaintenanceHistory {
@@ -297,6 +333,8 @@ model MaintenanceHistory {
   activities                MaintenanceHistoryActivity[]
 
   priority MaintenancePriority @relation(fields: [priorityName], references: [name])
+  User     User?               @relation(fields: [userId], references: [id])
+  userId   String?
 
   @@map("maintenancesHistory")
 }
@@ -548,6 +586,7 @@ model Building {
   mandatoryReportProof              Boolean  @default(false)
   isActivityLogPublic               Boolean  @default(false)
   guestCanCompleteMaintenance       Boolean  @default(true)
+  image                             String?
 
   residentPassword String?
   syndicPassword   String?
@@ -560,18 +599,20 @@ model Building {
   BuildingType BuildingType @relation(fields: [buildingTypeId], references: [id], onDelete: Cascade)
   Company      Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  NotificationsConfigurations BuildingNotificationConfiguration[]
-  Categories                  BuildingCategory[]
-  Annexes                     BuildingAnnexe[]
-  Banners                     BuildingBanners[]
-  MaintenancesHistory         MaintenanceHistory[]
-  oldBuildingIds              oldBuildingIds[]
-  BuildingFolders             BuildingFolders[]
-  BuildingsAccessHistory      BuildingAccessHistory[]
-  checklists                  Checklist[]
-  tickets                     Ticket[]
-  UserBuildingsPermissions    UserBuildingsPermissions[]
-  BuildingApartments          BuildingApartment[]
+  NotificationsConfigurations      BuildingNotificationConfiguration[]
+  Categories                       BuildingCategory[]
+  Annexes                          BuildingAnnexe[]
+  Banners                          BuildingBanners[]
+  MaintenancesHistory              MaintenanceHistory[]
+  oldBuildingIds                   oldBuildingIds[]
+  BuildingFolders                  BuildingFolders[]
+  BuildingsAccessHistory           BuildingAccessHistory[]
+  checklists                       Checklist[]
+  tickets                          Ticket[]
+  UserBuildingsPermissions         UserBuildingsPermissions[]
+  BuildingApartments               BuildingApartment[]
+  MaintenanceAdditionalInformation MaintenanceAdditionalInformation[]
+  ChecklistTemplate                ChecklistTemplate[]
 
   @@map("buildings")
 }
@@ -828,8 +869,11 @@ model DefaultTemplateMaintenance {
 model Checklist {
   id String @id @default(uuid())
 
-  buildingId              String
-  syndicId                String?
+  buildingId String
+  syndicId   String?
+  userId     String?
+  templateId String?
+
   name                    String
   description             String?
   date                    DateTime
@@ -844,13 +888,67 @@ model Checklist {
   updatedAt DateTime @updatedAt
 
   building              Building                           @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  user                  User?                              @relation(fields: [userId], references: [id], onDelete: SetNull)
   syndic                BuildingNotificationConfiguration? @relation(fields: [syndicId], references: [id], onDelete: SetNull)
   frequencyTimeInterval TimeInterval?                      @relation(fields: [frequencyTimeIntervalId], references: [id])
+  template              ChecklistTemplate?                 @relation(fields: [templateId], references: [id], onDelete: SetNull)
 
-  images       ChecklistImage[]
-  detailImages ChecklistDetailImage[]
+  checklistItem ChecklistItem[]
+  images        ChecklistImage[]
+  detailImages  ChecklistDetailImage[]
 
   @@map("checklists")
+}
+
+model ChecklistItem {
+  id String @id @default(uuid())
+
+  checklistId String
+
+  name        String
+  description String?
+  status      ChecklistStatusName @default(pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  checklist Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+
+  @@map("checklistItems")
+}
+
+model ChecklistTemplate {
+  id String @id @default(uuid())
+
+  buildingId String
+
+  name        String
+  description String?
+  items       ChecklistTemplateItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  building Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+
+  Checklist Checklist[]
+
+  @@map("checklistTemplates")
+}
+
+model ChecklistTemplateItem {
+  id String @id @default(uuid())
+
+  templateId String
+
+  name String
+
+  checklistTemplate ChecklistTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("checklistTemplateItems")
 }
 
 // Essas são as imagens do "relato", Ficou com o nome ruim porque só depois que veio as imagens da checklist padrão.
@@ -868,6 +966,7 @@ model ChecklistImage {
 
 enum ChecklistStatusName {
   pending
+  inProgress
   completed
 }
 
@@ -887,21 +986,27 @@ model ChecklistDetailImage {
 model Ticket {
   id String @id @default(uuid())
 
-  ticketNumber         Int              @unique @default(autoincrement())
   buildingId           String
-  residentName         String
-  residentApartment    String
-  residentEmail        String?
-  description          String
   placeId              String
-  statusName           TicketStatusName
   maintenanceHistoryId String?
-  seen                 Boolean          @default(false)
-  showToResident       Boolean          @default(false)
+
+  ticketNumber      Int              @unique @default(autoincrement())
+  residentName      String
+  residentPhone     String?
+  residentApartment String
+  residentEmail     String?
+  residentCPF       String?
+  description       String
+  statusName        TicketStatusName
+  signature         String?
+  collaborator      String?
+  seen              Boolean          @default(false)
+  showToResident    Boolean          @default(false)
 
   dismissReasonName  TicketDismissReasonsName?
   dismissObservation String?
   dismissedById      String?
+  dismissedByUserId  String?
   dismissedAt        DateTime?
 
   createdAt DateTime @default(now())
@@ -916,6 +1021,7 @@ model Ticket {
   activities         TicketHistoryActivities[]
   dismissReasons     TicketDismissReasons?              @relation(fields: [dismissReasonName], references: [name])
   dismissedBy        BuildingNotificationConfiguration? @relation(fields: [dismissedById], references: [id], onDelete: SetNull)
+  dismissedByUser    User?                              @relation(fields: [dismissedByUserId], references: [id])
 
   @@map("tickets")
 }

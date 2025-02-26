@@ -2,11 +2,16 @@
 /* eslint-disable no-loop-func */
 // #region IMPORTS
 import { Request, Response } from 'express';
-import { IMaintenancesData } from '../services/types';
+
 import { BuildingReportsServices } from '../services/buildingReportsServices';
 import { SharedCalendarServices } from '../../../../shared/calendar/services/SharedCalendarServices';
 import { buildingServices } from '../../building/services/buildingServices';
+
 import { setToUTCLastMinuteOfDay } from '../../../../../utils/dateTime';
+import { hasAdminPermission } from '../../../../../utils/permissions/hasAdminPermission';
+import { handlePermittedBuildings } from '../../../../../utils/permissions/handlePermittedBuildings';
+
+import type { IMaintenancesData } from '../services/types';
 
 // CLASS
 const buildingReportsServices = new BuildingReportsServices();
@@ -98,6 +103,13 @@ export const capitalizeFirstLetter = (value: string) =>
 
 export async function listForBuildingReports(req: Request, res: Response) {
   const queryFilter = buildingReportsServices.mountQueryFilter({ query: req.query as any });
+
+  const isAdmin = hasAdminPermission(req.Permissions);
+  const permittedBuildings = handlePermittedBuildings(req.BuildingsPermissions, 'id');
+
+  if (!queryFilter.buildingIds || queryFilter.buildingIds?.length === 0) {
+    queryFilter.buildingIds = isAdmin ? undefined : permittedBuildings;
+  }
 
   const { maintenancesHistory, MaintenancesPending } =
     await buildingReportsServices.findBuildingMaintenancesHistory({
