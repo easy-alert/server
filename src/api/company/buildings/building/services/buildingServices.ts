@@ -48,6 +48,7 @@ export class BuildingServices {
       include: {
         Banners: true,
         Company: true,
+        UserBuildingsPermissions: true,
       },
       where: {
         id: buildingId,
