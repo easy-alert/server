@@ -15,6 +15,14 @@ const allowedOrigins = [
   'https://app.easyalert.com.br',
 ];
 
-export const corsOptions: cors.CorsOptions = {
-  origin: allowedOrigins,
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
 };
+
+export { corsOptions };

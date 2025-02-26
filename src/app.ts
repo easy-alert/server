@@ -25,10 +25,10 @@ export class App {
 
   middleware() {
     this.server.use(express.json({ limit: '50mb' }));
+    this.server.use(cors(corsOptions));
   }
 
   router() {
-    this.server.use(cors(corsOptions));
     this.server.use('/api', routes);
   }
 
