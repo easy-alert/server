@@ -53,7 +53,7 @@ export const authCompany = async (req: Request, res: Response) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        phoneNumber: user.phoneNumber,
+        // phoneNumber: user.phoneNumber,
         lastAccess: user.lastAccess,
         createdAt: user.createdAt,
         isCompanyOwner,
