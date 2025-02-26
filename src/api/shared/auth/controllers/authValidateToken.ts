@@ -7,7 +7,9 @@ import { AuthServices } from '../services/authServices';
 const authServices = new AuthServices();
 
 export const authValidateToken = async (req: Request, res: Response) => {
-  const user = await authServices.validateToken({ userId: req.userId });
+  const { userId } = req;
+
+  const user = await authServices.validateToken({ userId });
 
   let isCompanyOwner = false;
 
@@ -19,6 +21,7 @@ export const authValidateToken = async (req: Request, res: Response) => {
   }
 
   return res.status(200).json({
+    Company: user.Companies.length > 0 ? user.Companies[0].Company : null,
     User: {
       id: user.id,
       name: user.name,
@@ -29,6 +32,5 @@ export const authValidateToken = async (req: Request, res: Response) => {
       Permissions: user.Permissions,
       BuildingsPermissions: user.UserBuildingsPermissions,
     },
-    Company: user.Companies.length > 0 ? user.Companies[0].Company : null,
   });
 };

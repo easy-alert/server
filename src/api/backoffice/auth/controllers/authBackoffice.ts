@@ -36,11 +36,12 @@ export const authBackoffice = async (req: Request, res: Response) => {
   const token = tokenServices.generate({
     tokenData: {
       userId: user.id!,
-      Permissions: user.Permissions,
     },
   });
 
   return res.status(200).json({
+    token,
+
     User: {
       id: user.id,
       name: user.name,
@@ -49,6 +50,5 @@ export const authBackoffice = async (req: Request, res: Response) => {
       createdAt: user.createdAt,
       Permissions: user.Permissions,
     },
-    token,
   });
 };

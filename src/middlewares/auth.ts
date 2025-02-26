@@ -1,12 +1,15 @@
 // LIBS
 import 'dotenv/config';
 import { verify } from 'jsonwebtoken';
+
+import type { NextFunction, Request, Response } from 'express';
+
 // CLASS
-import { NextFunction, Request, Response } from 'express';
 import { ServerMessage } from '../utils/messages/serverMessage';
-import { IToken } from './types';
 import { UserServices } from '../api/shared/users/user/services/userServices';
+
 // TYPES
+import type { IToken } from './types';
 
 const userServices = new UserServices();
 
@@ -25,14 +28,15 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
     const secret: any = process.env.JWT_SECRET;
 
     const decoded = verify(token, secret);
-    const { userId, Company, Permissions, BuildingsPermissions } = decoded as IToken;
+    const { userId } = decoded as IToken;
 
-    await userServices.findById({ userId });
+    const user = await userServices.findById({ userId });
 
-    req.userId = userId;
-    req.Company = Company;
-    req.Permissions = Permissions;
-    req.BuildingsPermissions = BuildingsPermissions;
+    req.userId = user.id;
+    req.Company =
+      user.Companies.length > 0 ? user.Companies[0].Company : ({} as Request['Company']);
+    req.Permissions = user.Permissions;
+    req.BuildingsPermissions = user.UserBuildingsPermissions;
 
     next();
   } catch (error) {

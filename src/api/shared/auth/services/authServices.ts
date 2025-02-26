@@ -95,6 +95,70 @@ export class AuthServices {
     return User;
   }
 
+  async findByEmailOrPhone({ login }: { login: string }) {
+    const User = await prisma.user.findFirst({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phoneNumber: true,
+        createdAt: true,
+        lastAccess: true,
+        passwordHash: true,
+        updatedAt: true,
+        isBlocked: true,
+
+        Companies: {
+          select: {
+            Company: {
+              select: {
+                id: true,
+                name: true,
+                contactNumber: true,
+                CNPJ: true,
+                CPF: true,
+                createdAt: true,
+                image: true,
+                isBlocked: true,
+                ticketInfo: true,
+                ticketType: true,
+              },
+            },
+          },
+        },
+
+        Permissions: {
+          select: { Permission: { select: { name: true } } },
+        },
+
+        UserBuildingsPermissions: {
+          select: {
+            Building: {
+              select: {
+                id: true,
+                nanoId: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+
+      where: {
+        OR: [{ email: login }, { phoneNumber: login }],
+      },
+    });
+
+    if (!User) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'E-mail ou senha incorretos.',
+      });
+    }
+
+    return User;
+  }
+
   async findById({ userId }: { userId: string }) {
     const User = await prisma.user.findUnique({
       select: {
