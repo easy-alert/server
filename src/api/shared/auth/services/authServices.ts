@@ -161,11 +161,13 @@ export class AuthServices {
         id: true,
         name: true,
         email: true,
+        phoneNumber: true,
         createdAt: true,
         lastAccess: true,
         passwordHash: true,
         updatedAt: true,
         isBlocked: true,
+
         Companies: {
           select: {
             Company: {

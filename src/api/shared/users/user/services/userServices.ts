@@ -159,12 +159,46 @@ export class UserServices {
         name: true,
         email: true,
         phoneNumber: true,
-
+        createdAt: true,
+        lastAccess: true,
+        passwordHash: true,
+        updatedAt: true,
         isBlocked: true,
 
-        lastAccess: true,
-        updatedAt: true,
-        createdAt: true,
+        Companies: {
+          select: {
+            Company: {
+              select: {
+                id: true,
+                name: true,
+                contactNumber: true,
+                CNPJ: true,
+                CPF: true,
+                createdAt: true,
+                image: true,
+                isBlocked: true,
+                ticketInfo: true,
+                ticketType: true,
+              },
+            },
+          },
+        },
+
+        Permissions: {
+          select: { Permission: { select: { name: true } } },
+        },
+
+        UserBuildingsPermissions: {
+          select: {
+            Building: {
+              select: {
+                id: true,
+                nanoId: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
       where: { id: userId },
     });

@@ -40,27 +40,26 @@ export const authCompany = async (req: Request, res: Response) => {
   const token = tokenServices.generate({
     tokenData: {
       userId: user.id,
-      Permissions: user.Permissions,
-      BuildingsPermissions: user.UserBuildingsPermissions,
-      Company: user.Companies[0].Company,
     },
   });
 
   return res.status(200).json({
+    token,
+
     Account: {
       origin: 'Company',
+      Company: user.Companies[0].Company,
       User: {
         id: user.id,
         name: user.name,
         email: user.email,
+        // phoneNumber: user.phoneNumber,
         lastAccess: user.lastAccess,
-        isCompanyOwner,
         createdAt: user.createdAt,
+        isCompanyOwner,
         Permissions: user.Permissions,
         BuildingsPermissions: user.UserBuildingsPermissions,
       },
-      Company: user.Companies[0].Company,
     },
-    token,
   });
 };
