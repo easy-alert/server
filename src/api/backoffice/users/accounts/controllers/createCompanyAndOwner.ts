@@ -47,7 +47,10 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
 
   const emailLowerCase = email.toLowerCase() as string;
 
-  const checkUser = await userServices.findEmailForCreate({ email: emailLowerCase });
+  const checkUser = await userServices.findEmailForCreate({
+    email: emailLowerCase,
+    phoneNumber: contactNumber,
+  });
 
   validator.cannotExists([{ label: 'e-mail', variable: checkUser }]);
 
