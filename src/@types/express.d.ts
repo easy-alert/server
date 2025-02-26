@@ -6,28 +6,29 @@ declare namespace Express {
     Company: {
       id: string;
       name: string;
-      contactNumber: string;
-      CNPJ?: string;
-      CPF?: string;
       createdAt: Date;
+      isBlocked: boolean;
+      contactNumber: string;
+      CNPJ: string | null;
+      CPF: string | null;
       image: string;
+      ticketInfo: string | null;
+      ticketType: string | null;
     };
 
-    Permissions: [
-      {
-        Permission: {
-          name: string;
-        };
-      },
-    ];
+    Permissions: Array<{
+      Permission: {
+        name: string;
+      };
+    }>;
 
-    BuildingsPermissions: {
+    BuildingsPermissions: Array<{
       Building: {
         id: string;
         nanoId: string;
         name: string;
       };
-    }[];
+    }>;
 
     iat: number;
     exp: number;
