@@ -74,6 +74,7 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
   const user = await userServices.create({
     name,
     email: emailLowerCase,
+    phoneNumber: contactNumber,
     passwordHash: password,
   });
 
