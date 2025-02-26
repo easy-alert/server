@@ -240,7 +240,7 @@ export class BuildingServices {
     ]);
   }
 
-  async list({ take = 60, page, search = '', companyId, buildingsIds }: IListBuildings) {
+  async list({ take = 100, page, search = '', companyId, buildingsIds }: IListBuildings) {
     const where: prismaTypes.BuildingWhereInput = {
       id: {
         in: buildingsIds,
