@@ -4,8 +4,8 @@ import { checkValues } from '../../../../utils/newValidator';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
 
 interface IBody {
-  buildingId: string;
-  buildingNanoId: string;
+  buildingId?: string;
+  buildingNanoId?: string;
   residentName: string;
   residentEmail?: string | null;
   residentApartment: string;
@@ -37,8 +37,10 @@ export async function createTicketController(req: Request, res: Response) {
     types,
   }: IBody = req.body;
 
+  const buildingSelected = buildingId || buildingNanoId;
+
   checkValues([
-    { label: 'Edificação', type: 'string', value: buildingNanoId || buildingId },
+    { label: 'Edificação', type: 'string', value: buildingSelected },
     { label: 'Descrição', type: 'string', value: description },
     { label: 'Local da ocorrência', type: 'string', value: placeId },
     { label: 'Nome do morador', type: 'string', value: residentName },
@@ -61,23 +63,25 @@ export async function createTicketController(req: Request, res: Response) {
     checkValues([{ label: 'Tipo de assistência', type: 'string', value: data.serviceTypeId }]);
   });
 
-  await ticketServices.checkAccess({ buildingId: buildingId || buildingNanoId });
-
   let building = null;
 
-  if (buildingId.length === 12) {
+  if (buildingSelected?.length === 12) {
     building = await buildingServices.findByNanoId({
-      buildingNanoId: buildingId,
+      buildingNanoId: buildingSelected,
     });
-  } else {
-    building = await buildingServices.findById({ buildingId });
+  } else if (buildingSelected) {
+    building = await buildingServices.findById({ buildingId: buildingSelected });
   }
+
+  checkValues([{ label: 'Edificação', type: 'string', value: building?.id }]);
+
+  await ticketServices.checkAccess({ buildingId: building?.id! });
 
   const lowerCaseEmail = residentEmail ? residentEmail?.toLowerCase() : null;
 
   const ticket = await ticketServices.create({
     data: {
-      buildingId: building.id,
+      buildingId: building?.id!,
       residentName,
       residentApartment,
       residentEmail: lowerCaseEmail,
@@ -100,8 +104,6 @@ export async function createTicketController(req: Request, res: Response) {
       },
     },
   });
-
-  console.log('🚀 ~ createTicketController ~ ticket:', ticket);
 
   ticketServices.sendCreatedTicketEmails({
     ticketIds: [ticket.id],
