@@ -19,8 +19,7 @@ const validator = new Validator();
 export async function clientBuildingDetails(req: Request, res: Response) {
   const YEARFORSUM = 5;
 
-  const { buildingNanoId } = req.params;
-  // const { year } = req.query;
+  const { buildingId } = req.params;
 
   // #region VALIDATION
 
@@ -28,11 +27,19 @@ export async function clientBuildingDetails(req: Request, res: Response) {
     {
       label: 'Id da edificação',
       type: 'string',
-      variable: buildingNanoId,
+      variable: buildingId,
     },
   ]);
 
-  const building = await buildingServices.findByNanoId({ buildingNanoId });
+  let building = null;
+
+  if (buildingId.length === 12) {
+    building = await buildingServices.findByNanoId({
+      buildingNanoId: buildingId,
+    });
+  } else {
+    building = await buildingServices.findById({ buildingId });
+  }
 
   // #endregion
 

@@ -4,6 +4,8 @@ import { checkValues } from '../../../../utils/newValidator';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
 
 interface IBody {
+  buildingId?: string;
+  buildingNanoId?: string;
   residentName: string;
   residentEmail?: string | null;
   residentApartment: string;
@@ -11,7 +13,6 @@ interface IBody {
   residentPhone?: string;
   description: string;
   placeId: string;
-  buildingNanoId: string;
 
   images: {
     name: string;
@@ -23,6 +24,7 @@ interface IBody {
 
 export async function createTicketController(req: Request, res: Response) {
   const {
+    buildingId,
     buildingNanoId,
     description,
     placeId,
@@ -35,8 +37,10 @@ export async function createTicketController(req: Request, res: Response) {
     types,
   }: IBody = req.body;
 
+  const buildingSelected = buildingId || buildingNanoId;
+
   checkValues([
-    { label: 'Edificação', type: 'string', value: buildingNanoId },
+    { label: 'Edificação', type: 'string', value: buildingSelected },
     { label: 'Descrição', type: 'string', value: description },
     { label: 'Local da ocorrência', type: 'string', value: placeId },
     { label: 'Nome do morador', type: 'string', value: residentName },
@@ -59,15 +63,25 @@ export async function createTicketController(req: Request, res: Response) {
     checkValues([{ label: 'Tipo de assistência', type: 'string', value: data.serviceTypeId }]);
   });
 
-  await ticketServices.checkAccess({ buildingNanoId });
+  let building = null;
 
-  const building = await buildingServices.findByNanoId({ buildingNanoId });
+  if (buildingSelected?.length === 12) {
+    building = await buildingServices.findByNanoId({
+      buildingNanoId: buildingSelected,
+    });
+  } else if (buildingSelected) {
+    building = await buildingServices.findById({ buildingId: buildingSelected });
+  }
+
+  checkValues([{ label: 'Edificação', type: 'string', value: building?.id }]);
+
+  await ticketServices.checkAccess({ buildingId: building?.id! });
 
   const lowerCaseEmail = residentEmail ? residentEmail?.toLowerCase() : null;
 
   const ticket = await ticketServices.create({
     data: {
-      buildingId: building.id,
+      buildingId: building?.id!,
       residentName,
       residentApartment,
       residentEmail: lowerCaseEmail,

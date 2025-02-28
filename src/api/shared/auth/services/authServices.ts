@@ -11,8 +11,8 @@ import { Validator } from '../../../../utils/validator/validator';
 const validator = new Validator();
 
 export class AuthServices {
-  async canLogin({ email, password }: { email: string; password: string }) {
-    const user = await this.findByEmail({ email });
+  async canLogin({ login, password }: { login: string; password: string }) {
+    const user = await this.findByEmailOrPhone({ login });
 
     const isValuePassword = await compare(password, user.passwordHash);
 
@@ -33,6 +33,66 @@ export class AuthServices {
     }
 
     return user!;
+  }
+
+  async findByPhone({ phone }: { phone: string }) {
+    const User = await prisma.user.findUnique({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+        lastAccess: true,
+        passwordHash: true,
+        updatedAt: true,
+        isBlocked: true,
+        Companies: {
+          select: {
+            Company: {
+              select: {
+                id: true,
+                name: true,
+                contactNumber: true,
+                CNPJ: true,
+                CPF: true,
+                createdAt: true,
+                image: true,
+                isBlocked: true,
+                ticketInfo: true,
+                ticketType: true,
+              },
+            },
+          },
+        },
+
+        Permissions: {
+          select: { Permission: { select: { name: true } } },
+        },
+
+        UserBuildingsPermissions: {
+          select: {
+            Building: {
+              select: {
+                id: true,
+                nanoId: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+
+      where: { phoneNumber: phone },
+    });
+
+    if (!User) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'E-mail ou senha incorretos.',
+      });
+    }
+
+    return User;
   }
 
   async findByEmail({ email }: { email: string }) {

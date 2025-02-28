@@ -1,6 +1,8 @@
 import { Response, Request } from 'express';
-import { checkPassword, checkValues } from '../../../../utils/newValidator';
+
 import { UserServices } from '../../../shared/users/user/services/userServices';
+
+import { cannotExist, checkPassword, checkValues } from '../../../../utils/newValidator';
 
 interface IBody {
   id: string;
@@ -32,27 +34,37 @@ export async function updateUserController(req: Request, res: Response) {
 
   checkPassword({ password, confirmPassword });
 
-  await userServices.findByEmailForEdit({
-    email,
-    userId: id,
-  });
+  const uniqueUser = await userServices.findUniqueUser({ email, phoneNumber });
+  cannotExist([{ label: 'Usuário', variable: uniqueUser }]);
 
-  await userServices.edit({
-    userId: id,
-    image,
-    name,
-    role,
-    email,
-    phoneNumber,
-    isBlocked,
-  });
-
-  if (password) {
-    await userServices.editPassword({
+  try {
+    await userServices.edit({
       userId: id,
-      password,
+      image,
+      name,
+      role,
+      email,
+      phoneNumber,
+      isBlocked,
     });
-  }
 
-  return res.status(200).json({ ServerMessage: { message: 'Usuário atualizado com sucesso.' } });
+    if (password) {
+      await userServices.editPassword({
+        userId: id,
+        password,
+      });
+    }
+
+    return res.status(200).json({ ServerMessage: { message: 'Usuário atualizado com sucesso.' } });
+  } catch (error: any) {
+    if (error?.meta?.target?.includes('email')) {
+      return res.status(400).json({ ServerMessage: { message: 'Email já cadastrado.' } });
+    }
+
+    if (error?.meta?.target?.includes('phoneNumber')) {
+      return res.status(400).json({ ServerMessage: { message: 'Telefone já cadastrado.' } });
+    }
+
+    return res.status(500).json({ ServerMessage: { message: 'Erro ao atualizar usuário.' } });
+  }
 }
