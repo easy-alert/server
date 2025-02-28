@@ -3,17 +3,25 @@ import { checkValues } from '../../../../utils/newValidator';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
 
 export async function checkPasswordExistenceController(req: Request, res: Response) {
-  const { buildingNanoId, type } = req.params as {
-    buildingNanoId: string;
+  const { buildingId, type } = req.params as {
+    buildingId: string;
     type: 'responsible' | 'resident';
   };
 
   checkValues([
-    { label: 'ID da edificação', type: 'string', value: buildingNanoId },
+    { label: 'ID da edificação', type: 'string', value: buildingId },
     { label: 'Tipo da senha', type: 'string', value: type },
   ]);
 
-  const building = await buildingServices.findByNanoId({ buildingNanoId });
+  let building = null;
+
+  if (buildingId.length === 12) {
+    building = await buildingServices.findByNanoId({
+      buildingNanoId: buildingId,
+    });
+  } else {
+    building = await buildingServices.findById({ buildingId });
+  }
 
   if (type === 'resident') {
     return res
