@@ -4,6 +4,8 @@ import { checkValues } from '../../../../utils/newValidator';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
 
 interface IBody {
+  buildingId: string;
+  buildingNanoId: string;
   residentName: string;
   residentEmail?: string | null;
   residentApartment: string;
@@ -11,7 +13,6 @@ interface IBody {
   residentPhone?: string;
   description: string;
   placeId: string;
-  buildingNanoId: string;
 
   images: {
     name: string;
@@ -23,6 +24,7 @@ interface IBody {
 
 export async function createTicketController(req: Request, res: Response) {
   const {
+    buildingId,
     buildingNanoId,
     description,
     placeId,
@@ -36,7 +38,7 @@ export async function createTicketController(req: Request, res: Response) {
   }: IBody = req.body;
 
   checkValues([
-    { label: 'Edificação', type: 'string', value: buildingNanoId },
+    { label: 'Edificação', type: 'string', value: buildingNanoId || buildingId },
     { label: 'Descrição', type: 'string', value: description },
     { label: 'Local da ocorrência', type: 'string', value: placeId },
     { label: 'Nome do morador', type: 'string', value: residentName },
@@ -59,9 +61,17 @@ export async function createTicketController(req: Request, res: Response) {
     checkValues([{ label: 'Tipo de assistência', type: 'string', value: data.serviceTypeId }]);
   });
 
-  await ticketServices.checkAccess({ buildingNanoId });
+  await ticketServices.checkAccess({ buildingId: buildingId || buildingNanoId });
 
-  const building = await buildingServices.findByNanoId({ buildingNanoId });
+  let building = null;
+
+  if (buildingId.length === 12) {
+    building = await buildingServices.findByNanoId({
+      buildingNanoId: buildingId,
+    });
+  } else {
+    building = await buildingServices.findById({ buildingId });
+  }
 
   const lowerCaseEmail = residentEmail ? residentEmail?.toLowerCase() : null;
 
@@ -90,6 +100,8 @@ export async function createTicketController(req: Request, res: Response) {
       },
     },
   });
+
+  console.log('🚀 ~ createTicketController ~ ticket:', ticket);
 
   ticketServices.sendCreatedTicketEmails({
     ticketIds: [ticket.id],
