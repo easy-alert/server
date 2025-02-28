@@ -71,17 +71,17 @@ clientRouter.get('/syndic/:syndicNanoId', clientSyndicBuildingDetails);
 
 clientRouter.get('/building/id/:buildingId', findBuildingByIdController);
 
-clientRouter.get('/building/:buildingNanoId', clientBuildingDetails);
+clientRouter.get('/building/:buildingId', clientBuildingDetails);
 
 clientRouter.post('/building/reports/occasional/create', createOccasionalReport);
 
-clientRouter.get('/building/informations/:buildingNanoId', findClientInformations);
+clientRouter.get('/building/informations/:buildingId', findClientInformations);
 
-clientRouter.get('/building/home/:buildingNanoId', findHomeInformations);
+clientRouter.get('/building/home/:buildingId', findHomeInformations);
 
-clientRouter.get('/building/annex/:buildingNanoId', findBuildingAnnex);
+clientRouter.get('/building/annex/:buildingId', findBuildingAnnex);
 
-clientRouter.get('/building/logo/:buildingNanoId', findCompanyLogo);
+clientRouter.get('/building/logo/:buildingId', findCompanyLogo);
 
 clientRouter.post('/maintenances/create/report', sharedCreateMaintenanceReport);
 
@@ -150,10 +150,7 @@ clientRouter.use('/tickets', ticketRouter);
 
 clientRouter.use('/suppliers', supplierRouter);
 
-clientRouter.get(
-  '/check-password-existence/:buildingNanoId/:type',
-  checkPasswordExistenceController,
-);
+clientRouter.get('/check-password-existence/:buildingId/:type', checkPasswordExistenceController);
 
 clientRouter.post('/validate-password', validatePasswordController);
 
