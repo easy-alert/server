@@ -34,8 +34,12 @@ export async function updateUserController(req: Request, res: Response) {
 
   checkPassword({ password, confirmPassword });
 
-  const uniqueUser = await userServices.findUniqueUser({ email, phoneNumber });
-  cannotExist([{ label: 'Usuário', variable: uniqueUser }]);
+  const user = await userServices.findEmailPhoneById({ userId: id });
+
+  if (user.email !== email && user.phoneNumber !== phoneNumber) {
+    const uniqueUser = await userServices.findUniqueUser({ email, phoneNumber });
+    cannotExist([{ label: 'Usuário', variable: uniqueUser }]);
+  }
 
   try {
     await userServices.edit({
