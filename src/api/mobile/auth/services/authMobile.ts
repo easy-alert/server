@@ -1,27 +1,32 @@
+import { compare } from 'bcrypt';
+
 import { prisma } from '../../../../../prisma';
 
-export class AuthMobile {
-  async canLogin({
-    email,
-    phoneNumber,
-  }: {
-    email: string;
-    phoneNumber: string;
-  }): Promise<{ canLogin: boolean; hasPassword: boolean }> {
-    const user = await prisma.buildingNotificationConfiguration.findFirst({
-      where: {
-        OR: [
-          {
-            email,
-          },
-          {
-            contactNumber: phoneNumber,
-          },
-        ],
-      },
-    });
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
 
-    return { canLogin: !!user, hasPassword: !!user?.password };
+export class AuthMobile {
+  async canLogin({ login, password }: { login: string; password: string }) {
+    const user = await this.findByEmailOrPhone({ login });
+
+    const isValuePassword = await compare(password, user.passwordHash);
+
+    if (!isValuePassword) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'E-mail ou senha incorretos.',
+      });
+    }
+
+    const companyIsBlocked = user.Companies.some((company) => company.Company.isBlocked === true);
+
+    if (user.isBlocked || companyIsBlocked) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Sua conta está bloqueada, entre em contato com a administração.',
+      });
+    }
+
+    return user!;
   }
 
   async login({
@@ -119,5 +124,69 @@ export class AuthMobile {
       buildingNanoId: building.Building?.nanoId,
       buildingName: building.Building?.name,
     }));
+  }
+
+  async findByEmailOrPhone({ login }: { login: string }) {
+    const User = await prisma.user.findFirst({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phoneNumber: true,
+        createdAt: true,
+        lastAccess: true,
+        passwordHash: true,
+        updatedAt: true,
+        isBlocked: true,
+
+        Companies: {
+          select: {
+            Company: {
+              select: {
+                id: true,
+                name: true,
+                contactNumber: true,
+                CNPJ: true,
+                CPF: true,
+                createdAt: true,
+                image: true,
+                isBlocked: true,
+                ticketInfo: true,
+                ticketType: true,
+              },
+            },
+          },
+        },
+
+        Permissions: {
+          select: { Permission: { select: { name: true } } },
+        },
+
+        UserBuildingsPermissions: {
+          select: {
+            Building: {
+              select: {
+                id: true,
+                nanoId: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+
+      where: {
+        OR: [{ email: login }, { phoneNumber: login }],
+      },
+    });
+
+    if (!User) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'E-mail ou senha incorretos.',
+      });
+    }
+
+    return User;
   }
 }
