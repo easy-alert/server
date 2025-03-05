@@ -6,6 +6,7 @@ import { deleteExpiredMaintenance } from './deleteExpiredMaintenance';
 import { migrateBuildingToOtherCompany } from './migrateBuildingToOtherCompany';
 import { migrateReportObservationToActivities } from './migrateReportObservationToActivities';
 import { migrateSuppliers } from './migrateSuppliers';
+import { migrateResponsibleToUser } from './migrateResponsibleToUser';
 
 // ROUTES
 export const scriptRouter: Router = Router();
@@ -25,3 +26,5 @@ scriptRouter.delete('/expired-maintenances/:maintenanceHistoryId', deleteExpired
 scriptRouter.get('/migrate-report-observation-to-activities', migrateReportObservationToActivities);
 
 scriptRouter.post('/migrate-suppliers', migrateSuppliers);
+
+scriptRouter.put('/migrate-responsible-to-user', migrateResponsibleToUser);
