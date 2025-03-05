@@ -241,7 +241,5 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
 
   kanban[3].maintenances.sort((a: any, b: any) => (a.date < b.date ? 1 : -1));
 
-  console.log('🚀 ~ getMaintenancesKanban ~ kanban:', kanban);
-
   return res.status(200).json({ kanban, maintenanceCategoriesForSelect });
 }
