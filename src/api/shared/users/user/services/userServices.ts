@@ -208,6 +208,20 @@ export class UserServices {
     return user!;
   }
 
+  async findEmailPhoneById({ userId }: { userId: string }) {
+    const user = await prisma.user.findUnique({
+      select: {
+        email: true,
+        phoneNumber: true,
+      },
+      where: { id: userId },
+    });
+
+    validator.needExist([{ label: 'Usuário', variable: user }]);
+
+    return user!;
+  }
+
   async findOwner({ companyId }: { companyId: string }) {
     const user = await prisma.userCompanies.findFirst({
       where: { companyId, owner: true },
