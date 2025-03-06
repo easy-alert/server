@@ -12,35 +12,30 @@ const permissionServices = new PermissionServices();
 const tokenServices = new TokenServices();
 
 export async function authMobile(req: Request, res: Response) {
-  try {
-    // Obtém o phoneNumber da query string
-    const { login, password } = req.body;
+  const { login, password } = req.body;
 
-    needExist([
-      { label: 'Login', variable: login },
-      { label: 'Senha', variable: password },
-    ]);
+  needExist([
+    { label: 'Login', variable: login },
+    { label: 'Senha', variable: password },
+  ]);
 
-    const user = await authServices.canLogin({ login, password });
+  const user = await authServices.canLogin({ login, password });
 
-    await permissionServices.checkPermission({
-      UserPermissions: user.Permissions,
-      permissions: ['admin:company', 'access:company'],
-    });
+  await permissionServices.checkPermission({
+    UserPermissions: user.Permissions,
+    permissions: ['admin:company', 'access:company'],
+  });
 
-    const isCompanyOwner = await authServices.isCompanyOwner({
+  const isCompanyOwner = await authServices.isCompanyOwner({
+    userId: user.id,
+    companyId: user.Companies[0].Company.id,
+  });
+
+  const authToken = tokenServices.generate({
+    tokenData: {
       userId: user.id,
-      companyId: user.Companies[0].Company.id,
-    });
+    },
+  });
 
-    const authToken = tokenServices.generate({
-      tokenData: {
-        userId: user.id,
-      },
-    });
-
-    return res.status(200).json({ authToken, user: { isCompanyOwner, ...user } });
-  } catch (error) {
-    return res.status(500).json({ error: 'Erro ao buscar os prédios do responsável' });
-  }
+  return res.status(200).json({ authToken, user: { isCompanyOwner, ...user } });
 }
