@@ -1,42 +1,33 @@
 import { Request, Response } from 'express';
+
 import { AuthMobile } from '../services/authMobile';
+import { PermissionServices } from '../../../shared/permissions/permission/services/permissionServices';
+
+import { needExist } from '../../../../utils/newValidator';
 
 // Instância do serviço
 const authMobile = new AuthMobile();
+const permissionServices = new PermissionServices();
 
 export async function listBuildingsFromResponsible(req: Request, res: Response) {
   try {
     // Obtém o phoneNumber da query string
-    const { email, phoneNumber, password, createPassword } = req.body;
+    const { login, password } = req.body;
 
-    if (createPassword) {
-      // Altera a senha do usuário
-      await authMobile.changePassword({ email, phoneNumber, password });
-    }
+    needExist([
+      { label: 'Login', variable: login },
+      { label: 'Senha', variable: password },
+    ]);
 
-    if ((email || phoneNumber) && password) {
-      // Verifica se o usuário pode logar
-      const user = await authMobile.login({ email, phoneNumber, password });
+    const user = await authMobile.canLogin({ login, password });
 
-      if (!user) {
-        return res.status(200).json({ error: 'Usuário não encontrado ou senha incorreta.' });
-      }
+    await permissionServices.checkPermission({
+      UserPermissions: user.Permissions,
+      permissions: ['admin:company', 'access:company'],
+    });
 
-      // Chama o serviço para buscar os prédios
-      const buildings = await authMobile.listBuildings({ phoneNumber });
-
-      return res.status(200).json({ buildings });
-    }
-
-    if (email || phoneNumber) {
-      // Verifica se o usuário pode logar
-      const { canLogin, hasPassword } = await authMobile.canLogin({ email, phoneNumber });
-
-      return res.status(200).json({ canLogin, hasPassword });
-    }
-
-    return res.status(400).json({ error: 'Parâmetros inválidos.' });
+    return res.status(200).json({ user });
   } catch (error) {
-    return res.status(500).json({ error: 'Erro interno do servidor.' });
+    return res.status(500).json({ error: 'Erro ao buscar os prédios do responsável' });
   }
 }

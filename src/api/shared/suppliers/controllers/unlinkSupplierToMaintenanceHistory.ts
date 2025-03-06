@@ -4,13 +4,16 @@ import { checkValues } from '../../../../utils/newValidator';
 import { createMaintenanceHistoryActivityCommentService } from '../../maintenanceHistoryActivities/services';
 
 interface IBody {
-  maintenanceHistoryId: string;
   supplierId: string;
+  maintenanceHistoryId: string;
+  userId: string;
 }
 
 export async function unlinkSupplierToMaintenanceHistory(req: Request, res: Response) {
-  const { maintenanceHistoryId, supplierId }: IBody = req.body;
+  const { maintenanceHistoryId, supplierId, userId }: IBody = req.body;
   const { syndicNanoId } = req.query as any as { syndicNanoId: string };
+
+  const userIdToUse = userId || req?.userId;
 
   checkValues([
     { label: 'ID do histórico de manutenção', type: 'string', value: maintenanceHistoryId },
@@ -23,7 +26,7 @@ export async function unlinkSupplierToMaintenanceHistory(req: Request, res: Resp
 
   await createMaintenanceHistoryActivityCommentService({
     content: `O fornecedor ${supplier.name} foi removido da manutenção.`,
-    userId: req.userId,
+    userId: userIdToUse,
     maintenanceHistoryId,
     syndicNanoId,
   });
