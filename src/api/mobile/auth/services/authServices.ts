@@ -13,7 +13,7 @@ export class AuthServices {
     if (!isValuePassword) {
       throw new ServerMessage({
         statusCode: 400,
-        message: 'E-mail ou senha incorretos.',
+        message: 'Login ou senha incorretos.',
       });
     }
 
