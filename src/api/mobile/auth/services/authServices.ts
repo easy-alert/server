@@ -4,7 +4,7 @@ import { prisma } from '../../../../../prisma';
 
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 
-export class AuthMobile {
+export class AuthServices {
   async canLogin({ login, password }: { login: string; password: string }) {
     const user = await this.findByEmailOrPhone({ login });
 
@@ -13,7 +13,7 @@ export class AuthMobile {
     if (!isValuePassword) {
       throw new ServerMessage({
         statusCode: 400,
-        message: 'E-mail ou senha incorretos.',
+        message: 'Login ou senha incorretos.',
       });
     }
 
@@ -188,5 +188,18 @@ export class AuthMobile {
     }
 
     return User;
+  }
+
+  async isCompanyOwner({ userId, companyId }: { userId: string; companyId: string }) {
+    if (!companyId) return false;
+
+    const owner = prisma.userCompanies
+      .findUnique({
+        where: { userId_companyId: { userId, companyId } },
+        select: { owner: true },
+      })
+      .then((userCompany) => userCompany?.owner ?? false);
+
+    return owner;
   }
 }
