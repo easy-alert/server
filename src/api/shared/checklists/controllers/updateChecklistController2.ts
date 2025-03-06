@@ -26,7 +26,6 @@ export async function updateChecklistController2(req: Request, res: Response) {
   checkValues([
     { label: 'ID do checklist', type: 'string', value: checklistId },
     { label: 'Status', type: 'string', value: status },
-    { label: 'Itens da checklist', type: 'array', value: checklistItems },
   ]);
 
   images?.forEach((data) => {
