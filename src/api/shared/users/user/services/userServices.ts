@@ -37,7 +37,7 @@ export class UserServices {
     phoneNumber,
     isBlocked,
   }: Prisma.UserUpdateInput & { userId: string }) {
-    await prisma.user.update({
+    return prisma.user.update({
       data: {
         image,
         name,
@@ -46,6 +46,7 @@ export class UserServices {
         phoneNumber,
         isBlocked,
       },
+
       where: { id: userId },
     });
   }
@@ -103,7 +104,7 @@ export class UserServices {
     return user!;
   }
 
-  async findEmailForCreate({ email }: { email: string }) {
+  async findEmailForCreate({ email, phoneNumber }: { email: string; phoneNumber: string }) {
     const user = await prisma.user.findUnique({
       select: {
         id: true,
@@ -115,7 +116,12 @@ export class UserServices {
         Permissions: true,
       },
 
-      where: { email: email.toLowerCase() },
+      where: {
+        email_phoneNumber: {
+          email: email.toLowerCase(),
+          phoneNumber,
+        },
+      },
     });
 
     return user;
@@ -202,12 +208,55 @@ export class UserServices {
     return user!;
   }
 
+  async findEmailPhoneById({ userId }: { userId: string }) {
+    const user = await prisma.user.findUnique({
+      select: {
+        email: true,
+        phoneNumber: true,
+      },
+      where: { id: userId },
+    });
+
+    validator.needExist([{ label: 'Usuário', variable: user }]);
+
+    return user!;
+  }
+
   async findOwner({ companyId }: { companyId: string }) {
     const user = await prisma.userCompanies.findFirst({
       where: { companyId, owner: true },
     });
 
     validator.needExist([{ label: 'usuário', variable: user }]);
+
+    return user;
+  }
+
+  async findUniqueUser({ phoneNumber, email }: { phoneNumber: string; email: string }) {
+    const user = await prisma.user.findUnique({
+      where: {
+        email_phoneNumber: {
+          email: email.toLowerCase(),
+          phoneNumber,
+        },
+      },
+    });
+
+    return user;
+  }
+
+  async findUniquePhone({ phoneNumber }: { phoneNumber: string }) {
+    const user = await prisma.user.findUnique({
+      where: { phoneNumber },
+    });
+
+    return user;
+  }
+
+  async findUniqueEmail({ email }: { email: string }) {
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
 
     return user;
   }

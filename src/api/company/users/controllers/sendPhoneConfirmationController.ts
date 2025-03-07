@@ -22,6 +22,8 @@ interface IBody {
 export async function sendPhoneConfirmationController(req: Request, res: Response) {
   const { userId, link } = req.body as IBody;
 
+  const webLink = link || `${process.env.BASE_COMPANY_URL}/confirm/phone`;
+
   // #region VALIDATIONS
   checkValues([
     {
@@ -32,7 +34,7 @@ export async function sendPhoneConfirmationController(req: Request, res: Respons
     {
       label: 'Link ',
       type: 'string',
-      value: link,
+      value: webLink,
     },
   ]);
 
@@ -76,7 +78,7 @@ export async function sendPhoneConfirmationController(req: Request, res: Respons
   await sendPhoneConfirmation({
     userId,
     phoneNumber: user.phoneNumber,
-    link: `${link}?tokenId=${createdToken.id}`,
+    link: `${webLink}?tokenId=${createdToken.id}`,
   });
 
   // #endregion

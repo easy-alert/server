@@ -22,6 +22,8 @@ interface IBody {
 export async function sendEmailConfirmationController(req: Request, res: Response) {
   const { userId, link } = req.body as IBody;
 
+  const webLink = link || `${process.env.BASE_COMPANY_URL}/confirm/email`;
+
   // #region VALIDATIONS
   checkValues([
     {
@@ -32,7 +34,7 @@ export async function sendEmailConfirmationController(req: Request, res: Respons
     {
       label: 'Link ',
       type: 'string',
-      value: link,
+      value: webLink,
     },
   ]);
 
@@ -47,7 +49,6 @@ export async function sendEmailConfirmationController(req: Request, res: Respons
   }
 
   // #region AWAIT 5 MINUTES FOR SEND OTHER NOTIFICATION
-
   // const actualHoursInMs = new Date().getTime();
   // const notificationHoursInMs = new Date(user.lastNotificationDate).getTime();
 
@@ -61,8 +62,6 @@ export async function sendEmailConfirmationController(req: Request, res: Respons
   // }
   // #endregion
 
-  // #endregion
-
   // #region SEND MESSAGE
   const token = tokenServices.generate({
     tokenData: {
@@ -73,7 +72,7 @@ export async function sendEmailConfirmationController(req: Request, res: Respons
 
   await tokenServices.saveInDatabase({ token });
 
-  await sendEmailConfirmation({ userId, email: user.email, link: `${link}?token=${token}` });
+  await sendEmailConfirmation({ userId, email: user.email, link: `${webLink}?token=${token}` });
 
   // #endregion
 

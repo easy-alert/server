@@ -17,7 +17,7 @@ ticketRouter.post('/', createTicketController);
 
 ticketRouter.get('/:ticketId', findTicketByIdController);
 ticketRouter.put('/:ticketId', updateTicketById);
-ticketRouter.get('/buildings/:buildingsNanoId', findManyTicketsController);
+ticketRouter.get('/buildings/:buildingsId', findManyTicketsController);
 
 ticketRouter.get('/places/:placeId', findAllTicketPlaces);
 

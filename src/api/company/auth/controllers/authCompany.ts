@@ -16,14 +16,14 @@ const authServices = new AuthServices();
 const validator = new Validator();
 
 export const authCompany = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { login, password } = req.body;
 
   validator.notNull([
-    { label: 'email', variable: email },
+    { label: 'login', variable: login },
     { label: 'senha', variable: password },
   ]);
 
-  const user = await authServices.canLogin({ email, password });
+  const user = await authServices.canLogin({ login, password });
 
   await permissionServices.checkPermission({
     UserPermissions: user.Permissions,
