@@ -48,7 +48,6 @@ import { deleteBuildingBanner } from './buildingBanners/controllers/deleteBuildi
 import { updateBuildingApartmentsController } from './building/controllers/updateBuildingApartmentsController';
 import { listBuildingApartmentsController } from './building/controllers/listBuildingApartmentsController';
 import { updateMaintenanceAdditionalInformationController } from './buildingMaintenances/controllers/updateMaintenanceAdditionalInformationController';
-import { getMaintenancesKanban } from './buildingMaintenances/controllers/getMaintenancesKanban';
 
 // ROUTES
 export const buildingRouter = Router();
@@ -92,8 +91,6 @@ buildingRouter.delete('/notifications/delete', deleteBuildingNotificationConfigu
 // BUILDING MAINTENANCES
 buildingRouter.put('/maintenances/edit', editBuildingCategoriesAndMaintenances);
 buildingRouter.post('/maintenances/list', listBuildingCategoriesAndMaintenances);
-
-buildingRouter.get('/maintenances', getMaintenancesKanban);
 
 // BUILDING ANNEXES
 buildingRouter.use('/annexes', buildingAnnexeRouter);

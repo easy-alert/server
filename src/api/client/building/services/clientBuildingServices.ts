@@ -710,28 +710,35 @@ export class ClientBuildingServices {
   }
 
   async findContactInformation({ buildingId }: { buildingId: string }) {
-    const mainContact = await prisma.building.findFirst({
+    const buildingContacts = await prisma.building.findFirst({
       select: {
         name: true,
 
-        NotificationsConfigurations: {
+        UserBuildingsPermissions: {
           select: {
-            id: true,
-            name: true,
-            email: true,
-            contactNumber: true,
-            role: true,
-          },
-          where: {
             showContact: true,
-          },
-          orderBy: {
-            name: 'asc',
+
+            User: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                phoneNumber: true,
+                role: true,
+              },
+            },
           },
         },
       },
+
       where: {
-        id: buildingId,
+        UserBuildingsPermissions: {
+          some: {
+            buildingId,
+
+            showContact: true,
+          },
+        },
 
         Company: {
           isBlocked: false,
@@ -739,9 +746,9 @@ export class ClientBuildingServices {
       },
     });
 
-    validator.needExist([{ label: 'edificação', variable: mainContact }]);
+    validator.needExist([{ label: 'edificação', variable: buildingContacts }]);
 
-    return mainContact;
+    return buildingContacts;
   }
 
   async findCompanyLogo({ buildingId }: { buildingId: string }) {
@@ -787,6 +794,7 @@ export class ClientBuildingServices {
       },
       where: {
         id: buildingId,
+
         Company: {
           isBlocked: false,
         },
@@ -967,5 +975,22 @@ export class ClientBuildingServices {
     });
 
     return showToResidentTicket;
+  }
+
+  async findBuildingByNanoId({ buildingNanoId }: { buildingNanoId: string }) {
+    const building = await prisma.building.findUnique({
+      select: {
+        id: true,
+        name: true,
+        nanoId: true,
+      },
+      where: {
+        nanoId: buildingNanoId,
+      },
+    });
+
+    validator.needExist([{ label: 'edificação', variable: building }]);
+
+    return building;
   }
 }

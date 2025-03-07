@@ -38,7 +38,7 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     { label: 'imagem', variable: image },
   ]);
 
-  const checkUser = await userServices.findEmailForCreate({ email });
+  const checkUser = await userServices.findEmailForCreate({ email, phoneNumber: contactNumber });
 
   validator.cannotExists([{ label: 'e-mail', variable: checkUser }]);
 

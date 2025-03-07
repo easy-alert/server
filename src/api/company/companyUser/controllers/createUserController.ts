@@ -1,9 +1,19 @@
 import { Response, Request } from 'express';
-import { cannotExist, checkPassword, checkValues } from '../../../../utils/newValidator';
+
+import { sendEmailConfirmation } from '../../../shared/users/user/services/sendEmailConfirmation';
+import { sendPhoneConfirmation } from '../../../shared/users/user/services/sendPhoneConfirmation';
+
 import { UserServices } from '../../../shared/users/user/services/userServices';
 import { UserPermissionServices } from '../../../shared/users/userPermission/services/userPermissionServices';
 import { PermissionServices } from '../../../shared/permissions/permission/services/permissionServices';
 import { CompanyUserServices } from '../services/companyServices';
+
+import { cannotExist, checkPassword, checkValues } from '../../../../utils/newValidator';
+
+const userServices = new UserServices();
+const permissionServices = new PermissionServices();
+const companyUserServices = new CompanyUserServices();
+const userPermissionServices = new UserPermissionServices();
 
 interface IBody {
   image: string;
@@ -14,11 +24,6 @@ interface IBody {
   password: string;
   confirmPassword: string;
 }
-
-const userServices = new UserServices();
-const permissionServices = new PermissionServices();
-const companyUserServices = new CompanyUserServices();
-const userPermissionServices = new UserPermissionServices();
 
 export async function createUserController(req: Request, res: Response) {
   const { image, name, role, email, phoneNumber, password, confirmPassword }: IBody = req.body;
@@ -33,8 +38,11 @@ export async function createUserController(req: Request, res: Response) {
 
   checkPassword({ password, confirmPassword });
 
-  const checkUser = await userServices.findEmailForCreate({ email });
-  cannotExist([{ label: 'Email', variable: checkUser }]);
+  const uniqueUserEmail = await userServices.findUniqueEmail({ email });
+  cannotExist([{ label: 'Email', variable: uniqueUserEmail }]);
+
+  const uniqueUserPhone = await userServices.findUniquePhone({ phoneNumber });
+  cannotExist([{ label: 'Telefone', variable: uniqueUserPhone }]);
 
   const user = await userServices.create({
     image,
@@ -57,6 +65,9 @@ export async function createUserController(req: Request, res: Response) {
     userId: user.id,
     owner: false,
   });
+
+  sendEmailConfirmation({ email, userId: user.id });
+  sendPhoneConfirmation({ phoneNumber, userId: user.id });
 
   return res.status(201).json({ ServerMessage: { message: 'Usuário cadastrado com sucesso.' } });
 }

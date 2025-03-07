@@ -9,9 +9,9 @@ import { changeUTCTime } from '../../../../utils/dateTime';
 
 export async function findManyTicketsController(req: Request, res: Response) {
   const { Company } = req;
-  const { buildingsNanoId } = req.params as any as { buildingsNanoId: string };
+  const { buildingsId } = req.params as any as { buildingsId: string };
   const {
-    buildingsNanoIdBody,
+    buildingsIdBody,
     placesId,
     serviceTypesId,
     apartmentsNames,
@@ -28,16 +28,16 @@ export async function findManyTicketsController(req: Request, res: Response) {
     permission?.Permission?.name?.includes('admin'),
   );
 
-  const buildingsIds = buildingsNanoId ?? buildingsNanoIdBody;
-  const permittedBuildingsNanoIds = isAdmin
+  const buildingsIds = buildingsId ?? buildingsIdBody;
+  const permittedBuildingsIds = isAdmin
     ? undefined
-    : req.BuildingsPermissions?.map((b: any) => b.Building.nanoId);
+    : req.BuildingsPermissions?.map((b: any) => b.Building.id);
   let buildingName = '';
 
   const companyIdFilter = Company ? Company.id : undefined;
 
-  const buildingsNanoIdFilter =
-    buildingsIds === 'all' || !buildingsIds ? permittedBuildingsNanoIds : buildingsIds.split(',');
+  const buildingsIdFilter =
+    buildingsIds === 'all' || !buildingsIds ? permittedBuildingsIds : buildingsIds.split(',');
   const placeIdFilter =
     typeof placesId === 'string' && placesId !== '' ? placesId.split(',') : undefined;
   const serviceTypeIdFilter =
@@ -62,16 +62,16 @@ export async function findManyTicketsController(req: Request, res: Response) {
     ? changeUTCTime(new Date(String(endDate)), 23, 59, 59, 999)
     : undefined;
 
-  if (buildingsNanoIdFilter?.length === 1 && buildingsNanoId !== 'all') {
-    await ticketServices.checkAccess({ buildingNanoId: buildingsNanoId });
+  if (buildingsIdFilter?.length === 1 && buildingsId !== 'all') {
+    await ticketServices.checkAccess({ buildingId: buildingsId });
 
-    buildingName = (await buildingServices.findByNanoId({ buildingNanoId: buildingsNanoId })).name;
+    buildingName = (await buildingServices.findById({ buildingId: buildingsId })).name;
   }
 
   const months = getMonths();
 
   const findManyTickets = await ticketServices.findMany({
-    buildingNanoId: buildingsNanoIdFilter,
+    buildingId: buildingsIdFilter,
     companyId: companyIdFilter,
     statusName: statusFilter,
     placeId: placeIdFilter,
