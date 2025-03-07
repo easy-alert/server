@@ -13,6 +13,10 @@
     {
       "description": "Production",
       "url": "https://easyalert-production.herokuapp.com/api/scripts/"
+    },
+    {
+      "description": "Sandbox",
+      "url": "https://easyalert-sandbox.herokuapp.com/api/scripts/"
     }
   ],
   "components": {
@@ -46,7 +50,6 @@
       "post": {
         "tags": ["Template de manutenções"],
         "summary": "Cria um novo template de manutenção.",
-
         "requestBody": {
           "required": true,
           "content": {
@@ -121,6 +124,84 @@
           }
         ],
         "responses": {}
+      }
+    },
+    "/expired-maintenances/update/{maintenanceHistoryId}": {
+      "post": {
+        "tags": ["Manutenções vencidas"],
+        "summary": "ATUALIZA OS DADOS DE UMA MANUTENÇÃO VENCIDA.",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "maintenanceHistoryId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID do histórico da manutenção"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "notificationDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Data da notificação"
+                  },
+                  "dueDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Data de vencimento"
+                  },
+                  "resolutionDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Data de resolução"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Manutenção atualizada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ServerMessage": {
+                      "type": "object",
+                      "properties": {
+                        "message": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ServerMessage"
+          },
+          "401": {
+            "$ref": "#/components/responses/ServerMessage"
+          }
+        }
       }
     }
   }
