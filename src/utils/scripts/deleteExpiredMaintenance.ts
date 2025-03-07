@@ -19,19 +19,19 @@ export async function deleteExpiredMaintenance(req: Request, res: Response) {
 
   const maintenanceHistory = await maintenanceServices.findHistoryById({ maintenanceHistoryId });
 
-  // if (maintenanceHistory.MaintenancesStatus.name !== 'expired') {
-  //   throw new ServerMessage({
-  //     message: 'Você só pode excluir manutenções vencidas.',
-  //     statusCode: 400,
-  //   });
-  // }
+  if (maintenanceHistory.MaintenancesStatus.name !== 'pending') {
+    throw new ServerMessage({
+      message: 'Você não pode excluir uma manutenção pendente.',
+      statusCode: 400,
+    });
+  }
 
   await maintenanceServices.deleteHistory({ maintenanceHistoryId });
 
   await emailTransporter.sendDeleteMaintenanceScriptUsed({
     data: [maintenanceHistoryId],
     route: 'uma manutenção vencida',
-    toEmail: ['mandelli.augusto@gmail.com'],
+    toEmail: ['tecnologia@easyalert.com.br', 'contato@easyalert.com.br'],
     buildingName: maintenanceHistory.Building.name,
   });
 
