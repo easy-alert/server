@@ -13,6 +13,10 @@
     {
       "description": "Production",
       "url": "https://easyalert-production.herokuapp.com/api/scripts/"
+    },
+    {
+      "description": "Sandbox",
+      "url": "https://easyalert-sandbox.herokuapp.com/api/scripts/"
     }
   ],
   "components": {
