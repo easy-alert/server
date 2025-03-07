@@ -6,12 +6,26 @@ import { ticketServices } from '../services/ticketServices';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
 import getMonths from '../../../../utils/constants/months';
 import { changeUTCTime } from '../../../../utils/dateTime';
+import { hasAdminPermission } from '../../../../utils/permissions/hasAdminPermission';
+import { handlePermittedBuildings } from '../../../../utils/permissions/handlePermittedBuildings';
+
+interface IQuery {
+  buildingsId: string;
+  placesId: string;
+  serviceTypesId: string;
+  apartmentsNames: string;
+  status: string;
+  startDate: string;
+  endDate: string;
+  seen: string;
+  page: string;
+  take: string;
+  count: string;
+}
 
 export async function findManyTicketsController(req: Request, res: Response) {
-  const { Company } = req;
-  const { buildingsId } = req.params as any as { buildingsId: string };
   const {
-    buildingsIdBody,
+    buildingsId,
     placesId,
     serviceTypesId,
     apartmentsNames,
@@ -22,22 +36,19 @@ export async function findManyTicketsController(req: Request, res: Response) {
     page,
     take,
     count,
-  } = req.query;
+  } = req.query as unknown as IQuery;
+  const { Company } = req;
 
-  const isAdmin = req.Permissions?.some((permission) =>
-    permission?.Permission?.name?.includes('admin'),
-  );
-
-  const buildingsIds = buildingsId ?? buildingsIdBody;
+  const isAdmin = hasAdminPermission(req.Permissions);
   const permittedBuildingsIds = isAdmin
     ? undefined
-    : req.BuildingsPermissions?.map((b: any) => b.Building.id);
+    : handlePermittedBuildings(req.BuildingsPermissions, 'id');
+
   let buildingName = '';
 
   const companyIdFilter = Company ? Company.id : undefined;
 
-  const buildingsIdFilter =
-    buildingsIds === 'all' || !buildingsIds ? permittedBuildingsIds : buildingsIds.split(',');
+  const buildingsIdFilter = !buildingsId ? permittedBuildingsIds : buildingsId.split(',');
   const placeIdFilter =
     typeof placesId === 'string' && placesId !== '' ? placesId.split(',') : undefined;
   const serviceTypeIdFilter =
@@ -62,13 +73,11 @@ export async function findManyTicketsController(req: Request, res: Response) {
     ? changeUTCTime(new Date(String(endDate)), 23, 59, 59, 999)
     : undefined;
 
-  if (buildingsIdFilter?.length === 1 && buildingsId !== 'all') {
-    await ticketServices.checkAccess({ buildingId: buildingsId });
+  if (buildingsIdFilter?.length === 1) {
+    await ticketServices.checkAccess({ buildingId: buildingsIdFilter[0] });
 
-    buildingName = (await buildingServices.findById({ buildingId: buildingsId })).name;
+    buildingName = (await buildingServices.findById({ buildingId: buildingsIdFilter[0] })).name;
   }
-
-  const months = getMonths();
 
   const findManyTickets = await ticketServices.findMany({
     buildingId: buildingsIdFilter,
@@ -83,6 +92,8 @@ export async function findManyTicketsController(req: Request, res: Response) {
     page: Number(page),
     take: Number(take),
   });
+
+  const months = getMonths();
 
   const filterOptions = {
     years: findManyTickets.years,

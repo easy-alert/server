@@ -26,7 +26,7 @@ ticketRouter.get('/places/:placeId', findAllTicketPlaces);
 
 ticketRouter.get('/status/:statusId', findAllStatus);
 
-ticketRouter.get('/buildings/:buildingsNanoId', findManyTicketsController);
+ticketRouter.get('/buildings', findManyTicketsController);
 
 ticketRouter.get('/report/pdf', listTicketsByCompanyId);
 ticketRouter.post('/report/pdf', generateTicketReportPDF);
