@@ -159,17 +159,20 @@
                   "notificationDate": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Data da notificação"
+                    "description": "Data da notificação",
+                    "default": "2025-01-01T00:00:00Z"
                   },
                   "dueDate": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Data de vencimento"
+                    "description": "Data de vencimento",
+                    "default": "2025-01-01T00:00:00Z"
                   },
                   "resolutionDate": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Data de resolução"
+                    "description": "Data de resolução",
+                    "default": "2025-01-01T00:00:00Z"
                   }
                 }
               }
