@@ -41,6 +41,7 @@ export async function sharedEditCompanyAndOwner({
     { label: 'ID da empresa', variable: companyId },
     { label: 'nome', variable: name },
     { label: 'e-mail', variable: email },
+    { label: 'telefone', variable: contactNumber },
     { label: 'imagem', variable: image },
     { label: 'Número de contato', variable: contactNumber },
     { label: 'nome da empresa', variable: companyName },
@@ -70,6 +71,7 @@ export async function sharedEditCompanyAndOwner({
     userId,
     name,
     email,
+    phoneNumber: contactNumber,
   });
 
   const lowerCaseTicketInfo = ticketInfo ? ticketInfo.toLowerCase() : null;
