@@ -75,13 +75,29 @@ class ChecklistServices {
         id: true,
         buildingId: true,
         name: true,
+        status: true,
+
+        user: {
+          select: {
+            name: true,
+          },
+        },
+
         syndic: {
           select: {
             name: true,
           },
         },
-        status: true,
+
+        checklistItem: {
+          select: {
+            id: true,
+            name: true,
+            status: true,
+          },
+        },
       },
+
       where: {
         building: {
           nanoId: buildingNanoId,
@@ -197,12 +213,19 @@ class ChecklistServices {
   }
 
   async findChecklistDataByMonth({ buildingNanoId }: { buildingNanoId: string }) {
-    const [pending, completed] = await prisma.$transaction([
+    const [pending, inProgress, completed] = await prisma.$transaction([
       prisma.checklist.findMany({
         select: { date: true },
         distinct: 'date',
         where: { building: { nanoId: buildingNanoId }, status: 'pending' },
       }),
+
+      prisma.checklist.findMany({
+        select: { date: true },
+        distinct: 'date',
+        where: { building: { nanoId: buildingNanoId }, status: 'inProgress' },
+      }),
+
       prisma.checklist.findMany({
         select: { date: true },
         distinct: 'date',
@@ -210,7 +233,7 @@ class ChecklistServices {
       }),
     ]);
 
-    return { pending, completed };
+    return { pending, inProgress, completed };
   }
 
   async findLatestChecklistFromGroup({ groupId }: { groupId: string }) {
