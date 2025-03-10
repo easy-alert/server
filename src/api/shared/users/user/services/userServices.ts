@@ -47,6 +47,18 @@ export class UserServices {
         isBlocked,
       },
 
+      select: {
+        id: true,
+        image: true,
+        name: true,
+        role: true,
+        email: true,
+        phoneNumber: true,
+        isBlocked: true,
+        createdAt: true,
+        lastAccess: true,
+      },
+
       where: { id: userId },
     });
   }
