@@ -22,6 +22,8 @@ async function main() {
   await seedServices.upsertTicketServiceTypes();
   await seedServices.upsertTicketStatus();
   await seedServices.upsertTicketDismissReasons();
+
+  await seedServices.updateOwnerUsers();
 }
 
 main()
