@@ -52,9 +52,14 @@ export const authBackofficeCompany = async (req: Request, res: Response) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        lastAccess: user.lastAccess,
+        phoneNumber: user.phoneNumber,
+        role: user.role,
+        isBlocked: user.isBlocked,
         isCompanyOwner,
+
+        lastAccess: user.lastAccess,
         createdAt: user.createdAt,
+
         Permissions: user.Permissions,
         BuildingsPermissions: user.UserBuildingsPermissions,
       },
