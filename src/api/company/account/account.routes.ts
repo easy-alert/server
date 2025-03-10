@@ -3,9 +3,12 @@ import { Router } from 'express';
 
 // FUNCTIONS
 
-import { editCompanyAndOwner } from './controllers/editCompanyAndOwner';
+import { updateCompanyController } from './controllers/updateCompanyController';
+import { updateUserController } from './controllers/updateUserController';
 
 // ROUTES
 export const accountRouter = Router();
 
-accountRouter.put('/edit', editCompanyAndOwner);
+accountRouter.put('/company', updateCompanyController);
+
+accountRouter.put('/user', updateUserController);
