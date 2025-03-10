@@ -575,4 +575,53 @@ export class SeedServices {
 
     console.log('Maintenance Priorities upserted.');
   }
+
+  async updateOwnerUsers() {
+    console.log('\n\nstarting Owner Users update ...');
+
+    const ownerUsers = await prisma.userCompanies.findMany({
+      where: {
+        owner: true,
+      },
+    });
+
+    for (const ownerUser of ownerUsers) {
+      const company = await prisma.company.findUnique({
+        where: {
+          id: ownerUser.companyId,
+        },
+      });
+
+      if (!company) {
+        console.error('Company not found for Owner User ', ownerUser.userId);
+        continue;
+      }
+
+      if (company.isBlocked) {
+        console.log('Company ', company!.name, ' is blocked.');
+        continue;
+      }
+
+      try {
+        await prisma.user.update({
+          where: {
+            id: ownerUser.userId,
+          },
+          data: {
+            phoneNumber: company.contactNumber,
+          },
+        });
+
+      } catch (error) {
+        console.error('Error updating Owner User in Company ', company!.name);
+        continue;
+      }
+
+      console.log('Owner User updated in Company ', company!.name);
+    }
+
+    console.log('Owner Users updated.');
+  }
 }
+
+
