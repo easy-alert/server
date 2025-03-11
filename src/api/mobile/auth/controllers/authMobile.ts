@@ -26,6 +26,22 @@ export async function authMobile(req: Request, res: Response) {
     permissions: ['admin:company', 'access:company'],
   });
 
+  let userBuildingsPermissions = user.UserBuildingsPermissions;
+
+  if (user.Permissions.find((permission) => permission.Permission.name === 'admin:company')) {
+    const buildingsForAdmin = await authServices.buildingsPermissionForAdmin({
+      companyId: user.Companies[0].Company.id,
+    });
+
+    userBuildingsPermissions = buildingsForAdmin.map((building) => ({
+      Building: {
+        id: building.id,
+        nanoId: building.nanoId,
+        name: building.name,
+      },
+    }));
+  }
+
   const isCompanyOwner = await authServices.isCompanyOwner({
     userId: user.id,
     companyId: user.Companies[0].Company.id,
@@ -37,5 +53,8 @@ export async function authMobile(req: Request, res: Response) {
     },
   });
 
-  return res.status(200).json({ authToken, user: { isCompanyOwner, ...user } });
+  return res.status(200).json({
+    authToken,
+    user: { ...user, isCompanyOwner, UserBuildingsPermissions: userBuildingsPermissions },
+  });
 }
