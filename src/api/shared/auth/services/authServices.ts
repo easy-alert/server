@@ -162,7 +162,9 @@ export class AuthServices {
 
         name: true,
         email: true,
+        emailIsConfirmed: true,
         phoneNumber: true,
+        phoneNumberIsConfirmed: true,
         role: true,
         passwordHash: true,
 
@@ -230,7 +232,9 @@ export class AuthServices {
 
         name: true,
         email: true,
+        emailIsConfirmed: true,
         phoneNumber: true,
+        phoneNumberIsConfirmed: true,
         role: true,
         passwordHash: true,
 
