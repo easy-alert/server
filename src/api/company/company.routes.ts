@@ -40,6 +40,8 @@ import { listForSelectRouter } from './listForSelect/list.routes';
 // ROUTES
 export const companyRouter: Router = Router();
 
+const companyPermission = 'access:company';
+
 companyRouter.use('/docs', swaggerUi.serve, (_req: any, res: any) => {
   const html = swaggerUi.generateHTML(swaggerFile);
   res.send(html);
@@ -55,49 +57,54 @@ companyRouter.post('/buildings/list/detailsforconfirm', listBuildingDetailsForCo
 companyRouter.use('/auth', authRouter);
 
 // Middlewares estão lá dentro
-companyRouter.use('/usercompany', companyUserRouter);
+companyRouter.use(
+  '/usercompany',
+  authMiddleware,
+  handleCompanyPermCheck([companyPermission, 'access:account']),
+  companyUserRouter,
+);
 
 companyRouter.get('/timeinterval/list', listTimeIntervals);
 
 companyRouter.use(
   '/account',
   authMiddleware,
-  handleCompanyPermCheck(['access:account']),
+  handleCompanyPermCheck([companyPermission, 'access:account']),
   accountRouter,
 );
 
 companyRouter.use(
   '/users',
   authMiddleware,
-  handleCompanyPermCheck(['access:company']),
+  handleCompanyPermCheck([companyPermission, 'access:company']),
   usersRouter,
 );
 
 companyRouter.use(
   '/categories',
   authMiddleware,
-  handleCompanyPermCheck(['access:company']),
+  handleCompanyPermCheck([companyPermission, 'access:company']),
   categoryRouter,
 );
 
 companyRouter.use(
   '/buildings',
   authMiddleware,
-  handleCompanyPermCheck(['access:buildings']),
+  handleCompanyPermCheck([companyPermission, 'access:buildings']),
   buildingRouter,
 );
 
 companyRouter.use(
   '/maintenances',
   authMiddleware,
-  handleCompanyPermCheck(['access:company']),
+  handleCompanyPermCheck([companyPermission, 'access:company']),
   maintenanceRouter,
 );
 
 companyRouter.use(
   '/calendars',
   authMiddleware,
-  handleCompanyPermCheck(['access:calendar']),
+  handleCompanyPermCheck([companyPermission, 'access:calendar']),
   calendarRouter,
 );
 
@@ -108,84 +115,84 @@ companyRouter.put('/passwordrecovery/change', changePassword);
 companyRouter.use(
   '/dashboard',
   authMiddleware,
-  handleCompanyPermCheck(['access:dashboard']),
+  handleCompanyPermCheck([companyPermission, 'access:dashboard']),
   dashboardRouter,
 );
 
 companyRouter.use(
   '/checklists',
   authMiddleware,
-  handleCompanyPermCheck(['access:checklist']),
+  handleCompanyPermCheck([companyPermission, 'access:checklist']),
   checklistRouter,
 );
 
 companyRouter.use(
   '/tickets',
   authMiddleware,
-  handleCompanyPermCheck(['access:tickets']),
+  handleCompanyPermCheck([companyPermission, 'access:tickets']),
   ticketRouter,
 );
 
 companyRouter.use(
   '/suppliers',
   authMiddleware,
-  handleCompanyPermCheck(['access:suppliers']),
+  handleCompanyPermCheck([companyPermission, 'access:suppliers']),
   supplierRouter,
 );
 
 companyRouter.use(
   '/maintenance-history-activities',
   authMiddleware,
-  handleCompanyPermCheck(['access:company']),
+  handleCompanyPermCheck([companyPermission, 'access:company']),
   maintenanceHistoryActivitiesRouter,
 );
 
 companyRouter.use(
   '/ticketHistoryActivities',
   authMiddleware,
-  handleCompanyPermCheck(['access:company']),
+  handleCompanyPermCheck([companyPermission, 'access:company']),
   ticketHistoryActivitiesRouter,
 );
 
 companyRouter.use(
   '/ticketDismissReasons',
   authMiddleware,
-  handleCompanyPermCheck(['access:company']),
+  handleCompanyPermCheck([companyPermission, 'access:company']),
   ticketDismissReasonsRouter,
 );
 
 companyRouter.get(
   '/serviceTypes',
   authMiddleware,
-  handleCompanyPermCheck(['access:company']),
+  handleCompanyPermCheck([companyPermission, 'access:company']),
   findManyServiceTypes,
 );
 
 companyRouter.get(
   '/priority',
   authMiddleware,
-  handleCompanyPermCheck(['access:company']),
+  handleCompanyPermCheck([companyPermission, 'access:company']),
   findAllMaintenancePriority,
 );
 
 companyRouter.use(
   '/tutorials',
   authMiddleware,
-  handleCompanyPermCheck(['access:tutorials']),
+  handleCompanyPermCheck([companyPermission, 'access:tutorials']),
   tutorialsRouter,
 );
 
 companyRouter.use(
   '/permissions',
   authMiddleware,
-  handleCompanyPermCheck(['access:company']),
+  handleCompanyPermCheck([companyPermission, 'access:company']),
   permissionsRouter,
 );
 
 companyRouter.use(
   '/list',
   authMiddleware,
-  handleCompanyPermCheck(['access:company']),
+  handleCompanyPermCheck([companyPermission, 'access:company']),
   listForSelectRouter,
 );
 

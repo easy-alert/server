@@ -9,7 +9,7 @@ const validator = new Validator();
 const emailTransporter = new EmailTransporterServices();
 
 interface IFindMany {
-  buildingNanoId: string[] | undefined;
+  buildingId: string[] | undefined;
   statusName?: TicketStatusName[];
   placeId?: string[];
   serviceTypeId?: string[];
@@ -97,7 +97,7 @@ class TicketServices {
   }
 
   async findMany({
-    buildingNanoId,
+    buildingId,
     companyId,
     statusName,
     startDate,
@@ -140,8 +140,8 @@ class TicketServices {
         where: {
           building: {
             companyId,
-            nanoId: {
-              in: buildingNanoId,
+            id: {
+              in: buildingId,
             },
           },
 
@@ -188,8 +188,8 @@ class TicketServices {
         },
         where: {
           building: {
-            nanoId: {
-              in: buildingNanoId,
+            id: {
+              in: buildingId,
             },
           },
         },
@@ -223,12 +223,12 @@ class TicketServices {
     return { places, types };
   }
 
-  async checkAccess({ buildingNanoId }: { buildingNanoId: string }) {
+  async checkAccess({ buildingId }: { buildingId: string }) {
     const company = await prisma.company.findFirst({
       select: {
         canAccessTickets: true,
       },
-      where: { Buildings: { some: { nanoId: buildingNanoId } } },
+      where: { Buildings: { some: { id: buildingId } } },
     });
 
     validator.needExist([{ label: 'Empresa', variable: company }]);

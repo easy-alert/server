@@ -159,14 +159,20 @@ export class AuthServices {
     const User = await prisma.user.findFirst({
       select: {
         id: true,
+
         name: true,
         email: true,
+        emailIsConfirmed: true,
         phoneNumber: true,
-        createdAt: true,
-        lastAccess: true,
+        phoneNumberIsConfirmed: true,
+        role: true,
         passwordHash: true,
-        updatedAt: true,
+
+        lastAccess: true,
         isBlocked: true,
+
+        createdAt: true,
+        updatedAt: true,
 
         Companies: {
           select: {
@@ -223,13 +229,20 @@ export class AuthServices {
     const User = await prisma.user.findUnique({
       select: {
         id: true,
+
         name: true,
         email: true,
-        createdAt: true,
-        lastAccess: true,
+        emailIsConfirmed: true,
+        phoneNumber: true,
+        phoneNumberIsConfirmed: true,
+        role: true,
         passwordHash: true,
-        updatedAt: true,
+
+        lastAccess: true,
         isBlocked: true,
+
+        createdAt: true,
+        updatedAt: true,
 
         Companies: {
           select: {

@@ -193,6 +193,7 @@ export class SharedMaintenanceServices {
         id: true,
         notificationDate: true,
         dueDate: true,
+        resolutionDate: true,
         MaintenancesStatus: {
           select: {
             name: true,

@@ -1,22 +1,30 @@
 import { Request, Response } from 'express';
-import { Validator } from '../../../../utils/validator/validator';
-import { BuildingServices } from '../../../company/buildings/building/services/buildingServices';
+
 import { ClientBuildingServices } from '../services/clientBuildingServices';
+import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
+
+import { Validator } from '../../../../utils/validator/validator';
 
 const clientBuildingServices = new ClientBuildingServices();
-const buildingServices = new BuildingServices();
-
 const validator = new Validator();
 
 export async function findHomeInformations(req: Request, res: Response) {
-  const { buildingNanoId } = req.params;
+  const { buildingId } = req.params;
 
-  validator.check([{ label: 'Id da edificaçao', type: 'string', variable: buildingNanoId }]);
+  validator.check([{ label: 'Id da edificação', type: 'string', variable: buildingId }]);
 
-  const building = await buildingServices.findByNanoId({ buildingNanoId });
+  let building = null;
+
+  if (buildingId.length === 12) {
+    building = await buildingServices.findByNanoId({
+      buildingNanoId: buildingId,
+    });
+  } else {
+    building = await buildingServices.findById({ buildingId });
+  }
 
   const homeInformations = await clientBuildingServices.findHomeInformation({
-    buildingId: building.id,
+    buildingId: building ? building.id : buildingId,
   });
 
   return res.status(200).json(homeInformations);

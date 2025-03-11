@@ -6,12 +6,26 @@ import { ticketServices } from '../services/ticketServices';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
 import getMonths from '../../../../utils/constants/months';
 import { changeUTCTime } from '../../../../utils/dateTime';
+import { hasAdminPermission } from '../../../../utils/permissions/hasAdminPermission';
+import { handlePermittedBuildings } from '../../../../utils/permissions/handlePermittedBuildings';
+
+interface IQuery {
+  buildingsId: string;
+  placesId: string;
+  serviceTypesId: string;
+  apartmentsNames: string;
+  status: string;
+  startDate: string;
+  endDate: string;
+  seen: string;
+  page: string;
+  take: string;
+  count: string;
+}
 
 export async function findManyTicketsController(req: Request, res: Response) {
-  const { Company } = req;
-  const { buildingsNanoId } = req.params as any as { buildingsNanoId: string };
   const {
-    buildingsNanoIdBody,
+    buildingsId,
     placesId,
     serviceTypesId,
     apartmentsNames,
@@ -22,22 +36,19 @@ export async function findManyTicketsController(req: Request, res: Response) {
     page,
     take,
     count,
-  } = req.query;
+  } = req.query as unknown as IQuery;
+  const { Company } = req;
 
-  const isAdmin = req.Permissions?.some((permission) =>
-    permission?.Permission?.name?.includes('admin'),
-  );
-
-  const buildingsIds = buildingsNanoId ?? buildingsNanoIdBody;
-  const permittedBuildingsNanoIds = isAdmin
+  const isAdmin = hasAdminPermission(req.Permissions);
+  const permittedBuildingsIds = isAdmin
     ? undefined
-    : req.BuildingsPermissions?.map((b: any) => b.Building.nanoId);
+    : handlePermittedBuildings(req.BuildingsPermissions, 'id');
+
   let buildingName = '';
 
   const companyIdFilter = Company ? Company.id : undefined;
 
-  const buildingsNanoIdFilter =
-    buildingsIds === 'all' || !buildingsIds ? permittedBuildingsNanoIds : buildingsIds.split(',');
+  const buildingsIdFilter = !buildingsId ? permittedBuildingsIds : buildingsId.split(',');
   const placeIdFilter =
     typeof placesId === 'string' && placesId !== '' ? placesId.split(',') : undefined;
   const serviceTypeIdFilter =
@@ -62,16 +73,14 @@ export async function findManyTicketsController(req: Request, res: Response) {
     ? changeUTCTime(new Date(String(endDate)), 23, 59, 59, 999)
     : undefined;
 
-  if (buildingsNanoIdFilter?.length === 1 && buildingsNanoId !== 'all') {
-    await ticketServices.checkAccess({ buildingNanoId: buildingsNanoId });
+  if (buildingsIdFilter?.length === 1) {
+    await ticketServices.checkAccess({ buildingId: buildingsIdFilter[0] });
 
-    buildingName = (await buildingServices.findByNanoId({ buildingNanoId: buildingsNanoId })).name;
+    buildingName = (await buildingServices.findById({ buildingId: buildingsIdFilter[0] })).name;
   }
 
-  const months = getMonths();
-
   const findManyTickets = await ticketServices.findMany({
-    buildingNanoId: buildingsNanoIdFilter,
+    buildingId: buildingsIdFilter,
     companyId: companyIdFilter,
     statusName: statusFilter,
     placeId: placeIdFilter,
@@ -83,6 +92,8 @@ export async function findManyTicketsController(req: Request, res: Response) {
     page: Number(page),
     take: Number(take),
   });
+
+  const months = getMonths();
 
   const filterOptions = {
     years: findManyTickets.years,

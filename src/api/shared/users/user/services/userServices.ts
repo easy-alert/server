@@ -47,6 +47,18 @@ export class UserServices {
         isBlocked,
       },
 
+      select: {
+        id: true,
+        image: true,
+        name: true,
+        role: true,
+        email: true,
+        phoneNumber: true,
+        isBlocked: true,
+        createdAt: true,
+        lastAccess: true,
+      },
+
       where: { id: userId },
     });
   }
@@ -204,6 +216,20 @@ export class UserServices {
     });
 
     validator.needExist([{ label: 'usuário', variable: user }]);
+
+    return user!;
+  }
+
+  async findEmailPhoneById({ userId }: { userId: string }) {
+    const user = await prisma.user.findUnique({
+      select: {
+        email: true,
+        phoneNumber: true,
+      },
+      where: { id: userId },
+    });
+
+    validator.needExist([{ label: 'Usuário', variable: user }]);
 
     return user!;
   }
