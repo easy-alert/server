@@ -13,14 +13,25 @@ interface IBody {
   phoneNumber: string;
   password: string;
   confirmPassword: string;
+  colorScheme: string;
   isBlocked: boolean;
 }
 
 const userServices = new UserServices();
 
 export async function updateUserController(req: Request, res: Response) {
-  const { id, image, name, role, email, phoneNumber, password, confirmPassword, isBlocked }: IBody =
-    req.body;
+  const {
+    id,
+    image,
+    name,
+    role,
+    email,
+    phoneNumber,
+    password,
+    confirmPassword,
+    colorScheme,
+    isBlocked,
+  }: IBody = req.body;
 
   checkValues([
     { label: 'ID do usuário', type: 'string', value: id },
@@ -49,6 +60,7 @@ export async function updateUserController(req: Request, res: Response) {
       role,
       email,
       phoneNumber,
+      colorScheme,
       isBlocked,
     });
 

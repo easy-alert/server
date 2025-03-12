@@ -166,6 +166,8 @@ export class AuthServices {
         phoneNumber: true,
         phoneNumberIsConfirmed: true,
         role: true,
+        image: true,
+        colorScheme: true,
         passwordHash: true,
 
         lastAccess: true,
@@ -236,6 +238,8 @@ export class AuthServices {
         phoneNumber: true,
         phoneNumberIsConfirmed: true,
         role: true,
+        image: true,
+        colorScheme: true,
         passwordHash: true,
 
         lastAccess: true,
@@ -334,6 +338,7 @@ export class AuthServices {
         passwordHash: true,
         role: true,
         image: true,
+        colorScheme: true,
         isBlocked: true,
         isMainContact: true,
         showContact: true,

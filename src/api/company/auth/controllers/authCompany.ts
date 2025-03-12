@@ -57,6 +57,9 @@ export const authCompany = async (req: Request, res: Response) => {
         phoneNumber: user.phoneNumber,
         phoneNumberIsConfirmed: user.phoneNumberIsConfirmed,
         role: user.role,
+        image: user.image,
+        colorScheme: user.colorScheme,
+
         isBlocked: user.isBlocked,
         isCompanyOwner,
 
