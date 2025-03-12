@@ -50,12 +50,16 @@ export const authBackofficeCompany = async (req: Request, res: Response) => {
       Company: user.Companies[0].Company,
       User: {
         id: user.id,
+
         name: user.name,
         email: user.email,
         emailIsConfirmed: user.emailIsConfirmed,
         phoneNumber: user.phoneNumber,
         phoneNumberIsConfirmed: user.phoneNumberIsConfirmed,
         role: user.role,
+        image: user.image,
+        colorScheme: user.colorScheme,
+
         isBlocked: user.isBlocked,
         isCompanyOwner,
 
