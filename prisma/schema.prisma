@@ -893,7 +893,7 @@ model Checklist {
   user                  User?                              @relation(fields: [userId], references: [id], onDelete: SetNull)
   syndic                BuildingNotificationConfiguration? @relation(fields: [syndicId], references: [id], onDelete: SetNull)
   frequencyTimeInterval TimeInterval?                      @relation(fields: [frequencyTimeIntervalId], references: [id])
-  template              ChecklistTemplate?                 @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  template              ChecklistTemplate?                 @relation(fields: [templateId], references: [id], onDelete: NoAction)
 
   checklistItem ChecklistItem[]
   images        ChecklistImage[]
