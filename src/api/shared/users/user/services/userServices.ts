@@ -35,6 +35,7 @@ export class UserServices {
     role,
     email,
     phoneNumber,
+    colorScheme,
     isBlocked,
   }: Prisma.UserUpdateInput & { userId: string }) {
     return prisma.user.update({
@@ -44,6 +45,7 @@ export class UserServices {
         role,
         email,
         phoneNumber,
+        colorScheme,
         isBlocked,
       },
 
@@ -54,6 +56,7 @@ export class UserServices {
         role: true,
         email: true,
         phoneNumber: true,
+        colorScheme: true,
         isBlocked: true,
         createdAt: true,
         lastAccess: true,
