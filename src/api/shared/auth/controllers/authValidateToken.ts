@@ -26,9 +26,19 @@ export const authValidateToken = async (req: Request, res: Response) => {
       id: user.id,
       name: user.name,
       email: user.email,
-      lastAccess: user.lastAccess,
+      emailIsConfirmed: user.emailIsConfirmed,
+      phoneNumber: user.phoneNumber,
+      phoneNumberIsConfirmed: user.phoneNumberIsConfirmed,
+      role: user.role,
+      image: user.image,
+      colorScheme: user.colorScheme,
+
+      isBlocked: user.isBlocked,
       isCompanyOwner,
+
+      lastAccess: user.lastAccess,
       createdAt: user.createdAt,
+
       Permissions: user.Permissions,
       BuildingsPermissions: user.UserBuildingsPermissions,
     },

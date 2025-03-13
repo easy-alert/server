@@ -16,11 +16,13 @@ import { getChecklistsController } from '../../shared/checklists/controllers/get
 import { deleteChecklistController2 } from '../../shared/checklists/controllers/deleteChecklistController2';
 import { getChecklistsByBuildingIdController } from '../../shared/checklists/controllers/getChecklistsByBuildingIdController';
 import { updateChecklistController2 } from '../../shared/checklists/controllers/updateChecklistController2';
+import { deleteChecklistTemplateController } from '../../shared/checklists/controllers/deleteChecklistTemplateController';
 
 export const checklistRouter: Router = Router();
 
 // Template routes
 checklistRouter.post('/template/:buildingId', createChecklistTemplateController);
+checklistRouter.delete('/template/:checklistTemplateId', deleteChecklistTemplateController);
 
 checklistRouter.get('/templates/:buildingId', getChecklistsTemplatesController);
 
