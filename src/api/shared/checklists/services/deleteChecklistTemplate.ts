@@ -1,5 +1,13 @@
-import { prisma, prismaTypes } from '../../../../../prisma';
+import { prisma } from '../../../../../prisma';
 
-export async function deleteChecklistTemplate(args: prismaTypes.ChecklistDeleteManyArgs) {
-  await prisma.checklistTemplate.deleteMany(args);
+export async function deleteChecklistTemplate({
+  checklistTemplateId,
+}: {
+  checklistTemplateId: string;
+}) {
+  await prisma.checklistTemplate.delete({
+    where: {
+      id: checklistTemplateId,
+    },
+  });
 }
