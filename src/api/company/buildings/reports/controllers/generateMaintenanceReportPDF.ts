@@ -226,16 +226,17 @@ async function PDFService({
   MaintenancesPending,
   queryFilter,
 }: {
+  req: Request;
   company: { image: string } | null;
   id: string;
   query: any;
   maintenancesHistory: any;
-  req: Request;
   MaintenancesPending: any;
   queryFilter: any;
 }) {
   const pdfId = uuidv4().substring(0, 10);
   const folderName = `Folder-${Date.now()}`;
+
   try {
     fs.mkdirSync(folderName);
 
@@ -269,6 +270,8 @@ async function PDFService({
           status: MaintenancesPending[i].MaintenancesStatus.name,
           type: MaintenancesPending[i].Maintenance.MaintenanceType?.name ?? null,
           inProgress: MaintenancesPending[i].inProgress,
+
+          activities: MaintenancesPending[i].activities ?? [],
 
           cost: hasReport ? MaintenancesPending[i].MaintenanceReport[0].cost : null,
 
@@ -339,6 +342,8 @@ async function PDFService({
               type: Maintenance.MaintenanceType?.name ?? null,
               inProgress,
 
+              activities: MaintenancesPending[i].activities ?? [],
+
               cost: hasReport ? MaintenanceReport[0].cost : null,
 
               reportObservation: hasReport ? MaintenanceReport[0].observation : null,
@@ -395,6 +400,7 @@ async function PDFService({
       }
 
       const hasReport = maintenance.MaintenanceReport.length > 0;
+
       maintenances.push({
         id: maintenance.id,
 
@@ -412,6 +418,8 @@ async function PDFService({
         status: maintenance.MaintenancesStatus.name,
         type: maintenance.Maintenance.MaintenanceType?.name ?? null,
         inProgress: maintenance.inProgress,
+
+        activities: maintenance.activities ?? [],
 
         cost: hasReport ? maintenance.MaintenanceReport[0].cost : null,
 
@@ -504,6 +512,7 @@ async function PDFService({
           inProgress,
           annexes,
           activity,
+          activities,
           categoryName,
           cost,
           element,
@@ -545,6 +554,37 @@ async function PDFService({
             height: 50,
             link: url,
           });
+        }
+
+        const activitiesImagesForPDF: Content = [];
+
+        for (
+          let activityIndex = 0;
+          activityIndex < Math.min(activities.length, 4);
+          activityIndex++
+        ) {
+          const { images } = activities[activityIndex];
+
+          if (images.length === 0) {
+            continue;
+          }
+
+          for (let imageIndex = 0; imageIndex < Math.min(images.length, 4); imageIndex++) {
+            const { url } = images[imageIndex];
+
+            // Obter o stream da imagem do S3
+            const imageStream = await getImageStreamFromS3(url);
+
+            // Processar a imagem com sharp e converter para base64
+            const base64Image = await processImageToBase64(imageStream);
+
+            activitiesImagesForPDF.push({
+              image: base64Image,
+              width: 50,
+              height: 50,
+              link: url,
+            });
+          }
         }
 
         const tags: Content = [];
@@ -604,7 +644,7 @@ async function PDFService({
         }
 
         contentData.push({
-          columns: [
+          stack: [
             {
               stack: [
                 String(notificationDate.getDate()).padStart(2, '0'),
@@ -616,14 +656,13 @@ async function PDFService({
                     .substring(0, 3),
                 ),
               ],
-              width: 40,
               color: '#999999',
               fontSize: 14,
               bold: true,
             },
             {
               table: {
-                widths: [1, '*', '*', '*'],
+                widths: [1, '*'],
                 body: [
                   [
                     {
@@ -641,20 +680,16 @@ async function PDFService({
                       marginLeft: 8,
                       marginTop: 8,
                     },
-                    { text: '' },
-                    { text: '' },
                   ],
-                  [
-                    {
-                      text: '',
-                      fillColor: getStatusBackgroundColor(
-                        status === 'overdue' ? 'completed' : status,
-                      ),
-                    },
-                    { text: '' },
-                    { text: '' },
-                    { text: '' },
-                  ],
+                ],
+              },
+              layout: 'noBorders',
+              fillColor: '#E6E6E6',
+            },
+            {
+              table: {
+                widths: [1, '*', 200, '*'],
+                body: [
                   [
                     {
                       text: '',
@@ -673,8 +708,7 @@ async function PDFService({
                       ],
                     },
                     {
-                      text: `Imagens (${images.length || 0}): `,
-                      bold: true,
+                      text: [{ text: 'Responsável: ', bold: true }, { text: responsible }],
                     },
                   ],
                   [
@@ -695,10 +729,26 @@ async function PDFService({
                       ],
                     },
                     {
-                      columns: imagesForPDF,
-                      columnGap: 8,
+                      text: [
+                        { text: 'Valor: ', bold: true },
+                        {
+                          text: mask({
+                            type: 'BRL',
+                            value: String(cost || 0),
+                          }),
+                        },
+                      ],
                     },
                   ],
+                ],
+              },
+              layout: 'noBorders',
+              fillColor: '#E6E6E6',
+            },
+            {
+              table: {
+                widths: [1, '*'],
+                body: [
                   [
                     {
                       text: '',
@@ -710,10 +760,6 @@ async function PDFService({
                       text: [{ text: 'Atividade: ', bold: true }, { text: activity }],
                       marginLeft: 8,
                     },
-                    {
-                      text: [{ text: 'Responsável: ', bold: true }, { text: responsible }],
-                    },
-                    { text: '' },
                   ],
                   [
                     {
@@ -723,18 +769,48 @@ async function PDFService({
                       ),
                     },
                     { text: '' },
+                  ],
+                ],
+              },
+              layout: 'noBorders',
+              fillColor: '#E6E6E6',
+            },
+
+            {
+              table: {
+                widths: [1, '*'],
+                body: [
+                  [
                     {
-                      text: [
-                        { text: 'Valor: ', bold: true },
-                        {
-                          text: mask({
-                            type: 'BRL',
-                            value: String(cost || 0),
-                          }),
-                        },
-                      ],
+                      text: '',
+                      fillColor: getStatusBackgroundColor(
+                        status === 'overdue' ? 'completed' : status,
+                      ),
                     },
-                    { text: '' },
+                    {
+                      table: {
+                        widths: [100, '*', '*', '*'],
+                        body: [
+                          [
+                            { text: 'Data', bold: true, fontSize: 12 },
+                            { text: 'Atividade', bold: true, fontSize: 12 },
+                            { text: 'Descrição', bold: true, fontSize: 12 },
+                            { text: 'Imagens', bold: true, fontSize: 12 },
+                          ],
+                          ...activities.map(({ title, content, createdAt }) => [
+                            { text: dateFormatter(createdAt) },
+                            { text: title },
+                            { text: content },
+                            {
+                              columns: activitiesImagesForPDF,
+                              columnGap: 4,
+                            },
+                          ]),
+                        ],
+                      },
+                      layout: 'lightHorizontalLines',
+                      marginLeft: 8,
+                    },
                   ],
                   [
                     {
@@ -743,19 +819,31 @@ async function PDFService({
                         status === 'overdue' ? 'completed' : status,
                       ),
                     },
-                    { text: '' },
                     {
-                      text: [
-                        {
-                          text: `Anexos (${annexes.length || 0}): `,
-                          bold: true,
-                        },
-                        {
-                          text: annexesForPDF,
-                        },
-                      ],
+                      text: '',
                     },
-                    { text: '' },
+                  ],
+                ],
+              },
+              layout: 'noBorders',
+              fillColor: '#E6E6E6',
+            },
+
+            {
+              table: {
+                widths: [1, '*'],
+                body: [
+                  [
+                    {
+                      text: '',
+                      fillColor: getStatusBackgroundColor(
+                        status === 'overdue' ? 'completed' : status,
+                      ),
+                    },
+                    {
+                      text: [{ text: `Anexos (${annexes.length || 0}): `, bold: true }],
+                      marginLeft: 8,
+                    },
                   ],
                   [
                     {
@@ -764,9 +852,11 @@ async function PDFService({
                         status === 'overdue' ? 'completed' : status,
                       ),
                     },
-                    { text: '' },
-                    { text: '' },
-                    { text: '' },
+                    {
+                      columns: annexesForPDF,
+                      columnGap: 4,
+                      marginLeft: 8,
+                    },
                   ],
                   [
                     {
@@ -775,9 +865,9 @@ async function PDFService({
                         status === 'overdue' ? 'completed' : status,
                       ),
                     },
-                    { text: '' },
-                    { text: '' },
-                    { text: '' },
+                    {
+                      text: '',
+                    },
                   ],
                   [
                     {
@@ -786,16 +876,10 @@ async function PDFService({
                         status === 'overdue' ? 'completed' : status,
                       ),
                     },
-                    // {
-                    //   text: [
-                    //     { text: 'Observação do relato: ', bold: true },
-                    //     { text: MaintenanceReport?.[0]?.observation || '-' },
-                    //   ],
-                    //   marginLeft: 8,
-                    // },
-                    { text: '' }, // REMOVER ESSE SE VOLTAR O DE CIMA
-                    { text: '' },
-                    { text: '' },
+                    {
+                      text: [{ text: `Imagens (${images.length || 0}): `, bold: true }],
+                      marginLeft: 8,
+                    },
                   ],
                   [
                     {
@@ -804,20 +888,11 @@ async function PDFService({
                         status === 'overdue' ? 'completed' : status,
                       ),
                     },
-                    { text: '' },
-                    { text: '' },
-                    { text: '' },
-                  ],
-                  [
                     {
-                      text: '',
-                      fillColor: getStatusBackgroundColor(
-                        status === 'overdue' ? 'completed' : status,
-                      ),
+                      columns: imagesForPDF,
+                      columnGap: 4,
+                      marginLeft: 8,
                     },
-                    { text: '' },
-                    { text: '' },
-                    { text: '' },
                   ],
                 ],
               },
@@ -827,6 +902,128 @@ async function PDFService({
           ],
           unbreakable: true,
         });
+
+        // columns: [
+        //   {
+        //     stack: [
+        //       String(notificationDate.getDate()).padStart(2, '0'),
+        //       capitalizeFirstLetter(
+        //         new Date(notificationDate)
+        //           .toLocaleString('pt-br', {
+        //             weekday: 'long',
+        //           })
+        //           .substring(0, 3),
+        //       ),
+        //     ],
+        //     width: 40,
+        //     color: '#999999',
+        //     fontSize: 14,
+        //     bold: true,
+        //   },
+        //   {
+        //     table: {
+        //       widths: [1, '*', 100, '*'],
+        //       body: [
+        //         [
+        //           {
+        //             text: '',
+        //             fillColor: getStatusBackgroundColor(
+        //               status === 'overdue' ? 'completed' : status,
+        //             ),
+        //             opacity: 1,
+        //           },
+        //           {
+        //             table: {
+        //               body: [tags],
+        //             },
+        //             layout: 'noBorders',
+        //             marginLeft: 8,
+        //             marginTop: 8,
+        //           },
+        //           { text: '' },
+        //           { text: '' },
+        //         ],
+        //         [
+        //           {
+        //             text: '',
+        //             fillColor: getStatusBackgroundColor(
+        //               status === 'overdue' ? 'completed' : status,
+        //             ),
+        //           },
+        //           { text: '' },
+        //           { text: '' },
+        //           { text: '' },
+        //         ],
+        //         [
+        //           {
+        //             text: '',
+        //             fillColor: getStatusBackgroundColor(
+        //               status === 'overdue' ? 'completed' : status,
+        //             ),
+        //           },
+        //           {
+        //             text: [{ text: 'Categoria: ', bold: true }, { text: categoryName }],
+        //             marginLeft: 8,
+        //           },
+        //           {
+        //             text: [
+        //               { text: 'Notificação: ', bold: true },
+        //               { text: dateFormatter(notificationDate) },
+        //             ],
+        //           },
+        //           {
+        //             text: [{ text: 'Responsável: ', bold: true }, { text: responsible }],
+        //           },
+        //         ],
+        //         [
+        //           {
+        //             text: '',
+        //             fillColor: getStatusBackgroundColor(
+        //               status === 'overdue' ? 'completed' : status,
+        //             ),
+        //           },
+        //           {
+        //             text: [{ text: 'Elemento: ', bold: true }, { text: element }],
+        //             marginLeft: 8,
+        //           },
+        //           {
+        //             text: [
+        //               { text: 'Conclusão: ', bold: true },
+        //               { text: resolutionDate ? dateFormatter(resolutionDate) : '-' },
+        //             ],
+        //           },
+        //           {
+        //             text: [
+        //               { text: 'Valor: ', bold: true },
+        //               {
+        //                 text: mask({
+        //                   type: 'BRL',
+        //                   value: String(cost || 0),
+        //                 }),
+        //               },
+        //             ],
+        //           },
+        //         ],
+        //         [
+        //           {
+        //             text: '',
+        //             fillColor: getStatusBackgroundColor(
+        //               status === 'overdue' ? 'completed' : status,
+        //             ),
+        //           },
+        //           {
+        //             text: [{ text: 'Atividade: ', bold: true }, { text: activity }],
+        //             marginLeft: 8,
+        //           },
+        //           { text: '' },
+        //           { text: '' },
+        //         ],
+        //       ],
+        //     },
+        //     layout: 'noBorders',
+        //     fillColor: '#E6E6E6',
+        //   },
+        // ],
       }
     }
 
@@ -995,6 +1192,8 @@ async function PDFService({
 }
 
 export async function generateMaintenanceReportPDF(req: Request, res: Response) {
+  const { query } = req as any;
+
   const previousReport = await prisma.maintenanceReportPdf.findFirst({
     where: { authorId: req.userId },
     orderBy: { createdAt: 'desc' },
@@ -1007,7 +1206,6 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
     });
   }
 
-  const { query } = req as any;
   const queryFilter = buildingReportsServices.mountQueryFilter({ query: req.query as any });
 
   const { maintenancesHistory, company, MaintenancesPending } =

@@ -165,6 +165,21 @@ export class BuildingReportsServices {
           inProgress: true,
           dueDate: true,
 
+          activities: {
+            select: {
+              title: true,
+              content: true,
+              type: true,
+              createdAt: true,
+
+              images: {
+                select: {
+                  url: true,
+                },
+              },
+            },
+          },
+
           MaintenanceReport: {
             select: {
               observation: true,
@@ -184,6 +199,7 @@ export class BuildingReportsServices {
               },
             },
           },
+
           MaintenancesStatus: {
             select: {
               name: true,
@@ -195,6 +211,7 @@ export class BuildingReportsServices {
               name: true,
             },
           },
+
           Maintenance: {
             select: {
               element: true,
@@ -215,8 +232,16 @@ export class BuildingReportsServices {
             },
           },
         },
+
         orderBy: { notificationDate: 'desc' },
+
         where: {
+          activities: {
+            every: {
+              type: 'comment',
+            },
+          },
+
           maintenanceStatusId: {
             in: queryFilter.maintenanceStatusIds,
           },
@@ -251,6 +276,21 @@ export class BuildingReportsServices {
           inProgress: true,
           dueDate: true,
 
+          activities: {
+            select: {
+              title: true,
+              content: true,
+              type: true,
+              createdAt: true,
+
+              images: {
+                select: {
+                  url: true,
+                },
+              },
+            },
+          },
+
           MaintenanceReport: {
             select: {
               observation: true,
@@ -270,6 +310,7 @@ export class BuildingReportsServices {
               },
             },
           },
+
           MaintenancesStatus: {
             select: {
               name: true,
@@ -282,6 +323,7 @@ export class BuildingReportsServices {
               id: true,
             },
           },
+
           Maintenance: {
             select: {
               id: true,
@@ -320,6 +362,12 @@ export class BuildingReportsServices {
           { notificationDate: 'desc' },
         ],
         where: {
+          activities: {
+            every: {
+              type: 'comment',
+            },
+          },
+
           maintenanceStatusId: {
             in: queryFilter.maintenanceStatusIds,
           },
