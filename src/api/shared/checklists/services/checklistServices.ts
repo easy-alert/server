@@ -69,7 +69,15 @@ class ChecklistServices {
     await prisma.checklist.deleteMany(args);
   }
 
-  async findMany({ buildingNanoId, date }: { buildingNanoId: string; date: string }) {
+  async findMany({
+    buildingNanoId,
+    userId,
+    date,
+  }: {
+    buildingNanoId: string;
+    userId?: string;
+    date: string;
+  }) {
     return prisma.checklist.findMany({
       select: {
         id: true,
@@ -102,6 +110,8 @@ class ChecklistServices {
         building: {
           nanoId: buildingNanoId,
         },
+
+        userId,
 
         date: {
           gte: setToUTCMidnight(new Date(date)),
@@ -212,24 +222,30 @@ class ChecklistServices {
     }
   }
 
-  async findChecklistDataByMonth({ buildingNanoId }: { buildingNanoId: string }) {
+  async findChecklistDataByMonth({
+    userId,
+    buildingNanoId,
+  }: {
+    userId?: string;
+    buildingNanoId: string;
+  }) {
     const [pending, inProgress, completed] = await prisma.$transaction([
       prisma.checklist.findMany({
         select: { date: true },
         distinct: 'date',
-        where: { building: { nanoId: buildingNanoId }, status: 'pending' },
+        where: { building: { nanoId: buildingNanoId }, userId, status: 'pending' },
       }),
 
       prisma.checklist.findMany({
         select: { date: true },
         distinct: 'date',
-        where: { building: { nanoId: buildingNanoId }, status: 'inProgress' },
+        where: { building: { nanoId: buildingNanoId }, userId, status: 'inProgress' },
       }),
 
       prisma.checklist.findMany({
         select: { date: true },
         distinct: 'date',
-        where: { building: { nanoId: buildingNanoId }, status: 'completed' },
+        where: { building: { nanoId: buildingNanoId }, userId, status: 'completed' },
       }),
     ]);
 

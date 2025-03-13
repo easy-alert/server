@@ -1,10 +1,17 @@
 import { Response, Request } from 'express';
+
 import { checklistServices } from '../services/checklistServices';
-import { checkValues } from '../../../../utils/newValidator';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
+
+import { checkValues } from '../../../../utils/newValidator';
+import { hasAdminPermission } from '../../../../utils/permissions/hasAdminPermission';
 
 export async function findManyChecklistsController(req: Request, res: Response) {
   const { buildingNanoId, date } = req.params as any as { buildingNanoId: string; date: string };
+  const { userId, Permissions } = req;
+
+  const idAdmin = hasAdminPermission(Permissions);
+  const userIdForFilter = idAdmin ? undefined : userId;
 
   checkValues([
     { label: 'ID da edificação', type: 'string', value: buildingNanoId },
@@ -13,7 +20,11 @@ export async function findManyChecklistsController(req: Request, res: Response) 
 
   await checklistServices.checkAccess({ buildingNanoId });
 
-  const checklists = await checklistServices.findMany({ buildingNanoId, date });
+  const checklists = await checklistServices.findMany({
+    buildingNanoId,
+    userId: userIdForFilter,
+    date,
+  });
 
   const formattedChecklist = checklists.map((checklist) => {
     const { checklistItem, ...rest } = checklist;
