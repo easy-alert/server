@@ -202,4 +202,18 @@ export class AuthServices {
 
     return owner;
   }
+
+  async buildingsPermissionForAdmin({ companyId }: { companyId: string }) {
+    return prisma.building.findMany({
+      select: {
+        id: true,
+        nanoId: true,
+        name: true,
+      },
+
+      where: {
+        companyId,
+      },
+    });
+  }
 }
