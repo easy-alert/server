@@ -141,6 +141,8 @@ export async function listForBuildingReports(req: Request, res: Response) {
         type: MaintenancesPending[i].Maintenance.MaintenanceType?.name ?? null,
         inProgress: MaintenancesPending[i].inProgress,
 
+        activities: MaintenancesPending[i].activities ?? [],
+
         cost: hasReport ? MaintenancesPending[i].MaintenanceReport[0].cost : null,
 
         reportObservation: hasReport
