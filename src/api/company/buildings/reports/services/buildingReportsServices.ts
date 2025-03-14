@@ -174,6 +174,7 @@ export class BuildingReportsServices {
 
               images: {
                 select: {
+                  name: true,
                   url: true,
                 },
               },
