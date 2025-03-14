@@ -490,11 +490,9 @@ async function PDFService({
           ],
         },
         layout: 'noBorders',
-        marginTop: 0,
-        marginLeft: 40,
-        marginBottom: 20,
-        unbreakable: true,
         fillColor: '#E6E6E6',
+        unbreakable: true,
+        marginBottom: 10,
       },
     ];
 
@@ -539,8 +537,12 @@ async function PDFService({
 
         const imagesForPDF: Content = [];
 
-        for (let imageIndex = 0; imageIndex < Math.min(images.length, 4); imageIndex++) {
-          const { url } = images[imageIndex];
+        for (let imageIndex = 0; imageIndex < Math.min(images?.length ?? 0, 4); imageIndex++) {
+          const { url } = images?.[imageIndex] || {};
+
+          if (!url) {
+            continue;
+          }
 
           // Obter o stream da imagem do S3
           const imageStream = await getImageStreamFromS3(url);
@@ -558,34 +560,14 @@ async function PDFService({
 
         const activitiesImagesForPDF: Content = [];
 
-        for (
-          let activityIndex = 0;
-          activityIndex < Math.min(activities.length, 4);
-          activityIndex++
-        ) {
-          const { images } = activities[activityIndex];
-
-          if (images.length === 0) {
-            continue;
-          }
-
-          for (let imageIndex = 0; imageIndex < Math.min(images.length, 4); imageIndex++) {
-            const { url } = images[imageIndex];
-
-            // Obter o stream da imagem do S3
-            const imageStream = await getImageStreamFromS3(url);
-
-            // Processar a imagem com sharp e converter para base64
-            const base64Image = await processImageToBase64(imageStream);
-
+        activities?.forEach(({ images }) => {
+          images?.forEach(({ name, url }, index) => {
             activitiesImagesForPDF.push({
-              image: base64Image,
-              width: 50,
-              height: 50,
+              text: name ?? `Imagem-${index + 1}.jpeg`,
               link: url,
             });
-          }
-        }
+          });
+        });
 
         const tags: Content = [];
 
@@ -644,7 +626,7 @@ async function PDFService({
         }
 
         contentData.push({
-          stack: [
+          columns: [
             {
               stack: [
                 String(notificationDate.getDate()).padStart(2, '0'),
@@ -656,381 +638,407 @@ async function PDFService({
                     .substring(0, 3),
                 ),
               ],
+              width: 40,
               color: '#999999',
               fontSize: 14,
               bold: true,
             },
             {
-              table: {
-                widths: [1, '*'],
-                body: [
-                  [
-                    {
-                      text: '',
-                      fillColor: getStatusBackgroundColor(
-                        status === 'overdue' ? 'completed' : status,
-                      ),
-                      opacity: 1,
-                    },
-                    {
-                      table: {
-                        body: [tags],
-                      },
-                      layout: 'noBorders',
-                      marginLeft: 8,
-                      marginTop: 8,
-                    },
-                  ],
-                ],
-              },
-              layout: 'noBorders',
-              fillColor: '#E6E6E6',
-            },
-            {
-              table: {
-                widths: [1, '*', 200, '*'],
-                body: [
-                  [
-                    {
-                      text: '',
-                      fillColor: getStatusBackgroundColor(
-                        status === 'overdue' ? 'completed' : status,
-                      ),
-                    },
-                    {
-                      text: [{ text: 'Categoria: ', bold: true }, { text: categoryName }],
-                      marginLeft: 8,
-                    },
-                    {
-                      text: [
-                        { text: 'Notificação: ', bold: true },
-                        { text: dateFormatter(notificationDate) },
-                      ],
-                    },
-                    {
-                      text: [{ text: 'Responsável: ', bold: true }, { text: responsible }],
-                    },
-                  ],
-                  [
-                    {
-                      text: '',
-                      fillColor: getStatusBackgroundColor(
-                        status === 'overdue' ? 'completed' : status,
-                      ),
-                    },
-                    {
-                      text: [{ text: 'Elemento: ', bold: true }, { text: element }],
-                      marginLeft: 8,
-                    },
-                    {
-                      text: [
-                        { text: 'Conclusão: ', bold: true },
-                        { text: resolutionDate ? dateFormatter(resolutionDate) : '-' },
-                      ],
-                    },
-                    {
-                      text: [
-                        { text: 'Valor: ', bold: true },
+              stack: [
+                {
+                  table: {
+                    widths: [1, '*'],
+                    body: [
+                      [
                         {
-                          text: mask({
-                            type: 'BRL',
-                            value: String(cost || 0),
-                          }),
+                          text: '',
+                          fillColor: getStatusBackgroundColor(
+                            status === 'overdue' ? 'completed' : status,
+                          ),
+                          opacity: 1,
+                        },
+                        {
+                          table: {
+                            body: [tags],
+                          },
+                          layout: 'noBorders',
+                          marginLeft: 8,
+                          marginTop: 8,
                         },
                       ],
-                    },
-                  ],
-                ],
-              },
-              layout: 'noBorders',
-              fillColor: '#E6E6E6',
-            },
-            {
-              table: {
-                widths: [1, '*'],
-                body: [
-                  [
-                    {
-                      text: '',
-                      fillColor: getStatusBackgroundColor(
-                        status === 'overdue' ? 'completed' : status,
-                      ),
-                    },
-                    {
-                      text: [{ text: 'Atividade: ', bold: true }, { text: activity }],
-                      marginLeft: 8,
-                    },
-                  ],
-                  [
-                    {
-                      text: '',
-                      fillColor: getStatusBackgroundColor(
-                        status === 'overdue' ? 'completed' : status,
-                      ),
-                    },
-                    { text: '' },
-                  ],
-                ],
-              },
-              layout: 'noBorders',
-              fillColor: '#E6E6E6',
-            },
-
-            {
-              table: {
-                widths: [1, '*'],
-                body: [
-                  [
-                    {
-                      text: '',
-                      fillColor: getStatusBackgroundColor(
-                        status === 'overdue' ? 'completed' : status,
-                      ),
-                    },
-                    {
-                      table: {
-                        widths: [100, '*', '*', '*'],
-                        body: [
-                          [
-                            { text: 'Data', bold: true, fontSize: 12 },
-                            { text: 'Atividade', bold: true, fontSize: 12 },
-                            { text: 'Descrição', bold: true, fontSize: 12 },
-                            { text: 'Imagens', bold: true, fontSize: 12 },
+                    ],
+                  },
+                  layout: 'noBorders',
+                  fillColor: '#E6E6E6',
+                },
+                {
+                  table: {
+                    widths: [1, '*', 200, '*'],
+                    body: [
+                      [
+                        {
+                          text: '',
+                          fillColor: getStatusBackgroundColor(
+                            status === 'overdue' ? 'completed' : status,
+                          ),
+                        },
+                        {
+                          text: [{ text: 'Categoria: ', bold: true }, { text: categoryName }],
+                          marginLeft: 8,
+                        },
+                        {
+                          text: [
+                            { text: 'Notificação: ', bold: true },
+                            { text: dateFormatter(notificationDate) },
                           ],
-                          ...activities.map(({ title, content, createdAt }) => [
-                            { text: dateFormatter(createdAt) },
-                            { text: title },
-                            { text: content },
+                        },
+                        {
+                          text: [{ text: 'Responsável: ', bold: true }, { text: responsible }],
+                        },
+                      ],
+                      [
+                        {
+                          text: '',
+                          fillColor: getStatusBackgroundColor(
+                            status === 'overdue' ? 'completed' : status,
+                          ),
+                        },
+                        {
+                          text: [{ text: 'Elemento: ', bold: true }, { text: element }],
+                          marginLeft: 8,
+                        },
+                        {
+                          text: [
+                            { text: 'Conclusão: ', bold: true },
+                            { text: resolutionDate ? dateFormatter(resolutionDate) : '-' },
+                          ],
+                        },
+                        {
+                          text: [
+                            { text: 'Valor: ', bold: true },
                             {
-                              columns: activitiesImagesForPDF,
-                              columnGap: 4,
+                              text: mask({
+                                type: 'BRL',
+                                value: String(cost || 0),
+                              }),
                             },
-                          ]),
-                        ],
-                      },
-                      layout: 'lightHorizontalLines',
-                      marginLeft: 8,
-                    },
-                  ],
-                  [
-                    {
-                      text: '',
-                      fillColor: getStatusBackgroundColor(
-                        status === 'overdue' ? 'completed' : status,
-                      ),
-                    },
-                    {
-                      text: '',
-                    },
-                  ],
-                ],
-              },
-              layout: 'noBorders',
-              fillColor: '#E6E6E6',
-            },
-
-            {
-              table: {
-                widths: [1, '*'],
-                body: [
-                  [
-                    {
-                      text: '',
-                      fillColor: getStatusBackgroundColor(
-                        status === 'overdue' ? 'completed' : status,
-                      ),
-                    },
-                    {
-                      text: [{ text: `Anexos (${annexes.length || 0}): `, bold: true }],
-                      marginLeft: 8,
-                    },
-                  ],
-                  [
-                    {
-                      text: '',
-                      fillColor: getStatusBackgroundColor(
-                        status === 'overdue' ? 'completed' : status,
-                      ),
-                    },
-                    {
-                      columns: annexesForPDF,
-                      columnGap: 4,
-                      marginLeft: 8,
-                    },
-                  ],
-                  [
-                    {
-                      text: '',
-                      fillColor: getStatusBackgroundColor(
-                        status === 'overdue' ? 'completed' : status,
-                      ),
-                    },
-                    {
-                      text: '',
-                    },
-                  ],
-                  [
-                    {
-                      text: '',
-                      fillColor: getStatusBackgroundColor(
-                        status === 'overdue' ? 'completed' : status,
-                      ),
-                    },
-                    {
-                      text: [{ text: `Imagens (${images.length || 0}): `, bold: true }],
-                      marginLeft: 8,
-                    },
-                  ],
-                  [
-                    {
-                      text: '',
-                      fillColor: getStatusBackgroundColor(
-                        status === 'overdue' ? 'completed' : status,
-                      ),
-                    },
-                    {
-                      columns: imagesForPDF,
-                      columnGap: 4,
-                      marginLeft: 8,
-                    },
-                  ],
-                ],
-              },
-              layout: 'noBorders',
-              fillColor: '#E6E6E6',
+                          ],
+                        },
+                      ],
+                    ],
+                  },
+                  layout: 'noBorders',
+                  fillColor: '#E6E6E6',
+                },
+                {
+                  table: {
+                    widths: [1, '*'],
+                    body: [
+                      [
+                        {
+                          text: '',
+                          fillColor: getStatusBackgroundColor(
+                            status === 'overdue' ? 'completed' : status,
+                          ),
+                        },
+                        {
+                          text: [{ text: 'Atividade: ', bold: true }, { text: activity }],
+                          marginLeft: 8,
+                        },
+                      ],
+                      [
+                        {
+                          text: '',
+                          fillColor: getStatusBackgroundColor(
+                            status === 'overdue' ? 'completed' : status,
+                          ),
+                        },
+                        { text: '' },
+                      ],
+                    ],
+                  },
+                  layout: 'noBorders',
+                  fillColor: '#E6E6E6',
+                },
+              ],
             },
           ],
           unbreakable: true,
         });
 
-        // columns: [
-        //   {
-        //     stack: [
-        //       String(notificationDate.getDate()).padStart(2, '0'),
-        //       capitalizeFirstLetter(
-        //         new Date(notificationDate)
-        //           .toLocaleString('pt-br', {
-        //             weekday: 'long',
-        //           })
-        //           .substring(0, 3),
-        //       ),
-        //     ],
-        //     width: 40,
-        //     color: '#999999',
-        //     fontSize: 14,
-        //     bold: true,
-        //   },
-        //   {
-        //     table: {
-        //       widths: [1, '*', 100, '*'],
-        //       body: [
-        //         [
-        //           {
-        //             text: '',
-        //             fillColor: getStatusBackgroundColor(
-        //               status === 'overdue' ? 'completed' : status,
-        //             ),
-        //             opacity: 1,
-        //           },
-        //           {
-        //             table: {
-        //               body: [tags],
-        //             },
-        //             layout: 'noBorders',
-        //             marginLeft: 8,
-        //             marginTop: 8,
-        //           },
-        //           { text: '' },
-        //           { text: '' },
-        //         ],
-        //         [
-        //           {
-        //             text: '',
-        //             fillColor: getStatusBackgroundColor(
-        //               status === 'overdue' ? 'completed' : status,
-        //             ),
-        //           },
-        //           { text: '' },
-        //           { text: '' },
-        //           { text: '' },
-        //         ],
-        //         [
-        //           {
-        //             text: '',
-        //             fillColor: getStatusBackgroundColor(
-        //               status === 'overdue' ? 'completed' : status,
-        //             ),
-        //           },
-        //           {
-        //             text: [{ text: 'Categoria: ', bold: true }, { text: categoryName }],
-        //             marginLeft: 8,
-        //           },
-        //           {
-        //             text: [
-        //               { text: 'Notificação: ', bold: true },
-        //               { text: dateFormatter(notificationDate) },
-        //             ],
-        //           },
-        //           {
-        //             text: [{ text: 'Responsável: ', bold: true }, { text: responsible }],
-        //           },
-        //         ],
-        //         [
-        //           {
-        //             text: '',
-        //             fillColor: getStatusBackgroundColor(
-        //               status === 'overdue' ? 'completed' : status,
-        //             ),
-        //           },
-        //           {
-        //             text: [{ text: 'Elemento: ', bold: true }, { text: element }],
-        //             marginLeft: 8,
-        //           },
-        //           {
-        //             text: [
-        //               { text: 'Conclusão: ', bold: true },
-        //               { text: resolutionDate ? dateFormatter(resolutionDate) : '-' },
-        //             ],
-        //           },
-        //           {
-        //             text: [
-        //               { text: 'Valor: ', bold: true },
-        //               {
-        //                 text: mask({
-        //                   type: 'BRL',
-        //                   value: String(cost || 0),
-        //                 }),
-        //               },
-        //             ],
-        //           },
-        //         ],
-        //         [
-        //           {
-        //             text: '',
-        //             fillColor: getStatusBackgroundColor(
-        //               status === 'overdue' ? 'completed' : status,
-        //             ),
-        //           },
-        //           {
-        //             text: [{ text: 'Atividade: ', bold: true }, { text: activity }],
-        //             marginLeft: 8,
-        //           },
-        //           { text: '' },
-        //           { text: '' },
-        //         ],
-        //       ],
-        //     },
-        //     layout: 'noBorders',
-        //     fillColor: '#E6E6E6',
-        //   },
-        // ],
+        const lastContent = contentData.length - 1;
+
+        if (activities && activities.length > 0) {
+          (contentData[lastContent] as any).columns[1].stack.push({
+            table: {
+              widths: [1, '*'],
+              body: [
+                [
+                  {
+                    text: '',
+                    fillColor: getStatusBackgroundColor(
+                      status === 'overdue' ? 'completed' : status,
+                    ),
+                  },
+                  {
+                    table: {
+                      widths: [60, 200, 200, '*'],
+                      body: [
+                        [
+                          { text: 'Data', bold: true },
+                          { text: 'Atividade', bold: true },
+                          { text: 'Descrição', bold: true },
+                          { text: 'Anexos', bold: true },
+                        ],
+                        ...(activities ?? []).map(({ title, content, createdAt }) => [
+                          { text: dateFormatter(createdAt) },
+                          { text: title },
+                          { text: content },
+                          {
+                            stack: activitiesImagesForPDF,
+                          },
+                        ]),
+                      ],
+                    },
+                    layout: 'lightHorizontalLines',
+                    marginLeft: 8,
+                    marginRight: 8,
+                  },
+                ],
+                [
+                  {
+                    text: '',
+                    fillColor: getStatusBackgroundColor(
+                      status === 'overdue' ? 'completed' : status,
+                    ),
+                  },
+                  { text: '' },
+                ],
+              ],
+            },
+            layout: 'noBorders',
+            fillColor: '#E6E6E6',
+          });
+        }
+
+        if (annexes && annexes.length > 0) {
+          (contentData[lastContent] as any).columns[1].stack.push({
+            table: {
+              widths: [1, '*'],
+              body: [
+                [
+                  {
+                    text: '',
+                    fillColor: getStatusBackgroundColor(
+                      status === 'overdue' ? 'completed' : status,
+                    ),
+                  },
+                  {
+                    text: [{ text: `Anexos (${annexes.length || 0}): `, bold: true }],
+                    marginLeft: 8,
+                  },
+                ],
+                [
+                  {
+                    text: '',
+                    fillColor: getStatusBackgroundColor(
+                      status === 'overdue' ? 'completed' : status,
+                    ),
+                  },
+                  {
+                    columns: [
+                      {
+                        stack: annexesForPDF,
+                      },
+                    ],
+                    marginLeft: 8,
+                  },
+                ],
+                [
+                  {
+                    text: '',
+                    fillColor: getStatusBackgroundColor(
+                      status === 'overdue' ? 'completed' : status,
+                    ),
+                  },
+                  { text: '' },
+                ],
+              ],
+            },
+            layout: 'noBorders',
+            fillColor: '#E6E6E6',
+          });
+        }
+
+        if (images && images.length > 0) {
+          (contentData[lastContent] as any).columns[1].stack.push({
+            table: {
+              widths: [1, '*'],
+              body: [
+                [
+                  {
+                    text: '',
+                    fillColor: getStatusBackgroundColor(
+                      status === 'overdue' ? 'completed' : status,
+                    ),
+                  },
+                  {
+                    text: [{ text: `Imagens (${images.length || 0}): `, bold: true }],
+                    marginLeft: 8,
+                  },
+                ],
+                [
+                  {
+                    text: '',
+                    fillColor: getStatusBackgroundColor(
+                      status === 'overdue' ? 'completed' : status,
+                    ),
+                  },
+                  {
+                    columns: imagesForPDF,
+                    columnGap: 4,
+                    marginLeft: 8,
+                  },
+                ],
+                [
+                  {
+                    text: '',
+                    fillColor: getStatusBackgroundColor(
+                      status === 'overdue' ? 'completed' : status,
+                    ),
+                  },
+                  { text: '' },
+                ],
+              ],
+            },
+            layout: 'noBorders',
+            fillColor: '#E6E6E6',
+          });
+        }
       }
     }
 
     const docDefinitions: TDocumentDefinitions = {
-      pageOrientation: 'landscape',
       defaultStyle: { font: 'Arial', lineHeight: 1.1, fontSize: 10 },
-      pageMargins: [30, 110, 30, 30],
+      pageOrientation: 'landscape',
+      pageMargins: [30, 100, 30, 30],
+      header() {
+        return {
+          stack: [
+            {
+              table: {
+                widths: ['*', 'auto'],
+                body: [
+                  [
+                    {
+                      text: `Relatório de Manutenções `,
+                      fontSize: 18,
+                      bold: true,
+                      absolutePosition: { x: 320, y: 10 },
+                    },
+                    {
+                      image: path.join(folderName, headerLogo),
+                      width: 64,
+                      height: 20,
+                      alignment: 'right',
+                    },
+                  ],
+                ],
+              },
+              margin: [30, 5, 30, 5],
+              layout: 'noBorders',
+            },
+            {
+              table: {
+                widths: ['*', 'auto'],
+                body: [
+                  [
+                    {
+                      text: [
+                        { text: 'Edificação: ', bold: true },
+                        { text: query.buildingNames || 'Todas' },
+                      ],
+                      fontSize: 12,
+                      marginLeft: 8,
+                    },
+                    {
+                      text: [
+                        { text: 'Emissão: ', bold: true },
+                        { text: `${new Date().toLocaleString('pt-br')}` },
+                      ],
+                      fontSize: 12,
+                      alignment: 'right',
+                      marginRight: 8,
+                    },
+                  ],
+                  [
+                    {
+                      text: [
+                        { text: 'Categoria: ', bold: true },
+                        { text: query.categoryNames || 'Todas' },
+                      ],
+                      fontSize: 12,
+                      marginLeft: 8,
+                    },
+                    {
+                      text: [
+                        {
+                          text: `Período de ${
+                            queryFilter.filterBy === 'notificationDate'
+                              ? 'notificação'
+                              : 'vencimento'
+                          }: `,
+                          bold: true,
+                        },
+                        {
+                          text: `${dateFormatter(
+                            setToUTCMidnight(new Date(req.query.startDate as string)),
+                          )} a ${dateFormatter(
+                            setToUTCMidnight(new Date(req.query.endDate as string)),
+                          )}`,
+                        },
+                      ],
+                      fontSize: 12,
+                      marginRight: 8,
+                    },
+                  ],
+                  [
+                    {
+                      text: [
+                        { text: 'Status: ', bold: true },
+                        {
+                          text: query.maintenanceStatusNames
+                            ? query.maintenanceStatusNames
+                                .split(',')
+                                .map(
+                                  (value: string, i: number) =>
+                                    `${getSingularStatusNameforPdf(value)}${
+                                      query.maintenanceStatusNames.split(',').length === i + 1
+                                        ? ''
+                                        : ','
+                                    }`,
+                                )
+                            : 'Todos',
+                        },
+                      ],
+                      fontSize: 12,
+                      marginLeft: 8,
+                    },
+                    { text: '' },
+                  ],
+                ],
+              },
+              fillColor: '#B21D1D',
+              color: '#FFFFFF',
+              margin: [30, 0],
+              layout: 'noBorders',
+            },
+          ],
+        };
+      },
+
+      content: [contentData],
+
       footer(currentPage, totalPages) {
         return {
           columns: [
@@ -1038,112 +1046,26 @@ async function PDFService({
               image: path.join(folderName, footerLogo),
               alignment: 'left',
               marginLeft: 30,
-              marginBottom: 40,
-              width: 92,
+              width: 64,
               height: 20,
             },
             {
-              text: `Página ${currentPage} de ${totalPages}`,
-              alignment: 'right',
-              marginRight: 30,
-              marginBottom: 40,
+              stack: [
+                {
+                  text: `Página ${currentPage} de ${totalPages}`,
+                  alignment: 'right',
+                  marginRight: 30,
+                },
+                {
+                  text: [{ text: 'ID: ', bold: true }, { text: pdfId }],
+                  alignment: 'right',
+                  marginRight: 30,
+                },
+              ],
             },
           ],
         };
       },
-      header() {
-        return {
-          columns: [
-            {
-              image: path.join(folderName, headerLogo),
-              width: 60,
-            },
-            { text: ' ', width: 8 },
-            [
-              {
-                text: [
-                  { text: 'Edificação:', bold: true },
-                  { text: ' ' },
-                  { text: query.buildingNames || 'Todas' },
-                ],
-                fontSize: 12,
-              },
-              {
-                text: [
-                  { text: 'Categoria:', bold: true },
-                  { text: ' ' },
-                  { text: query.categoryNames || 'Todas' },
-                ],
-                fontSize: 12,
-              },
-              {
-                text: [
-                  { text: 'Status:', bold: true },
-                  { text: ' ' },
-                  {
-                    text: query.maintenanceStatusNames
-                      ? query.maintenanceStatusNames
-                          .split(',')
-                          .map(
-                            (value: string, i: number) =>
-                              `${getSingularStatusNameforPdf(value)}${
-                                query.maintenanceStatusNames.split(',').length === i + 1 ? '' : ','
-                              }`,
-                          )
-                      : 'Todos',
-                  },
-                ],
-                fontSize: 12,
-              },
-              {
-                text: [
-                  {
-                    text: `Período de ${
-                      queryFilter.filterBy === 'notificationDate' ? 'notificação' : 'vencimento'
-                    }:`,
-                    bold: true,
-                  },
-                  { text: ' ' },
-                  {
-                    text: `${dateFormatter(
-                      setToUTCMidnight(new Date(req.query.startDate as string)),
-                    )} a ${dateFormatter(setToUTCMidnight(new Date(req.query.endDate as string)))}`,
-                  },
-                ],
-                fontSize: 12,
-              },
-            ],
-            [
-              {
-                text: [
-                  { text: 'ID:', bold: true },
-                  { text: ' ' },
-                  {
-                    text: pdfId,
-                  },
-                ],
-                alignment: 'right',
-                fontSize: 12,
-              },
-
-              {
-                text: [
-                  { text: 'Emissão:', bold: true },
-                  { text: ' ' },
-                  {
-                    text: `${new Date().toLocaleString('pt-br')}`,
-                  },
-                ],
-                alignment: 'right',
-                fontSize: 12,
-              },
-            ],
-          ],
-          margin: 30,
-        };
-      },
-
-      content: [contentData],
     };
 
     const pdfDoc = printer.createPdfKitDocument(docDefinitions);
