@@ -42,6 +42,17 @@ export interface IMaintenancesData {
   isFuture?: boolean;
   dueDate: Date;
 
+  activities?: {
+    title: string;
+    content: string | null;
+    type: string;
+    createdAt: Date;
+    images?: {
+      name: string;
+      url: string;
+    }[];
+  }[];
+
   images: {
     url: string;
   }[];
