@@ -46,7 +46,7 @@ export async function findManyTicketsController(req: Request, res: Response) {
 
   let buildingName = '';
 
-  const companyIdFilter = Company ? Company.id : undefined;
+  const companyIdFilter = Company ? Company?.id : undefined;
 
   const buildingsIdFilter = !buildingsId ? permittedBuildingsIds : buildingsId.split(',');
   const placeIdFilter =
