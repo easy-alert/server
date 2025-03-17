@@ -608,10 +608,11 @@ export class SeedServices {
             id: ownerUser.userId,
           },
           data: {
+            emailIsConfirmed: true,
             phoneNumber: company.contactNumber,
+            phoneNumberIsConfirmed: true,
           },
         });
-
       } catch (error) {
         console.error('Error updating Owner User in Company ', company!.name);
         continue;
@@ -622,6 +623,81 @@ export class SeedServices {
 
     console.log('Owner Users updated.');
   }
+
+  async ownerBuildingPermissions() {
+    console.log('\n\nstarting Owner Building Permissions creation ...');
+
+    const ownerUsers = await prisma.userCompanies.findMany({
+      where: {
+        owner: true,
+      },
+    });
+
+    for (const ownerUser of ownerUsers) {
+      console.log('Owner User ', ownerUser.userId);
+
+      const company = await prisma.company.findUnique({
+        where: {
+          id: ownerUser.companyId,
+        },
+      });
+
+      if (!company) {
+        console.error('Company not found for Owner User ', ownerUser.userId);
+        continue;
+      }
+
+      console.log('Company ', company.name);
+
+      const companyBuildings = await prisma.building.findMany({
+        where: {
+          companyId: company.id,
+        },
+      });
+
+      if (!companyBuildings.length) {
+        console.error('Company Buildings not found for Company ', company!.name);
+        continue;
+      }
+
+      try {
+        for (const building of companyBuildings) {
+          const buildingMainContact = await prisma.userBuildingsPermissions.findFirst({
+            where: {
+              buildingId: building.id,
+              isMainContact: true,
+            },
+          });
+
+          await prisma.userBuildingsPermissions.upsert({
+            create: {
+              userId: ownerUser.userId,
+              buildingId: building.id,
+              isMainContact: !buildingMainContact,
+              showContact: true,
+            },
+            update: {
+              userId: ownerUser.userId,
+              buildingId: building.id,
+              isMainContact: !buildingMainContact,
+              showContact: true,
+            },
+            where: {
+              userId_buildingId: {
+                userId: ownerUser.userId,
+                buildingId: building.id,
+              },
+            },
+          });
+
+          console.log('Owner Building Permissions created in Building ', building.name);
+        }
+      } catch (error) {
+        console.error('Error creating Owner Building Permissions in Company ', company!.name);
+        continue;
+      }
+    }
+
+    console.log('Owner Building Permissions created.');
+  }
 }
-
-
