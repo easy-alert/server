@@ -20,16 +20,21 @@ interface IBody {
 export async function createSupplier(req: Request, res: Response) {
   const { city, image, link, name, state, email, phone, cnpj, categoriesIds }: IBody = req.body;
 
+  if (email) {
+    checkValues([{ label: 'Email', type: 'email', value: email, required: false }]);
+  }
+
+  if (phone) {
+    checkValues([{ label: 'Telefone/Celular', type: 'string', value: phone, required: false }]);
+  }
+
   checkValues([
     { label: 'Nome', type: 'string', value: name },
     { label: 'Imagem', type: 'string', value: image, required: false },
     { label: 'Cidade', type: 'string', value: city },
     { label: 'Site', type: 'string', value: link, required: false },
     { label: 'Estado', type: 'string', value: state },
-    { label: 'Telefone/Celular', type: 'string', value: phone, required: false },
-    { label: 'Email', type: 'email', value: email, required: false },
     { label: 'CNPJ', type: 'CNPJ', value: cnpj, required: false },
-
     { label: 'Categorias', type: 'array', value: categoriesIds },
   ]);
 
