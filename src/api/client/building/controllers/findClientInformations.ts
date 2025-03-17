@@ -27,5 +27,5 @@ export async function findClientInformations(req: Request, res: Response) {
     buildingId: building ? building.id : buildingId,
   });
 
-  return res.status(200).json(buildingContacts);
+  return res.status(200).json({ buildingName: building.name, buildingContacts });
 }

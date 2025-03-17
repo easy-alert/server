@@ -710,39 +710,23 @@ export class ClientBuildingServices {
   }
 
   async findContactInformation({ buildingId }: { buildingId: string }) {
-    const buildingContacts = await prisma.building.findFirst({
+    const buildingContacts = await prisma.userBuildingsPermissions.findMany({
       select: {
-        name: true,
-
-        UserBuildingsPermissions: {
+        User: {
           select: {
-            showContact: true,
-
-            User: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                phoneNumber: true,
-                role: true,
-              },
-            },
+            id: true,
+            name: true,
+            email: true,
+            phoneNumber: true,
+            role: true,
           },
         },
       },
 
       where: {
-        UserBuildingsPermissions: {
-          some: {
-            buildingId,
+        buildingId,
 
-            showContact: true,
-          },
-        },
-
-        Company: {
-          isBlocked: false,
-        },
+        showContact: true,
       },
     });
 

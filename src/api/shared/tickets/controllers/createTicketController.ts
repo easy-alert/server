@@ -1,6 +1,6 @@
 import { Response, Request } from 'express';
 import { ticketServices } from '../services/ticketServices';
-import { checkValues } from '../../../../utils/newValidator';
+import { checkValues, needExist } from '../../../../utils/newValidator';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
 
 interface IBody {
@@ -39,6 +39,8 @@ export async function createTicketController(req: Request, res: Response) {
 
   const buildingSelected = buildingId || buildingNanoId;
 
+  needExist([{ label: 'Edificação', variable: buildingSelected }]);
+
   checkValues([
     { label: 'Edificação', type: 'string', value: buildingSelected },
     { label: 'Descrição', type: 'string', value: description },
@@ -69,19 +71,19 @@ export async function createTicketController(req: Request, res: Response) {
     building = await buildingServices.findByNanoId({
       buildingNanoId: buildingSelected,
     });
-  } else if (buildingSelected) {
-    building = await buildingServices.findById({ buildingId: buildingSelected });
+  } else {
+    building = await buildingServices.findById({ buildingId: buildingSelected! });
   }
 
   checkValues([{ label: 'Edificação', type: 'string', value: building?.id }]);
 
-  await ticketServices.checkAccess({ buildingId: building?.id! });
+  await ticketServices.checkAccess({ buildingId: building?.id });
 
   const lowerCaseEmail = residentEmail ? residentEmail?.toLowerCase() : null;
 
   const ticket = await ticketServices.create({
     data: {
-      buildingId: building?.id!,
+      buildingId: building?.id,
       residentName,
       residentApartment,
       residentEmail: lowerCaseEmail,
@@ -106,6 +108,7 @@ export async function createTicketController(req: Request, res: Response) {
   });
 
   ticketServices.sendCreatedTicketEmails({
+    buildingId: building?.id,
     ticketIds: [ticket.id],
   });
 

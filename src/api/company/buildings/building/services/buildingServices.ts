@@ -50,6 +50,7 @@ export class BuildingServices {
         Company: true,
         UserBuildingsPermissions: true,
       },
+
       where: {
         id: buildingId,
       },
@@ -145,6 +146,7 @@ export class BuildingServices {
     const building = await prisma.building.findFirst({
       include: {
         Company: { select: { ticketInfo: true, ticketType: true, canAccessTickets: true } },
+
         Banners: {
           select: {
             originalName: true,
@@ -152,9 +154,11 @@ export class BuildingServices {
             url: true,
             id: true,
           },
+
           orderBy: { createdAt: 'asc' },
         },
       },
+
       where: {
         nanoId: buildingNanoId,
 
