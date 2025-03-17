@@ -309,22 +309,60 @@ class TicketServices {
     });
   }
 
-  async sendCreatedTicketEmails({ ticketIds }: { ticketIds: string[] }) {
-    const emails = await prisma.ticket.findMany({
+  async sendCreatedTicketEmails({
+    buildingId,
+    ticketIds,
+  }: {
+    buildingId: string;
+    ticketIds: string[];
+  }) {
+    const ticketsEmails = await prisma.ticket.findMany({
       select: {
         id: true,
         residentEmail: true,
         ticketNumber: true,
         residentName: true,
-        building: { select: { name: true, NotificationsConfigurations: true } },
+
+        building: {
+          select: {
+            name: true,
+
+            UserBuildingsPermissions: {
+              select: {
+                User: {
+                  select: {
+                    name: true,
+                    email: true,
+                    emailIsConfirmed: true,
+                  },
+                },
+              },
+
+              where: {
+                buildingId,
+
+                User: {
+                  Permissions: {
+                    some: {
+                      Permission: {
+                        name: {
+                          in: ['admin:company', 'access:tickets'],
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
+
       where: { id: { in: ticketIds } },
     });
 
-    const filteredEmails = emails.filter((e) => e.residentEmail);
-
-    for (let index = 0; index < filteredEmails.length; index++) {
-      const { id, residentEmail, ticketNumber, residentName, building } = filteredEmails[index];
+    for (let index = 0; index < ticketsEmails.length; index++) {
+      const { id, residentEmail, ticketNumber, residentName, building } = ticketsEmails[index];
 
       // Teoricamente o filter ali de cima já era pra validar o email, mas não quer.
       if (residentEmail) {
@@ -339,23 +377,29 @@ class TicketServices {
 
         await sleep(6000);
       }
+
+      if (building.UserBuildingsPermissions.length) {
+        console.log(
+          '🚀 ~ TicketServices ~ building.UserBuildingsPermissions:',
+          building.UserBuildingsPermissions,
+        );
+
+        building.UserBuildingsPermissions.forEach(async ({ User }) => {
+          if (User.email && User.emailIsConfirmed) {
+            emailTransporter.sendTicketCreated({
+              toEmail: User.email,
+              buildingName: building.name,
+              responsibleName: User.name,
+              ticketNumber,
+              toWhom: 'responsible',
+              link: `${process.env.BASE_COMPANY_URL}/tickets?ticketId=${id}`,
+            });
+
+            await sleep(6000);
+          }
+        });
+      }
     }
-
-    emails.forEach(async (email) => {
-      email.building.NotificationsConfigurations.forEach(async (config) => {
-        if (config.email && config.emailIsConfirmed) {
-          emailTransporter.sendTicketCreated({
-            toEmail: config.email,
-            buildingName: email.building.name,
-            responsibleName: config.name,
-            ticketNumber: email.ticketNumber,
-            toWhom: 'responsible',
-          });
-
-          await sleep(6000);
-        }
-      });
-    });
   }
 
   async sendStatusChangedEmails({ ticketIds }: { ticketIds: string[] }) {
