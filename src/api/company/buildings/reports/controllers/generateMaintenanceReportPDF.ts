@@ -559,7 +559,7 @@ async function PDFService({
           });
         }
 
-        const activitiesImagesForPDF: Content = [];
+        // const activitiesImagesForPDF: Content = [];
 
         // activities?.forEach(({ images }) => {
         //   images?.forEach(({ name, url }, index) => {
