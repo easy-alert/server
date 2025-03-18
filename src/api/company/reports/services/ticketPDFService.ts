@@ -178,9 +178,9 @@ export async function ticketPDFService({
     const ticketsForPdf = separateByMonth(dataForPDF.tickets);
 
     const fonts = {
-      DMSans: {
-        normal: 'fonts/Arial/DMSansRegular.ttf',
-        bold: 'fonts/Arial/DMSansMedium.ttf',
+      Arial: {
+        normal: 'fonts/Arial/Arial.ttf',
+        bold: 'fonts/Arial/ArialMedium.ttf',
       },
     };
 
@@ -257,11 +257,9 @@ export async function ticketPDFService({
           ],
         },
         layout: 'noBorders',
-        marginTop: 0,
-        marginLeft: 40,
-        marginBottom: 20,
-        unbreakable: true,
         fillColor: '#E6E6E6',
+        unbreakable: true,
+        marginLeft: 32,
       },
     ];
 
@@ -294,18 +292,28 @@ export async function ticketPDFService({
         }
 
         const imagesForPDF: Content = [];
+        const annexesForPDF: Content = [];
 
         await Promise.all(
-          images.slice(0, 4).map(async ({ url }) => {
-            const imageStream = await getImageStreamFromS3(url);
-            const base64Image = await processImageToBase64(imageStream);
+          images.map(async ({ name, url }, index) => {
+            if (!url) return;
 
-            imagesForPDF.push({
-              image: base64Image,
-              width: 50,
-              height: 50,
-              link: url,
-            });
+            if (!name.includes('jpeg') && !name.includes('jpg') && !name.includes('png')) {
+              annexesForPDF.push({
+                text: `${name}${images.length === index + 1 ? '.' : ', '}`,
+                link: url,
+              });
+            } else {
+              const imageStream = await getImageStreamFromS3(url);
+              const base64Image = await processImageToBase64(imageStream);
+
+              imagesForPDF.push({
+                image: base64Image,
+                width: 50,
+                height: 50,
+                link: url,
+              });
+            }
           }),
         );
 
@@ -358,105 +366,299 @@ export async function ticketPDFService({
               bold: true,
             },
             {
-              table: {
-                widths: [1, '*', 'auto', '*'],
-                body: [
-                  [
-                    {
-                      text: '',
-                      fillColor: status.backgroundColor,
-                      opacity: 1,
-                    },
-                    {
-                      table: {
-                        body: [tags],
-                      },
-                      layout: 'noBorders',
-                      marginLeft: 8,
-                      marginTop: 8,
-                    },
-                    { text: '' },
-                    { text: '' },
-                  ],
-                  [
-                    {
-                      text: '',
-                      fillColor: status.backgroundColor,
-                    },
-                    { text: '' },
-                    { text: '' },
-                    { text: '' },
-                  ],
-                  [
-                    {
-                      text: '',
-                      fillColor: status.backgroundColor,
-                    },
-                    {
-                      text: [{ text: 'Morador: ', bold: true }, { text: residentName }],
-                      marginLeft: 8,
-                    },
-                    {
-                      text: [{ text: 'Descrição: ', bold: true }, { text: description }],
-                      marginLeft: 8,
-                    },
-                    {
-                      text: `Imagens (${images.length || 0}): `,
-                      marginLeft: 8,
-                      bold: true,
-                    },
-                  ],
-                  [
-                    {
-                      text: '',
-                      fillColor: status.backgroundColor,
-                    },
-                    {
-                      text: [{ text: 'Apartamento: ', bold: true }, { text: residentApartment }],
-                      marginLeft: 8,
-                    },
-                    {
-                      text: [{ text: 'Local: ', bold: true }, { text: place.label }],
-                      marginLeft: 8,
-                    },
-                    {
-                      columns: imagesForPDF,
-                      marginLeft: 8,
-                      columnGap: 8,
-                    },
-                  ],
-                  [
-                    {
-                      text: '',
-                      fillColor: status.backgroundColor,
-                    },
-                    {
-                      text: [{ text: 'E-mail: ', bold: true }, { text: residentEmail }],
-                      marginLeft: 8,
-                    },
-                    {
-                      text: '',
-                    },
-                    {
-                      text: '',
-                    },
-                  ],
-                ],
-              },
-              layout: 'noBorders',
-              fillColor: '#E6E6E6',
+              stack: [
+                {
+                  table: {
+                    widths: [1, '*'],
+                    body: [
+                      [
+                        {
+                          text: '',
+                          fillColor: status.backgroundColor,
+                          opacity: 1,
+                        },
+                        {
+                          table: {
+                            body: [tags],
+                          },
+                          layout: 'noBorders',
+                          marginLeft: 8,
+                          marginTop: 8,
+                        },
+                      ],
+                    ],
+                  },
+                  layout: 'noBorders',
+                  fillColor: '#E6E6E6',
+                },
+                {
+                  table: {
+                    widths: [1, '*', '*'],
+                    body: [
+                      [
+                        {
+                          text: '',
+                          fillColor: status.backgroundColor,
+                        },
+                        {
+                          text: [{ text: 'Local: ', bold: true }, { text: place.label }],
+                          marginLeft: 8,
+                        },
+                        {
+                          text: [{ text: 'Morador: ', bold: true }, { text: residentName }],
+                        },
+                      ],
+                      [
+                        {
+                          text: '',
+                          fillColor: status.backgroundColor,
+                        },
+                        {
+                          text: [
+                            { text: 'Apartamento: ', bold: true },
+                            { text: residentApartment },
+                          ],
+                          marginLeft: 8,
+                        },
+                        {
+                          text: [{ text: 'E-mail: ', bold: true }, { text: residentEmail }],
+                        },
+                      ],
+                    ],
+                  },
+                  layout: 'noBorders',
+                  fillColor: '#E6E6E6',
+                },
+                {
+                  table: {
+                    widths: [1, '*'],
+                    body: [
+                      [
+                        {
+                          text: '',
+                          fillColor: status.backgroundColor,
+                        },
+                        {
+                          text: [{ text: 'Descrição: ', bold: true }, { text: description }],
+                          marginLeft: 8,
+                        },
+                      ],
+                      [
+                        {
+                          text: '',
+                          fillColor: status.backgroundColor,
+                        },
+                        { text: '' },
+                      ],
+                    ],
+                  },
+                  layout: 'noBorders',
+                  fillColor: '#E6E6E6',
+                },
+              ],
             },
           ],
           unbreakable: true,
         });
+
+        const lastContent = contentData.length - 1;
+
+        if (annexesForPDF && annexesForPDF.length > 0) {
+          (contentData[lastContent] as any).columns[1].stack.push({
+            table: {
+              widths: [1, '*'],
+              body: [
+                [
+                  {
+                    text: '',
+                    fillColor: status.backgroundColor,
+                    opacity: 1,
+                  },
+                  {
+                    text: [{ text: `Anexos (${annexesForPDF.length || 0}): `, bold: true }],
+                    marginLeft: 8,
+                  },
+                ],
+                [
+                  {
+                    text: '',
+                    fillColor: status.backgroundColor,
+                    opacity: 1,
+                  },
+                  {
+                    columns: [
+                      {
+                        stack: annexesForPDF,
+                      },
+                    ],
+                    marginLeft: 8,
+                  },
+                ],
+                [
+                  {
+                    text: '',
+                    fillColor: status.backgroundColor,
+                    opacity: 1,
+                  },
+                  { text: '' },
+                ],
+              ],
+            },
+            layout: 'noBorders',
+            fillColor: '#E6E6E6',
+          });
+        }
+
+        if (imagesForPDF && imagesForPDF.length > 0) {
+          (contentData[lastContent] as any).columns[1].stack.push({
+            table: {
+              widths: [1, '*'],
+              body: [
+                [
+                  {
+                    text: '',
+                    fillColor: status.backgroundColor,
+                    opacity: 1,
+                  },
+                  {
+                    text: [{ text: `Imagens (${imagesForPDF.length || 0}): `, bold: true }],
+                    marginLeft: 8,
+                  },
+                ],
+                [
+                  {
+                    text: '',
+                    fillColor: status.backgroundColor,
+                    opacity: 1,
+                  },
+                  {
+                    columns: imagesForPDF,
+                    columnGap: 4,
+                    marginLeft: 8,
+                  },
+                ],
+                [
+                  {
+                    text: '',
+                    fillColor: status.backgroundColor,
+                    opacity: 1,
+                  },
+                  { text: '' },
+                ],
+              ],
+            },
+            layout: 'noBorders',
+            fillColor: '#E6E6E6',
+          });
+        }
       }
     }
 
     const docDefinitions: TDocumentDefinitions = {
+      defaultStyle: { font: 'Arial', lineHeight: 1.1, fontSize: 10 },
       pageOrientation: 'landscape',
       pageSize: 'A4',
-      defaultStyle: { font: 'DMSans', lineHeight: 1.1, fontSize: 10 },
-      pageMargins: [30, 110, 30, 30],
+      pageMargins: [30, 100, 30, 30],
+
+      header() {
+        return {
+          stack: [
+            {
+              text: 'Relatório de Chamados',
+              fontSize: 20,
+              bold: true,
+              alignment: 'center',
+              marginTop: 4,
+              marginBottom: 4,
+            },
+            {
+              columns: [
+                {
+                  image: path.join(folderName, headerLogo),
+                  width: 64,
+                  height: 64,
+                  fit: [64, 64],
+                  absolutePosition: { x: 64, y: 46 },
+                },
+                {
+                  table: {
+                    widths: ['*', 'auto'],
+                    body: [
+                      [
+                        {
+                          text: [
+                            { text: 'Edificação: ', bold: true },
+                            { text: filterOptions.buildingsNames },
+                          ],
+                          fontSize: 12,
+                          marginLeft: 8,
+                        },
+                        {
+                          text: [
+                            { text: 'Período: ', bold: true },
+                            { text: filterOptions.interval },
+                          ],
+                          fontSize: 12,
+                          alignment: 'right',
+                          marginRight: 8,
+                        },
+                      ],
+                      [
+                        {
+                          text: [
+                            { text: 'Local: ', bold: true },
+                            { text: filterOptions.placesNames },
+                          ],
+                          fontSize: 12,
+                          marginLeft: 8,
+                        },
+                        {
+                          text: [
+                            { text: 'Emissão: ', bold: true },
+                            { text: `${new Date().toLocaleString('pt-br')}` },
+                          ],
+                          fontSize: 12,
+                          alignment: 'right',
+                          marginRight: 8,
+                        },
+                      ],
+                      [
+                        {
+                          text: [
+                            { text: 'Tipo de serviço: ', bold: true },
+                            { text: filterOptions.serviceTypesNames },
+                          ],
+                          fontSize: 12,
+                          marginLeft: 8,
+                        },
+                        { text: ' ' },
+                      ],
+                      [
+                        {
+                          text: [
+                            { text: 'Status: ', bold: true },
+                            { text: filterOptions.statusNames },
+                          ],
+                          fontSize: 12,
+                          marginLeft: 8,
+                        },
+                        { text: ' ' },
+                      ],
+                    ],
+                  },
+                  fillColor: '#B21D1D',
+                  color: '#FFFFFF',
+                  margin: [70, 0, 30, 0],
+                  layout: 'noBorders',
+                },
+              ],
+            },
+          ],
+        };
+      },
+
+      content: [contentData],
+
       footer(currentPage, totalPages) {
         return {
           columns: [
@@ -464,108 +666,26 @@ export async function ticketPDFService({
               image: path.join(folderName, footerLogo),
               alignment: 'left',
               marginLeft: 30,
-              marginBottom: 40,
-              width: 92,
+              width: 64,
               height: 20,
             },
             {
-              text: `Página ${currentPage} de ${totalPages}`,
-              alignment: 'right',
-              marginRight: 30,
-              marginBottom: 40,
+              stack: [
+                {
+                  text: `Página ${currentPage} de ${totalPages}`,
+                  alignment: 'right',
+                  marginRight: 30,
+                },
+                {
+                  text: [{ text: 'ID: ', bold: true }, { text: reportId }],
+                  alignment: 'right',
+                  marginRight: 30,
+                },
+              ],
             },
           ],
         };
       },
-      header() {
-        return {
-          columns: [
-            {
-              image: path.join(folderName, headerLogo),
-              width: 60,
-            },
-            { text: ' ', width: 8 },
-            [
-              {
-                text: [
-                  { text: 'Edificação:', bold: true },
-                  { text: ' ' },
-                  { text: filterOptions.buildingsNames },
-                ],
-                fontSize: 12,
-              },
-              {
-                text: [
-                  { text: 'Local:', bold: true },
-                  { text: ' ' },
-                  { text: filterOptions.placesNames },
-                ],
-                fontSize: 12,
-              },
-              {
-                text: [
-                  { text: 'Tipo de serviço:', bold: true },
-                  { text: ' ' },
-                  { text: filterOptions.serviceTypesNames },
-                ],
-                fontSize: 12,
-              },
-              {
-                text: [
-                  { text: 'Status:', bold: true },
-                  { text: ' ' },
-                  {
-                    text: filterOptions.statusNames,
-                  },
-                ],
-                fontSize: 12,
-              },
-            ],
-            [
-              {
-                text: [
-                  { text: 'ID:', bold: true },
-                  { text: ' ' },
-                  {
-                    text: reportId,
-                  },
-                ],
-                alignment: 'right',
-                fontSize: 12,
-              },
-              {
-                text: [
-                  {
-                    text: 'Período:',
-                    bold: true,
-                  },
-                  { text: ' ' },
-                  {
-                    text: filterOptions.interval,
-                  },
-                ],
-                alignment: 'right',
-                fontSize: 12,
-              },
-
-              {
-                text: [
-                  { text: 'Emissão:', bold: true },
-                  { text: ' ' },
-                  {
-                    text: `${new Date().toLocaleString('pt-br')}`,
-                  },
-                ],
-                alignment: 'right',
-                fontSize: 12,
-              },
-            ],
-          ],
-          margin: 30,
-        };
-      },
-
-      content: [contentData],
     };
 
     const pdfDoc = printer.createPdfKitDocument(docDefinitions);
