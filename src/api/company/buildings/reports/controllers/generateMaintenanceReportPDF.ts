@@ -24,6 +24,7 @@ import { sendErrorToServerLog } from '../../../../../utils/messages/sendErrorToS
 import { buildingServices } from '../../building/services/buildingServices';
 import { IInterval } from './listForBuildingReports';
 import { SharedCalendarServices } from '../../../../shared/calendar/services/SharedCalendarServices';
+import { dateTimeFormatter } from '../../../../../utils/dateTime/dateTimeFormatter';
 
 // CLASS
 const buildingReportsServices = new BuildingReportsServices();
@@ -491,7 +492,7 @@ async function PDFService({
         },
         layout: 'noBorders',
         fillColor: '#E6E6E6',
-        unbreakable: true,
+        unbreakable: false,
         marginBottom: 10,
       },
     ];
@@ -537,7 +538,7 @@ async function PDFService({
 
         const imagesForPDF: Content = [];
 
-        for (let imageIndex = 0; imageIndex < Math.min(images?.length ?? 0, 4); imageIndex++) {
+        for (let imageIndex = 0; imageIndex < images?.length; imageIndex++) {
           const { url } = images?.[imageIndex] || {};
 
           if (!url) {
@@ -558,16 +559,16 @@ async function PDFService({
           });
         }
 
-        const activitiesImagesForPDF: Content = [];
+        // const activitiesImagesForPDF: Content = [];
 
-        activities?.forEach(({ images }) => {
-          images?.forEach(({ name, url }, index) => {
-            activitiesImagesForPDF.push({
-              text: name ?? `Imagem-${index + 1}.jpeg`,
-              link: url,
-            });
-          });
-        });
+        // activities?.forEach(({ images }) => {
+        //   images?.forEach(({ name, url }, index) => {
+        //     activitiesImagesForPDF.push({
+        //       text: name ?? `Imagem-${index + 1}.jpeg`,
+        //       link: url,
+        //     });
+        //   });
+        // });
 
         const tags: Content = [];
 
@@ -763,7 +764,7 @@ async function PDFService({
               ],
             },
           ],
-          unbreakable: true,
+          unbreakable: false,
         });
 
         const lastContent = contentData.length - 1;
@@ -782,21 +783,27 @@ async function PDFService({
                   },
                   {
                     table: {
-                      widths: [60, 200, 200, '*'],
+                      // widths: ['auto', 200, '*', 200],
+                      widths: [90, 200, '*'],
                       body: [
                         [
                           { text: 'Data', bold: true },
                           { text: 'Atividade', bold: true },
                           { text: 'Descrição', bold: true },
-                          { text: 'Anexos', bold: true },
+                          // { text: 'Anexos', bold: true },
                         ],
                         ...(activities ?? []).map(({ title, content, createdAt }) => [
-                          { text: dateFormatter(createdAt) },
+                          { text: dateTimeFormatter(createdAt) },
                           { text: title },
                           { text: content },
-                          {
-                            stack: activitiesImagesForPDF,
-                          },
+                          // {
+                          //   stack: annexes?.map(({ name, url }) => [
+                          //     {
+                          //       text: name,
+                          //       link: url,
+                          //     },
+                          //   ]),
+                          // },
                         ]),
                       ],
                     },
@@ -821,7 +828,7 @@ async function PDFService({
           });
         }
 
-        if (annexes && annexes.length > 0) {
+        if (annexesForPDF && annexesForPDF.length > 0) {
           (contentData[lastContent] as any).columns[1].stack.push({
             table: {
               widths: [1, '*'],
@@ -846,11 +853,7 @@ async function PDFService({
                     ),
                   },
                   {
-                    columns: [
-                      {
-                        stack: annexesForPDF,
-                      },
-                    ],
+                    stack: annexesForPDF,
                     marginLeft: 8,
                   },
                 ],
@@ -870,7 +873,9 @@ async function PDFService({
           });
         }
 
-        if (images && images.length > 0) {
+        if (imagesForPDF && imagesForPDF.length > 0) {
+          const imagesRows = Math.ceil(imagesForPDF.length / 13);
+
           (contentData[lastContent] as any).columns[1].stack.push({
             table: {
               widths: [1, '*'],
@@ -887,33 +892,48 @@ async function PDFService({
                     marginLeft: 8,
                   },
                 ],
-                [
-                  {
-                    text: '',
-                    fillColor: getStatusBackgroundColor(
-                      status === 'overdue' ? 'completed' : status,
-                    ),
-                  },
-                  {
-                    columns: imagesForPDF,
-                    columnGap: 4,
-                    marginLeft: 8,
-                  },
-                ],
-                [
-                  {
-                    text: '',
-                    fillColor: getStatusBackgroundColor(
-                      status === 'overdue' ? 'completed' : status,
-                    ),
-                  },
-                  { text: '' },
-                ],
               ],
             },
             layout: 'noBorders',
             fillColor: '#E6E6E6',
           });
+
+          for (let row = 0; row < imagesRows; row++) {
+            const start = row * 13;
+            const end = start + 13;
+
+            (contentData[lastContent] as any).columns[1].stack.push({
+              table: {
+                widths: [1, '*'],
+                body: [
+                  [
+                    {
+                      text: '',
+                      fillColor: getStatusBackgroundColor(
+                        status === 'overdue' ? 'completed' : status,
+                      ),
+                    },
+                    {
+                      columns: imagesForPDF.slice(start, end),
+                      columnGap: 4,
+                      marginLeft: 8,
+                    },
+                  ],
+                  [
+                    {
+                      text: '',
+                      fillColor: getStatusBackgroundColor(
+                        status === 'overdue' ? 'completed' : status,
+                      ),
+                    },
+                    { text: '' },
+                  ],
+                ],
+              },
+              layout: 'noBorders',
+              fillColor: '#E6E6E6',
+            });
+          }
         }
       }
     }
