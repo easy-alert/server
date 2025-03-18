@@ -921,7 +921,9 @@ async function PDFService({
     const docDefinitions: TDocumentDefinitions = {
       defaultStyle: { font: 'Arial', lineHeight: 1.1, fontSize: 10 },
       pageOrientation: 'landscape',
+      pageSize: 'A4',
       pageMargins: [30, 100, 30, 30],
+
       header() {
         return {
           stack: [
