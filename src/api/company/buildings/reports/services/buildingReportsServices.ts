@@ -179,6 +179,8 @@ export class BuildingReportsServices {
                 },
               },
             },
+
+            orderBy: { createdAt: 'desc' },
           },
 
           MaintenanceReport: {
