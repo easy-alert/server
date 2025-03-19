@@ -4,16 +4,15 @@ import { findManyChecklistsController } from '../../shared/checklists/controller
 import { findChecklistByIdController } from '../../shared/checklists/controllers/findChecklistByIdController';
 import { completeChecklistController } from '../../shared/checklists/controllers/completeChecklistController';
 import { updateChecklistReportController } from '../../shared/checklists/controllers/updateChecklistReportController';
-import { updateChecklistController } from '../../shared/checklists/controllers/updateChecklistController';
 import { findChecklistDataByMonthController } from '../../shared/checklists/controllers/findChecklistDataByMonthController';
 import { findChecklistReportController } from '../../shared/checklists/controllers/findChecklistReportController';
 import { createChecklistTemplateController } from '../../shared/checklists/controllers/createChecklistTemplateController';
 import { getChecklistsTemplatesController } from '../../shared/checklists/controllers/getChecklistsTemplatesController';
-import { createChecklistController2 } from '../../shared/checklists/controllers/createChecklistController2';
 import { getChecklistsController } from '../../shared/checklists/controllers/getChecklistsController';
-import { deleteChecklistController2 } from '../../shared/checklists/controllers/deleteChecklistController2';
-import { updateChecklistController2 } from '../../shared/checklists/controllers/updateChecklistController2';
 import { getChecklistsByBuildingIdController } from '../../shared/checklists/controllers/getChecklistsByBuildingIdController';
+import { createChecklistController } from '../../shared/checklists/controllers/createChecklistController';
+import { updateChecklistController } from '../../shared/checklists/controllers/updateChecklistController';
+import { deleteChecklistController } from '../../shared/checklists/controllers/deleteChecklistController';
 
 export const checklistRouter: Router = Router();
 
@@ -23,13 +22,15 @@ checklistRouter.post('/template/:buildingId', createChecklistTemplateController)
 checklistRouter.get('/templates/:buildingId', getChecklistsTemplatesController);
 
 // Checklist routes
-checklistRouter.get('/v2/:checklistId', getChecklistsController);
+checklistRouter.get('/:checklistId', getChecklistsController);
 checklistRouter.get('/v2/:buildingId', getChecklistsByBuildingIdController);
 
-checklistRouter.post('/', createChecklistController2);
+checklistRouter.post('/', createChecklistController);
 
-checklistRouter.put('/:checklistId', updateChecklistController2);
-checklistRouter.delete('/:checklistId/:mode', deleteChecklistController2);
+checklistRouter.put('/:checklistId', updateChecklistController);
+checklistRouter.put('/', updateChecklistController);
+
+checklistRouter.delete('/:checklistId/:mode', deleteChecklistController);
 
 // Esse report é do relatório
 checklistRouter.get('/reports', findChecklistReportController);

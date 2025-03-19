@@ -1,32 +1,56 @@
 import { Response, Request } from 'express';
-import { checklistServices } from '../services/checklistServices';
+
+import { deleteChecklist } from '../services/deleteChecklist';
+import { getChecklists } from '../services/getChecklists';
+
 import { checkValues } from '../../../../utils/newValidator';
 
 type TDeleteMode = 'this' | 'all' | 'thisAndFollowing' | '';
 
 export async function deleteChecklistController(req: Request, res: Response) {
   const { checklistId, mode } = req.params as any as { checklistId: string; mode: TDeleteMode };
+  const { Company } = req;
 
   checkValues([
     { label: 'ID da checklist', type: 'string', value: checklistId },
     { label: 'Tipo da exclusão', type: 'string', value: mode },
   ]);
 
-  const { groupId, date, building } = await checklistServices.findById(checklistId);
+  const checklist = await getChecklists({ companyId: Company?.id, checklistId });
 
-  await checklistServices.checkAccess({ buildingNanoId: building.nanoId });
+  if (!checklist.length) {
+    return res.status(404).json({ ServerMessage: { message: 'Checklist não encontrado.' } });
+  }
 
   switch (mode) {
     case 'all':
-      await checklistServices.deleteMany({ where: { groupId } });
+      if (checklist[0].templateId) {
+        await deleteChecklist({ where: { templateId: checklist[0].templateId } });
+      } else {
+        await deleteChecklist({ where: { groupId: checklist[0].groupId } });
+      }
       break;
 
     case 'thisAndFollowing':
-      await checklistServices.deleteMany({ where: { groupId, date: { gte: date } } });
+      if (checklist[0].templateId) {
+        await deleteChecklist({
+          where: {
+            templateId: checklist[0].templateId,
+            date: { gte: checklist[0].date },
+          },
+        });
+      } else {
+        await deleteChecklist({
+          where: {
+            groupId: checklist[0].groupId,
+            date: { gte: checklist[0].date },
+          },
+        });
+      }
       break;
 
     default:
-      await checklistServices.deleteMany({ where: { id: checklistId } });
+      await deleteChecklist({ where: { id: checklistId } });
       break;
   }
 
