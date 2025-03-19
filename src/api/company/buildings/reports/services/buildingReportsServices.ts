@@ -239,12 +239,6 @@ export class BuildingReportsServices {
         orderBy: { notificationDate: 'desc' },
 
         where: {
-          activities: {
-            every: {
-              type: 'comment',
-            },
-          },
-
           maintenanceStatusId: {
             in: queryFilter.maintenanceStatusIds,
           },
@@ -357,6 +351,7 @@ export class BuildingReportsServices {
             },
           },
         },
+
         orderBy: [
           {
             Building: {
@@ -366,12 +361,6 @@ export class BuildingReportsServices {
           { notificationDate: 'desc' },
         ],
         where: {
-          activities: {
-            every: {
-              type: 'comment',
-            },
-          },
-
           maintenanceStatusId: {
             in: queryFilter.maintenanceStatusIds,
           },
