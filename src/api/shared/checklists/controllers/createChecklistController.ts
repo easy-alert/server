@@ -1,148 +1,133 @@
 import { Response, Request } from 'express';
-import {
-  checkMaximumNumber,
-  checkMinimumNumber,
-  checkValues,
-} from '../../../../utils/newValidator';
-import { TimeIntervalServices } from '../../timeInterval/services/timeIntervalServices';
-import { BuildingServices } from '../../../company/buildings/building/services/buildingServices';
-import { SharedBuildingNotificationConfigurationServices } from '../../notificationConfiguration/services/buildingNotificationConfigurationServices';
-import { checklistServices } from '../services/checklistServices';
+
+import type { Checklist, ChecklistItem, ChecklistStatusName } from '@prisma/client';
+
+// import { checklistServices } from '../services/checklistServices';
+import { getChecklistTemplateById } from '../services/getChecklistTemplateById';
+import { createChecklist } from '../services/createChecklist';
+
+import { checkValues } from '../../../../utils/newValidator';
 import { addDays, setToUTCMidnight } from '../../../../utils/dateTime';
-import { prisma, prismaTypes } from '../../../../../prisma';
 
 interface IBody {
-  buildingNanoId: string;
-  name: string;
-  date: string;
-  syndicId: string;
-
-  description: string | null;
-  frequency: number | null;
-  frequencyTimeIntervalId: string | null;
-
-  detailImages:
-    | {
-        name: string;
-        url: string;
-      }[]
-    | null
-    | undefined;
+  buildingId: string;
+  newChecklist?: Checklist & { items: ChecklistItem[] };
+  checklistTemplateId?: string;
+  responsibleId: string;
+  startDate: string;
+  interval: string;
+  status: ChecklistStatusName;
 }
-
-const timeIntervalServices = new TimeIntervalServices();
-const buildingServices = new BuildingServices();
-const buildingNotificationConfigurationServices =
-  new SharedBuildingNotificationConfigurationServices();
 
 export async function createChecklistController(req: Request, res: Response) {
   const {
-    buildingNanoId,
-    date,
-    description,
-    frequency,
-    frequencyTimeIntervalId,
-    name,
-    syndicId,
-    detailImages,
+    buildingId,
+    newChecklist,
+    checklistTemplateId,
+    responsibleId,
+    startDate,
+    interval,
+    status,
   }: IBody = req.body;
 
-  checkValues([
-    { label: 'ID da edificação', type: 'string', value: buildingNanoId },
-    { label: 'Data', type: 'date', value: date },
-    { label: 'Nome', type: 'string', value: name },
-    { label: 'ID do síndico', type: 'string', value: syndicId },
+  const numberFrequency = Number(interval);
 
-    { label: 'Descrição', type: 'string', value: description, required: false },
-    { label: 'Frequência', type: 'int', value: frequency || null, required: false },
-    {
-      label: 'Intervalo da frequência',
-      type: 'string',
-      value: frequencyTimeIntervalId,
-      required: false,
-    },
-    { label: 'Imagens', type: 'array', value: detailImages, required: false },
+  checkValues([
+    { label: 'Edificação', type: 'string', value: buildingId },
+    { label: 'Usuário', type: 'string', value: responsibleId },
+    { label: 'Status', type: 'string', value: status },
+    { label: 'Data', type: 'date', value: startDate },
   ]);
 
-  detailImages?.forEach((data) => {
-    checkValues([
-      { label: 'Nome da imagem', type: 'string', value: data.name },
-      { label: 'Link da imagem', type: 'string', value: data.url },
-    ]);
-  });
+  if (checklistTemplateId) {
+    checkValues([{ label: 'ID do template', type: 'string', value: checklistTemplateId }]);
 
-  if (frequency) {
-    checkMinimumNumber([{ label: 'Frequência', min: 1, value: frequency }]);
-  }
+    const checklistTemplate = await getChecklistTemplateById({ checklistId: checklistTemplateId });
 
-  const { id } = await buildingServices.findByNanoId({ buildingNanoId });
-
-  await checklistServices.checkAccess({ buildingNanoId });
-
-  await buildingNotificationConfigurationServices.findById({
-    buildingNotificationConfigurationId: syndicId,
-  });
-
-  let frequencyInDays = 0;
-
-  if (frequency && frequencyTimeIntervalId) {
-    const frequencyData = await timeIntervalServices.findById({
-      timeIntervalId: frequencyTimeIntervalId,
-    });
-    frequencyInDays = frequencyData.unitTime * frequency;
-
-    checkMaximumNumber([{ label: 'Periodicidade em dias', max: 35000, value: frequencyInDays }]);
-  }
-
-  const parentChecklist = await checklistServices.create({
-    data: {
-      buildingId: id,
-      date: setToUTCMidnight(new Date(date)),
-      name,
-      description,
-      syndicId,
-      frequency: frequency || null,
-      frequencyTimeIntervalId: frequency ? frequencyTimeIntervalId : null,
-      status: 'pending',
-
-      detailImages: {
-        createMany: {
-          data: Array.isArray(detailImages) ? detailImages : [],
-        },
-      },
-    },
-  });
-
-  if (frequencyInDays) {
-    // criando 3 anos de registros proporcional a data
-    const frequenciesToCreate = Math.ceil((365 / frequencyInDays) * 3);
-
-    const childrenChecklists: prismaTypes.ChecklistUncheckedCreateInput[] = [];
-
-    for (let index = 0; index < frequenciesToCreate; index++) {
-      childrenChecklists.push({
-        groupId: parentChecklist.groupId,
-        buildingId: parentChecklist.buildingId,
-        name: parentChecklist.name,
-        description: parentChecklist.description,
-        syndicId: parentChecklist.syndicId,
-        frequency: parentChecklist.frequency,
-        frequencyTimeIntervalId: parentChecklist.frequencyTimeIntervalId,
-        status: 'pending',
-        date: addDays({
-          date: parentChecklist.date,
-          days: frequencyInDays * index + frequencyInDays,
-        }),
-        detailImages: {
-          createMany: {
-            data: Array.isArray(detailImages) ? detailImages : [],
-          },
-        },
-      });
+    if (!checklistTemplate) {
+      return res.status(404).json({ ServerMessage: { message: 'Template não encontrado.' } });
     }
 
-    await prisma.$transaction(childrenChecklists.map((data) => prisma.checklist.create({ data })));
+    if (numberFrequency) {
+      const frequencyToCreate = Math.ceil((365 / numberFrequency) * 3);
+
+      const childrenChecklists: Checklist[] = [];
+
+      for (let index = 0; index < frequencyToCreate; index++) {
+        let setDate = setToUTCMidnight(new Date(startDate));
+
+        if (index > 0) {
+          setDate = addDays({
+            date: setToUTCMidnight(new Date(startDate)),
+            days: numberFrequency * index,
+          });
+        }
+
+        const createdChecklist = await createChecklist({
+          buildingId,
+          checklistTemplate,
+          responsibleId,
+          startDate: setDate,
+          interval: numberFrequency,
+          status,
+        });
+
+        childrenChecklists.push(createdChecklist);
+      }
+    }
+
+    return res
+      .status(201)
+      .json({ ServerMessage: { message: 'Checklist cadastrado com sucesso.' } });
   }
 
-  return res.status(201).json({ ServerMessage: { message: 'Checklist cadastrado com sucesso.' } });
+  if (newChecklist) {
+    checkValues([{ label: 'Checklist', type: 'object', value: newChecklist }]);
+
+    const createdChecklist = await createChecklist({
+      buildingId,
+      newChecklist,
+      responsibleId,
+      startDate: setToUTCMidnight(new Date(startDate)),
+      interval: numberFrequency,
+      status,
+    });
+
+    return res.status(201).json(createdChecklist);
+  }
+
+  return res.status(400).json({ ServerMessage: { message: 'Checklist inválido.' } });
+
+  // if (frequencyInDays) {
+  //   // criando 3 anos de registros proporcional a data
+  //   const frequenciesToCreate = Math.ceil((365 / frequencyInDays) * 3);
+
+  //   const childrenChecklists: prismaTypes.ChecklistUncheckedCreateInput[] = [];
+
+  //   for (let index = 0; index < frequenciesToCreate; index++) {
+  //     childrenChecklists.push({
+  //       groupId: parentChecklist.groupId,
+  //       buildingId: parentChecklist.buildingId,
+  //       name: parentChecklist.name,
+  //       description: parentChecklist.description,
+  //       syndicId: parentChecklist.syndicId,
+  //       frequency: parentChecklist.frequency,
+  //       frequencyTimeIntervalId: parentChecklist.frequencyTimeIntervalId,
+  //       status: 'pending',
+  //       date: addDays({
+  //         date: parentChecklist.date,
+  //         days: frequencyInDays * index + frequencyInDays,
+  //       }),
+  //       detailImages: {
+  //         createMany: {
+  //           data: Array.isArray(detailImages) ? detailImages : [],
+  //         },
+  //       },
+  //     });
+  //   }
+
+  //   await prisma.$transaction(childrenChecklists.map((data) => prisma.checklist.create({ data })));
+  // }
+
+  // return res.status(201).json({ ServerMessage: { message: 'Checklist cadastrado com sucesso.' } });
 }
