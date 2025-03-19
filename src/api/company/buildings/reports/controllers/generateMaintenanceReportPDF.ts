@@ -272,7 +272,10 @@ async function PDFService({
           type: MaintenancesPending[i].Maintenance.MaintenanceType?.name ?? null,
           inProgress: MaintenancesPending[i].inProgress,
 
-          activities: MaintenancesPending[i].activities ?? [],
+          activities:
+            MaintenancesPending[i].activities.filter(
+              (activity: any) => activity.type === 'comment',
+            ) ?? [],
 
           cost: hasReport ? MaintenancesPending[i].MaintenanceReport[0].cost : null,
 
@@ -343,7 +346,10 @@ async function PDFService({
               type: Maintenance.MaintenanceType?.name ?? null,
               inProgress,
 
-              activities: MaintenancesPending[i].activities ?? [],
+              activities:
+                MaintenancesPending[i].activities.filter(
+                  (activity: any) => activity.type === 'comment',
+                ) ?? [],
 
               cost: hasReport ? MaintenanceReport[0].cost : null,
 
@@ -420,7 +426,8 @@ async function PDFService({
         type: maintenance.Maintenance.MaintenanceType?.name ?? null,
         inProgress: maintenance.inProgress,
 
-        activities: maintenance.activities ?? [],
+        activities:
+          maintenance.activities.filter((activity: any) => activity.type === 'comment') ?? [],
 
         cost: hasReport ? maintenance.MaintenanceReport[0].cost : null,
 
