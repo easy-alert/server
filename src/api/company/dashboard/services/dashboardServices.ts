@@ -62,86 +62,57 @@ export class DashboardServices {
     buildingsIds?: string[];
     companyId: string;
   }) {
-    const [buildingsData, defaultCategories, companyCategories, companyCategories2] =
-      await prisma.$transaction([
-        prisma.building.findMany({
-          select: {
-            name: true,
+    const [buildingsData, companyCategories] = await prisma.$transaction([
+      prisma.building.findMany({
+        select: {
+          name: true,
+        },
+
+        orderBy: {
+          name: 'asc',
+        },
+
+        where: {
+          id: {
+            in: buildingsIds,
           },
 
-          orderBy: {
-            name: 'asc',
-          },
+          companyId,
+        },
+      }),
 
-          where: {
-            id: {
-              in: buildingsIds,
-            },
-
-            companyId,
-          },
-        }),
-
-        prisma.category.findMany({
-          select: {
-            name: true,
-          },
-          where: {
-            ownerCompanyId: null,
-          },
-          orderBy: {
-            name: 'asc',
-          },
-        }),
-
-        prisma.category.findMany({
-          select: {
-            name: true,
-          },
-          where: {
-            ownerCompanyId: companyId,
-          },
-          orderBy: {
-            name: 'asc',
-          },
-        }),
-
-        prisma.maintenanceHistory.findMany({
-          select: {
-            Maintenance: {
-              select: {
-                Category: {
-                  select: {
-                    name: true,
-                  },
+      prisma.maintenanceHistory.findMany({
+        select: {
+          Maintenance: {
+            select: {
+              Category: {
+                select: {
+                  name: true,
                 },
               },
             },
           },
+        },
 
-          orderBy: {
-            Maintenance: {
-              Category: {
-                name: 'asc',
-              },
+        orderBy: {
+          Maintenance: {
+            Category: {
+              name: 'asc',
             },
           },
+        },
 
-          where: {
-            Building: {
-              companyId,
-            },
+        where: {
+          Building: {
+            companyId,
           },
-        }),
-      ]);
+        },
+      }),
+    ]);
 
     return {
       buildingsData,
-      categoriesData: [
-        // ...defaultCategories,
-        // ...companyCategories,
-        ...companyCategories2,
-      ],
+      categoriesData: [...companyCategories],
     };
   }
 
