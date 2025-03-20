@@ -57,6 +57,7 @@ model User {
 
   @@unique([email, phoneNumber])
   @@map("users")
+  ApiLogs ApiLogs[]
 }
 
 model Permission {
@@ -166,6 +167,7 @@ model Company {
   BuildingApartment   BuildingApartment[]
 
   @@map("companies")
+  ApiLogs ApiLogs[]
 }
 
 enum CompanyTicketType {
@@ -1301,8 +1303,13 @@ model ApiLogs {
   query      String?
   params     String?
   method     String?
+  companyId  String?
+  userId     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("api_logs")
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  company Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  @@map("apiLogs")
 }
