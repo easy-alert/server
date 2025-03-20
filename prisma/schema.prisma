@@ -1301,8 +1301,8 @@ model ApiLogs {
   query      String?
   params     String?
   method     String?
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("api_logs")
 }
