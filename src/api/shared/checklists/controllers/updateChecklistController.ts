@@ -11,8 +11,9 @@ import { checkValues } from '../../../../utils/newValidator';
 interface IBody {
   buildingId: string;
   userId: string;
-  status: ChecklistStatusName;
   checklistItems: ChecklistItem[];
+  observation: string;
+  status: ChecklistStatusName;
   updateMode?: 'this' | 'thisAndFollowing' | 'all' | '';
 
   images:
@@ -26,12 +27,15 @@ interface IBody {
 
 export async function updateChecklistController(req: Request, res: Response) {
   const { checklistId } = req.params;
-  const { buildingId, userId, checklistItems, status, images, updateMode }: IBody = req.body;
+  const { buildingId, userId, checklistItems, observation, status, images, updateMode }: IBody =
+    req.body;
 
   checkValues([
     { label: 'ID do checklist', type: 'string', value: checklistId },
     { label: 'ID do prédio', type: 'string', value: buildingId, required: false },
     { label: 'ID do usuário', type: 'string', value: userId, required: false },
+    { label: 'Itens do checklist', type: 'array', value: checklistItems, required: false },
+    { label: 'Descrição', type: 'string', value: observation, required: false },
     { label: 'Status', type: 'string', value: status, required: false },
   ]);
 
@@ -77,8 +81,9 @@ export async function updateChecklistController(req: Request, res: Response) {
     await saveChecklist({
       checklistId,
       buildingId,
-      status,
       checklistItems,
+      observation,
+      status,
       images,
     });
   }
