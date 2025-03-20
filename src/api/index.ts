@@ -12,16 +12,17 @@ import { externalRouter } from './external/external.routes';
 import { findOldBuildingId } from './company/buildings/building/controllers';
 import { scriptRouter } from '../utils/scripts/scripts.routes';
 import { mobileRoutes } from './mobile/mobile.routes';
+import { logCatcherMiddleware } from '../middlewares/logCatcherMiddleware';
 
 // ROUTES
 export const routes: Router = Router();
 
-routes.use('/backoffice', backofficeRouter);
-routes.use('/company', companyRouter);
-routes.use('/client', clientRouter);
-routes.use('/external', externalRouter);
-routes.use('/scripts', scriptRouter);
-routes.use('/mobile', mobileRoutes);
+routes.use('/backoffice', logCatcherMiddleware, backofficeRouter);
+routes.use('/company', logCatcherMiddleware, companyRouter);
+routes.use('/client', logCatcherMiddleware, clientRouter);
+routes.use('/external', logCatcherMiddleware, externalRouter);
+routes.use('/scripts', logCatcherMiddleware, scriptRouter);
+routes.use('/mobile', logCatcherMiddleware, mobileRoutes);
 
 // URL FOR REDIRECT USER TO NEW CLIENT
 routes.use('/integration/docs', swaggerUi.serve, (_req: any, res: any) => {

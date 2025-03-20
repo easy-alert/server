@@ -1291,3 +1291,18 @@ model Tutorial {
 
   @@map("tutorials")
 }
+
+// API LOGS
+
+model ApiLogs {
+  id         String   @id @unique @default(uuid())
+  body       String?
+  path       String?
+  query      String?
+  params     String?
+  method     String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("api_logs")
+}
