@@ -6,8 +6,9 @@ interface ISaveChecklist {
   checklistId?: string;
   buildingId?: string;
   userId?: string;
-  status?: ChecklistStatusName;
   checklistItems?: ChecklistItem[];
+  observation?: string;
+  status?: ChecklistStatusName;
 
   images?:
     | {
@@ -20,8 +21,9 @@ interface ISaveChecklist {
 
 export async function saveChecklist({
   checklistId,
-  status,
   checklistItems,
+  observation,
+  status,
   images,
 }: ISaveChecklist) {
   if (images?.length) {
@@ -34,17 +36,8 @@ export async function saveChecklist({
 
   await prisma.checklist.update({
     data: {
+      observation,
       status,
-      images: images?.length
-        ? {
-            createMany: {
-              data: images.map((image) => ({
-                name: image.name,
-                url: image.url,
-              })),
-            },
-          }
-        : undefined,
 
       checklistItem: {
         updateMany: checklistItems?.length
@@ -58,6 +51,17 @@ export async function saveChecklist({
             }))
           : undefined,
       },
+
+      images: images?.length
+        ? {
+            createMany: {
+              data: images.map((image) => ({
+                name: image.name,
+                url: image.url,
+              })),
+            },
+          }
+        : undefined,
     },
 
     where: {
