@@ -2,17 +2,17 @@
 import { Request, Response } from 'express';
 import { dashboardServices } from '../services/dashboardServices';
 
-export async function dashboardFiltersController(req: Request, res: Response) {
-  const isAdmin = req.Permissions.some((permission) =>
-    permission.Permission.name.includes('admin'),
-  );
+import { hasAdminPermission } from '../../../../utils/permissions/hasAdminPermission';
+import { handlePermittedBuildings } from '../../../../utils/permissions/handlePermittedBuildings';
 
-  const permittedBuildings = req.BuildingsPermissions?.map(
-    (BuildingPermissions) => BuildingPermissions.Building.id,
-  );
+export async function dashboardFiltersController(req: Request, res: Response) {
+  const isAdmin = hasAdminPermission(req.Permissions);
+  const permittedBuildingsIds = handlePermittedBuildings(req.BuildingsPermissions, 'name');
+
+  const buildingsIds = isAdmin ? undefined : permittedBuildingsIds;
 
   const { buildingsData, categoriesData } = await dashboardServices.dashboardFilters({
-    permittedBuildings: isAdmin ? undefined : permittedBuildings,
+    buildingsIds,
     companyId: req.Company.id,
   });
 
@@ -20,39 +20,15 @@ export async function dashboardFiltersController(req: Request, res: Response) {
   let responsible: string[] = [];
   let categories: string[] = [];
 
-  const periods = [
-    {
-      label: '30 dias',
-      period: 30,
-    },
-    {
-      label: '3 meses',
-      period: 90,
-    },
-    {
-      label: '6 meses',
-      period: 180,
-    },
-    {
-      label: '1 ano',
-      period: 365,
-    },
-    {
-      label: '2 anos',
-      period: 730,
-    },
-  ];
-
   buildingsData.forEach((building) => {
     buildings.push(building.name);
-    responsible.push(...building.NotificationsConfigurations.map((config) => config.name));
   });
 
   buildings = [...new Set(buildings)].sort((a, b) => a.localeCompare(b));
   responsible = [...new Set(responsible)].sort((a, b) => a.localeCompare(b));
-  categories = [...new Set(categoriesData.map((category) => category.name))].sort((a, b) =>
-    a.localeCompare(b),
-  );
+  categories = [
+    ...new Set(categoriesData.map((category) => category.Maintenance.Category.name)),
+  ].sort((a, b) => a.localeCompare(b));
 
-  return res.status(200).json({ buildings, responsible, categories, periods });
+  return res.status(200).json({ buildings, responsible, categories });
 }

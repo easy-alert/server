@@ -500,8 +500,9 @@ export class BuildingServices {
       include: {
         Building: {
           select: {
-            name: true,
+            id: true,
             nanoId: true,
+            name: true,
 
             MaintenancesHistory: {
               select: {
