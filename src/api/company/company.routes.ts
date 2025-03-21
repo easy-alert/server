@@ -59,7 +59,6 @@ companyRouter.use('/auth', authRouter);
 // Middlewares estão lá dentro
 companyRouter.use(
   '/usercompany',
-  authMiddleware,
   handleCompanyPermCheck([companyPermission, 'access:account']),
   companyUserRouter,
 );
