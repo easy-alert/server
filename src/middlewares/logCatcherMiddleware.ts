@@ -1,34 +1,33 @@
 // LIBS
 import 'dotenv/config';
-import { verify } from 'jsonwebtoken';
+// import { verify } from 'jsonwebtoken';
 
 import { NextFunction, Response, Request } from 'express';
 
 import { prisma } from '../../prisma';
-import { ServerMessage } from '../utils/messages/serverMessage';
 
 // TYPES
-import type { IToken } from './types';
+// import type { IToken } from './types';
 
 // eslint-disable-next-line consistent-return
 export const logCatcherMiddleware = async (req: Request, _res: Response, next: NextFunction) => {
   try {
-    const { authorization } = req.headers;
+    // const { authorization } = req.headers;
     const { body, method, params, query, originalUrl } = req;
 
     if (!['POST', 'PUT', 'DELETE'].includes(method)) return next();
 
-    let userId;
+    // let userId;
 
-    if (authorization && authorization.includes('Bearer') && !authorization.includes('null')) {
-      const [, token] = authorization.split(' ');
+    // if (authorization && authorization.includes('Bearer') && !authorization.includes('null')) {
+    //   const [, token] = authorization.split(' ');
 
-      const secret: any = process.env.JWT_SECRET;
+    //   const secret: any = process.env.JWT_SECRET;
 
-      const decoded = verify(token, secret);
+    //   const decoded = verify(token, secret);
 
-      userId = (decoded as IToken)?.userId;
-    }
+    //   userId = (decoded as IToken)?.userId;
+    // }
 
     await prisma.apiLogs.create({
       data: {
@@ -37,15 +36,12 @@ export const logCatcherMiddleware = async (req: Request, _res: Response, next: N
         body: JSON.stringify(body),
         query: JSON.stringify(query),
         params: JSON.stringify(params),
-        userId,
+        // userId,
       },
     });
 
     return next();
   } catch (error) {
-    throw new ServerMessage({
-      statusCode: 401,
-      message: 'Você precisa de um token válido.',
-    });
+    next(error);
   }
 };
