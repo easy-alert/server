@@ -13,18 +13,19 @@ import { findMaintenanceHistory } from '../../../../client/building/services/fin
 const clientBuildingServices = new ClientBuildingServices();
 
 interface IQuery {
+  userId: string;
   buildingId: string;
   status: string;
   category: string;
   user: string;
   priorityName: string;
-  userId: string;
+  search: string;
   startDate: string;
   endDate: string;
 }
 
 export async function getMaintenancesKanban(req: Request, res: Response) {
-  const { buildingId, status, user, category, priorityName, startDate, endDate } =
+  const { buildingId, status, user, category, priorityName, search, startDate, endDate } =
     req.query as unknown as IQuery;
   const { Company } = req;
 
@@ -42,6 +43,7 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
     !priorityName || priorityName === 'undefined'
       ? undefined
       : (String(priorityName) as MaintenancePriorityName);
+  const searchFilter = search || '';
 
   const companyIdFilter = Company?.id;
 
@@ -64,6 +66,7 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
     endDate: endDateFilter,
     showMaintenancePriority: company?.showMaintenancePriority,
     priorityFilter,
+    search: searchFilter,
   });
 
   // # region filter
