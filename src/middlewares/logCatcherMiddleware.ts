@@ -15,6 +15,8 @@ export const logCatcherMiddleware = async (req: Request, _res: Response, next: N
     const { authorization } = req.headers;
     const { body, method, params, query, originalUrl } = req;
 
+    if (!['POST', 'PUT', 'DELETE'].includes(method)) return next();
+
     let userId;
 
     if (authorization && authorization.includes('Bearer') && !authorization.includes('null')) {
@@ -26,8 +28,6 @@ export const logCatcherMiddleware = async (req: Request, _res: Response, next: N
 
       userId = (decoded as IToken)?.userId;
     }
-
-    if (!['POST', 'PUT', 'DELETE'].includes(method)) return next();
 
     await prisma.apiLogs.create({
       data: {
