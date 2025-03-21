@@ -57,11 +57,7 @@ companyRouter.post('/buildings/list/detailsforconfirm', listBuildingDetailsForCo
 companyRouter.use('/auth', authRouter);
 
 // Middlewares estão lá dentro
-companyRouter.use(
-  '/usercompany',
-  handleCompanyPermCheck([companyPermission, 'access:account']),
-  companyUserRouter,
-);
+companyRouter.use('/usercompany', companyUserRouter);
 
 companyRouter.get('/timeinterval/list', listTimeIntervals);
 
