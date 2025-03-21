@@ -43,9 +43,6 @@ export const logCatcherMiddleware = async (req: Request, _res: Response, next: N
 
     return next();
   } catch (error) {
-    throw new ServerMessage({
-      statusCode: 401,
-      message: 'Você precisa de um token válido.',
-    });
+    next(error);
   }
 };
