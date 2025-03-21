@@ -5,6 +5,7 @@ import { verify } from 'jsonwebtoken';
 import { NextFunction, Response, Request } from 'express';
 
 import { prisma } from '../../prisma';
+import { ServerMessage } from '../utils/messages/serverMessage';
 
 // TYPES
 import type { IToken } from './types';
@@ -42,6 +43,9 @@ export const logCatcherMiddleware = async (req: Request, _res: Response, next: N
 
     return next();
   } catch (error) {
-    next(error);
+    throw new ServerMessage({
+      statusCode: 401,
+      message: 'Você precisa de um token válido.',
+    });
   }
 };
