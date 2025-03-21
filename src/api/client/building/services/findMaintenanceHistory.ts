@@ -1,5 +1,6 @@
 import type { MaintenancePriorityName } from '@prisma/client';
 import { prisma } from '../../../../../prisma';
+
 import { needExist } from '../../../../utils/newValidator';
 
 interface IFindMaintenanceHistory {
@@ -12,6 +13,7 @@ interface IFindMaintenanceHistory {
   endDate: Date | undefined;
   showMaintenancePriority?: boolean | undefined;
   priorityFilter: MaintenancePriorityName | undefined;
+  search?: string;
 }
 
 export async function findMaintenanceHistory({
@@ -24,6 +26,7 @@ export async function findMaintenanceHistory({
   endDate,
   categoryIdFilter,
   priorityFilter,
+  search,
 }: IFindMaintenanceHistory) {
   const maintenancesHistory = await prisma.maintenanceHistory.findMany({
     select: {
@@ -113,8 +116,10 @@ export async function findMaintenanceHistory({
         id: companyId,
       },
 
-      buildingId: {
-        in: buildingId,
+      Building: {
+        id: {
+          in: buildingId,
+        },
       },
 
       priorityName: priorityFilter,
@@ -143,6 +148,16 @@ export async function findMaintenanceHistory({
         { notificationDate: { lte: endDate, gte: startDate } },
         { resolutionDate: { lte: endDate, gte: startDate } },
       ],
+
+      ...(search && {
+        OR: [
+          { Building: { name: { contains: search, mode: 'insensitive' } } },
+          { Maintenance: { element: { contains: search, mode: 'insensitive' } } },
+          { Maintenance: { activity: { contains: search, mode: 'insensitive' } } },
+          { Maintenance: { Category: { name: { contains: search, mode: 'insensitive' } } } },
+          { MaintenancesStatus: { singularLabel: { contains: search, mode: 'insensitive' } } },
+        ],
+      }),
     },
   });
 
