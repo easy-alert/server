@@ -56,58 +56,64 @@ function customSort(array: IMaintenance[]) {
 
 export class DashboardServices {
   async dashboardFilters({
-    permittedBuildings,
+    buildingsIds,
     companyId,
   }: {
-    permittedBuildings?: string[];
+    buildingsIds?: string[];
     companyId: string;
   }) {
-    const [buildingsData, defaultCategories, companyCategories] = await prisma.$transaction([
+    const [buildingsData, companyCategories] = await prisma.$transaction([
       prisma.building.findMany({
         select: {
           name: true,
-          NotificationsConfigurations: {
-            select: {
-              name: true,
-            },
-          },
         },
+
         orderBy: {
           name: 'asc',
         },
+
         where: {
           id: {
-            in: permittedBuildings,
+            in: buildingsIds,
           },
+
           companyId,
         },
       }),
 
-      prisma.category.findMany({
+      prisma.maintenanceHistory.findMany({
         select: {
-          name: true,
+          Maintenance: {
+            select: {
+              Category: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
         },
-        where: {
-          ownerCompanyId: null,
-        },
-        orderBy: {
-          name: 'asc',
-        },
-      }),
 
-      prisma.category.findMany({
-        select: {
-          name: true,
-        },
-        where: {
-          ownerCompanyId: companyId,
-        },
         orderBy: {
-          name: 'asc',
+          Maintenance: {
+            Category: {
+              name: 'asc',
+            },
+          },
+        },
+
+        where: {
+          Building: {
+            companyId,
+          },
         },
       }),
     ]);
-    return { buildingsData, categoriesData: [...defaultCategories, ...companyCategories] };
+
+    return {
+      buildingsData,
+      categoriesData: [...companyCategories],
+    };
   }
 
   async maintenancesCountAndCost({
@@ -117,42 +123,51 @@ export class DashboardServices {
     filter: IDashboardFilter;
     maintenanceType: 'common' | 'occasional' | undefined;
   }) {
-    const maintenancesData = await prisma.maintenanceReport.aggregate({
-      _sum: { cost: true },
-      _count: { id: true },
+    const maintenancesData = await prisma.maintenanceHistory.findMany({
+      select: {
+        MaintenanceReport: {
+          select: {
+            cost: true,
+          },
+        },
+      },
+
       where: {
-        MaintenanceHistory: {
-          resolutionDate: filter.period,
-          Building: {
-            NotificationsConfigurations: filter.responsible,
-            name: filter.buildings,
+        ownerCompanyId: filter.companyId,
+        resolutionDate: filter.period,
+
+        Building: {
+          name: filter.buildings,
+        },
+
+        Maintenance: {
+          Category: {
+            name: filter.categories,
           },
-          ownerCompanyId: filter.companyId,
-          Maintenance: {
-            Category: {
-              name: filter.categories,
+
+          MaintenanceType: { name: maintenanceType },
+        },
+
+        MaintenancesStatus: {
+          OR: [
+            {
+              name: 'completed',
             },
-
-            MaintenanceType: { name: maintenanceType },
-          },
-
-          MaintenancesStatus: {
-            OR: [
-              {
-                name: 'completed',
-              },
-              {
-                name: 'overdue',
-              },
-            ],
-          },
+            {
+              name: 'overdue',
+            },
+          ],
         },
       },
     });
 
+    const maintenancesCost = maintenancesData
+      .map((data) => data.MaintenanceReport[0].cost)
+      .reduce((acc, cost) => (acc ?? 0) + (cost ?? 0), 0);
+
     return {
-      maintenancesCount: maintenancesData._count.id,
-      maintenancesCost: maintenancesData._sum.cost,
+      maintenancesCount: maintenancesData.length,
+      maintenancesCost,
     };
   }
 
@@ -167,15 +182,14 @@ export class DashboardServices {
         orderBy: {
           notificationDate: 'desc',
         },
+
         where: {
+          ownerCompanyId: filter.companyId,
           notificationDate: filter.period,
 
           Building: {
-            NotificationsConfigurations: filter.responsible,
-
             name: filter.buildings,
           },
-          ownerCompanyId: filter.companyId,
 
           Maintenance: {
             Category: {
@@ -191,6 +205,7 @@ export class DashboardServices {
 
       prisma.maintenanceHistory.groupBy({
         by: ['resolutionDate'],
+
         _count: {
           resolutionDate: true,
         },
@@ -198,15 +213,14 @@ export class DashboardServices {
         orderBy: {
           resolutionDate: 'desc',
         },
+
         where: {
+          ownerCompanyId: filter.companyId,
           resolutionDate: filter.period,
 
           Building: {
-            NotificationsConfigurations: filter.responsible,
-
             name: filter.buildings,
           },
-          ownerCompanyId: filter.companyId,
 
           Maintenance: {
             Category: {
@@ -229,6 +243,7 @@ export class DashboardServices {
 
       prisma.maintenanceHistory.groupBy({
         by: ['dueDate'],
+
         _count: {
           dueDate: true,
         },
@@ -236,13 +251,14 @@ export class DashboardServices {
         orderBy: {
           dueDate: 'desc',
         },
+
         where: {
+          ownerCompanyId: filter.companyId,
           dueDate: filter.period,
+
           Building: {
-            NotificationsConfigurations: filter.responsible,
             name: filter.buildings,
           },
-          ownerCompanyId: filter.companyId,
 
           Maintenance: {
             Category: {
@@ -265,18 +281,19 @@ export class DashboardServices {
       await prisma.$transaction([
         prisma.maintenanceHistory.count({
           where: {
+            ownerCompanyId: filter.companyId,
             resolutionDate: filter.period,
+
             Building: {
-              NotificationsConfigurations: filter.responsible,
               name: filter.buildings,
             },
-            ownerCompanyId: filter.companyId,
 
             Maintenance: {
               Category: {
                 name: filter.categories,
               },
             },
+
             MaintenancesStatus: {
               OR: [
                 {
@@ -292,18 +309,19 @@ export class DashboardServices {
 
         prisma.maintenanceHistory.count({
           where: {
+            ownerCompanyId: filter.companyId,
             dueDate: filter.period,
+
             Building: {
-              NotificationsConfigurations: filter.responsible,
               name: filter.buildings,
             },
-            ownerCompanyId: filter.companyId,
 
             Maintenance: {
               Category: {
                 name: filter.categories,
               },
             },
+
             MaintenancesStatus: {
               name: 'expired',
             },
@@ -312,18 +330,19 @@ export class DashboardServices {
 
         prisma.maintenanceHistory.count({
           where: {
+            ownerCompanyId: filter.companyId,
             notificationDate: filter.period,
+
             Building: {
-              NotificationsConfigurations: filter.responsible,
               name: filter.buildings,
             },
-            ownerCompanyId: filter.companyId,
 
             Maintenance: {
               Category: {
                 name: filter.categories,
               },
             },
+
             MaintenancesStatus: {
               name: 'pending',
             },
