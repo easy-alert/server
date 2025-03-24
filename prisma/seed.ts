@@ -26,6 +26,8 @@ async function main() {
   await seedServices.updateOwnerUsers();
 
   await seedServices.ownerBuildingPermissions();
+
+  await seedServices.fixTicketsNumbers();
 }
 
 main()

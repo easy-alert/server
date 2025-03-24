@@ -994,7 +994,7 @@ model Ticket {
   placeId              String
   maintenanceHistoryId String?
 
-  ticketNumber      Int              @unique @default(autoincrement())
+  ticketNumber      Int
   residentName      String
   residentPhone     String?
   residentApartment String
