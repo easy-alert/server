@@ -1,6 +1,6 @@
 import { prisma } from '../../../../prisma';
 
-import { companyServices } from '../../backoffice/users/accounts/services/companyServices';
+import { companyServices } from '../../backoffice/account/companies/services/companyServices';
 
 class SharedBuildingAccessHistoryService {
   async create({ buildingId, key }: { buildingId: string; key: string }) {

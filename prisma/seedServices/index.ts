@@ -9,7 +9,7 @@ import { hashSync } from 'bcrypt';
 import { prisma } from '..';
 
 // SERVICES
-import { CompanyServices } from '../../src/api/backoffice/users/accounts/services/companyServices';
+import { CompanyServices } from '../../src/api/backoffice/account/companies/services/companyServices';
 import { PermissionServices } from '../../src/api/shared/permissions/permission/services/permissionServices';
 
 // PERMISSIONS
