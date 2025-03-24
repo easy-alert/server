@@ -5,23 +5,23 @@ import swaggerFile from '../../docs/backofficeDocs.json';
 
 // MIDDLEWARES
 import { authMiddleware } from '../../middlewares/auth';
-import { uploadRouter } from '../shared/upload/upload.routes';
 import { handleBackofficePermCheck } from '../../middlewares/permissions/permCheck';
 
 // CHILDREN ROUTES
+import { uploadRouter } from '../shared/upload/upload.routes';
 import { authRouter } from './auth/auth.routes';
 import { categoryRouter } from './categories/category/category.routes';
 import { maintenanceRouter } from './categories/maintenance/maintenance.routes';
-import { companyRouter } from './users/accounts/company.routes';
 import { listTimeIntervals } from '../shared/timeInterval/controllers/listTimeIntervals';
 import { findAllMaintenancePriority } from '../shared/maintenancePriority/controllers/findAllMaintenancePriority';
 import { tutorialsRouter } from './tutorials/tutorials.routes';
 import { permissionsRouter } from './permissions/permissions.routes';
 import { buildingRouter } from './buildings/building.routes';
+import { accountRouter } from './account/account.routes';
+import { listForSelectRouter } from './listForSelect/list.routes';
 
 // TYPES
 import type { TPermissionsNames } from '../../types/TPermissionsNames';
-import { listForSelectRouter } from './listForSelect/list.routes';
 
 // ROUTES
 export const backofficeRouter: Router = Router();
@@ -55,11 +55,12 @@ backofficeRouter.use(
   handleBackofficePermCheck(backofficePermissions),
   maintenanceRouter,
 );
+
 backofficeRouter.use(
-  '/companies',
+  '/account',
   authMiddleware,
   handleBackofficePermCheck(backofficePermissions),
-  companyRouter,
+  accountRouter,
 );
 
 backofficeRouter.get('/timeinterval/list', listTimeIntervals);
