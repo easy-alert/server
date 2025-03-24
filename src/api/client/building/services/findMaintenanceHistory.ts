@@ -156,6 +156,11 @@ export async function findMaintenanceHistory({
           { Maintenance: { activity: { contains: search, mode: 'insensitive' } } },
           { Maintenance: { Category: { name: { contains: search, mode: 'insensitive' } } } },
           { MaintenancesStatus: { singularLabel: { contains: search, mode: 'insensitive' } } },
+          {
+            Maintenance: {
+              instructions: { some: { name: { contains: search, mode: 'insensitive' } } },
+            },
+          },
         ],
       }),
     },

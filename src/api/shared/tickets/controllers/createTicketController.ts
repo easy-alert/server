@@ -81,9 +81,12 @@ export async function createTicketController(req: Request, res: Response) {
 
   const lowerCaseEmail = residentEmail ? residentEmail?.toLowerCase() : null;
 
+  const ticketNumber = await ticketServices.generateTicketNumber({ buildingId: building?.id });
+
   const ticket = await ticketServices.create({
     data: {
       buildingId: building?.id,
+      ticketNumber,
       residentName,
       residentApartment,
       residentEmail: lowerCaseEmail,
