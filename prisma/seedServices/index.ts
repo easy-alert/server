@@ -700,4 +700,48 @@ export class SeedServices {
 
     console.log('Owner Building Permissions created.');
   }
+
+  async fixTicketsNumbers() {
+    console.log('\n\nstarting Fix Tickets Numbers ...');
+
+    const buildings = await prisma.building.findMany();
+
+    for (const building of buildings) {
+      const tickets = await prisma.ticket.findMany({
+        where: {
+          buildingId: building.id,
+        },
+
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
+
+      if (!tickets.length) {
+        console.log(`No tickets found for building ${building.id}`);
+        continue;
+      }
+
+      for (let i = 0; i < tickets.length; i++) {
+        const ticket = tickets[i];
+
+        await prisma.ticket.update({
+          where: {
+            id: ticket.id,
+          },
+
+          data: {
+            ticketNumber: i + 1,
+          },
+        });
+
+        console.log(`Ticket ${ticket.id} updated with number ${i + 1}`);
+      }
+
+      // Use the tickets variable here
+      console.log(`Found ${tickets.length} tickets for building ${building.id}`);
+    }
+
+    console.log('Tickets Numbers fixed.');
+  }
 }
