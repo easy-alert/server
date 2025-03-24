@@ -379,11 +379,6 @@ class TicketServices {
       }
 
       if (building.UserBuildingsPermissions.length) {
-        console.log(
-          '🚀 ~ TicketServices ~ building.UserBuildingsPermissions:',
-          building.UserBuildingsPermissions,
-        );
-
         building.UserBuildingsPermissions.forEach(async ({ User }) => {
           if (User.email && User.emailIsConfirmed) {
             emailTransporter.sendTicketCreated({
@@ -641,6 +636,22 @@ class TicketServices {
     });
 
     return apartments?.BuildingApartments;
+  }
+
+  async generateTicketNumber({ buildingId }: { buildingId: string }) {
+    const tickets = await prisma.ticket.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+
+      where: {
+        buildingId,
+      },
+
+      take: 1,
+    });
+
+    return tickets.length ? tickets[0].ticketNumber + 1 : 1;
   }
 }
 
