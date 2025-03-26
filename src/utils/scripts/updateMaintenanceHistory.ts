@@ -30,12 +30,12 @@ export async function updateMaintenanceHistory(req: Request, res: Response) {
     return res.status(404).json({ ServerMessage: { message: 'Manutenção não encontrada.' } });
   }
 
-  if (!maintenanceHistory.resolutionDate && resolutionDate) {
-    throw new ServerMessage({
-      message: 'Você não pode resolver uma manutenção pendente.',
-      statusCode: 400,
-    });
-  }
+  // if (!maintenanceHistory.resolutionDate && resolutionDate) {
+  //   throw new ServerMessage({
+  //     message: 'Você não pode resolver uma manutenção pendente.',
+  //     statusCode: 400,
+  //   });
+  // }
 
   let status;
 
@@ -71,3 +71,4 @@ export async function updateMaintenanceHistory(req: Request, res: Response) {
 
   return res.status(200).json({ ServerMessage: { message: `Manutenção editada com sucesso.` } });
 }
+
