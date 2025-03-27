@@ -9,10 +9,20 @@ export async function listUsers(req: Request, res: Response) {
 
   const pagination = page ?? 1;
 
-  const Companies = await userServices.list({
+  const { users, usersCount } = await userServices.list({
     page: Number(pagination),
     search: search as string,
   });
 
-  return res.status(200).json(Companies);
+  const formattedUsers = users.map((user) => ({
+    id: user.id,
+    image: user.image,
+    name: user.name,
+    email: user.email,
+    phoneNumber: user.phoneNumber,
+    lastAccess: user.lastAccess,
+    status: user.isBlocked,
+  }));
+
+  return res.status(200).json({ users: formattedUsers, usersCount });
 }

@@ -1,5 +1,6 @@
 import { ServerMessage } from '../messages/serverMessage';
-import { INeedAndCannotExist } from './types';
+
+import type { INeedAndCannotExist } from './types';
 
 export function needExist(vars: INeedAndCannotExist[]) {
   for (let i = 0; i < vars.length; i++) {
