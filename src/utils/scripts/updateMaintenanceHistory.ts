@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { prisma } from '../../../prisma';
 import { ServerMessage } from '../messages/serverMessage';
 import { SharedMaintenanceServices } from '../../api/shared/maintenance/services/sharedMaintenanceServices';
 
@@ -28,6 +29,18 @@ export async function updateMaintenanceHistory(req: Request, res: Response) {
 
   if (!maintenanceHistory) {
     return res.status(404).json({ ServerMessage: { message: 'Manutenção não encontrada.' } });
+  }
+
+  if (
+    !maintenanceHistory.MaintenanceReport &&
+    maintenanceHistory.resolutionDate &&
+    maintenanceHistory.resolutionDate > maintenanceHistory.dueDate
+  ) {
+    await prisma.maintenanceReport.create({
+      data: {
+        maintenanceHistoryId,
+      },
+    });
   }
 
   // if (!maintenanceHistory.resolutionDate && resolutionDate) {
@@ -71,3 +84,4 @@ export async function updateMaintenanceHistory(req: Request, res: Response) {
 
   return res.status(200).json({ ServerMessage: { message: `Manutenção editada com sucesso.` } });
 }
+
