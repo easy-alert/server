@@ -7,7 +7,7 @@ import { AuthServices } from '../services/authServices';
 const authServices = new AuthServices();
 
 export const authValidateToken = async (req: Request, res: Response) => {
-  const { userId } = req;
+  const { userId, companyId } = req;
 
   const user = await authServices.validateToken({ userId });
 
@@ -16,12 +16,17 @@ export const authValidateToken = async (req: Request, res: Response) => {
   if (user.Companies.length > 0) {
     isCompanyOwner = await authServices.isCompanyOwner({
       userId: user.id,
-      companyId: user.Companies[0].Company.id,
+      companyId,
     });
   }
 
+  const selectedCompany = user?.Companies?.find(
+    (company) => company?.Company?.id === companyId,
+  )?.Company;
+
   return res.status(200).json({
-    Company: user.Companies.length > 0 ? user.Companies[0].Company : null,
+    Company: selectedCompany || user?.Companies[0]?.Company || null,
+
     User: {
       id: user.id,
       name: user.name,
