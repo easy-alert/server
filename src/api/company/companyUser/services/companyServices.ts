@@ -34,4 +34,16 @@ export class CompanyUserServices {
     });
   }
   // #endregion
+
+  // #region edit
+  async unlinkUserCompany({ userId, companyId }: { userId: string; companyId: string }) {
+    return prisma.userCompanies.delete({
+      where: {
+        userId_companyId: {
+          companyId,
+          userId,
+        },
+      },
+    });
+  }
 }
