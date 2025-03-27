@@ -1,9 +1,9 @@
 import { Router } from 'express';
 
-// import { findManyChecklistsController } from '../../shared/checklists/controllers/findManyChecklistsController';
+import { findManyChecklistsController } from '../../shared/checklists/controllers/findManyChecklistsController';
+import { completeChecklistController } from '../../shared/checklists/controllers/completeChecklistController';
+import { findChecklistDataByMonthController } from '../../shared/checklists/controllers/findChecklistDataByMonthController';
 // import { findChecklistByIdController } from '../../shared/checklists/controllers/findChecklistByIdController';
-// import { completeChecklistController } from '../../shared/checklists/controllers/completeChecklistController';
-// import { findChecklistDataByMonthController } from '../../shared/checklists/controllers/findChecklistDataByMonthController';
 import { updateChecklistReportController } from '../../shared/checklists/controllers/updateChecklistReportController';
 import { updateChecklistController } from '../../shared/checklists/controllers/updateChecklistController';
 import { findChecklistReportController } from '../../shared/checklists/controllers/findChecklistReportController';
@@ -36,9 +36,9 @@ checklistRouter.delete('/:checklistId/:mode', deleteChecklistController);
 // Esse report é do relatório
 checklistRouter.get('/reports', findChecklistReportController);
 // checklistRouter.get('/:checklistId', findChecklistByIdController);
-// checklistRouter.get('/:buildingNanoId/:date', findManyChecklistsController);
-// checklistRouter.get('/:buildingNanoId/calendar/dates', findChecklistDataByMonthController);
-// checklistRouter.put('/complete', completeChecklistController);
+checklistRouter.get('/:buildingNanoId/:date', findManyChecklistsController);
+checklistRouter.get('/:buildingNanoId/calendar/dates', findChecklistDataByMonthController);
+checklistRouter.put('/complete', completeChecklistController);
 
 // Esse report é do relato
 checklistRouter.put('/reports', updateChecklistReportController);
