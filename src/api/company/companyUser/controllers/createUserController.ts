@@ -26,7 +26,6 @@ interface IBody {
 }
 
 export async function createUserController(req: Request, res: Response) {
-  const { Company } = req;
   const { image, name, role, email, phoneNumber, password, confirmPassword }: IBody = req.body;
 
   checkValues([
@@ -40,23 +39,9 @@ export async function createUserController(req: Request, res: Response) {
   checkPassword({ password, confirmPassword });
 
   const uniqueUserEmail = await userServices.findUniqueEmail({ email });
-  const uniqueUserPhone = await userServices.findUniquePhone({ phoneNumber });
-
-  if (
-    uniqueUserEmail &&
-    uniqueUserPhone &&
-    !uniqueUserEmail.Companies.some((company) => company.companyId === Company.id)
-  ) {
-    await companyUserServices.createUserCompany({
-      companyId: req.Company.id,
-      userId: uniqueUserEmail.id,
-      owner: false,
-    });
-
-    return res.status(201).json({ ServerMessage: { message: 'Usuário cadastrado com sucesso.' } });
-  }
-
   cannotExist([{ label: 'Email', variable: uniqueUserEmail }]);
+
+  const uniqueUserPhone = await userServices.findUniquePhone({ phoneNumber });
   cannotExist([{ label: 'Telefone', variable: uniqueUserPhone }]);
 
   const user = await userServices.create({
