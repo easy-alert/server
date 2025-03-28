@@ -46,4 +46,83 @@ export class CompanyUserServices {
       },
     });
   }
+
+  // #endregion
+
+  // region find
+  async findUserCompany({ userId, companyId }: { userId: string; companyId: string }) {
+    const user = await prisma.userCompanies.findFirst({
+      where: {
+        userId,
+        companyId,
+      },
+    });
+
+    return user;
+  }
+
+  async findByEmailOrPhone({ userInfo }: { userInfo: string }) {
+    const user = await prisma.user.findFirst({
+      select: {
+        id: true,
+
+        name: true,
+        email: true,
+        emailIsConfirmed: true,
+        phoneNumber: true,
+        phoneNumberIsConfirmed: true,
+        role: true,
+        image: true,
+        colorScheme: true,
+        passwordHash: true,
+
+        lastAccess: true,
+        isBlocked: true,
+
+        createdAt: true,
+        updatedAt: true,
+
+        Companies: {
+          select: {
+            Company: {
+              select: {
+                id: true,
+                name: true,
+                contactNumber: true,
+                CNPJ: true,
+                CPF: true,
+                createdAt: true,
+                image: true,
+                isBlocked: true,
+                ticketInfo: true,
+                ticketType: true,
+              },
+            },
+          },
+        },
+
+        Permissions: {
+          select: { Permission: { select: { name: true } } },
+        },
+
+        UserBuildingsPermissions: {
+          select: {
+            Building: {
+              select: {
+                id: true,
+                nanoId: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+
+      where: {
+        OR: [{ email: userInfo }, { phoneNumber: userInfo }],
+      },
+    });
+
+    return user;
+  }
 }
