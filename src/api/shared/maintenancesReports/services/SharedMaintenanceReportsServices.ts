@@ -211,6 +211,19 @@ export class SharedMaintenanceReportsServices {
             },
           },
         },
+
+        Users: {
+          select: {
+            User: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                phoneNumber: true,
+              },
+            },
+          },
+        },
       },
 
       where: {
