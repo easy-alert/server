@@ -85,4 +85,3 @@ export async function updateMaintenanceHistory(req: Request, res: Response) {
 
   return res.status(200).json({ ServerMessage: { message: `Manutenção editada com sucesso.` } });
 }
-
