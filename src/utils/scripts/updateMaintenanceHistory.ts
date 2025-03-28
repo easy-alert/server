@@ -39,6 +39,7 @@ export async function updateMaintenanceHistory(req: Request, res: Response) {
     await prisma.maintenanceReport.create({
       data: {
         maintenanceHistoryId,
+        origin: 'Backoffice',
       },
     });
   }
