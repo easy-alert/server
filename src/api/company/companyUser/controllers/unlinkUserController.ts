@@ -1,7 +1,5 @@
 import { Response, Request } from 'express';
 
-import { prisma } from '../../../../../prisma';
-
 import { UserServices } from '../../../shared/users/user/services/userServices';
 import { CompanyUserServices } from '../services/companyServices';
 
