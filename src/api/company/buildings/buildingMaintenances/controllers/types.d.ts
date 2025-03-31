@@ -69,6 +69,7 @@ export interface IMaintenancesForHistorySelected {
   maintenanceId: string;
   resolutionDate: Date | null;
   notificationDate: Date | null;
+  status: string;
 }
 
 export interface IAllBuildingCategoriesAndMaintenances {
