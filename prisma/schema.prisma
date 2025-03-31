@@ -48,7 +48,7 @@ model User {
   Permissions                      UserPermissions[]
   UserBuildingsPermissions         UserBuildingsPermissions[]
   Companies                        UserCompanies[]
-  MaintenanceHistory               MaintenanceHistory[]
+  MaintenanceHistory               MaintenanceHistoryUsers[] // New relation field
   Ticket                           Ticket[]
   TicketReportPDF                  TicketReportPDF[]
   Checklist                        Checklist[]
@@ -306,7 +306,8 @@ model MaintenanceAdditionalInformation {
 }
 
 model MaintenanceHistory {
-  id                  String @id @unique @default(uuid())
+  id String @id @unique @default(uuid())
+
   buildingId          String
   maintenanceId       String
   ownerCompanyId      String
@@ -324,21 +325,21 @@ model MaintenanceHistory {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Building                 Building                   @relation(fields: [buildingId], references: [id], onDelete: Cascade)
-  Maintenance              Maintenance                @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
-  Company                  Company                    @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
-  MaintenancesStatus       MaintenancesStatus         @relation(fields: [maintenanceStatusId], references: [id], onDelete: Cascade)
-  MaintenanceReport        MaintenanceReport[]
-  MaintenanceReportHistory MaintenanceReportHistory[]
+  Building           Building            @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  Maintenance        Maintenance         @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+  Company            Company             @relation(fields: [ownerCompanyId], references: [id], onDelete: Cascade)
+  MaintenancesStatus MaintenancesStatus  @relation(fields: [maintenanceStatusId], references: [id], onDelete: Cascade)
+  priority           MaintenancePriority @relation(fields: [priorityName], references: [name])
 
+  MaintenanceReport         MaintenanceReport[]
+  MaintenanceReportHistory  MaintenanceReportHistory[]
   MaintenanceReportProgress MaintenanceReportProgress[]
-  tickets                   Ticket[]
-  suppliers                 MaintenanceHistorySupplier[]
-  activities                MaintenanceHistoryActivity[]
 
-  priority MaintenancePriority @relation(fields: [priorityName], references: [name])
-  User     User?               @relation(fields: [userId], references: [id])
-  userId   String?
+  tickets    Ticket[]
+  suppliers  MaintenanceHistorySupplier[]
+  activities MaintenanceHistoryActivity[]
+
+  Users MaintenanceHistoryUsers[]
 
   @@map("maintenancesHistory")
 }
@@ -550,6 +551,22 @@ model MaintenancesStatus {
   MaintenancesHistory MaintenanceHistory[]
 
   @@map("maintenancesStatus")
+}
+
+model MaintenanceHistoryUsers {
+  id String @id @unique @default(uuid())
+
+  maintenanceHistoryId String
+  userId               String
+
+  MaintenanceHistory MaintenanceHistory @relation(fields: [maintenanceHistoryId], references: [id], onDelete: Cascade)
+  User               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([maintenanceHistoryId, userId])
+  @@map("maintenanceHistoryUsers")
 }
 
 // BUILDINGS
