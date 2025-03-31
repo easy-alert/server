@@ -78,7 +78,7 @@ export interface ICreateMaintenanceHistoryAndReport {
   dueDate: Date;
   inProgress: boolean;
 
-  MaintenanceReport: {
+  MaintenanceReport?: {
     create: {
       cost: number;
       observation: string;
