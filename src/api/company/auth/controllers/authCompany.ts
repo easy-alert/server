@@ -25,6 +25,17 @@ export const authCompany = async (req: Request, res: Response) => {
 
   const user = await authServices.canLogin({ login, password });
 
+  if (user.Companies.length > 1) {
+    return res.status(200).json({
+      userId: user.id,
+      Companies: user.Companies.map((company) => ({
+        id: company.Company.id,
+        name: company.Company.name,
+        image: company.Company.image,
+      })),
+    });
+  }
+
   await permissionServices.checkPermission({
     UserPermissions: user.Permissions,
     permissions: ['admin:company', 'access:company'],
@@ -40,6 +51,7 @@ export const authCompany = async (req: Request, res: Response) => {
   const token = tokenServices.generate({
     tokenData: {
       userId: user.id,
+      companyId: user.Companies[0].Company.id,
     },
   });
 
