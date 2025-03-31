@@ -165,7 +165,9 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
           maintenanceId: bodyData[i].Maintenances[j].id,
           daysToAnticipate: bodyData[i].Maintenances[j].daysToAnticipate,
         });
+
         maintenancesForHistorySelected.push({
+          status: bodyData[i].Maintenances[j].status,
           maintenanceId: bodyData[i].Maintenances[j].id,
           resolutionDate: bodyData[i].Maintenances[j].resolutionDate
             ? changeTime({
@@ -242,13 +244,17 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       ...maintenance,
       notificationDate: maintenancesForCreateHistory[i].notificationDate,
       resolutionDate: maintenancesForCreateHistory[i].resolutionDate,
+      status: maintenancesForCreateHistory[i].status,
     };
   }
 
-  const completedStatus = await sharedMaintenanceStatusServices.findByName({ name: 'completed' });
-
   let notificationDate = null;
+
   for (let i = 0; i < updatedsMaintenances.length; i++) {
+    const updatedMaintenanceStatus = await sharedMaintenanceStatusServices.findByName({
+      name: updatedsMaintenances[i].status || 'completed',
+    });
+
     const timeIntervalDelay = await timeIntervalServices.findById({
       timeIntervalId: updatedsMaintenances[i].delayTimeIntervalId,
     });
@@ -363,10 +369,11 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         buildingId,
         maintenanceId: updatedsMaintenances[i].id,
         ownerCompanyId: req.Company.id,
-        maintenanceStatusId: completedStatus.id,
+        maintenanceStatusId: updatedMaintenanceStatus.id,
         notificationDate: updatedsMaintenances[i].resolutionDate,
         resolutionDate: updatedsMaintenances[i].resolutionDate,
         dueDate: updatedsMaintenances[i].resolutionDate,
+
         MaintenanceReport: {
           create: {
             origin,
@@ -390,6 +397,13 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
           },
         },
       };
+
+      if (
+        updatedsMaintenances[i].status === 'expired' ||
+        updatedsMaintenances[i].status === 'pending'
+      ) {
+        dataForCreateHistoryAndReport.MaintenanceReport = undefined;
+      }
 
       const createdMaintenanceHistory = await sharedMaintenanceServices.createHistoryAndReport({
         data: dataForCreateHistoryAndReport,
