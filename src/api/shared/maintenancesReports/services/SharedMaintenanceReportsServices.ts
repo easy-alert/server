@@ -217,6 +217,7 @@ export class SharedMaintenanceReportsServices {
             User: {
               select: {
                 id: true,
+                image: true,
                 name: true,
                 email: true,
                 phoneNumber: true,
