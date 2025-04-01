@@ -185,8 +185,13 @@ export class CompanyServices {
             },
             owner: true,
           },
+
+          where: {
+            owner: true,
+          },
         },
       },
+
       where: {
         id: companyId,
       },
