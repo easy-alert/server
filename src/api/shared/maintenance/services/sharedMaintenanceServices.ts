@@ -63,6 +63,16 @@ export class SharedMaintenanceServices {
     return prisma.maintenanceHistory.create(args);
   }
 
+  async createMaintenanceHistoryUser({
+    data,
+  }: {
+    data: { maintenanceHistoryId: string; userId: string };
+  }) {
+    return prisma.maintenanceHistoryUsers.create({
+      data,
+    });
+  }
+
   async createHistoryAndReport({ data }: { data: ICreateMaintenanceHistoryAndReport }) {
     return prisma.maintenanceHistory.create({
       data,

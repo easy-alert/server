@@ -39,6 +39,7 @@ export const authBackofficeCompany = async (req: Request, res: Response) => {
   const token = tokenServices.generate({
     tokenData: {
       userId: user.id,
+      companyId: user.Companies[0].Company.id,
     },
   });
 

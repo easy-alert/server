@@ -14,6 +14,8 @@ export interface ICreateOccasionalMaintenanceReport {
   occasionalMaintenanceType: 'finished' | 'pending';
   priorityName: MaintenancePriorityName;
 
+  usersId?: string[];
+
   maintenanceData: {
     id: string;
     element: string;
