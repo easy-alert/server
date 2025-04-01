@@ -7,6 +7,7 @@ import type { NextFunction, Request, Response } from 'express';
 // CLASS
 import { ServerMessage } from '../utils/messages/serverMessage';
 import { UserServices } from '../api/shared/users/user/services/userServices';
+import { upsertApiLogs } from '../api/shared/apiLog/services/upsertApiLogs';
 
 // TYPES
 import type { IToken } from './types';
@@ -23,6 +24,10 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
     });
   }
 
+  const { body, method, params, query, originalUrl } = req;
+
+  const isAllowedMethod = ['POST', 'PUT', 'DELETE'].includes(method);
+
   try {
     const [, token] = authorization.split(' ');
     const secret: any = process.env.JWT_SECRET;
@@ -37,6 +42,19 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
       user.Companies.length > 0 ? user.Companies[0].Company : ({} as Request['Company']);
     req.Permissions = user.Permissions;
     req.BuildingsPermissions = user.UserBuildingsPermissions;
+
+    if (isAllowedMethod) {
+      await upsertApiLogs({
+        companyId,
+        userId: user.id,
+        apiLogId: req.apiLogId,
+        body,
+        method,
+        params,
+        query,
+        originalUrl,
+      });
+    }
 
     next();
   } catch (error) {

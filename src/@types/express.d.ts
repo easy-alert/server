@@ -2,6 +2,7 @@
 declare namespace Express {
   export interface Request {
     userId: string;
+    apiLogId?: string;
 
     Company: {
       id: string;
