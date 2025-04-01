@@ -44,6 +44,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
     ticketIds,
     occasionalMaintenanceType,
     priorityName,
+    usersId,
   }: ICreateOccasionalMaintenanceReport = body;
 
   // #region VALIDATIONS
@@ -156,6 +157,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
         maintenanceStatusId: pendingStatus.id,
         notificationDate: new Date(executionDate),
         priorityName,
+
         dueDate: noWeekendTimeDate({
           date: addDays({ date: new Date(executionDate), days: defaultPeriod }),
           interval: 2,
@@ -163,6 +165,20 @@ export async function sharedCreateOccasionalMaintenanceReport({
         inProgress,
       },
     });
+
+    // Associate the array of users with the newly created MaintenanceHistory
+    if (usersId && Array.isArray(usersId) && usersId.length > 0) {
+      await Promise.all(
+        usersId.map(async (userId) => {
+          await sharedMaintenanceServices.createMaintenanceHistoryUser({
+            data: {
+              maintenanceHistoryId: newPending.id,
+              userId,
+            },
+          });
+        }),
+      );
+    }
 
     // Repetido lá embaixo
     if (ticketIds && Array.isArray(ticketIds) && ticketIds?.length > 0) {
@@ -200,6 +216,20 @@ export async function sharedCreateOccasionalMaintenanceReport({
           inProgress,
         },
       });
+
+      // Associate the array of users with the newly created MaintenanceHistory
+      if (usersId && Array.isArray(usersId) && usersId.length > 0) {
+        await Promise.all(
+          usersId.map(async (userId) => {
+            await sharedMaintenanceServices.createMaintenanceHistoryUser({
+              data: {
+                maintenanceHistoryId: pendingInProgress.id,
+                userId,
+              },
+            });
+          }),
+        );
+      }
 
       if (ticketIds && Array.isArray(ticketIds) && ticketIds?.length > 0) {
         await ticketServices.updateMany({
@@ -275,6 +305,20 @@ export async function sharedCreateOccasionalMaintenanceReport({
             },
           },
         });
+      }
+
+      // Associate the array of users with the newly created MaintenanceHistory
+      if (usersId && Array.isArray(usersId) && usersId.length > 0) {
+        await Promise.all(
+          usersId.map(async (userId) => {
+            await sharedMaintenanceServices.createMaintenanceHistoryUser({
+              data: {
+                maintenanceHistoryId: maintenanceHistory.id,
+                userId,
+              },
+            });
+          }),
+        );
       }
 
       if (ticketIds && Array.isArray(ticketIds) && ticketIds?.length > 0) {

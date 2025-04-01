@@ -33,13 +33,17 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
     const secret: any = process.env.JWT_SECRET;
 
     const decoded = verify(token, secret);
-    const { userId } = decoded as IToken;
+    const { companyId, userId } = decoded as IToken;
 
     const user = await userServices.findById({ userId });
 
+    const selectedCompany = user?.Companies?.find(
+      (company) => company?.Company?.id === companyId,
+    )?.Company;
+
     req.userId = user.id;
-    req.Company =
-      user.Companies.length > 0 ? user.Companies[0].Company : ({} as Request['Company']);
+    req.companyId = companyId;
+    req.Company = selectedCompany || user?.Companies[0]?.Company || null;
     req.Permissions = user.Permissions;
     req.BuildingsPermissions = user.UserBuildingsPermissions;
 

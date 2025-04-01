@@ -171,14 +171,23 @@ export class UserServices {
     const user = await prisma.user.findUnique({
       select: {
         id: true,
+
         name: true,
         email: true,
+        emailIsConfirmed: true,
         phoneNumber: true,
-        createdAt: true,
+        phoneNumberIsConfirmed: true,
+        role: true,
+        image: true,
+        colorScheme: true,
+
         lastAccess: true,
-        passwordHash: true,
-        updatedAt: true,
         isBlocked: true,
+
+        createdAt: true,
+        updatedAt: true,
+
+        passwordHash: true,
 
         Companies: {
           select: {
@@ -262,6 +271,14 @@ export class UserServices {
 
   async findUniquePhone({ phoneNumber }: { phoneNumber: string }) {
     const user = await prisma.user.findUnique({
+      include: {
+        Companies: {
+          select: {
+            companyId: true,
+          },
+        },
+      },
+
       where: { phoneNumber },
     });
 
@@ -270,6 +287,14 @@ export class UserServices {
 
   async findUniqueEmail({ email }: { email: string }) {
     const user = await prisma.user.findUnique({
+      include: {
+        Companies: {
+          select: {
+            companyId: true,
+          },
+        },
+      },
+
       where: { email: email.toLowerCase() },
     });
 

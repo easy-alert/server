@@ -9,6 +9,8 @@ import { createUserController } from './controllers/createUserController';
 import { authMiddleware } from '../../../middlewares/auth';
 import { isCompany } from '../../../middlewares/permissions/isCompany';
 import { handleCompanyPermCheck } from '../../../middlewares/permissions/permCheck';
+import { unlinkUserController } from './controllers/unlinkUserController';
+import { linkUserController } from './controllers/linkUserController';
 
 const companyPermission = 'access:company';
 
@@ -22,6 +24,14 @@ companyUserRouter.post(
   handleCompanyPermCheck([companyPermission, 'access:account']),
   isCompany,
   createUserController,
+);
+
+companyUserRouter.post(
+  '/link-user',
+  authMiddleware,
+  handleCompanyPermCheck([companyPermission, 'access:account']),
+  isCompany,
+  linkUserController,
 );
 
 companyUserRouter.put(
@@ -38,4 +48,12 @@ companyUserRouter.delete(
   handleCompanyPermCheck([companyPermission, 'access:account']),
   isCompany,
   deleteUserController,
+);
+
+companyUserRouter.delete(
+  '/unlink/:userId',
+  authMiddleware,
+  handleCompanyPermCheck([companyPermission, 'access:account']),
+  isCompany,
+  unlinkUserController,
 );
