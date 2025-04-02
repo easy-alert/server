@@ -755,6 +755,46 @@ export class BuildingServices {
       })),
     });
   }
+
+  async createAdminBuildingPermissions({ buildingId }: { buildingId: string }) {
+    const building = await prisma.building.findUnique({
+      select: {
+        Company: {
+          select: {
+            UserCompanies: {
+              select: {
+                userId: true,
+              },
+
+              where: {
+                owner: true,
+              },
+            },
+          },
+        },
+      },
+
+      where: {
+        id: buildingId,
+      },
+    });
+
+    if (!building) {
+      throw new ServerMessage({
+        statusCode: 404,
+        message: `A informação: edificação não existe na base de dados.`,
+      });
+    }
+
+    await prisma.userBuildingsPermissions.createMany({
+      data: building.Company.UserCompanies.map((user) => ({
+        userId: user.userId,
+        buildingId,
+        isMainContact: true,
+        showContact: true,
+      })),
+    });
+  }
 }
 
 export const buildingServices = new BuildingServices();
