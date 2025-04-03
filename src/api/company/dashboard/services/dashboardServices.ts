@@ -276,81 +276,166 @@ export class DashboardServices {
     return { timeLinePending, timeLineCompleted, timeLineExpired };
   }
 
-  async maintenancesByStatus({ filter }: { filter: IDashboardFilter }) {
-    const [completedMaintenances, expiredMaintenances, pendingMaintenances] =
-      await prisma.$transaction([
-        prisma.maintenanceHistory.count({
-          where: {
-            ownerCompanyId: filter.companyId,
-            resolutionDate: filter.period,
+  async maintenancesByStatus({
+    filter,
+    maintenanceType,
+  }: {
+    filter: IDashboardFilter;
+    maintenanceType: 'common' | 'occasional' | undefined;
+  }) {
+    const [
+      completedMaintenances,
+      expiredMaintenances,
+      pendingMaintenances,
+      inProgressMaintenances,
+    ] = await prisma.$transaction([
+      prisma.maintenanceHistory.count({
+        where: {
+          ownerCompanyId: filter.companyId,
+          resolutionDate: filter.period,
 
-            Building: {
-              name: filter.buildings,
+          Building: {
+            name: filter.buildings,
+          },
+
+          Maintenance: {
+            Category: {
+              name: filter.categories,
             },
 
-            Maintenance: {
-              Category: {
-                name: filter.categories,
+            MaintenanceType: { name: maintenanceType },
+          },
+
+          MaintenancesStatus: {
+            OR: [
+              {
+                name: 'completed',
+              },
+              {
+                name: 'overdue',
+              },
+            ],
+          },
+        },
+      }),
+
+      prisma.maintenanceHistory.count({
+        where: {
+          ownerCompanyId: filter.companyId,
+          dueDate: filter.period,
+
+          Building: {
+            name: filter.buildings,
+          },
+
+          Maintenance: {
+            Category: {
+              name: filter.categories,
+            },
+
+            MaintenanceType: { name: maintenanceType },
+          },
+
+          MaintenancesStatus: {
+            name: 'expired',
+          },
+        },
+      }),
+
+      prisma.maintenanceHistory.count({
+        where: {
+          ownerCompanyId: filter.companyId,
+          notificationDate: filter.period,
+
+          Building: {
+            name: filter.buildings,
+          },
+
+          Maintenance: {
+            Category: {
+              name: filter.categories,
+            },
+
+            MaintenanceType: { name: maintenanceType },
+          },
+
+          MaintenancesStatus: {
+            name: 'pending',
+          },
+        },
+      }),
+
+      prisma.maintenanceHistory.count({
+        where: {
+          ownerCompanyId: filter.companyId,
+          notificationDate: filter.period,
+          inProgress: true,
+
+          Building: {
+            name: filter.buildings,
+          },
+
+          Maintenance: {
+            Category: {
+              name: filter.categories,
+            },
+
+            MaintenanceType: { name: maintenanceType },
+          },
+
+          MaintenancesStatus: {
+            name: 'pending',
+          },
+        },
+      }),
+    ]);
+
+    return {
+      completedMaintenances,
+      expiredMaintenances,
+      pendingMaintenances,
+      inProgressMaintenances,
+    };
+  }
+
+  async maintenancesByCategories({
+    filter,
+    maintenanceType,
+  }: {
+    filter: IDashboardFilter;
+    maintenanceType: 'common' | 'occasional' | undefined;
+  }) {
+    const maintenances = await prisma.maintenanceHistory.findMany({
+      select: {
+        Maintenance: {
+          select: {
+            Category: {
+              select: {
+                name: true,
               },
             },
-
-            MaintenancesStatus: {
-              OR: [
-                {
-                  name: 'completed',
-                },
-                {
-                  name: 'overdue',
-                },
-              ],
-            },
           },
-        }),
-
-        prisma.maintenanceHistory.count({
-          where: {
-            ownerCompanyId: filter.companyId,
-            dueDate: filter.period,
-
-            Building: {
-              name: filter.buildings,
-            },
-
-            Maintenance: {
-              Category: {
-                name: filter.categories,
-              },
-            },
-
-            MaintenancesStatus: {
-              name: 'expired',
-            },
+        },
+      },
+      where: {
+        ownerCompanyId: filter.companyId,
+        resolutionDate: filter.period,
+        Building: {
+          name: filter.buildings,
+        },
+        Maintenance: {
+          Category: {
+            name: filter.categories,
           },
-        }),
+          MaintenanceType: { name: maintenanceType },
+        },
+        MaintenancesStatus: {
+          name: 'completed',
+        },
+      },
+    });
 
-        prisma.maintenanceHistory.count({
-          where: {
-            ownerCompanyId: filter.companyId,
-            notificationDate: filter.period,
-
-            Building: {
-              name: filter.buildings,
-            },
-
-            Maintenance: {
-              Category: {
-                name: filter.categories,
-              },
-            },
-
-            MaintenancesStatus: {
-              name: 'pending',
-            },
-          },
-        }),
-      ]);
-
-    return { completedMaintenances, expiredMaintenances, pendingMaintenances };
+    return maintenances;
   }
 
   async maintenancesMostCompletedExpired({
@@ -712,6 +797,97 @@ export class DashboardServices {
     ]);
 
     return { ticketsServicesType, serviceTypes };
+  }
+
+  async usersActivities({ filter }: { filter: IDashboardFilter }) {
+    const usersActivities = await prisma.user.findMany({
+      select: {
+        name: true,
+
+        MaintenanceHistory: {
+          select: {
+            id: true,
+          },
+
+          where: {
+            MaintenanceHistory: {
+              ownerCompanyId: filter.companyId,
+              resolutionDate: filter.period,
+
+              Building: {
+                name: filter.buildings,
+              },
+
+              Maintenance: {
+                Category: {
+                  name: filter.categories,
+                },
+              },
+
+              MaintenancesStatus: {
+                OR: [
+                  {
+                    name: 'completed',
+                  },
+                  {
+                    name: 'overdue',
+                  },
+                ],
+              },
+            },
+          },
+        },
+
+        Ticket: {
+          select: {
+            id: true,
+          },
+
+          where: {
+            createdAt: filter.period,
+
+            building: {
+              name: filter.buildings,
+              companyId: filter.companyId,
+            },
+
+            statusName: {
+              in: ['finished', 'dismissed'],
+            },
+          },
+        },
+
+        Checklist: {
+          select: {
+            id: true,
+          },
+
+          where: {
+            createdAt: filter.period,
+
+            status: 'completed',
+
+            building: {
+              name: filter.buildings,
+              companyId: filter.companyId,
+            },
+          },
+        },
+      },
+
+      where: {
+        UserBuildingsPermissions: {
+          some: {
+            Building: {
+              name: filter.buildings,
+              companyId: filter.companyId,
+            },
+          },
+        },
+      },
+    });
+
+    return usersActivities;
   }
 }
 
