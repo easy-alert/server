@@ -5,7 +5,7 @@ import { dashboardServices } from '../services/dashboardServices';
 import { handleDashboardFilter } from '../../../../utils/filters/handleDashboardFilter';
 import { setToUTCMidnight } from '../../../../utils/dateTime';
 
-export async function maintenancesByStatusController(req: Request, res: Response) {
+export async function maintenancesByCategoriesController(req: Request, res: Response) {
   const { buildings, categories, responsible, startDate, endDate, maintenanceType } = req.query;
 
   const startDateFormatted = startDate ? setToUTCMidnight(startDate as string) : undefined;
@@ -22,21 +22,25 @@ export async function maintenancesByStatusController(req: Request, res: Response
     buildingsPermissions: req.BuildingsPermissions,
   });
 
-  const maintenances = await dashboardServices.maintenancesByStatus({
+  const maintenances = await dashboardServices.maintenancesByCategories({
     filter: dashboardFilter,
     maintenanceType: maintenanceType ? (maintenanceType as 'common' | 'occasional') : undefined,
   });
 
-  const maintenancesStatusData: { data: number[]; labels: string[]; colors: string[] } = {
-    data: [
-      maintenances.completedMaintenances,
-      maintenances.expiredMaintenances,
-      maintenances.pendingMaintenances,
-      maintenances.inProgressMaintenances,
-    ],
-    labels: ['Concluídas', 'Vencidas', 'Pendentes', 'Em Andamento'],
-    colors: ['#34B53A', '#FF3508', '#FFB200', '#007BFF'],
-  };
+  // Group by category name and count
+  const groupedCategories = maintenances.reduce((acc, maintenance) => {
+    const categoryName = maintenance.Maintenance?.Category?.name || 'Unknown';
+    acc[categoryName] = (acc[categoryName] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
 
-  return res.status(200).json({ ...maintenancesStatusData });
+  // Convert to array format
+  const categoriesArray = Object.entries(groupedCategories)
+    .map(([category, count]) => ({
+      category,
+      count,
+    }))
+    .sort((a, b) => b.count - a.count); // Sort in descending order
+
+  return res.status(200).json({ categoriesArray });
 }
