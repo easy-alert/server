@@ -31,7 +31,12 @@ export async function editMaintenanceHistory(req: Request, res: Response) {
   const maintenance = await updateMaintenanceHistory({
     id: body.id,
     dueDate: body.dueDate,
-    maintenanceStatusId: maintenanceStatus.id,
+
+    MaintenancesStatus: {
+      connect: {
+        id: maintenanceStatus.id,
+      },
+    },
   });
 
   return res.status(200).json({
