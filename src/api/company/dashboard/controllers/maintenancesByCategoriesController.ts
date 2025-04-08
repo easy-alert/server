@@ -4,6 +4,7 @@ import { dashboardServices } from '../services/dashboardServices';
 
 import { handleDashboardFilter } from '../../../../utils/filters/handleDashboardFilter';
 import { setToUTCMidnight } from '../../../../utils/dateTime';
+import { mask } from '../../../../utils/dataHandler';
 
 export async function maintenancesByCategoriesController(req: Request, res: Response) {
   const { buildings, categories, responsible, startDate, endDate, maintenanceType } = req.query;
@@ -27,6 +28,19 @@ export async function maintenancesByCategoriesController(req: Request, res: Resp
     maintenanceType: maintenanceType ? (maintenanceType as 'common' | 'occasional') : undefined,
   });
 
+  // Total number of maintenances
+  const totalMaintenances = maintenances.length;
+
+  // Total cost of maintenances
+  const totalCost = maintenances.reduce((acc, maintenance) => {
+    const cost = maintenance.MaintenanceReport.reduce((sum, report) => {
+      const reportCost = report.cost || 0;
+      return sum + reportCost;
+    }, 0);
+    return acc + cost;
+  }, 0);
+  const formattedTotalCost = mask({ value: totalCost.toString(), type: 'BRL' });
+
   // Group by category name and count
   const groupedCategories = maintenances.reduce((acc, maintenance) => {
     const categoryName = maintenance.Maintenance?.Category?.name || 'Unknown';
@@ -42,5 +56,9 @@ export async function maintenancesByCategoriesController(req: Request, res: Resp
     }))
     .sort((a, b) => b.count - a.count); // Sort in descending order
 
-  return res.status(200).json({ categoriesArray });
+  return res.status(200).json({
+    totalMaintenances,
+    totalCost: formattedTotalCost,
+    categoriesArray,
+  });
 }
