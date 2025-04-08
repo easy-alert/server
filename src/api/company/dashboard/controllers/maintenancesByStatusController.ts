@@ -6,7 +6,7 @@ import { handleDashboardFilter } from '../../../../utils/filters/handleDashboard
 import { setToUTCMidnight } from '../../../../utils/dateTime';
 
 export async function maintenancesByStatusController(req: Request, res: Response) {
-  const { buildings, categories, responsible, startDate, endDate } = req.query;
+  const { buildings, categories, responsible, startDate, endDate, maintenanceType } = req.query;
 
   const startDateFormatted = startDate ? setToUTCMidnight(startDate as string) : undefined;
   const endDateFormatted = endDate ? setToUTCMidnight(endDate as string) : undefined;
@@ -24,6 +24,7 @@ export async function maintenancesByStatusController(req: Request, res: Response
 
   const maintenances = await dashboardServices.maintenancesByStatus({
     filter: dashboardFilter,
+    maintenanceType: maintenanceType ? (maintenanceType as 'common' | 'occasional') : undefined,
   });
 
   const maintenancesStatusData: { data: number[]; labels: string[]; colors: string[] } = {
@@ -31,9 +32,10 @@ export async function maintenancesByStatusController(req: Request, res: Response
       maintenances.completedMaintenances,
       maintenances.expiredMaintenances,
       maintenances.pendingMaintenances,
+      maintenances.inProgressMaintenances,
     ],
-    labels: ['Concluídas', 'Vencidas', 'Pendentes'],
-    colors: ['#34B53A', '#FF3508', '#FFB200'],
+    labels: ['Concluídas', 'Vencidas', 'Pendentes', 'Em Andamento'],
+    colors: ['#34B53A', '#FF3508', '#FFB200', '#007BFF'],
   };
 
   return res.status(200).json({ ...maintenancesStatusData });
