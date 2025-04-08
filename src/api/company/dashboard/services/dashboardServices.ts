@@ -416,21 +416,39 @@ export class DashboardServices {
             },
           },
         },
+
+        MaintenanceReport: {
+          select: {
+            cost: true,
+          },
+        },
       },
+
       where: {
         ownerCompanyId: filter.companyId,
         resolutionDate: filter.period,
+
         Building: {
           name: filter.buildings,
         },
+
         Maintenance: {
           Category: {
             name: filter.categories,
           },
+
           MaintenanceType: { name: maintenanceType },
         },
+
         MaintenancesStatus: {
-          name: 'completed',
+          OR: [
+            {
+              name: 'completed',
+            },
+            {
+              name: 'overdue',
+            },
+          ],
         },
       },
     });
@@ -464,12 +482,14 @@ export class DashboardServices {
           },
         },
         where: {
+          ownerCompanyId: filter.companyId,
           notificationDate: filter.period,
+
           Building: {
             NotificationsConfigurations: filter.responsible,
             name: filter.buildings,
           },
-          ownerCompanyId: filter.companyId,
+
           Maintenance: {
             Category: {
               name: filter.categories,
@@ -482,6 +502,7 @@ export class DashboardServices {
               },
             },
           },
+
           MaintenancesStatus: {
             OR: [
               {
