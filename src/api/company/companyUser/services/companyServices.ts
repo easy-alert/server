@@ -47,6 +47,22 @@ export class CompanyUserServices {
     });
   }
 
+  async deleteUserPermissions({ userId }: { userId: string }) {
+    return prisma.userPermissions.deleteMany({
+      where: {
+        userId,
+      },
+    });
+  }
+
+  async deleteUserBuildingsPermissions({ userId }: { userId: string }) {
+    return prisma.userBuildingsPermissions.deleteMany({
+      where: {
+        userId,
+      },
+    });
+  }
+
   // #endregion
 
   // region find
