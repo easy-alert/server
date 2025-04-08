@@ -195,11 +195,14 @@ export class SharedMaintenanceReportsServices {
               select: {
                 pluralLabel: true,
                 singularLabel: true,
+                unitTime: true,
               },
             },
 
             PeriodTimeInterval: {
               select: {
+                singularLabel: true,
+                pluralLabel: true,
                 unitTime: true,
               },
             },

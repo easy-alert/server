@@ -12,13 +12,15 @@ import { createMaintenance } from './controllers/createMaintenance';
 import { deleteMaintenance } from './controllers/deleteMaintenance';
 import { editMaintenance } from './controllers/editMaintenance';
 import { deleteOccasionalMaintenanceHistory } from './controllers/deleteOccasionalMaintenanceReport';
+import { getMaintenancesKanban } from './controllers/getMaintenancesKanban';
 import { sharedUpdateInProgressMaintenanceHistory } from '../../../shared/maintenance/controllers/sharedUpdateInProgressMaintenanceHistory';
 import { sharedCreateReportProgress } from '../../../shared/maintenancesReportProgresses/controllers/sharedCreateReportProgress';
 import { sharedFindReportProgress } from '../../../shared/maintenancesReportProgresses/controllers/sharedFindReportProgress';
-import { getMaintenancesKanban } from './controllers/getMaintenancesKanban';
+import { editMaintenanceHistory } from './controllers/editMaintenanceHistory';
 
 export const maintenanceRouter = Router();
 
+// MAINTENANCE ROUTES
 maintenanceRouter.get('/kanban', getMaintenancesKanban);
 
 maintenanceRouter.post('/create', createMaintenance);
@@ -31,6 +33,10 @@ maintenanceRouter.delete(
   deleteOccasionalMaintenanceHistory,
 );
 
+// MAINTENANCE HISTORY ROUTES
+maintenanceRouter.put('/history/edit', editMaintenanceHistory);
+
+// MAINTENANCE REPORTS ROUTES
 maintenanceRouter.post('/set/in-progress', sharedUpdateInProgressMaintenanceHistory);
 maintenanceRouter.post('/create/report', sharedCreateMaintenanceReport);
 maintenanceRouter.post('/create/report/progress', sharedCreateReportProgress);

@@ -1,14 +1,15 @@
 import { hyphenToSlash } from '../dataHandler';
-import { changeTime } from './changeTime';
 
 export function setToUTCLastMinuteOfDay(date: Date | string) {
   let dateValue = date;
 
   if (typeof dateValue === 'string') {
     dateValue = hyphenToSlash(String(dateValue)).substring(0, 10);
+    dateValue = new Date(dateValue);
   }
 
-  const newDate = new Date(dateValue);
-  const endOfDay = changeTime({ date: newDate, time: { h: 23, m: 59, s: 59, ms: 999 } });
-  return endOfDay;
+  dateValue.setUTCHours(23, 59, 59, 999); // Set to the last minute of the day in UTC
+  const midnight = dateValue;
+
+  return midnight;
 }
