@@ -1,8 +1,11 @@
 import { Request, Response } from 'express';
 
 import { updateMaintenanceHistory } from '../../../../shared/maintenanceHistory/services/updateMaintenanceHistory';
+import { SharedMaintenanceStatusServices } from '../../../../shared/maintenanceStatus/services/sharedMaintenanceStatusServices';
 
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+
+const sharedMaintenanceStatusServices = new SharedMaintenanceStatusServices();
 
 export async function editMaintenanceHistory(req: Request, res: Response) {
   const { body } = req;
@@ -21,8 +24,14 @@ export async function editMaintenanceHistory(req: Request, res: Response) {
     });
   }
 
+  const maintenanceStatus = await sharedMaintenanceStatusServices.findByName({
+    name: body.maintenanceStatus,
+  });
+
   const maintenance = await updateMaintenanceHistory({
-    ...req.body,
+    id: body.id,
+    dueDate: body.dueDate,
+    maintenanceStatusId: maintenanceStatus.id,
   });
 
   return res.status(200).json({
