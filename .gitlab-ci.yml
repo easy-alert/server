@@ -16,7 +16,6 @@ staging_migrate:
   environment: review/develop
   stage: staging_migrate
   script:
-    - yarn add prisma --dev
     - yarn
     - yarn prisma migrate deploy
     - yarn prisma db seed
@@ -27,7 +26,6 @@ production_migrate:
   environment: production
   stage: production_migrate
   script:
-    - yarn add prisma --dev
     - yarn
     - yarn prisma migrate deploy
     - yarn prisma db seed
@@ -37,7 +35,7 @@ production_migrate:
 build:
   stage: build
   script:
-    - yarn add typescript
+    - yarn
     - yarn build
     - ls
   only:
