@@ -16,6 +16,9 @@ export async function unlinkUserController(req: Request, res: Response) {
 
   await userServices.findById({ userId });
 
+  await companyUserServices.deleteUserPermissions({ userId });
+  await companyUserServices.deleteUserBuildingsPermissions({ userId });
+
   await companyUserServices.unlinkUserCompany({ userId, companyId });
 
   return res.status(200).json({ ServerMessage: { message: 'Usuário desvinculados com sucesso.' } });
