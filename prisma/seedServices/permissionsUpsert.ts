@@ -201,3 +201,12 @@ export const checklistPermissions: IPermissionUpsert[] = [
     label: 'Deletar Checklist',
   },
 ];
+
+export const managementPermissions: IPermissionUpsert[] = [
+  {
+    moduleName: 'management',
+    moduleLabel: 'Gestão',
+    name: 'management:checklist',
+    label: 'Checklist',
+  },
+]

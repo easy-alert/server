@@ -20,6 +20,7 @@ import {
   buildingsPermissions,
   checklistPermissions,
   maintenancesPermissions,
+  managementPermissions,
   ticketsPermissions,
 } from './permissionsUpsert';
 
@@ -46,6 +47,9 @@ export class SeedServices {
 
       // maintenance permissions
       ...maintenancesPermissions,
+
+      // management permissions
+      ...managementPermissions
     ];
 
     for (const modulePermission of modulePermissions) {
