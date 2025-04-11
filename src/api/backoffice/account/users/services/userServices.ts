@@ -10,7 +10,26 @@ export class UserServices {
       include: {
         Companies: {
           include: {
-            Company: true,
+            Company: {
+              select: {
+                id: true,
+                name: true,
+                isBlocked: true,
+                image: true,
+              },
+            },
+          },
+        },
+
+        UserBuildingsPermissions: {
+          include: {
+            Building: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
           },
         },
       },
