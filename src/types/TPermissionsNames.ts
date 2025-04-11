@@ -56,4 +56,7 @@ export type TPermissionsNames =
   | 'maintenances:updateDates'
   | 'maintenances:delete'
   | 'maintenances:createOccasional'
-  | 'maintenances:finish';
+  | 'maintenances:finish'
+
+  // management permissions
+  | 'management:checklist';
