@@ -22,6 +22,7 @@ export async function listUserDetails(req: Request, res: Response) {
 
   const formattedUser = {
     id: user.id,
+
     image: user.image,
     name: user.name,
     email: user.email,
@@ -29,11 +30,18 @@ export async function listUserDetails(req: Request, res: Response) {
     role: user.role,
     lastAccess: user.lastAccess,
     createdAt: user.createdAt,
+
     Companies: user.Companies.map((userCompany) => ({
       id: userCompany.Company.id,
       name: userCompany.Company.name,
       image: userCompany.Company.image,
       owner: userCompany.owner,
+    })),
+
+    Buildings: user.UserBuildingsPermissions.map((userBuilding) => ({
+      id: userBuilding.Building.id,
+      name: userBuilding.Building.name,
+      image: userBuilding.Building.image,
     })),
   };
 
