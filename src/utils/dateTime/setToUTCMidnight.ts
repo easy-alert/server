@@ -8,7 +8,7 @@ export function setToUTCMidnight(date: Date | string) {
     dateValue = new Date(dateValue);
   }
 
-  dateValue.setUTCHours(0, 0, 0, 0);
+  dateValue.setUTCHours(3, 0, 0, 0);
   const midnight = dateValue;
 
   return midnight;
