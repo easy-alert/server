@@ -2,15 +2,15 @@ import { Request, Response } from 'express';
 
 import { dashboardServices } from '../services/dashboardServices';
 
-import { handleDashboardFilter } from '../../../../utils/filters/handleDashboardFilter';
 import { mask } from '../../../../utils/masks';
-import { setToUTCMidnight } from '../../../../utils/dateTime';
+import { handleDashboardFilter } from '../../../../utils/filters/handleDashboardFilter';
+import { setToMidnight } from '../../../../utils/dateTime';
 
 export async function maintenancesCountAndCostController(req: Request, res: Response) {
   const { buildings, categories, responsible, maintenanceType, startDate, endDate } = req.query;
 
-  const startDateFormatted = startDate ? setToUTCMidnight(startDate as string) : undefined;
-  const endDateFormatted = endDate ? setToUTCMidnight(endDate as string) : undefined;
+  const startDateFormatted = startDate ? setToMidnight(startDate as string) : undefined;
+  const endDateFormatted = endDate ? setToMidnight(endDate as string) : undefined;
 
   const dashboardFilter = handleDashboardFilter({
     companyId: req.Company.id,
