@@ -59,4 +59,5 @@ export type TPermissionsNames =
   | 'maintenances:finish'
 
   // management permissions
-  | 'management:checklist';
+  | 'management:checklist'
+  | 'management:account';
