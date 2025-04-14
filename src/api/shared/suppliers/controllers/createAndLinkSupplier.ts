@@ -2,7 +2,7 @@ import { Response, Request } from 'express';
 import { supplierServices } from '../services/supplierServices';
 import { checkValues } from '../../../../utils/newValidator';
 import { createInitialsAvatar, unmask } from '../../../../utils/dataHandler';
-import { SharedMaintenanceServices } from '../../../shared/maintenance/services/sharedMaintenanceServices';
+import { SharedMaintenanceServices } from '../../maintenance/services/sharedMaintenanceServices';
 
 interface IBody {
   name: string;
