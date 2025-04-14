@@ -9,7 +9,7 @@ export class UserServices {
     const user = await prisma.user.findUnique({
       include: {
         Companies: {
-          include: {
+          select: {
             Company: {
               select: {
                 id: true,

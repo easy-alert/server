@@ -35,7 +35,7 @@ export async function listUserDetails(req: Request, res: Response) {
       id: userCompany.Company.id,
       name: userCompany.Company.name,
       image: userCompany.Company.image,
-      owner: userCompany.owner,
+      isBlocked: userCompany.Company.isBlocked,
     })),
 
     Buildings: user.UserBuildingsPermissions.map((userBuilding) => ({
