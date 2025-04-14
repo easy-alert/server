@@ -27,7 +27,7 @@ export async function createMaintenanceHistoryActivityCommentService({
   content,
   images,
 }: IData) {
-  let author: string = 'Convidado';
+  let author = 'Convidado';
 
   // Gambiarra, ver lá na modal
   if (syndicNanoId && syndicNanoId !== 'guest') {

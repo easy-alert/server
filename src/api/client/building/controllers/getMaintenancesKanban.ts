@@ -5,7 +5,7 @@ import type { Company as TCompany, MaintenancePriorityName } from '@prisma/clien
 
 import { hasAdminPermission } from '../../../../utils/permissions/hasAdminPermission';
 import { handlePermittedBuildings } from '../../../../utils/permissions/handlePermittedBuildings';
-import { ClientBuildingServices } from '../../../client/building/services/clientBuildingServices';
+import { ClientBuildingServices } from '../services/clientBuildingServices';
 import { changeUTCTime } from '../../../../utils/dateTime';
 import { findCompanyByUserId } from '../../../shared/company/services/findCompanyByUserId';
 import { findUserById } from '../../user/services/findUserById';

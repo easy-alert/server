@@ -10,7 +10,7 @@ import { SharedMaintenanceStatusServices } from '../maintenanceStatus/services/s
 import { addDays } from '../../../utils/dateTime';
 import { SharedMaintenanceReportsServices } from '../maintenancesReports/services/SharedMaintenanceReportsServices';
 import { noWeekendTimeDate } from '../../../utils/dateTime/noWeekendTimeDate';
-import { SharedBuildingNotificationConfigurationServices } from '../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
+import { SharedBuildingNotificationConfigurationServices } from '../notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { checkValues } from '../../../utils/newValidator';
 import { ticketServices } from '../tickets/services/ticketServices';
 
