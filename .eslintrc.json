@@ -3,7 +3,12 @@
     "node": true,
     "es2021": true
   },
-  "extends": ["airbnb-base", "prettier"],
+  "extends": [
+    "airbnb-base",
+    "plugin:import/typescript",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
@@ -16,14 +21,20 @@
     "import/prefer-default-export": "off",
     "import/extensions": "off",
     "import/no-unresolved": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "no-console": "off",
     "linebreak-style": "off",
     "class-methods-use-this": "off",
     "no-restricted-syntax": "off",
     "no-unused-expressions": "off",
     "no-unused-vars": "warn",
-    "@typescript-eslint/no-unused-vars": "warn",
     "no-await-in-loop": "off",
     "no-plusplus": "off",
-    "no-continue": "off"
+    "no-continue": "off",
+    "import/no-cycle": "warn",
+    "@typescript-eslint/ban-ts-comment": "warn"
   }
 }
