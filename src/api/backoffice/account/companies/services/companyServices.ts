@@ -177,17 +177,21 @@ export class CompanyServices {
           select: {
             User: {
               select: {
+                id: true,
                 name: true,
                 email: true,
-                id: true,
                 lastAccess: true,
               },
             },
+
             owner: true,
           },
+        },
 
-          where: {
-            owner: true,
+        Buildings: {
+          select: {
+            id: true,
+            name: true,
           },
         },
       },
