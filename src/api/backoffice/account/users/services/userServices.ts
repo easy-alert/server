@@ -22,7 +22,7 @@ export class UserServices {
         },
 
         UserBuildingsPermissions: {
-          include: {
+          select: {
             Building: {
               select: {
                 id: true,
