@@ -4,6 +4,9 @@
   "description": "",
   "main": "src/server.ts",
   "license": "MIT",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "tsc --noEmit && ts-node-dev --respawn --exit-child --transpile-only --ignore-watch node_modules src/server.ts",
     "dev1": "ts-node-dev --respawn --exit-child --transpile-only --ignore-watch node_modules src/server.ts",
