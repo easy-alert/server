@@ -12,6 +12,8 @@
     "dev1": "ts-node-dev --respawn --exit-child --transpile-only --ignore-watch node_modules src/server.ts",
     "start": "node dist/src/server.js",
     "build": "tsc",
+    "migrate:deploy": "prisma migrate deploy",
+    "db:seed": "prisma db seed",
     "lint": "eslint src/**/*.{ts,js}",
     "lint:fix": "eslint src/**/*.{ts,js} --fix",
     "format": "prettier --write src",
