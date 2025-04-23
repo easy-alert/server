@@ -6,6 +6,11 @@ import { SeedServices } from './seedServices';
 const seedServices = new SeedServices();
 
 async function main() {
+  if (process.env.NODE_ENV === 'production') {
+    const exists = await prisma.user.count()
+    if (exists > 0) return
+  }
+
   console.log('seed is running ...');
 
   await seedServices.upsertPermissions();
