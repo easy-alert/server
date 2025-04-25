@@ -44,15 +44,15 @@ export async function sharedMaintenanceHistoryDetails(req: Request, res: Respons
     },
   });
 
-  const selectedMaintenance = history.find(
-    (item) => item.id === maintenanceHistoryId,
-  );
+  const selectedMaintenance = history.find((item) => item.id === maintenanceHistoryId);
 
   if (!selectedMaintenance) {
     return res.status(404).json({ message: 'Histórico de manutenção não encontrado' });
   }
 
-  const period = selectedMaintenance.Maintenance.period * selectedMaintenance.Maintenance.PeriodTimeInterval.unitTime;
+  const period =
+    selectedMaintenance.Maintenance.period *
+    selectedMaintenance.Maintenance.PeriodTimeInterval.unitTime;
 
   // se aplica só
   const canReportPending =
