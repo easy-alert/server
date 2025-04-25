@@ -44,16 +44,24 @@ export async function sharedMaintenanceHistoryDetails(req: Request, res: Respons
     },
   });
 
-  const period = history[0].Maintenance.period * history[0].Maintenance.PeriodTimeInterval.unitTime;
+  const selectedMaintenance = history.find(
+    (item) => item.id === maintenanceHistoryId,
+  );
 
-  // s eaplica só
+  if (!selectedMaintenance) {
+    return res.status(404).json({ message: 'Histórico de manutenção não encontrado' });
+  }
+
+  const period = selectedMaintenance.Maintenance.period * selectedMaintenance.Maintenance.PeriodTimeInterval.unitTime;
+
+  // se aplica só
   const canReportPending =
-    today >= removeDays({ date: history[0]?.notificationDate, days: period });
+    today >= removeDays({ date: selectedMaintenance?.notificationDate, days: period });
 
   let allowReport = true;
 
   if (maintenance.MaintenancesStatus.name === 'expired') {
-    if (history[1]?.id !== maintenance?.id || today >= history[0]?.notificationDate) {
+    if (history[1]?.id !== maintenance?.id || today >= selectedMaintenance?.notificationDate) {
       allowReport = false;
     }
   }
@@ -77,7 +85,7 @@ export async function sharedMaintenanceHistoryDetails(req: Request, res: Respons
   if (
     maintenance.MaintenancesStatus.name === 'pending' &&
     history[1]?.MaintenancesStatus?.name === 'expired' &&
-    today < history[0]?.notificationDate
+    today < selectedMaintenance?.notificationDate
   ) {
     allowReport = false;
   }
