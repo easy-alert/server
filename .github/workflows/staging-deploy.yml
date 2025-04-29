@@ -29,6 +29,8 @@ jobs:
 
       - name: Seed database
         run: npm run db:seed
+        env:
+          DATABASE_URL: '${{ secrets.DATABASE_URL }}'
 
   build:
     name: 🛠 Build (staging)
