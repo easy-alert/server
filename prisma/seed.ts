@@ -28,9 +28,9 @@ async function main() {
   await seedServices.upsertTicketStatus();
   await seedServices.upsertTicketDismissReasons();
 
-  await seedServices.updateOwnerUsers();
+  // await seedServices.updateOwnerUsers();
 
-  await seedServices.ownerBuildingPermissions();
+  // await seedServices.ownerBuildingPermissions();
 
   // await seedServices.fixTicketsNumbers();
 }
