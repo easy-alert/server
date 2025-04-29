@@ -9,6 +9,7 @@ jobs:
   migrate:
     name: 🎲 Migrate (staging)
     runs-on: ubuntu-latest
+    environment: staging
     steps:
       - uses: actions/checkout@v4
 
@@ -29,7 +30,7 @@ jobs:
       - name: Apply Prisma migrations
         run: npx prisma migrate deploy
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: '${{ secrets.DATABASE_URL }}'
 
       - name: Seed database
         run: npm run seed
@@ -37,6 +38,7 @@ jobs:
   build:
     name: 🛠 Build (staging)
     runs-on: ubuntu-latest
+    environment: staging
     needs: migrate
     steps:
       - uses: actions/checkout@v4
@@ -56,6 +58,7 @@ jobs:
   deploy:
     name: 🚀 Deploy to Heroku (staging)
     runs-on: ubuntu-latest
+    environment: staging
     needs: build
     steps:
       - uses: actions/checkout@v4
