@@ -23,8 +23,8 @@ jobs:
 
       - name: Debug DATABASE_URL
         run: |
-          echo "::add-mask::${{ secrets.DATABASE_URL_STAGING }}"
-          echo "DATABASE_URL_STAGING='${{ secrets.DATABASE_URL_STAGING }}'"
+          echo "::add-mask::${{ secrets.DATABASE_URL }}"
+          echo "DATABASE_URL='${{ secrets.DATABASE_URL }}'"
 
       - name: Apply Prisma migrations
         run: npx prisma migrate deploy
