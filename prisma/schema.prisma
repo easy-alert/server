@@ -320,6 +320,7 @@ model MaintenanceHistory {
   wasNotified      Boolean   @default(false)
   inProgress       Boolean   @default(false)
   daysInAdvance    Int       @default(0)
+  showToResident   Boolean   @default(true)
 
   priorityName MaintenancePriorityName @default(low)
 

@@ -9,6 +9,7 @@ const sharedMaintenanceStatusServices = new SharedMaintenanceStatusServices();
 
 export async function editMaintenanceHistory(req: Request, res: Response) {
   const { body } = req;
+  console.log('🚀 ~ editMaintenanceHistory ~ body:', body);
 
   if (!body) {
     throw new ServerMessage({
@@ -31,6 +32,7 @@ export async function editMaintenanceHistory(req: Request, res: Response) {
   const maintenance = await updateMaintenanceHistory({
     id: body.id,
     dueDate: body.dueDate,
+    showToResident: body.showToResident,
 
     MaintenancesStatus: {
       connect: {

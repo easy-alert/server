@@ -1,15 +1,19 @@
 name: Production Deploy Heroku
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
-      - develop
+      - master
 
 jobs:
   migrate:
     name: 🎲 Migrate (production)
     runs-on: ubuntu-latest
     environment: production
+    if: >
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'release/')
     steps:
       - uses: actions/checkout@v4
 
@@ -37,6 +41,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     needs: migrate
+    if: >
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'release/')
     steps:
       - uses: actions/checkout@v4
 
@@ -57,6 +64,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     needs: build
+    if: >
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'release/')
     steps:
       - uses: actions/checkout@v4
 
