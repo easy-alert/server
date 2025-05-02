@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {
   createMaintenanceHistoryActivityController,
   findManyMaintenanceHistoryActivitiesController,
-} from '../../shared/maintenanceHistoryActivities/controllers';
+} from './controllers';
 
 export const maintenanceHistoryActivitiesRouter: Router = Router();
 

@@ -482,6 +482,7 @@ export class SharedMaintenanceServices {
         maintenanceId: true,
         wasNotified: true,
         priority: true,
+        showToResident: true,
         Maintenance: {
           select: {
             period: true,

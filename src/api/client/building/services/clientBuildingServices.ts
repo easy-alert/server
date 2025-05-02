@@ -464,6 +464,8 @@ export class ClientBuildingServices {
             },
           },
 
+          showToResident: true,
+
           // OR: [
           //   { notificationDate: { lte: endDate, gte: startDate } },
           //   { resolutionDate: { lte: endDate, gte: startDate } },
@@ -548,6 +550,8 @@ export class ClientBuildingServices {
               },
             ],
           },
+
+          showToResident: true,
 
           // OR: [
           //   { notificationDate: { lte: endDatePending, gte: startDatePending } },

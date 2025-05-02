@@ -30,7 +30,7 @@ export async function createOneTicketHistoryActivity({
   activityImages,
   type = 'comment',
 }: ICreateOneTicketHistoryActivity) {
-  let author: string = 'Convidado';
+  let author = 'Convidado';
 
   // Gambiarra, ver lá na modal
   if (syndicNanoId && syndicNanoId !== 'guest') {

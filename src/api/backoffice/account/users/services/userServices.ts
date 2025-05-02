@@ -9,8 +9,27 @@ export class UserServices {
     const user = await prisma.user.findUnique({
       include: {
         Companies: {
-          include: {
-            Company: true,
+          select: {
+            Company: {
+              select: {
+                id: true,
+                name: true,
+                isBlocked: true,
+                image: true,
+              },
+            },
+          },
+        },
+
+        UserBuildingsPermissions: {
+          select: {
+            Building: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
           },
         },
       },

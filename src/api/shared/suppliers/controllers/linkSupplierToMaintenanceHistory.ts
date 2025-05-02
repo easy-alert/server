@@ -1,6 +1,6 @@
 import { Response, Request } from 'express';
 import { supplierServices } from '../services/supplierServices';
-import { SharedMaintenanceServices } from '../../../shared/maintenance/services/sharedMaintenanceServices';
+import { SharedMaintenanceServices } from '../../maintenance/services/sharedMaintenanceServices';
 import { checkValues } from '../../../../utils/newValidator';
 import { createMaintenanceHistoryActivityCommentService } from '../../maintenanceHistoryActivities/services';
 

@@ -8,7 +8,7 @@ export function setToUTCLastMinuteOfDay(date: Date | string) {
     dateValue = new Date(dateValue);
   }
 
-  dateValue.setUTCHours(23, 59, 59, 999); // Set to the last minute of the day in UTC
+  dateValue.setUTCHours(2, 59, 59, 999); // Set to the last minute of the day in UTC
   const midnight = dateValue;
 
   return midnight;

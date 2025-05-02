@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
@@ -319,6 +320,7 @@ model MaintenanceHistory {
   wasNotified      Boolean   @default(false)
   inProgress       Boolean   @default(false)
   daysInAdvance    Int       @default(0)
+  showToResident   Boolean   @default(true)
 
   priorityName MaintenancePriorityName @default(low)
 
@@ -608,6 +610,7 @@ model Building {
   isActivityLogPublic               Boolean  @default(false)
   guestCanCompleteMaintenance       Boolean  @default(true)
   image                             String?
+  isBlocked                         Boolean  @default(false)
 
   residentPassword String?
   syndicPassword   String?

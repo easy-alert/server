@@ -110,6 +110,7 @@ export class SharedMaintenanceReportsServices {
         daysInAdvance: true,
         priorityName: true,
         priority: true,
+        showToResident: true,
 
         MaintenanceReportProgress: {
           select: {

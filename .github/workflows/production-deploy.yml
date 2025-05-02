@@ -1,0 +1,81 @@
+name: Production Deploy Heroku
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - master
+
+jobs:
+  migrate:
+    name: 🎲 Migrate (production)
+    runs-on: ubuntu-latest
+    environment: production
+    if: >
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'release/')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply Prisma migrations
+        run: npm run migrate:deploy
+        env:
+          DATABASE_URL: '${{ secrets.DATABASE_URL }}'
+
+      - name: Seed database
+        run: npm run db:seed
+        env:
+          DATABASE_URL: '${{ secrets.DATABASE_URL }}'
+
+  build:
+    name: 🛠 Build (production)
+    runs-on: ubuntu-latest
+    environment: production
+    needs: migrate
+    if: >
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'release/')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+  deploy:
+    name: 🚀 Deploy to Heroku (production)
+    runs-on: ubuntu-latest
+    environment: production
+    needs: build
+    if: >
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'release/')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+
+      - uses: akhileshns/heroku-deploy@v3.14.15
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}

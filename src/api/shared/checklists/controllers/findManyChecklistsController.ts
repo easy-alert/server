@@ -5,13 +5,15 @@ import { buildingServices } from '../../../company/buildings/building/services/b
 
 import { checkValues } from '../../../../utils/newValidator';
 import { hasAdminPermission } from '../../../../utils/permissions/hasAdminPermission';
+import { hasManagementPermission } from '../../../../utils/permissions/hasManagementPermission';
 
 export async function findManyChecklistsController(req: Request, res: Response) {
   const { buildingNanoId, date } = req.params as any as { buildingNanoId: string; date: string };
   const { userId, Permissions } = req;
 
   const idAdmin = hasAdminPermission(Permissions);
-  const userIdForFilter = idAdmin ? undefined : userId;
+  const isManager = hasManagementPermission(Permissions, 'management:checklist');
+  const userIdForFilter = idAdmin || isManager ? undefined : userId;
 
   checkValues([
     { label: 'ID da edificação', type: 'string', value: buildingNanoId },

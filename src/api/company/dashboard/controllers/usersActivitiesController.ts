@@ -3,13 +3,13 @@ import { Request, Response } from 'express';
 import { dashboardServices } from '../services/dashboardServices';
 
 import { handleDashboardFilter } from '../../../../utils/filters/handleDashboardFilter';
-import { setToUTCLastMinuteOfDay, setToUTCMidnight } from '../../../../utils/dateTime';
+import { setToLastMinuteOfDay, setToMidnight } from '../../../../utils/dateTime';
 
 export async function usersActivitiesController(req: Request, res: Response) {
   const { buildings, categories, responsible, startDate, endDate } = req.query;
 
-  const startDateFormatted = startDate ? setToUTCMidnight(startDate as string) : undefined;
-  const endDateFormatted = endDate ? setToUTCLastMinuteOfDay(endDate as string) : undefined;
+  const startDateFormatted = startDate ? setToMidnight(startDate as string) : undefined;
+  const endDateFormatted = endDate ? setToLastMinuteOfDay(endDate as string) : undefined;
 
   const dashboardFilter = handleDashboardFilter({
     companyId: req.Company.id,

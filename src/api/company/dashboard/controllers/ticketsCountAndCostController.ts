@@ -4,13 +4,13 @@ import type { TicketStatusName } from '@prisma/client';
 import { dashboardServices } from '../services/dashboardServices';
 
 import { handleDashboardFilter } from '../../../../utils/filters/handleDashboardFilter';
-import { setToUTCMidnight } from '../../../../utils/dateTime';
+import { setToMidnight } from '../../../../utils/dateTime';
 
 export async function ticketsCountAndCostController(req: Request, res: Response) {
   const { buildings, categories, responsible, ticketStatus, startDate, endDate } = req.query;
 
-  const startDateFormatted = startDate ? setToUTCMidnight(startDate as string) : undefined;
-  const endDateFormatted = endDate ? setToUTCMidnight(endDate as string) : undefined;
+  const startDateFormatted = startDate ? setToMidnight(startDate as string) : undefined;
+  const endDateFormatted = endDate ? setToMidnight(endDate as string) : undefined;
 
   const dashboardFilter = handleDashboardFilter({
     companyId: req.Company.id,
