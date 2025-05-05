@@ -12,6 +12,8 @@ import { PermissionServices } from '../../../../shared/permissions/permission/se
 import { UserPermissionServices } from '../../../../shared/users/userPermission/services/userPermissionServices';
 import { CompanyServices } from '../services/companyServices';
 import { SharedCompanyServices } from '../../../../shared/users/accounts/services/sharedCompanyServices';
+import { sendEmailConfirmation } from '../../../../shared/users/user/services/sendEmailConfirmation';
+import { sendPhoneConfirmation } from '../../../../shared/users/user/services/sendPhoneConfirmation';
 
 const validator = new Validator();
 const userServices = new UserServices();
@@ -103,6 +105,9 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     userId: user.id,
     owner: true,
   });
+
+  if (user.email) sendEmailConfirmation({ email: user.email, userId: user.id });
+  if (user.phoneNumber) sendPhoneConfirmation({ phoneNumber: user.phoneNumber, userId: user.id });
 
   return res.status(200).json({
     ServerMessage: {
