@@ -223,6 +223,7 @@ export class SharedMaintenanceServices {
             warrantyExpiration: true,
             keepNotificationAfterWarrantyEnds: true,
             mandatoryReportProof: true,
+            nextMaintenanceCreationBasis: true,
           },
         },
         Company: {
@@ -483,6 +484,7 @@ export class SharedMaintenanceServices {
         wasNotified: true,
         priority: true,
         showToResident: true,
+
         Maintenance: {
           select: {
             period: true,
