@@ -106,10 +106,8 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     owner: true,
   });
 
-    if (user.email)
-      sendEmailConfirmation({ email: user.email, userId: user.id });
-    if (user.phoneNumber)
-      sendPhoneConfirmation({ phoneNumber: user.phoneNumber, userId: user.id });
+  if (user.email) sendEmailConfirmation({ email: user.email, userId: user.id });
+  if (user.phoneNumber) sendPhoneConfirmation({ phoneNumber: user.phoneNumber, userId: user.id });
 
   return res.status(200).json({
     ServerMessage: {
