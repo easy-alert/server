@@ -46,7 +46,6 @@ export async function editMaintenanceHistory(req: Request, res: Response) {
       buildingId: maintenanceHistory.Building.id,
       maintenanceId: maintenanceHistory.Maintenance.id,
     });
-    console.log("🚀 ~ editMaintenanceHistory ~ history:", history)
 
     if (history.length > 0 && history[0].id === maintenanceHistory.id) {
       const foundBuildingMaintenance =
