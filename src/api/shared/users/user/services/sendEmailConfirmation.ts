@@ -44,7 +44,7 @@ export async function sendEmailConfirmation({ email, link, userId }: ISendEmailC
 
   await emailTransporter.sendConfirmEmail({
     subject: 'Confirmação de e-mail',
-    text: 'Você está recebendo esta mensagem pois seu e-mail foi apontado como responsável por uma edificação!',
+    text: 'Você está recebendo esta mensagem pois seu e-mail foi apontado como responsável por uma empresa!',
     link: webLink,
     toEmail: email,
     companyLogo: company?.image || '',

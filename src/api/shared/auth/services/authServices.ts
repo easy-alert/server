@@ -99,13 +99,16 @@ export class AuthServices {
     const User = await prisma.user.findUnique({
       select: {
         id: true,
+
         name: true,
         email: true,
+        phoneNumber: true,
         createdAt: true,
         lastAccess: true,
         passwordHash: true,
         updatedAt: true,
         isBlocked: true,
+
         Companies: {
           select: {
             Company: {
