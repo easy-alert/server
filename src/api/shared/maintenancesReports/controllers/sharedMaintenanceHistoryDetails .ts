@@ -48,7 +48,7 @@ export async function sharedMaintenanceHistoryDetails(req: Request, res: Respons
 
   // se aplica só
   const canReportPending =
-    today >= removeDays({ date: history[0]?.notificationDate, days: period });
+    today >= removeDays({ date: maintenance.notificationDate, days: period });
 
   let allowReport = true;
 
