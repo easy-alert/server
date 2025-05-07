@@ -36,6 +36,7 @@ import { tutorialsRouter } from './tutorials/tutorials.routes';
 import { usersRouter } from './users/users.routes';
 import { permissionsRouter } from './permissions/permissions.routes';
 import { listForSelectRouter } from './listForSelect/list.routes';
+import { updateReportPDFController } from './reports/controllers/updateReportPDFController';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -193,3 +194,6 @@ companyRouter.use(
 
 // upload routes
 companyRouter.use('/upload', uploadRouter);
+
+// report routes
+companyRouter.put('/report/:reportPDFId', updateReportPDFController);
