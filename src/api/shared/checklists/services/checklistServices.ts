@@ -1,6 +1,6 @@
 import { ChecklistStatusName } from '@prisma/client';
 import { prisma, prismaTypes } from '../../../../../prisma';
-import { setToUTCLastMinuteOfDay, setToUTCMidnight } from '../../../../utils/dateTime';
+import { setToLastMinuteOfDay, setToMidnight } from '../../../../utils/dateTime';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { Validator } from '../../../../utils/validator/validator';
 
@@ -114,8 +114,8 @@ class ChecklistServices {
         userId,
 
         date: {
-          gte: setToUTCMidnight(new Date(date)),
-          lte: setToUTCLastMinuteOfDay(new Date(date)),
+          gte: setToMidnight(new Date(date)),
+          lte: setToLastMinuteOfDay(new Date(date)),
         },
       },
 
