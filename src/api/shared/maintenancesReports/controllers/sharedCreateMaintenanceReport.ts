@@ -16,6 +16,7 @@ import { ticketServices } from '../../tickets/services/ticketServices';
 import { createMaintenanceHistoryActivityCommentService } from '../../maintenanceHistoryActivities/services';
 import { checkValues } from '../../../../utils/newValidator';
 import { findUserById } from '../../users/user/services/findUserById';
+import { findCompanyOwner } from '../../company/services/findCompanyOwner';
 
 // CLASS
 
@@ -139,6 +140,10 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       syndicNanoId: responsibleSyndicId,
     });
   }
+
+  const companyOwner = await findCompanyOwner({
+    companyId: maintenanceHistory.Company.id,
+  });
   // #endregion
 
   const { Building } = await sharedMaintenanceServices.findHistoryById({
@@ -289,7 +294,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
           currency: 'BRL',
         });
 
-  if (responsibleData && responsibleData?.emailIsConfirmed && responsibleData?.email) {
+  if (companyOwner && companyOwner?.emailIsConfirmed && companyOwner?.email) {
     await emailTransporter.sendProofOfReport({
       companyLogo: maintenanceHistory.Company.image,
       dueDate: new Date(maintenanceHistory.dueDate).toLocaleDateString('pt-BR'),
@@ -309,8 +314,8 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
       reportObservation: data.observation && data.observation !== '' ? data.observation : '-',
       resolutionDate: new Date().toLocaleString('pt-BR'),
       subject: 'Comprovante de relato',
-      syndicName: responsibleData.name,
-      toEmail: responsibleData.email,
+      syndicName: userData?.name ?? responsibleData?.name ?? companyOwner.name,
+      toEmail: companyOwner.email,
       attachments,
     });
   } else if (userData && userData.email && userData.emailIsConfirmed) {
