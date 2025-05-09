@@ -7,11 +7,13 @@ import { Validator } from '../../../../utils/validator/validator';
 const validator = new Validator();
 
 interface IFindManyForReport {
-  companyId: string;
-  buildingNames?: string[];
+  buildingId: string[] | undefined;
   statusNames?: ChecklistStatusName[];
-  startDate: Date;
-  endDate: Date;
+  companyId: string | undefined;
+  startDate?: Date;
+  endDate?: Date;
+  page?: number;
+  take?: number;
 }
 
 class ChecklistServices {
@@ -124,26 +126,12 @@ class ChecklistServices {
   }
 
   async findManyForReport({
+    buildingId,
     companyId,
-    endDate,
-    startDate,
-    buildingNames,
     statusNames,
+    startDate,
+    endDate,
   }: IFindManyForReport) {
-    const where: prismaTypes.ChecklistWhereInput = {
-      building: {
-        companyId,
-        name: buildingNames?.length ? { in: buildingNames } : undefined,
-      },
-
-      date: {
-        gte: startDate,
-        lte: endDate,
-      },
-
-      status: statusNames?.length ? { in: statusNames } : undefined,
-    };
-
     return prisma.checklist.findMany({
       select: {
         id: true,
@@ -151,11 +139,6 @@ class ChecklistServices {
         description: true,
         date: true,
         building: {
-          select: {
-            name: true,
-          },
-        },
-        syndic: {
           select: {
             name: true,
           },
@@ -175,8 +158,40 @@ class ChecklistServices {
             url: true,
           },
         },
+        user: {
+          select: {
+            name: true,
+          },
+        },
+        checklistItem: {
+          select: {
+            id: true,
+            name: true,
+            status: true,
+          },
+        },
       },
-      where,
+
+      where: {
+        building: {
+          id: {
+            in: buildingId,
+          },
+
+          Company: {
+            id: companyId,
+          },
+        },
+
+        status: {
+          in: statusNames,
+        },
+
+        date: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
 
       orderBy: {
         date: 'desc',

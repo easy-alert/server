@@ -1,0 +1,134 @@
+import type { ChecklistStatusName } from '@prisma/client';
+import { prisma } from '../../../../../prisma';
+
+interface IFindManyChecklistsForReportPDF {
+  companyId: string | undefined;
+  buildingId: string[] | undefined;
+  status?: ChecklistStatusName[];
+  startDate?: Date;
+  endDate?: Date;
+  page?: number;
+  take?: number;
+}
+
+export async function findManyChecklistsForReportPDF({
+  companyId,
+  buildingId,
+  status,
+  startDate,
+  endDate,
+}: IFindManyChecklistsForReportPDF) {
+  const [checklists, pendingChecklistsCount, inProgressChecklistsCount, completedChecklistCount] =
+    await prisma.$transaction([
+      prisma.checklist.findMany({
+        include: {
+          images: true,
+
+          user: {
+            select: {
+              name: true,
+            },
+          },
+
+          building: {
+            select: {
+              name: true,
+            },
+          },
+        },
+
+        where: {
+          building: {
+            id: {
+              in: buildingId,
+            },
+
+            Company: {
+              id: companyId,
+            },
+          },
+
+          status: {
+            in: status,
+          },
+
+          date: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+
+        orderBy: [{ createdAt: 'asc' }, { status: 'asc' }],
+      }),
+
+      prisma.checklist.count({
+        where: {
+          building: {
+            id: {
+              in: buildingId,
+            },
+
+            Company: {
+              id: companyId,
+            },
+          },
+
+          status: 'pending',
+
+          date: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+      }),
+
+      prisma.checklist.count({
+        where: {
+          building: {
+            id: {
+              in: buildingId,
+            },
+
+            Company: {
+              id: companyId,
+            },
+          },
+
+          status: 'inProgress',
+
+          date: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+      }),
+
+      prisma.checklist.count({
+        where: {
+          building: {
+            id: {
+              in: buildingId,
+            },
+
+            Company: {
+              id: companyId,
+            },
+          },
+
+          status: 'completed',
+
+          date: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+      }),
+    ]);
+
+  return {
+    checklists,
+    pendingChecklistsCount,
+    inProgressChecklistsCount,
+    completedChecklistCount,
+  };
+}
