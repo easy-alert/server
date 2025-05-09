@@ -14,6 +14,8 @@ import { getChecklistsController } from '../../shared/checklists/controllers/get
 import { deleteChecklistController } from '../../shared/checklists/controllers/deleteChecklistController';
 import { getChecklistsByBuildingIdController } from '../../shared/checklists/controllers/getChecklistsByBuildingIdController';
 import { deleteChecklistTemplateController } from '../../shared/checklists/controllers/deleteChecklistTemplateController';
+import { listChecklistReportsByCompanyIdController } from '../reports/controllers/listChecklistReportsByCompanyIdController';
+import { generateChecklistReportPDFController } from '../reports/controllers/generateChecklistReportPDFController';
 
 export const checklistRouter: Router = Router();
 
@@ -26,8 +28,8 @@ checklistRouter.get('/templates/:buildingId', getChecklistsTemplatesController);
 // Checklist routes
 checklistRouter.get('/:checklistId', getChecklistsController);
 checklistRouter.get('/v2/:buildingId', getChecklistsByBuildingIdController);
-checklistRouter.get('/:buildingNanoId/:date', findManyChecklistsController);
-checklistRouter.get('/:buildingNanoId/calendar/dates', findChecklistDataByMonthController);
+checklistRouter.get('/list/:buildingNanoId/:date', findManyChecklistsController);
+checklistRouter.get('/calendar/:buildingNanoId/dates', findChecklistDataByMonthController);
 
 checklistRouter.post('/', createChecklistController);
 
@@ -37,6 +39,9 @@ checklistRouter.put('/complete', completeChecklistController);
 checklistRouter.delete('/:checklistId/:mode', deleteChecklistController);
 
 // Esse report é do relatório
+checklistRouter.get('/report/pdf', listChecklistReportsByCompanyIdController);
+checklistRouter.post('/report/pdf', generateChecklistReportPDFController);
+
 checklistRouter.get('/reports', findChecklistReportController);
 // checklistRouter.get('/:checklistId', findChecklistByIdController);
 
