@@ -9,7 +9,7 @@ export async function findFirstTicketReportPDF({
   userId,
   orderBy = 'desc',
 }: IFindFirstTicketReportPDF) {
-  const ticket = await prisma.maintenanceReportPdf.findFirst({
+  const ticket = await prisma.ticketReportPDF.findFirst({
     where: { authorId: userId },
     orderBy: { createdAt: orderBy },
   });
