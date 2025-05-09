@@ -56,6 +56,7 @@ model User {
   reportPdfs                       MaintenanceReportPdf[]
   MaintenanceAdditionalInformation MaintenanceAdditionalInformation[]
   ApiLogs                          ApiLogs[]
+  ChecklistReportPDF               ChecklistReportPDF[]
 
   @@unique([email, phoneNumber])
   @@map("users")
@@ -167,6 +168,7 @@ model Company {
   TicketReportPDF     TicketReportPDF[]
   BuildingApartment   BuildingApartment[]
   ApiLogs             ApiLogs[]
+  ChecklistReportPDF  ChecklistReportPDF[]
 
   @@map("companies")
 }
@@ -1004,6 +1006,25 @@ model ChecklistDetailImage {
   checklist Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
 
   @@map("checklistDetailImages")
+}
+
+model ChecklistReportPDF {
+  id String @id @default(uuid())
+
+  authorId        String
+  authorCompanyId String
+
+  name   String
+  url    String?
+  status ReportPDFStatusName @default(pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author        User    @relation(fields: [authorId], references: [id])
+  authorCompany Company @relation(fields: [authorCompanyId], references: [id])
+
+  @@map("checklistReportPdfs")
 }
 
 // region TICKETS
