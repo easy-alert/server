@@ -289,6 +289,7 @@ export async function checklistPDFService({
         const {
           name: checklistName,
           description,
+          observation,
           user,
           images,
           status,
@@ -403,6 +404,7 @@ export async function checklistPDFService({
                         },
                         {
                           text: [{ text: 'Nome: ', bold: true }, { text: checklistName }],
+                          marginLeft: 8,
                         },
                         {
                           text: [{ text: 'Responsável: ', bold: true }, { text: user?.name || '' }],
@@ -429,7 +431,11 @@ export async function checklistPDFService({
                           fillColor: checklistStatusBgColor,
                         },
                         {
-                          text: [{ text: 'Descrição: ', bold: true }, { text: description }],
+                          text: [
+                            { text: 'Observação: ', bold: true },
+                            { text: observation || description },
+                          ],
+                          marginLeft: 8,
                         },
                       ],
                     ],
