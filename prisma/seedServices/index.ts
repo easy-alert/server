@@ -748,4 +748,34 @@ export class SeedServices {
 
     console.log('Tickets Numbers fixed.');
   }
+
+  async fillCompanyIdToChecklistTemplate() {
+    console.log('\n\nstarting Fill CompanyId to Checklist Template ...');
+
+    const checklistTemplates = await prisma.checklistTemplate.findMany();
+
+    for (const checklistTemplate of checklistTemplates) {
+      const checklistTemplateBuilding = await prisma.building.findUnique({
+        where: {
+          id: checklistTemplate.buildingId,
+        },
+      });
+
+      if (!checklistTemplateBuilding) {
+        console.log('Checklist Template ', checklistTemplate.id, ' has no building.');
+        continue;
+      }
+
+      await prisma.checklistTemplate.update({
+        where: {
+          id: checklistTemplate.id,
+        },
+        data: {
+          companyId: checklistTemplateBuilding.companyId,
+        },
+      });
+    }
+
+    console.log('CompanyId filled to Checklist Template.');
+  }
 }
