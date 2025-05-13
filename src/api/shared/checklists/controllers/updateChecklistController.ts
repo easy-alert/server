@@ -57,7 +57,7 @@ export async function updateChecklistController(req: Request, res: Response) {
           },
 
           where: {
-            templateId: checklist[0].templateId,
+            templateId: checklist[0].groupId,
             date: { gte: checklist[0].date },
           },
         });
