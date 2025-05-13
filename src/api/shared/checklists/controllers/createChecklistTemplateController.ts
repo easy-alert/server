@@ -13,6 +13,7 @@ interface IBody {
 }
 
 export async function createChecklistTemplateController(req: Request, res: Response) {
+  const { companyId } = req;
   const { buildingId } = req.params;
   const { name, description, items }: IBody = req.body;
 
@@ -22,7 +23,13 @@ export async function createChecklistTemplateController(req: Request, res: Respo
     { label: 'Itens', type: 'array', value: items },
   ]);
 
-  const checklistTemplate = await createChecklistTemplate({ buildingId, name, description, items });
+  const checklistTemplate = await createChecklistTemplate({
+    companyId,
+    buildingId,
+    name,
+    description,
+    items,
+  });
 
   return res.status(201).json(checklistTemplate);
 }
