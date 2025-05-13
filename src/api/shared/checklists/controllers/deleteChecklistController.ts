@@ -24,29 +24,16 @@ export async function deleteChecklistController(req: Request, res: Response) {
 
   switch (mode) {
     case 'all':
-      if (checklist[0].templateId) {
-        await deleteChecklist({ where: { templateId: checklist[0].templateId } });
-      } else {
-        await deleteChecklist({ where: { groupId: checklist[0].groupId } });
-      }
+      await deleteChecklist({ where: { groupId: checklist[0].groupId } });
       break;
 
     case 'thisAndFollowing':
-      if (checklist[0].templateId) {
-        await deleteChecklist({
-          where: {
-            templateId: checklist[0].templateId,
-            date: { gte: checklist[0].date },
-          },
-        });
-      } else {
-        await deleteChecklist({
-          where: {
-            groupId: checklist[0].groupId,
-            date: { gte: checklist[0].date },
-          },
-        });
-      }
+      await deleteChecklist({
+        where: {
+          groupId: checklist[0].groupId,
+          date: { gte: checklist[0].date },
+        },
+      });
       break;
 
     default:
