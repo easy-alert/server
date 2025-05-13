@@ -1,7 +1,13 @@
 import { Response, Request } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
-import type { Checklist, ChecklistItem, ChecklistStatusName } from '@prisma/client';
+import type {
+  Checklist,
+  ChecklistItem,
+  ChecklistStatusName,
+  ChecklistTemplate,
+  ChecklistTemplateItem,
+} from '@prisma/client';
 
 // import { checklistServices } from '../services/checklistServices';
 import { getChecklistTemplateById } from '../services/getChecklistTemplateById';
@@ -12,8 +18,9 @@ import { addDays, setToUTCMidnight } from '../../../../utils/dateTime';
 
 interface IBody {
   buildingId: string;
-  newChecklist?: Checklist & { items: ChecklistItem[] };
   checklistTemplateId?: string;
+  editedChecklistTemplate?: ChecklistTemplate & { items: ChecklistTemplateItem[] };
+  newChecklist?: Checklist & { items: ChecklistItem[] };
   responsibleId: string;
   startDate: string;
   interval: string;
@@ -23,8 +30,9 @@ interface IBody {
 export async function createChecklistController(req: Request, res: Response) {
   const {
     buildingId,
-    newChecklist,
     checklistTemplateId,
+    editedChecklistTemplate,
+    newChecklist,
     responsibleId,
     startDate,
     interval,
@@ -68,7 +76,7 @@ export async function createChecklistController(req: Request, res: Response) {
 
         const createdChecklist = await createChecklist({
           buildingId,
-          checklistTemplate,
+          checklistTemplate: editedChecklistTemplate,
           responsibleId,
           startDate: setDate,
           interval: numberFrequency,
