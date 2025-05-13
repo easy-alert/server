@@ -1,19 +1,19 @@
 import { prisma } from '../../../../../prisma';
 
-interface IGetChecklistsTemplates {
-  companyId: string;
-  buildingId?: string;
+interface IGetChecklistsTemplatesById {
+  checklistTemplateId: string;
 }
 
-export async function getChecklistsTemplates({ companyId, buildingId }: IGetChecklistsTemplates) {
+export async function getChecklistsTemplatesById({
+  checklistTemplateId,
+}: IGetChecklistsTemplatesById) {
   const checklistTemplates = await prisma.checklistTemplate.findMany({
     include: {
       items: true,
     },
 
     where: {
-      companyId,
-      buildingId,
+      id: checklistTemplateId,
     },
   });
 

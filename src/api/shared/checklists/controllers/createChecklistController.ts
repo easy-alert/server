@@ -1,4 +1,5 @@
 import { Response, Request } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 
 import type { Checklist, ChecklistItem, ChecklistStatusName } from '@prisma/client';
 
@@ -53,6 +54,8 @@ export async function createChecklistController(req: Request, res: Response) {
 
       const childrenChecklists: Checklist[] = [];
 
+      const groupId = uuidv4().replace(/-/g, '').substring(0, 12);
+
       for (let index = 0; index < frequencyToCreate; index++) {
         let setDate = setToUTCMidnight(new Date(startDate));
 
@@ -70,6 +73,7 @@ export async function createChecklistController(req: Request, res: Response) {
           startDate: setDate,
           interval: numberFrequency,
           status,
+          groupId,
         });
 
         childrenChecklists.push(createdChecklist);
@@ -84,6 +88,8 @@ export async function createChecklistController(req: Request, res: Response) {
   if (newChecklist) {
     checkValues([{ label: 'Checklist', type: 'object', value: newChecklist }]);
 
+    const groupId = uuidv4().replace(/-/g, '').substring(0, 12);
+
     const createdChecklist = await createChecklist({
       buildingId,
       newChecklist,
@@ -91,6 +97,7 @@ export async function createChecklistController(req: Request, res: Response) {
       startDate: setToUTCMidnight(new Date(startDate)),
       interval: numberFrequency,
       status,
+      groupId,
     });
 
     return res.status(201).json(createdChecklist);

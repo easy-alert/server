@@ -16,6 +16,7 @@ interface ICreateChecklist {
   startDate: Date;
   interval: number;
   status: ChecklistStatusName;
+  groupId?: string;
 }
 
 export async function createChecklist({
@@ -26,6 +27,7 @@ export async function createChecklist({
   startDate,
   interval,
   status,
+  groupId,
 }: ICreateChecklist) {
   let building = null;
 
@@ -55,6 +57,7 @@ export async function createChecklist({
       buildingId: building.id,
       userId: responsibleId,
       templateId: selectedChecklist?.id,
+      groupId,
 
       name: selectedChecklist?.name || `Checklist - ${new Date().toLocaleDateString()}`,
       description: selectedChecklist?.description,
