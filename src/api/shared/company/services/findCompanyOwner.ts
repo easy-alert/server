@@ -1,42 +1,37 @@
 import { prisma } from '../../../../../prisma';
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
 
 interface IFindUserCompanyOwner {
   companyId: string;
 }
 
 export async function findCompanyOwner({ companyId }: IFindUserCompanyOwner) {
-  const companyUser = await prisma.company.findFirst({
+  const companyUser = await prisma.userCompanies.findFirst({
     select: {
-      UserCompanies: {
+      User: {
         select: {
-          User: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              emailIsConfirmed: true,
-            },
-          },
+          id: true,
+          name: true,
+          email: true,
+          emailIsConfirmed: true,
+          phoneNumber: true,
         },
       },
     },
 
     where: {
-      id: companyId,
-
-      UserCompanies: {
-        some: {
-          companyId,
-          owner: true,
-        },
-      },
+      companyId,
+      owner: true,
     },
   });
 
-  const companyOwner = companyUser?.UserCompanies[0]?.User;
+  const companyOwner = companyUser?.User;
 
   if (!companyOwner) {
-    throw new Error('Dono da empresa não encontrado');
+    throw new ServerMessage({
+      statusCode: 404,
+      message: 'Dono da empresa não encontrado',
+    });
   }
 
   return companyOwner;
