@@ -249,7 +249,13 @@ export class BuildingServices {
       id: {
         in: buildingsIds,
       },
+
       companyId,
+
+      NOT: {
+        isBlocked: true,
+      },
+
       OR: [
         {
           name: {
