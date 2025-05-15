@@ -778,4 +778,35 @@ export class SeedServices {
 
     console.log('CompanyId filled to Checklist Template.');
   }
+
+  async blockBuildingsOfBlockedCompanies() {
+    console.log('\n\nstarting Block Buildings of Blocked Companies ...');
+
+    const blockedCompanies = await prisma.company.findMany({
+      where: {
+        isBlocked: true,
+      },
+    });
+
+    for (const blockedCompany of blockedCompanies) {
+      const buildings = await prisma.building.findMany({
+        where: {
+          companyId: blockedCompany.id,
+        },
+      });
+
+      for (const building of buildings) {
+        await prisma.building.update({
+          where: {
+            id: building.id,
+          },
+          data: {
+            isBlocked: true,
+          },
+        });
+      }
+    }
+
+    console.log('Buildings of Blocked Companies blocked.');
+  }
 }
