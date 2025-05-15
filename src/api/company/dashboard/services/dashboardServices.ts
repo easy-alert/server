@@ -162,7 +162,7 @@ export class DashboardServices {
     });
 
     const maintenancesCost = maintenancesData
-      .map((data) => data.MaintenanceReport[0].cost)
+      .map((data) => data.MaintenanceReport[0]?.cost ?? 0)
       .reduce((acc, cost) => (acc ?? 0) + (cost ?? 0), 0);
 
     return {
