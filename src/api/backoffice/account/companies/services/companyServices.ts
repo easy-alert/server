@@ -98,12 +98,24 @@ export class CompanyServices {
   async changeIsBlocked({ companyId }: { companyId: string }) {
     const company = await sharedCompanyServices.findById({ companyId });
 
-    await prisma.company.update({
-      data: {
-        isBlocked: !company?.isBlocked,
-      },
-      where: { id: companyId },
-    });
+    await prisma.$transaction([
+      prisma.building.updateMany({
+        where: {
+          companyId,
+        },
+
+        data: {
+          isBlocked: !company?.isBlocked,
+        },
+      }),
+
+      prisma.company.update({
+        data: {
+          isBlocked: !company?.isBlocked,
+        },
+        where: { id: companyId },
+      }),
+    ]);
   }
 
   // #endregion
