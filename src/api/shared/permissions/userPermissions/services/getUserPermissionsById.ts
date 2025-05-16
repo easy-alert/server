@@ -1,6 +1,11 @@
 import { prisma } from '../../../../../../prisma';
 
-export async function getUserPermissionsById({ userId }: { userId?: string }) {
+interface IGetUserPermissionsById {
+  companyId?: string;
+  userId?: string;
+}
+
+export async function getUserPermissionsById({ companyId, userId }: IGetUserPermissionsById) {
   const userPermissions = await prisma.userPermissions.findMany({
     select: {
       Permission: {
@@ -12,6 +17,7 @@ export async function getUserPermissionsById({ userId }: { userId?: string }) {
     },
 
     where: {
+      companyId,
       userId,
     },
   });
