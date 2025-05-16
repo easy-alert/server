@@ -846,7 +846,8 @@ export class SeedServices {
           },
         });
       } catch (error) {
-        console.error('Error updating User Permissions with CompanyId for user ', user.id);
+        console.error('Error updating User Permissions with CompanyId for user ', user.id, error);
+
         continue;
       }
     }
