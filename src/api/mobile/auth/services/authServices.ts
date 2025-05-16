@@ -39,6 +39,7 @@ export class AuthServices {
         message: 'Sua conta está bloqueada, entre em contato com a administração.',
       });
     }
+
     // Apenas registra o token se o usuário enviar os dados necessários
     if (deviceId && pushNotificationToken && os) {
       await prisma.$transaction(async (tx) => {
