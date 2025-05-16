@@ -1,9 +1,18 @@
 import { prisma } from '../../../../../../prisma';
 
-export async function getUserBuildingsPermissionsById({ userId }: { userId?: string }) {
+interface IGetUserBuildingsPermissionsById {
+  companyId?: string;
+  userId?: string;
+}
+
+export async function getUserBuildingsPermissionsById({
+  companyId,
+  userId,
+}: IGetUserBuildingsPermissionsById) {
   const userBuildingsPermissions = await prisma.userBuildingsPermissions.findMany({
     select: {
       buildingId: true,
+
       Permission: {
         select: {
           id: true,
@@ -14,6 +23,12 @@ export async function getUserBuildingsPermissionsById({ userId }: { userId?: str
 
     where: {
       userId,
+
+      Building: {
+        Company: {
+          id: companyId,
+        },
+      },
     },
   });
 
