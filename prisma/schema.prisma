@@ -60,6 +60,23 @@ model User {
 
   @@unique([email, phoneNumber])
   @@map("users")
+  PushNotification PushNotification[]
+}
+
+model PushNotification {
+  id String @id @unique @default(uuid())
+
+  userId String
+  token   String @unique
+  deviceId String
+  os String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("pushNotifications")
 }
 
 model Permission {

@@ -5,7 +5,19 @@ import { prisma } from '../../../../../prisma';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 
 export class AuthServices {
-  async canLogin({ login, password }: { login: string; password: string }) {
+  async canLogin({
+    login,
+    password,
+    pushNotificationToken,
+    deviceId,
+    os,
+  }: {
+    login: string;
+    password: string;
+    pushNotificationToken: string;
+    deviceId: string;
+    os: string;
+  }) {
     const user = await this.findByEmailOrPhone({ login });
 
     const isValuePassword = await compare(password, user.passwordHash);
@@ -17,12 +29,48 @@ export class AuthServices {
       });
     }
 
-    const companyIsBlocked = user.Companies.some((company) => company.Company.isBlocked === true);
+    const companyIsBlocked = user.Companies.some(
+      (company: any) => company.Company.isBlocked === true,
+    );
 
     if (user.isBlocked || companyIsBlocked) {
       throw new ServerMessage({
         statusCode: 400,
         message: 'Sua conta está bloqueada, entre em contato com a administração.',
+      });
+    }
+    // Apenas registra o token se o usuário enviar os dados necessários
+    if (deviceId && pushNotificationToken && os) {
+      await prisma.$transaction(async (tx) => {
+        // a) Existe um registro para o mesmo device?
+        const existing = await tx.pushNotification.findFirst({
+          where: { userId: user.id, deviceId },
+        });
+
+        if (existing) {
+          // Atualiza token ou SO caso tenham mudado
+          await tx.pushNotification.update({
+            where: { id: existing.id },
+            data: { token: pushNotificationToken, os },
+          });
+        } else {
+          // b) Não existe: cria, ou reaproveita se o token já estiver salvo
+          await tx.pushNotification.upsert({
+            // token é único no schema → podemos usá-lo como chave do upsert
+            where: { token: pushNotificationToken },
+            create: {
+              userId: user.id,
+              deviceId,
+              token: pushNotificationToken,
+              os,
+            },
+            update: {
+              userId: user.id,
+              deviceId,
+              os,
+            },
+          });
+        }
       });
     }
 
@@ -139,6 +187,17 @@ export class AuthServices {
         updatedAt: true,
         isBlocked: true,
 
+        PushNotification: {
+          select: {
+            id: true,
+            deviceId: true,
+            os: true,
+            token: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+
         Companies: {
           select: {
             Company: {
@@ -217,3 +276,4 @@ export class AuthServices {
     });
   }
 }
+
