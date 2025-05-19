@@ -4,9 +4,9 @@ import { updateUserPermissionsById } from '../../../../shared/permissions/userPe
 
 export async function updateUserPermissionsByIdController(req: Request, res: Response) {
   const { userId } = req.params;
-  const { userPermissions } = req.body;
+  const { companyId, userPermissions } = req.body;
 
-  await updateUserPermissionsById({ userId, userPermissions });
+  await updateUserPermissionsById({ companyId, userId, userPermissions });
 
   return res.status(200).json({
     ServerMessage: {

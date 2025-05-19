@@ -37,6 +37,8 @@ async function main() {
   await seedServices.fillCompanyIdToChecklistTemplate();
 
   await seedServices.blockBuildingsOfBlockedCompanies();
+
+  await seedServices.upsertUserPermissionsWithCompanyId();
 }
 
 main()

@@ -4,9 +4,9 @@ import { updateUserBuildingsPermissionsById } from '../../../../shared/permissio
 
 export async function updateUserBuildingsPermissionsByIdController(req: Request, res: Response) {
   const { userId } = req.params;
-  const { userBuildingsPermissions } = req.body;
+  const { companyId, userBuildingsPermissions } = req.body;
 
-  await updateUserBuildingsPermissionsById({ userId, userBuildingsPermissions });
+  await updateUserBuildingsPermissionsById({ companyId, userId, userBuildingsPermissions });
 
   return res.status(200).json({
     ServerMessage: {

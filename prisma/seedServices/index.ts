@@ -49,7 +49,7 @@ export class SeedServices {
       ...maintenancesPermissions,
 
       // management permissions
-      ...managementPermissions
+      ...managementPermissions,
     ];
 
     for (const modulePermission of modulePermissions) {
@@ -103,7 +103,8 @@ export class SeedServices {
           permissionId: permissionData!.id,
         },
         where: {
-          userId_permissionId: {
+          companyId_userId_permissionId: {
+            companyId: '',
             userId: backoffice.id,
             permissionId: permissionData!.id,
           },
@@ -165,15 +166,18 @@ export class SeedServices {
 
       await prisma.userPermissions.upsert({
         create: {
+          companyId: company.id,
           userId: backoffice.id,
           permissionId: permissionData!.id,
         },
         update: {
+          companyId: company.id,
           userId: backoffice.id,
           permissionId: permissionData!.id,
         },
         where: {
-          userId_permissionId: {
+          companyId_userId_permissionId: {
+            companyId: company.id,
             userId: backoffice.id,
             permissionId: permissionData!.id,
           },
@@ -808,5 +812,46 @@ export class SeedServices {
     }
 
     console.log('Buildings of Blocked Companies blocked.');
+  }
+
+  async upsertUserPermissionsWithCompanyId() {
+    console.log('\n\nstarting User Permissions with CompanyId ...');
+
+    const users = await prisma.user.findMany();
+
+    for (const user of users) {
+      const userCompany = await prisma.userCompanies.findFirst({
+        where: {
+          userId: user.id,
+        },
+
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
+
+      if (!userCompany) {
+        console.log('User ', user.id, ' has no company.');
+        continue;
+      }
+
+      try {
+        await prisma.userPermissions.updateMany({
+          where: {
+            userId: user.id,
+          },
+
+          data: {
+            companyId: userCompany?.companyId,
+          },
+        });
+      } catch (error) {
+        console.error('Error updating User Permissions with CompanyId for user ', user.id, error);
+
+        continue;
+      }
+    }
+
+    console.log('User Permissions with CompanyId upserted.');
   }
 }

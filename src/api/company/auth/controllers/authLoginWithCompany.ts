@@ -23,7 +23,15 @@ export const authLoginWithCompany = async (req: Request, res: Response) => {
     { label: 'ID do usuário', variable: userId },
   ]);
 
-  const user = await userServices.findById({ userId });
+  console.log('🚀 ~ authLoginWithCompany ~ companyId:', companyId);
+
+  const parsedCompanyId = companyId ? (companyId as string) : undefined;
+
+  const user = await userServices.findById({ companyId: parsedCompanyId, userId });
+
+  user.Permissions.forEach((permission) =>
+    console.log('🚀 ~ authLoginWithCompany ~ permission:', permission.Permission.name),
+  );
 
   await permissionServices.checkPermission({
     UserPermissions: user.Permissions,
@@ -49,7 +57,9 @@ export const authLoginWithCompany = async (req: Request, res: Response) => {
 
     Account: {
       origin: 'Company',
+
       Company: user.Companies.find((company) => company.Company.id === companyId)?.Company,
+
       User: {
         id: user.id,
         name: user.name,

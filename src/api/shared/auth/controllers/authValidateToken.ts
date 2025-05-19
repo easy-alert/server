@@ -7,9 +7,9 @@ import { AuthServices } from '../services/authServices';
 const authServices = new AuthServices();
 
 export const authValidateToken = async (req: Request, res: Response) => {
-  const { userId, companyId } = req;
+  const { companyId, userId } = req;
 
-  const user = await authServices.validateToken({ userId });
+  const user = await authServices.validateToken({ companyId, userId });
 
   let isCompanyOwner = false;
 
@@ -25,6 +25,8 @@ export const authValidateToken = async (req: Request, res: Response) => {
   )?.Company;
 
   return res.status(200).json({
+    origin: 'Company',
+
     Company: selectedCompany || user?.Companies[0]?.Company || null,
 
     User: {
