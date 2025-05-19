@@ -82,16 +82,18 @@ model Permission {
 model UserPermissions {
   id String @id @unique @default(uuid())
 
+  companyId    String?
   userId       String
   permissionId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  Company    Company?    @relation(fields: [companyId], references: [id], onDelete: Cascade)
   User       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   Permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, permissionId])
+  @@unique([companyId, userId, permissionId])
   @@map("userPermissions")
 }
 
@@ -169,6 +171,8 @@ model Company {
   BuildingApartment   BuildingApartment[]
   ApiLogs             ApiLogs[]
   ChecklistReportPDF  ChecklistReportPDF[]
+  ChecklistTemplate   ChecklistTemplate[]
+  UserPermissions     UserPermissions[]
 
   @@map("companies")
 }
@@ -946,6 +950,7 @@ model ChecklistItem {
 model ChecklistTemplate {
   id String @id @default(uuid())
 
+  companyId  String @default("248573d2-5927-4ff1-aeff-4de8bf1144cb")
   buildingId String
 
   name        String
@@ -956,6 +961,7 @@ model ChecklistTemplate {
   updatedAt DateTime @updatedAt
 
   building Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   Checklist Checklist[]
 

@@ -6,10 +6,10 @@ import { checkIsMainContact } from '../../../../shared/permissions/userBuildings
 
 export async function updateUserBuildingsPermissionsByIdController(req: Request, res: Response) {
   const { userId, buildingId } = req.params;
-  const { userBuildingsPermissions, isMainContact, showContact } = req.body;
+  const { companyId, userBuildingsPermissions, isMainContact, showContact } = req.body;
 
   if (userBuildingsPermissions) {
-    await updateUserBuildingsPermissionsById({ userId, userBuildingsPermissions });
+    await updateUserBuildingsPermissionsById({ companyId, userId, userBuildingsPermissions });
 
     return res.status(200).json({
       ServerMessage: {

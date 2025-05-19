@@ -49,7 +49,7 @@ export class SeedServices {
       ...maintenancesPermissions,
 
       // management permissions
-      ...managementPermissions
+      ...managementPermissions,
     ];
 
     for (const modulePermission of modulePermissions) {
@@ -103,7 +103,8 @@ export class SeedServices {
           permissionId: permissionData!.id,
         },
         where: {
-          userId_permissionId: {
+          companyId_userId_permissionId: {
+            companyId: '',
             userId: backoffice.id,
             permissionId: permissionData!.id,
           },
@@ -165,15 +166,18 @@ export class SeedServices {
 
       await prisma.userPermissions.upsert({
         create: {
+          companyId: company.id,
           userId: backoffice.id,
           permissionId: permissionData!.id,
         },
         update: {
+          companyId: company.id,
           userId: backoffice.id,
           permissionId: permissionData!.id,
         },
         where: {
-          userId_permissionId: {
+          companyId_userId_permissionId: {
+            companyId: company.id,
             userId: backoffice.id,
             permissionId: permissionData!.id,
           },
@@ -747,5 +751,107 @@ export class SeedServices {
     }
 
     console.log('Tickets Numbers fixed.');
+  }
+
+  async fillCompanyIdToChecklistTemplate() {
+    console.log('\n\nstarting Fill CompanyId to Checklist Template ...');
+
+    const checklistTemplates = await prisma.checklistTemplate.findMany();
+
+    for (const checklistTemplate of checklistTemplates) {
+      const checklistTemplateBuilding = await prisma.building.findUnique({
+        where: {
+          id: checklistTemplate.buildingId,
+        },
+      });
+
+      if (!checklistTemplateBuilding) {
+        console.log('Checklist Template ', checklistTemplate.id, ' has no building.');
+        continue;
+      }
+
+      await prisma.checklistTemplate.update({
+        where: {
+          id: checklistTemplate.id,
+        },
+        data: {
+          companyId: checklistTemplateBuilding.companyId,
+        },
+      });
+    }
+
+    console.log('CompanyId filled to Checklist Template.');
+  }
+
+  async blockBuildingsOfBlockedCompanies() {
+    console.log('\n\nstarting Block Buildings of Blocked Companies ...');
+
+    const blockedCompanies = await prisma.company.findMany({
+      where: {
+        isBlocked: true,
+      },
+    });
+
+    for (const blockedCompany of blockedCompanies) {
+      const buildings = await prisma.building.findMany({
+        where: {
+          companyId: blockedCompany.id,
+        },
+      });
+
+      for (const building of buildings) {
+        await prisma.building.update({
+          where: {
+            id: building.id,
+          },
+          data: {
+            isBlocked: true,
+          },
+        });
+      }
+    }
+
+    console.log('Buildings of Blocked Companies blocked.');
+  }
+
+  async upsertUserPermissionsWithCompanyId() {
+    console.log('\n\nstarting User Permissions with CompanyId ...');
+
+    const users = await prisma.user.findMany();
+
+    for (const user of users) {
+      const userCompany = await prisma.userCompanies.findFirst({
+        where: {
+          userId: user.id,
+        },
+
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
+
+      if (!userCompany) {
+        console.log('User ', user.id, ' has no company.');
+        continue;
+      }
+
+      try {
+        await prisma.userPermissions.updateMany({
+          where: {
+            userId: user.id,
+          },
+
+          data: {
+            companyId: userCompany?.companyId,
+          },
+        });
+      } catch (error) {
+        console.error('Error updating User Permissions with CompanyId for user ', user.id, error);
+
+        continue;
+      }
+    }
+
+    console.log('User Permissions with CompanyId upserted.');
   }
 }

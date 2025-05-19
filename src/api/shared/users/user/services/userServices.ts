@@ -167,7 +167,7 @@ export class UserServices {
     return user;
   }
 
-  async findById({ userId }: { userId: string }) {
+  async findById({ companyId, userId }: { companyId?: string; userId: string }) {
     const user = await prisma.user.findUnique({
       select: {
         id: true,
@@ -210,6 +210,10 @@ export class UserServices {
 
         Permissions: {
           select: { Permission: { select: { name: true } } },
+
+          where: {
+            companyId,
+          },
         },
 
         UserBuildingsPermissions: {
@@ -222,9 +226,18 @@ export class UserServices {
               },
             },
           },
+
+          where: {
+            Building: {
+              companyId,
+            },
+          },
         },
       },
-      where: { id: userId },
+
+      where: {
+        id: userId,
+      },
     });
 
     validator.needExist([{ label: 'usuário', variable: user }]);

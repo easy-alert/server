@@ -7,8 +7,8 @@ const seedServices = new SeedServices();
 
 async function main() {
   if (process.env.NODE_ENV === 'production') {
-    const exists = await prisma.user.count()
-    if (exists > 0) return
+    const exists = await prisma.user.count();
+    if (exists > 0) return;
   }
 
   console.log('seed is running ...');
@@ -33,6 +33,12 @@ async function main() {
   // await seedServices.ownerBuildingPermissions();
 
   // await seedServices.fixTicketsNumbers();
+
+  await seedServices.fillCompanyIdToChecklistTemplate();
+
+  await seedServices.blockBuildingsOfBlockedCompanies();
+
+  await seedServices.upsertUserPermissionsWithCompanyId();
 }
 
 main()

@@ -329,7 +329,7 @@ export class AuthServices {
     return User;
   }
 
-  async validateToken({ userId }: { userId: string }) {
+  async validateToken({ companyId, userId }: { companyId?: string; userId: string }) {
     const User = await prisma.user.findUnique({
       select: {
         id: true,
@@ -399,6 +399,10 @@ export class AuthServices {
 
         Permissions: {
           select: { Permission: { select: { name: true } } },
+
+          where: {
+            companyId,
+          },
         },
 
         UserBuildingsPermissions: {
@@ -409,6 +413,12 @@ export class AuthServices {
                 nanoId: true,
                 name: true,
               },
+            },
+          },
+
+          where: {
+            Building: {
+              companyId,
             },
           },
         },

@@ -1,6 +1,7 @@
 import { prisma } from '../../../../../prisma';
 
 interface ICreateChecklistTemplate {
+  companyId: string;
   buildingId: string;
   name: string;
   description?: string;
@@ -10,6 +11,7 @@ interface ICreateChecklistTemplate {
 }
 
 export async function createChecklistTemplate({
+  companyId,
   buildingId,
   name,
   description,
@@ -39,10 +41,17 @@ export async function createChecklistTemplate({
     data: {
       name,
       description,
+
       items: {
         create: items.map((item) => ({
           name: item.name,
         })),
+      },
+
+      company: {
+        connect: {
+          id: companyId,
+        },
       },
 
       building: {
