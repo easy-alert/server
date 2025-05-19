@@ -184,15 +184,21 @@ export class AuthServices {
             Company: {
               select: {
                 id: true,
+
+                image: true,
                 name: true,
                 contactNumber: true,
                 CNPJ: true,
                 CPF: true,
-                createdAt: true,
-                image: true,
+
                 isBlocked: true,
                 ticketInfo: true,
                 ticketType: true,
+                canAccessChecklists: true,
+                canAccessTickets: true,
+                showMaintenancePriority: true,
+
+                createdAt: true,
               },
             },
           },
@@ -256,16 +262,22 @@ export class AuthServices {
             Company: {
               select: {
                 id: true,
+
+                image: true,
                 name: true,
                 contactNumber: true,
                 CNPJ: true,
                 CPF: true,
-                createdAt: true,
-                image: true,
+
                 isBlocked: true,
                 ticketInfo: true,
                 ticketType: true,
+                canAccessChecklists: true,
+                canAccessTickets: true,
                 showMaintenancePriority: true,
+
+                createdAt: true,
+
                 UserCompanies: {
                   select: {
                     owner: true,
@@ -354,15 +366,21 @@ export class AuthServices {
             Company: {
               select: {
                 id: true,
+
+                image: true,
                 name: true,
                 contactNumber: true,
                 CNPJ: true,
                 CPF: true,
-                createdAt: true,
-                image: true,
+
+                isBlocked: true,
                 ticketInfo: true,
                 ticketType: true,
+                canAccessChecklists: true,
+                canAccessTickets: true,
                 showMaintenancePriority: true,
+
+                createdAt: true,
 
                 UserCompanies: {
                   select: {

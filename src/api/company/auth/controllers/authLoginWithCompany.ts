@@ -23,8 +23,6 @@ export const authLoginWithCompany = async (req: Request, res: Response) => {
     { label: 'ID do usuário', variable: userId },
   ]);
 
-  console.log('🚀 ~ authLoginWithCompany ~ companyId:', companyId);
-
   const parsedCompanyId = companyId ? (companyId as string) : undefined;
 
   const user = await userServices.findById({ companyId: parsedCompanyId, userId });

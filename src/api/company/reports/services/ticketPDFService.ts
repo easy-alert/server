@@ -309,8 +309,8 @@ export async function ticketPDFService({
 
               imagesForPDF.push({
                 image: base64Image,
-                width: 50,
-                height: 50,
+                width: 100,
+                height: 100,
                 link: url,
               });
             }
@@ -510,6 +510,8 @@ export async function ticketPDFService({
         }
 
         if (imagesForPDF && imagesForPDF.length > 0) {
+          const imagesRows = Math.ceil(imagesForPDF.length / 6);
+
           (contentData[lastContent] as any).columns[1].stack.push({
             table: {
               widths: [1, '*'],
@@ -525,31 +527,44 @@ export async function ticketPDFService({
                     marginLeft: 8,
                   },
                 ],
-                [
-                  {
-                    text: '',
-                    fillColor: status.backgroundColor,
-                    opacity: 1,
-                  },
-                  {
-                    columns: imagesForPDF,
-                    columnGap: 4,
-                    marginLeft: 8,
-                  },
-                ],
-                [
-                  {
-                    text: '',
-                    fillColor: status.backgroundColor,
-                    opacity: 1,
-                  },
-                  { text: '' },
-                ],
               ],
             },
             layout: 'noBorders',
             fillColor: '#E6E6E6',
           });
+
+          for (let row = 0; row < imagesRows; row++) {
+            const start = row * 6;
+            const end = start + 6;
+
+            (contentData[lastContent] as any).columns[1].stack.push({
+              table: {
+                widths: [1, '*'],
+                body: [
+                  [
+                    {
+                      text: '',
+                      fillColor: status.backgroundColor,
+                    },
+                    {
+                      columns: imagesForPDF.slice(start, end),
+                      columnGap: 4,
+                      marginLeft: 8,
+                    },
+                  ],
+                  [
+                    {
+                      text: '',
+                      fillColor: status.backgroundColor,
+                    },
+                    { text: '' },
+                  ],
+                ],
+              },
+              layout: 'noBorders',
+              fillColor: '#E6E6E6',
+            });
+          }
         }
       }
     }

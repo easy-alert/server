@@ -323,8 +323,8 @@ export async function checklistPDFService({
 
               imagesForPDF.push({
                 image: base64Image,
-                width: 50,
-                height: 50,
+                width: 100,
+                height: 100,
                 link: url,
               });
             }
@@ -452,6 +452,8 @@ export async function checklistPDFService({
         const lastContent = contentData.length - 1;
 
         if (imagesForPDF && imagesForPDF.length > 0) {
+          const imagesRows = Math.ceil(imagesForPDF.length / 6);
+
           (contentData[lastContent] as any).columns[1].stack.push({
             table: {
               widths: [1, '*'],
@@ -467,31 +469,44 @@ export async function checklistPDFService({
                     marginLeft: 8,
                   },
                 ],
-                [
-                  {
-                    text: '',
-                    fillColor: checklistStatusBgColor,
-                    opacity: 1,
-                  },
-                  {
-                    columns: imagesForPDF,
-                    columnGap: 4,
-                    marginLeft: 8,
-                  },
-                ],
-                [
-                  {
-                    text: '',
-                    fillColor: checklistStatusBgColor,
-                    opacity: 1,
-                  },
-                  { text: '' },
-                ],
               ],
             },
             layout: 'noBorders',
             fillColor: '#E6E6E6',
           });
+
+          for (let row = 0; row < imagesRows; row++) {
+            const start = row * 6;
+            const end = start + 6;
+
+            (contentData[lastContent] as any).columns[1].stack.push({
+              table: {
+                widths: [1, '*'],
+                body: [
+                  [
+                    {
+                      text: '',
+                      fillColor: checklistStatusBgColor,
+                    },
+                    {
+                      columns: imagesForPDF.slice(start, end),
+                      columnGap: 4,
+                      marginLeft: 8,
+                    },
+                  ],
+                  [
+                    {
+                      text: '',
+                      fillColor: checklistStatusBgColor,
+                    },
+                    { text: '' },
+                  ],
+                ],
+              },
+              layout: 'noBorders',
+              fillColor: '#E6E6E6',
+            });
+          }
         }
 
         if (annexesForPDF && annexesForPDF.length > 0) {
