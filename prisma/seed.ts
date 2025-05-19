@@ -34,11 +34,11 @@ async function main() {
 
   // await seedServices.fixTicketsNumbers();
 
-  await seedServices.fillCompanyIdToChecklistTemplate();
+  // await seedServices.fillCompanyIdToChecklistTemplate();
 
-  await seedServices.blockBuildingsOfBlockedCompanies();
+  // await seedServices.blockBuildingsOfBlockedCompanies();
 
-  await seedServices.upsertUserPermissionsWithCompanyId();
+  // await seedServices.upsertUserPermissionsWithCompanyId();
 }
 
 main()
