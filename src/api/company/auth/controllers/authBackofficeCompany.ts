@@ -1,21 +1,21 @@
 // TYPES
 import { Response, Request } from 'express';
 
+import { PermissionServices } from '../../../shared/permissions/permission/services/permissionServices';
+
 // CLASS
 import { AuthServices } from '../../../shared/auth/services/authServices';
 import { TokenServices } from '../../../../utils/token/tokenServices';
 import { Validator } from '../../../../utils/validator/validator';
-
-import { PermissionServices } from '../../../shared/permissions/permission/services/permissionServices';
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
 
 const permissionServices = new PermissionServices();
 const authServices = new AuthServices();
 const tokenServices = new TokenServices();
-
 const validator = new Validator();
 
 export const authBackofficeCompany = async (req: Request, res: Response) => {
-  const { userId, backofficeToken } = req.body;
+  const { companyId, userId, backofficeToken } = req.body;
 
   validator.notNull([
     { label: 'id do usuário', variable: userId },
@@ -25,6 +25,16 @@ export const authBackofficeCompany = async (req: Request, res: Response) => {
   tokenServices.decode({ token: backofficeToken });
 
   const user = await authServices.findById({ userId });
+  const selectedCompany = user.Companies.find(
+    (company) => company.Company.id === companyId,
+  )?.Company;
+
+  if (!selectedCompany) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: 'Usuário não pertence a empresa informada.',
+    });
+  }
 
   await permissionServices.checkPermission({
     UserPermissions: user.Permissions,
@@ -33,13 +43,13 @@ export const authBackofficeCompany = async (req: Request, res: Response) => {
 
   const isCompanyOwner = await authServices.isCompanyOwner({
     userId,
-    companyId: user.Companies[0].Company.id,
+    companyId: selectedCompany.id,
   });
 
   const token = tokenServices.generate({
     tokenData: {
       userId: user.id,
-      companyId: user.Companies[0].Company.id,
+      companyId: selectedCompany.id,
     },
   });
 
@@ -48,7 +58,7 @@ export const authBackofficeCompany = async (req: Request, res: Response) => {
 
     Account: {
       origin: 'Backoffice',
-      Company: user.Companies[0].Company,
+      Company: selectedCompany,
       User: {
         id: user.id,
 
