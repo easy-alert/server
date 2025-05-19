@@ -15,6 +15,10 @@ export async function getChecklistsTemplates({ companyId, buildingId }: IGetChec
       companyId,
       buildingId,
     },
+
+    orderBy: {
+      name: 'asc',
+    },
   });
 
   return checklistTemplates;
