@@ -31,5 +31,11 @@ export async function createChecklistTemplateController(req: Request, res: Respo
     items,
   });
 
-  return res.status(201).json(checklistTemplate);
+  return res.status(201).json({
+    checklistTemplate,
+    ServerMessage: {
+      message: 'Modelo de checklist criado com sucesso.',
+      statusCode: 201,
+    },
+  });
 }
