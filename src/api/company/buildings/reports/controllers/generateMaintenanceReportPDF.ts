@@ -560,8 +560,8 @@ async function PDFService({
 
           imagesForPDF.push({
             image: base64Image,
-            width: 50,
-            height: 50,
+            width: 100,
+            height: 100,
             link: url,
           });
         }
@@ -881,7 +881,7 @@ async function PDFService({
         }
 
         if (imagesForPDF && imagesForPDF.length > 0) {
-          const imagesRows = Math.ceil(imagesForPDF.length / 13);
+          const imagesRows = Math.ceil(imagesForPDF.length / 6);
 
           (contentData[lastContent] as any).columns[1].stack.push({
             table: {
@@ -906,8 +906,8 @@ async function PDFService({
           });
 
           for (let row = 0; row < imagesRows; row++) {
-            const start = row * 13;
-            const end = start + 13;
+            const start = row * 6;
+            const end = start + 6;
 
             (contentData[lastContent] as any).columns[1].stack.push({
               table: {
