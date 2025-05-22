@@ -80,6 +80,7 @@ export class SharedCalendarServices {
           resolutionDate: true,
           inProgress: true,
           priority: true,
+          serviceOrderNumber: true,
 
           Building: {
             select: {
@@ -137,6 +138,7 @@ export class SharedCalendarServices {
           id: true,
           notificationDate: true,
           inProgress: true,
+          serviceOrderNumber: true,
 
           Building: {
             select: {
