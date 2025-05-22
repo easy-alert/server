@@ -64,4 +64,3 @@ export async function authMobile(req: Request, res: Response) {
     user: { ...user, isCompanyOwner, UserBuildingsPermissions: userBuildingsPermissions },
   });
 }
-

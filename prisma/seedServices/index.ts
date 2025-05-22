@@ -854,4 +854,49 @@ export class SeedServices {
 
     console.log('User Permissions with CompanyId upserted.');
   }
+
+  async addMaintenanceServiceOrderNumber() {
+    console.log('\n\nstarting Maintenance Service Order Number ...');
+
+    const companies = await prisma.company.findMany();
+
+    for (let i = 0; i < companies.length; i++) {
+      const company = companies[i];
+
+      const maintenancesHistory = await prisma.maintenanceHistory.findMany({
+        where: {
+          ownerCompanyId: company.id,
+        },
+
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
+
+      if (!maintenancesHistory.length) {
+        console.log('No maintenances history found for company ', company.name);
+        continue;
+      }
+
+      for (let j = 0; j < maintenancesHistory.length; j++) {
+        const maintenanceHistory = maintenancesHistory[j];
+
+        await prisma.maintenanceHistory.update({
+          where: {
+            id: maintenanceHistory.id,
+          },
+
+          data: {
+            serviceOrderNumber: j + 1,
+          },
+        });
+
+        console.log(
+          `Maintenance History ${maintenanceHistory.id} updated with service order number ${j + 1}`,
+        );
+      }
+    }
+
+    console.log('Maintenance Service Order Number added.');
+  }
 }

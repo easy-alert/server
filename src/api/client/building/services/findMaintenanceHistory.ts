@@ -37,6 +37,7 @@ export async function findMaintenanceHistory({
       inProgress: true,
       daysInAdvance: true,
       priority: showMaintenancePriority,
+      serviceOrderNumber: true,
 
       Building: {
         select: {

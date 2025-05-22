@@ -65,6 +65,7 @@ export interface IMaintenanceHistory {
   dueDate: Date;
   daysInAdvance?: number;
   inProgress?: boolean;
+  serviceOrderNumber?: number;
 }
 
 export interface ICreateMaintenanceHistoryAndReport {
@@ -77,6 +78,7 @@ export interface ICreateMaintenanceHistoryAndReport {
   resolutionDate?: Date;
   dueDate: Date;
   inProgress: boolean;
+  serviceOrderNumber?: number;
 
   MaintenanceReport?: {
     create: {

@@ -484,6 +484,7 @@ export class SharedMaintenanceServices {
         wasNotified: true,
         priority: true,
         showToResident: true,
+        serviceOrderNumber: true,
 
         Maintenance: {
           select: {
