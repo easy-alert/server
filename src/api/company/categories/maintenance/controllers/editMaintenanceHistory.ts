@@ -9,6 +9,7 @@ import { noWeekendTimeDate } from '../../../../../utils/dateTime/noWeekendTimeDa
 import { addDays } from '../../../../../utils/dateTime';
 import { changeTime } from '../../../../../utils/dateTime/changeTime';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+import { getCompanyLastServiceOrder } from '../../../../shared/maintenanceHistory/services/getCompanyLastServiceOrder';
 
 const sharedMaintenanceStatusServices = new SharedMaintenanceStatusServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
@@ -96,6 +97,10 @@ export async function editMaintenanceHistory(req: Request, res: Response) {
 
       const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
 
+      const lastServiceOrderNumber = await getCompanyLastServiceOrder({
+        companyId: req.Company.id,
+      });
+
       await sharedMaintenanceServices.createHistory({
         data: [
           {
@@ -106,6 +111,7 @@ export async function editMaintenanceHistory(req: Request, res: Response) {
             notificationDate,
             dueDate,
             daysInAdvance: foundBuildingMaintenance?.daysToAnticipate ?? 0,
+            serviceOrderNumber: lastServiceOrderNumber + 1,
           },
         ],
       });

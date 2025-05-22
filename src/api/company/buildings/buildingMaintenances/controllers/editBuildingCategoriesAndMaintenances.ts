@@ -16,6 +16,7 @@ import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 import { addDays, removeDays } from '../../../../../utils/dateTime';
 import { changeTime } from '../../../../../utils/dateTime/changeTime';
 import { SharedMaintenanceReportsServices } from '../../../../shared/maintenancesReports/services/SharedMaintenanceReportsServices';
+import { getCompanyLastServiceOrder } from '../../../../shared/maintenanceHistory/services/getCompanyLastServiceOrder';
 
 // CLASS
 
@@ -251,6 +252,10 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
   let notificationDate = null;
 
   for (let i = 0; i < updatedsMaintenances.length; i++) {
+    const lastServiceOrderNumber = await getCompanyLastServiceOrder({
+      companyId: req.Company.id,
+    });
+
     const updatedMaintenanceStatus = await sharedMaintenanceStatusServices.findByName({
       name: updatedsMaintenances[i].status || 'completed',
     });
@@ -373,6 +378,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         notificationDate: updatedsMaintenances[i].resolutionDate,
         resolutionDate: updatedsMaintenances[i].resolutionDate,
         dueDate: updatedsMaintenances[i].resolutionDate,
+        serviceOrderNumber: lastServiceOrderNumber + 1,
 
         MaintenanceReport: {
           create: {
@@ -538,6 +544,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       notificationDate,
       dueDate,
       daysInAdvance: firstMaintenanceWasAntecipated ? daysToAnticipate : 0,
+      serviceOrderNumber: lastServiceOrderNumber + 1,
     });
   }
 

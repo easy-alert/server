@@ -17,6 +17,7 @@ import { createMaintenanceHistoryActivityCommentService } from '../../maintenanc
 import { checkValues } from '../../../../utils/newValidator';
 import { findUserById } from '../../users/user/services/findUserById';
 import { findCompanyOwner } from '../../company/services/findCompanyOwner';
+import { getCompanyLastServiceOrder } from '../../maintenanceHistory/services/getCompanyLastServiceOrder';
 
 // CLASS
 
@@ -463,6 +464,11 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
 
   if (maintenanceHistory.MaintenancesStatus.name === 'pending') {
     const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
+
+    const lastServiceOrderNumber = await getCompanyLastServiceOrder({
+      companyId: req.Company.id,
+    });
+
     await sharedMaintenanceServices.createHistory({
       data: [
         {
@@ -473,6 +479,7 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
           notificationDate,
           dueDate,
           daysInAdvance: foundBuildingMaintenance?.daysToAnticipate ?? 0,
+          serviceOrderNumber: lastServiceOrderNumber + 1,
         },
       ],
     });
