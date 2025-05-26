@@ -140,6 +140,7 @@ export async function listForBuildingReports(req: Request, res: Response) {
         status: MaintenancesPending[i].MaintenancesStatus.name,
         type: MaintenancesPending[i].Maintenance.MaintenanceType?.name ?? null,
         inProgress: MaintenancesPending[i].inProgress,
+        serviceOrderNumber: MaintenancesPending[i].serviceOrderNumber,
 
         activities: MaintenancesPending[i].activities ?? [],
 
@@ -211,6 +212,7 @@ export async function listForBuildingReports(req: Request, res: Response) {
             status: MaintenancesStatus.name,
             type: Maintenance.MaintenanceType?.name ?? null,
             inProgress,
+            serviceOrderNumber: MaintenancesPending[i].serviceOrderNumber,
 
             cost: hasReport ? MaintenanceReport[0].cost : null,
 
@@ -286,6 +288,7 @@ export async function listForBuildingReports(req: Request, res: Response) {
       status: maintenance.MaintenancesStatus.name,
       type: maintenance.Maintenance.MaintenanceType?.name ?? null,
       inProgress: maintenance.inProgress,
+      serviceOrderNumber: maintenance.serviceOrderNumber,
 
       cost: hasReport ? maintenance.MaintenanceReport[0].cost : null,
 

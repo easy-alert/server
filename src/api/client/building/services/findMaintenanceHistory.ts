@@ -162,6 +162,7 @@ export async function findMaintenanceHistory({
               instructions: { some: { name: { contains: search, mode: 'insensitive' } } },
             },
           },
+          { serviceOrderNumber: { equals: Number(search) } },
         ],
       }),
     },

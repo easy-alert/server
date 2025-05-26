@@ -6,6 +6,7 @@ export interface IFindBuildingMaintenancesHistory {
     categoryNames: string[] | undefined;
     dateFilter: { gte: Date; lte: Date };
     filterBy: string;
+    search?: string;
   };
 }
 
@@ -17,6 +18,7 @@ export interface IListForBuildingReportQuery {
     startDate: string | undefined;
     endDate: string | undefined;
     filterBy: string;
+    search?: string;
   };
 }
 
@@ -41,6 +43,7 @@ export interface IMaintenancesData {
   expectedNotificationDate?: Date;
   isFuture?: boolean;
   dueDate: Date;
+  serviceOrderNumber?: number | null;
 
   activities?: {
     title: string;

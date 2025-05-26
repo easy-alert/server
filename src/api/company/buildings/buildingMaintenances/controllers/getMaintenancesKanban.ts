@@ -27,6 +27,7 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
   const { Company } = req;
   const { buildingId, status, user, category, priorityName, startDate, endDate } =
     req.query as unknown as IQuery;
+  console.log('🚀 ~ getMaintenancesKanban ~ buildingId:', buildingId);
 
   const isAdmin = hasAdminPermission(req.Permissions);
   const permittedBuildingsIds = isAdmin

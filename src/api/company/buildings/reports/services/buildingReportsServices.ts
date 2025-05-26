@@ -74,6 +74,7 @@ export class BuildingReportsServices {
         lte: dates.endDate,
       },
       filterBy: query.filterBy,
+      search: query.search || '',
     };
 
     return filter;
@@ -164,6 +165,7 @@ export class BuildingReportsServices {
           resolutionDate: true,
           inProgress: true,
           dueDate: true,
+          serviceOrderNumber: true,
 
           activities: {
             select: {
@@ -262,6 +264,32 @@ export class BuildingReportsServices {
               name: 'pending',
             },
           },
+
+          ...(queryFilter.search && {
+            OR: [
+              { Building: { name: { contains: queryFilter.search, mode: 'insensitive' } } },
+              { Maintenance: { element: { contains: queryFilter.search, mode: 'insensitive' } } },
+              { Maintenance: { activity: { contains: queryFilter.search, mode: 'insensitive' } } },
+              {
+                Maintenance: {
+                  Category: { name: { contains: queryFilter.search, mode: 'insensitive' } },
+                },
+              },
+              {
+                MaintenancesStatus: {
+                  singularLabel: { contains: queryFilter.search, mode: 'insensitive' },
+                },
+              },
+              {
+                Maintenance: {
+                  instructions: {
+                    some: { name: { contains: queryFilter.search, mode: 'insensitive' } },
+                  },
+                },
+              },
+              { serviceOrderNumber: { equals: Number(queryFilter.search) } },
+            ],
+          }),
         },
       }),
 
@@ -272,6 +300,7 @@ export class BuildingReportsServices {
           resolutionDate: true,
           inProgress: true,
           dueDate: true,
+          serviceOrderNumber: true,
 
           activities: {
             select: {
@@ -360,6 +389,7 @@ export class BuildingReportsServices {
           },
           { notificationDate: 'desc' },
         ],
+
         where: {
           maintenanceStatusId: {
             in: queryFilter.maintenanceStatusIds,
@@ -384,6 +414,32 @@ export class BuildingReportsServices {
           MaintenancesStatus: {
             name: 'pending',
           },
+
+          ...(queryFilter.search && {
+            OR: [
+              { Building: { name: { contains: queryFilter.search, mode: 'insensitive' } } },
+              { Maintenance: { element: { contains: queryFilter.search, mode: 'insensitive' } } },
+              { Maintenance: { activity: { contains: queryFilter.search, mode: 'insensitive' } } },
+              {
+                Maintenance: {
+                  Category: { name: { contains: queryFilter.search, mode: 'insensitive' } },
+                },
+              },
+              {
+                MaintenancesStatus: {
+                  singularLabel: { contains: queryFilter.search, mode: 'insensitive' },
+                },
+              },
+              {
+                Maintenance: {
+                  instructions: {
+                    some: { name: { contains: queryFilter.search, mode: 'insensitive' } },
+                  },
+                },
+              },
+              { serviceOrderNumber: { equals: Number(queryFilter.search) } },
+            ],
+          }),
         },
       }),
 
