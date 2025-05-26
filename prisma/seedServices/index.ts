@@ -860,41 +860,66 @@ export class SeedServices {
 
     const companies = await prisma.company.findMany();
 
-    for (let i = 0; i < companies.length; i++) {
-      const company = companies[i];
+    // Helper to run promises with concurrency limit
+    async function runWithConcurrencyLimit<T>(
+      tasks: (() => Promise<T>)[],
+      limit: number,
+    ): Promise<T[]> {
+      const results: T[] = [];
+      const executing: Promise<void>[] = [];
+      let i = 0;
 
+      const enqueue = async () => {
+        if (i === tasks.length) return;
+        const taskIndex = i++;
+        const p = tasks[taskIndex]()
+          .then((res) => {
+            results[taskIndex] = res;
+          })
+          .catch((err) => {
+            throw err;
+          });
+        executing.push(
+          p.then(async () => {
+            executing.splice(executing.indexOf(p), 1);
+          }),
+        );
+        if (executing.length >= limit) {
+          await Promise.race(executing);
+        }
+        await enqueue();
+      };
+
+      await enqueue();
+      await Promise.all(executing);
+      return results;
+    }
+
+    for (const company of companies) {
       const maintenancesHistory = await prisma.maintenanceHistory.findMany({
-        where: {
-          ownerCompanyId: company.id,
-        },
-
-        orderBy: {
-          createdAt: 'asc',
-        },
+        where: { ownerCompanyId: company.id },
+        orderBy: { createdAt: 'asc' },
       });
 
       if (!maintenancesHistory.length) {
-        console.log('No maintenances history found for company ', company.name);
         continue;
       }
 
-      for (let j = 0; j < maintenancesHistory.length; j++) {
-        const maintenanceHistory = maintenancesHistory[j];
+      // Prepare update functions
+      const updateTasks = maintenancesHistory.map(
+        (maintenanceHistory, idx) => () =>
+          prisma.maintenanceHistory.update({
+            where: { id: maintenanceHistory.id },
+            data: { serviceOrderNumber: idx + 1 },
+          }),
+      );
 
-        await prisma.maintenanceHistory.update({
-          where: {
-            id: maintenanceHistory.id,
-          },
+      // Run updates with concurrency limit (e.g., 2 at a time)
+      await runWithConcurrencyLimit(updateTasks, 1);
 
-          data: {
-            serviceOrderNumber: j + 1,
-          },
-        });
-
-        console.log(
-          `Maintenance History ${maintenanceHistory.id} updated with service order number ${j + 1}`,
-        );
-      }
+      console.log(
+        `Updated ${maintenancesHistory.length} maintenance histories for company ${company.name}`,
+      );
     }
 
     console.log('Maintenance Service Order Number added.');
