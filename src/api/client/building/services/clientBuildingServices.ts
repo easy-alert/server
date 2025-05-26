@@ -261,6 +261,8 @@ export class ClientBuildingServices {
               priorityLabel: maintenance.priority?.label,
               priorityColor: maintenance.priority?.color,
               priorityBackgroundColor: maintenance.priority?.backgroundColor,
+              serviceOrderNumber: maintenance.serviceOrderNumber,
+
               // para ordenação
               date: maintenance.notificationDate,
               dueDate: maintenance.dueDate,
@@ -303,6 +305,8 @@ export class ClientBuildingServices {
             priorityLabel: maintenance.priority?.label,
             priorityColor: maintenance.priority?.color,
             priorityBackgroundColor: maintenance.priority?.backgroundColor,
+            serviceOrderNumber: maintenance.serviceOrderNumber,
+
             // não pode reportar a vencida, se a pendente já está liberada.
             cantReportExpired:
               canReportHistoryPending ||
@@ -328,6 +332,8 @@ export class ClientBuildingServices {
             priorityLabel: maintenance.priority?.label,
             priorityColor: maintenance.priority?.color,
             priorityBackgroundColor: maintenance.priority?.backgroundColor,
+            serviceOrderNumber: maintenance.serviceOrderNumber,
+
             // para ordenação
             date: maintenance.resolutionDate,
             dueDate: maintenance.dueDate,
@@ -352,6 +358,7 @@ export class ClientBuildingServices {
             priorityLabel: maintenance.priority?.label,
             priorityColor: maintenance.priority?.color,
             priorityBackgroundColor: maintenance.priority?.backgroundColor,
+            serviceOrderNumber: maintenance.serviceOrderNumber,
             // para ordenação
             date: maintenance.resolutionDate,
             dueDate: maintenance.dueDate,

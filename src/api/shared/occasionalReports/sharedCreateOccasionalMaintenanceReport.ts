@@ -13,6 +13,7 @@ import { noWeekendTimeDate } from '../../../utils/dateTime/noWeekendTimeDate';
 import { SharedBuildingNotificationConfigurationServices } from '../notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { checkValues } from '../../../utils/newValidator';
 import { ticketServices } from '../tickets/services/ticketServices';
+import { getCompanyLastServiceOrder } from '../maintenanceHistory/services/getCompanyLastServiceOrder';
 
 // CLASS
 const validator = new Validator();
@@ -146,6 +147,10 @@ export async function sharedCreateOccasionalMaintenanceReport({
 
   const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
 
+  const lastServiceOrderNumber = await getCompanyLastServiceOrder({
+    companyId,
+  });
+
   if (occasionalMaintenanceType === 'pending') {
     // PENDENTE
 
@@ -155,14 +160,15 @@ export async function sharedCreateOccasionalMaintenanceReport({
         buildingId,
         maintenanceId: maintenance.id,
         maintenanceStatusId: pendingStatus.id,
-        notificationDate: new Date(executionDate),
         priorityName,
+        serviceOrderNumber: lastServiceOrderNumber + 1,
+        inProgress,
 
+        notificationDate: new Date(executionDate),
         dueDate: noWeekendTimeDate({
           date: addDays({ date: new Date(executionDate), days: defaultPeriod }),
           interval: 2,
         }),
-        inProgress,
       },
     });
 
@@ -208,12 +214,14 @@ export async function sharedCreateOccasionalMaintenanceReport({
           maintenanceId: maintenance.id,
           maintenanceStatusId: pendingStatus.id,
           priorityName,
+          inProgress,
+          serviceOrderNumber: lastServiceOrderNumber + 1,
+
           notificationDate: new Date(executionDate),
           dueDate: noWeekendTimeDate({
             date: addDays({ date: new Date(executionDate), days: defaultPeriod }),
             interval: 2,
           }),
-          inProgress,
         },
       });
 
@@ -253,6 +261,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
           maintenanceId: maintenance.id,
           maintenanceStatusId: completedStatus.id,
           wasNotified: true,
+          serviceOrderNumber: lastServiceOrderNumber + 1,
           resolutionDate: new Date(executionDate),
           notificationDate: new Date(executionDate),
           dueDate: noWeekendTimeDate({

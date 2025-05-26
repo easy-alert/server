@@ -39,6 +39,8 @@ async function main() {
   // await seedServices.blockBuildingsOfBlockedCompanies();
 
   // await seedServices.upsertUserPermissionsWithCompanyId();
+
+  await seedServices.addMaintenanceServiceOrderNumber();
 }
 
 main()

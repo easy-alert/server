@@ -236,6 +236,7 @@ async function processMaintenancesHistory(processedBuildings: IProcessedBuilding
       ms: 0,
     },
   });
+
   const pendingStatus = await sharedMaintenancesStatus.findByName({ name: 'pending' });
 
   const maintenancesHistoryForCreate: IMaintenancesHistoryForCreate[] = [];

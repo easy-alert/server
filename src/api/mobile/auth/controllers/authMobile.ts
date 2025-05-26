@@ -12,14 +12,20 @@ const permissionServices = new PermissionServices();
 const tokenServices = new TokenServices();
 
 export async function authMobile(req: Request, res: Response) {
-  const { login, password } = req.body;
+  const { login, password, pushNotificationToken, deviceId, os } = req.body;
 
   needExist([
     { label: 'Login', variable: login },
     { label: 'Senha', variable: password },
   ]);
 
-  const user = await authServices.canLogin({ login, password });
+  const user = await authServices.canLogin({
+    login,
+    password,
+    pushNotificationToken,
+    deviceId,
+    os,
+  });
 
   await permissionServices.checkPermission({
     UserPermissions: user.Permissions,

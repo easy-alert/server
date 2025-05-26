@@ -56,6 +56,7 @@ interface IDateForCreateHistory {
   resolutionDate?: Date;
   dueDate: Date;
   daysInAdvance: number;
+  serviceOrderNumber: number;
   MaintenanceReport?: {
     create: {
       cost: number;

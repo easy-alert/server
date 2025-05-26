@@ -111,6 +111,7 @@ export class SharedMaintenanceReportsServices {
         priorityName: true,
         priority: true,
         showToResident: true,
+        serviceOrderNumber: true,
 
         MaintenanceReportProgress: {
           select: {

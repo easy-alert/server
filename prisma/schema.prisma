@@ -57,9 +57,26 @@ model User {
   MaintenanceAdditionalInformation MaintenanceAdditionalInformation[]
   ApiLogs                          ApiLogs[]
   ChecklistReportPDF               ChecklistReportPDF[]
+  PushNotification                 PushNotification[]
 
   @@unique([email, phoneNumber])
   @@map("users")
+}
+
+model PushNotification {
+  id String @id @unique @default(uuid())
+
+  userId   String
+  token    String @unique
+  deviceId String
+  os       String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("pushNotifications")
 }
 
 model Permission {
@@ -89,7 +106,7 @@ model UserPermissions {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Company    Company?    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  Company    Company?   @relation(fields: [companyId], references: [id], onDelete: Cascade)
   User       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   Permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
@@ -320,13 +337,14 @@ model MaintenanceHistory {
   ownerCompanyId      String
   maintenanceStatusId String
 
-  notificationDate DateTime
-  dueDate          DateTime
-  resolutionDate   DateTime?
-  wasNotified      Boolean   @default(false)
-  inProgress       Boolean   @default(false)
-  daysInAdvance    Int       @default(0)
-  showToResident   Boolean   @default(true)
+  notificationDate   DateTime
+  dueDate            DateTime
+  resolutionDate     DateTime?
+  daysInAdvance      Int       @default(0)
+  serviceOrderNumber Int       @default(0)
+  wasNotified        Boolean   @default(false)
+  inProgress         Boolean   @default(false)
+  showToResident     Boolean   @default(true)
 
   priorityName MaintenancePriorityName @default(low)
 
