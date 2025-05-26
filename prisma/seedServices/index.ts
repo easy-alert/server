@@ -915,7 +915,7 @@ export class SeedServices {
       );
 
       // Run updates with concurrency limit (e.g., 2 at a time)
-      await runWithConcurrencyLimit(updateTasks, 2);
+      await runWithConcurrencyLimit(updateTasks, 1);
 
       console.log(
         `Updated ${maintenancesHistory.length} maintenance histories for company ${company.name}`,
