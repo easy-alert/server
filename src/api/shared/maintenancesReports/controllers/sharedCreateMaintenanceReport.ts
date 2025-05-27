@@ -186,9 +186,12 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
   }
 
   // VERIFICA SE A DATA DE NOTIFICAÇÃO DA PRIMEIRA POSIÇÃO QUE DEVE SER PENDENTE
-  const period = history[0].Maintenance.period * history[0].Maintenance.PeriodTimeInterval.unitTime;
+  const period =
+    maintenanceHistory.Maintenance.period *
+    maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime;
 
-  const canReport = today >= removeDays({ date: history[0]?.notificationDate, days: period });
+  const canReport =
+    today >= removeDays({ date: maintenanceHistory?.notificationDate, days: period });
 
   // só verifica tudo isso se for manutenção comum
   if (maintenanceHistory.Maintenance.MaintenanceType?.name !== 'occasional') {
