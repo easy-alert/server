@@ -287,7 +287,13 @@ export class BuildingReportsServices {
                   },
                 },
               },
-              { serviceOrderNumber: { equals: Number(queryFilter.search) } },
+              {
+                serviceOrderNumber: {
+                  equals: Number.isInteger(Number(queryFilter.search))
+                    ? Number(queryFilter.search)
+                    : 0,
+                },
+              },
             ],
           }),
         },
@@ -437,7 +443,13 @@ export class BuildingReportsServices {
                   },
                 },
               },
-              { serviceOrderNumber: { equals: Number(queryFilter.search) } },
+              {
+                serviceOrderNumber: {
+                  equals: Number.isInteger(Number(queryFilter.search))
+                    ? Number(queryFilter.search)
+                    : 0,
+                },
+              },
             ],
           }),
         },
