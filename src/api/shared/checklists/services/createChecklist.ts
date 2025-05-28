@@ -12,7 +12,7 @@ interface ICreateChecklist {
   buildingId: string;
   newChecklist?: Checklist & { items: ChecklistItem[] };
   checklistTemplate?: ChecklistTemplate & { items: ChecklistTemplateItem[] };
-  responsibleId: string;
+  responsibleId: string[];
   startDate: Date;
   interval: number;
   status: ChecklistStatusName;
@@ -55,7 +55,6 @@ export async function createChecklist({
   const createdChecklist = await prisma.checklist.create({
     data: {
       buildingId: building.id,
-      userId: responsibleId,
       templateId: selectedChecklist?.id,
       groupId,
 
@@ -72,6 +71,12 @@ export async function createChecklist({
             status: 'pending',
           })),
         },
+      },
+
+      checklistUsers: {
+        create: responsibleId.map((userId) => ({
+          userId,
+        })),
       },
     },
   });
