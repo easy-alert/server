@@ -124,6 +124,7 @@ export class ClientBuildingServices {
           dateInfos,
           type: maintenance.type ?? null,
           inProgress: maintenance.inProgress ?? false,
+          categoryId: maintenance.Maintenance.Category.id ?? null,
         };
       }
 
@@ -433,12 +434,21 @@ export class ClientBuildingServices {
               },
             },
           },
+
           Maintenance: {
             select: {
               id: true,
               element: true,
               frequency: true,
               activity: true,
+
+              Category: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+
               FrequencyTimeInterval: {
                 select: {
                   unitTime: true,
@@ -446,6 +456,7 @@ export class ClientBuildingServices {
                   pluralLabel: true,
                 },
               },
+
               MaintenanceType: {
                 select: {
                   id: true,
@@ -454,6 +465,7 @@ export class ClientBuildingServices {
               },
             },
           },
+
           MaintenancesStatus: {
             select: {
               name: true,
@@ -502,12 +514,22 @@ export class ClientBuildingServices {
               },
             },
           },
+
           Maintenance: {
             select: {
               id: true,
               element: true,
               frequency: true,
               activity: true,
+              period: true,
+
+              Category: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+
               FrequencyTimeInterval: {
                 select: {
                   unitTime: true,
@@ -516,7 +538,6 @@ export class ClientBuildingServices {
                 },
               },
 
-              period: true,
               PeriodTimeInterval: {
                 select: {
                   unitTime: true,
@@ -533,6 +554,7 @@ export class ClientBuildingServices {
               },
             },
           },
+
           MaintenancesStatus: {
             select: {
               name: true,
