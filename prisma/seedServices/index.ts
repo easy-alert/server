@@ -952,10 +952,28 @@ export class SeedServices {
           },
         },
       });
-
-      console.log('Checklist Users created for Checklist ', checklist.id);
     }
 
     console.log('Checklist Users created.');
+  }
+
+  async migrateChecklistItemStatus() {
+    console.log('\n\nstarting Checklist Item Status creation ...');
+
+    await prisma.checklistItem.updateMany({
+      data: {
+        status: 'approved',
+      },
+
+      where: {
+        status: 'pending',
+
+        checklist: {
+          status: 'completed',
+        },
+      },
+    });
+
+    console.log('Checklist Item Status updated.');
   }
 }

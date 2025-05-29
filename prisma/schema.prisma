@@ -957,7 +957,7 @@ model ChecklistItem {
 
   name        String
   description String?
-  status      ChecklistStatusName @default(pending)
+  status      ChecklistItemStatusName  @default(pending)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1020,6 +1020,12 @@ enum ChecklistStatusName {
   pending
   inProgress
   completed
+}
+
+enum ChecklistItemStatusName {
+  pending
+  approved
+  rejected
 }
 
 model ChecklistDetailImage {
