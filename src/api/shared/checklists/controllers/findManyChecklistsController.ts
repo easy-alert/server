@@ -32,7 +32,7 @@ export async function findManyChecklistsController(req: Request, res: Response) 
     const { checklistItem, checklistUsers, ...rest } = checklist;
 
     const totalItems = checklistItem.length;
-    const completedItems = checklistItem.filter((item) => item.status === 'completed').length;
+    const completedItems = checklistItem.filter((item) => item.status !== 'pending').length;
 
     const formattedChecklistUsers = checklistUsers.map((checklistUser) => ({
       id: checklistUser.user.id,
