@@ -382,10 +382,6 @@ export class DashboardServices {
 
             MaintenanceType: { name: maintenanceType },
           },
-
-          MaintenancesStatus: {
-            name: 'pending',
-          },
         },
       }),
     ]);
