@@ -137,7 +137,7 @@ export class DashboardServices {
         resolutionDate: filter.period,
 
         Building: {
-          name: filter.buildings,
+          id: filter.buildings,
         },
 
         Maintenance: {
@@ -219,7 +219,7 @@ export class DashboardServices {
           resolutionDate: filter.period,
 
           Building: {
-            name: filter.buildings,
+            id: filter.buildings,
           },
 
           Maintenance: {
@@ -257,7 +257,7 @@ export class DashboardServices {
           dueDate: filter.period,
 
           Building: {
-            name: filter.buildings,
+            id: filter.buildings,
           },
 
           Maintenance: {
@@ -295,7 +295,7 @@ export class DashboardServices {
           resolutionDate: filter.period,
 
           Building: {
-            name: filter.buildings,
+            id: filter.buildings,
           },
 
           Maintenance: {
@@ -325,7 +325,7 @@ export class DashboardServices {
           dueDate: filter.period,
 
           Building: {
-            name: filter.buildings,
+            id: filter.buildings,
           },
 
           Maintenance: {
@@ -348,7 +348,7 @@ export class DashboardServices {
           notificationDate: filter.period,
 
           Building: {
-            name: filter.buildings,
+            id: filter.buildings,
           },
 
           Maintenance: {
@@ -372,7 +372,7 @@ export class DashboardServices {
           inProgress: true,
 
           Building: {
-            name: filter.buildings,
+            id: filter.buildings,
           },
 
           Maintenance: {
@@ -429,7 +429,7 @@ export class DashboardServices {
         resolutionDate: filter.period,
 
         Building: {
-          name: filter.buildings,
+          id: filter.buildings,
         },
 
         Maintenance: {
@@ -487,7 +487,7 @@ export class DashboardServices {
 
           Building: {
             NotificationsConfigurations: filter.responsible,
-            name: filter.buildings,
+            id: filter.buildings,
           },
 
           Maintenance: {
@@ -530,7 +530,7 @@ export class DashboardServices {
           dueDate: filter.period,
           Building: {
             NotificationsConfigurations: filter.responsible,
-            name: filter.buildings,
+            id: filter.buildings,
           },
           Maintenance: {
             Category: {
@@ -594,7 +594,7 @@ export class DashboardServices {
           where: {
             Building: {
               NotificationsConfigurations: filter.responsible,
-              name: filter.buildings,
+              id: filter.buildings,
             },
             Maintenance: {
               Category: {
@@ -646,7 +646,7 @@ export class DashboardServices {
         where: {
           Building: {
             NotificationsConfigurations: filter.responsible,
-            name: filter.buildings,
+            id: filter.buildings,
           },
           Maintenance: {
             Category: {
@@ -785,7 +785,7 @@ export class DashboardServices {
         statusName: ticketStatus,
         createdAt: filter.period,
         building: {
-          name: filter.buildings,
+          id: filter.buildings,
           companyId: filter.companyId,
         },
       },
@@ -807,7 +807,7 @@ export class DashboardServices {
           ticket: {
             createdAt: filter.period,
             building: {
-              name: filter.buildings,
+              id: filter.buildings,
               companyId: filter.companyId,
             },
           },
@@ -836,7 +836,7 @@ export class DashboardServices {
               resolutionDate: filter.period,
 
               Building: {
-                name: filter.buildings,
+                id: filter.buildings,
               },
 
               Maintenance: {
@@ -868,7 +868,7 @@ export class DashboardServices {
             createdAt: filter.period,
 
             building: {
-              name: filter.buildings,
+              id: filter.buildings,
               companyId: filter.companyId,
             },
 
@@ -889,7 +889,7 @@ export class DashboardServices {
             status: 'completed',
 
             building: {
-              name: filter.buildings,
+              id: filter.buildings,
               companyId: filter.companyId,
             },
           },
@@ -900,7 +900,7 @@ export class DashboardServices {
         UserBuildingsPermissions: {
           some: {
             Building: {
-              name: filter.buildings,
+              id: filter.buildings,
               companyId: filter.companyId,
             },
           },
