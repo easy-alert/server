@@ -24,9 +24,24 @@ export async function findManyChecklistsForReportPDF({
         include: {
           images: true,
 
-          user: {
+          checklistItem: {
             select: {
+              id: true,
               name: true,
+              description: true,
+              status: true,
+              updatedAt: true,
+            },
+          },
+
+          checklistUsers: {
+            select: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
             },
           },
 
@@ -58,7 +73,7 @@ export async function findManyChecklistsForReportPDF({
           },
         },
 
-        orderBy: [{ createdAt: 'asc' }, { status: 'asc' }],
+        orderBy: [{ date: 'asc' }, { status: 'asc' }],
       }),
 
       prisma.checklist.count({

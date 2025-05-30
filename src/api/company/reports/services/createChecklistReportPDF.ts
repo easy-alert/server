@@ -1,4 +1,9 @@
-import type { Checklist, ChecklistImage, ChecklistStatusName } from '@prisma/client';
+import type {
+  Checklist,
+  ChecklistImage,
+  ChecklistItemStatusName,
+  ChecklistStatusName,
+} from '@prisma/client';
 import { prisma } from '../../../../../prisma';
 
 import { checklistPDFService } from './checklistPDFService';
@@ -10,9 +15,24 @@ import type { IFilterOptions } from '../controllers/generateChecklistReportPDFCo
 export interface IDataForPDF {
   checklists: (Checklist & {
     building: { name: string };
+
+    checklistItem: {
+      id: string;
+      name: string | null;
+      description: string | null;
+      status: ChecklistItemStatusName;
+      updatedAt: Date;
+    }[];
+
+    checklistUsers: {
+      user: {
+        id: string;
+        name: string;
+      };
+    }[];
+
     status: ChecklistStatusName;
     images: ChecklistImage[];
-    user: { name: string } | null;
   })[];
   pendingChecklistsCount: number;
   inProgressChecklistsCount: number;
