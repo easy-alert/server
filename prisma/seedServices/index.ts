@@ -928,31 +928,71 @@ export class SeedServices {
   async migrateChecklistUsers() {
     console.log('\n\nstarting Checklist Users creation ...');
 
-    const checklists = await prisma.checklist.findMany();
+    const checklists = await prisma.checklist.findMany({
+      where: {
+        userId: { not: null },
+      },
+      select: {
+        id: true,
+        userId: true,
+      },
+    });
 
-    for (const checklist of checklists) {
-      if (!checklist.userId) {
-        console.log('Checklist ', checklist.id, ' has no userId.');
-        continue;
-      }
+    // Helper to run promises with concurrency limit
+    async function runWithConcurrencyLimit<T>(
+      tasks: (() => Promise<T>)[],
+      limit: number,
+    ): Promise<T[]> {
+      const results: T[] = [];
+      const executing: Promise<void>[] = [];
+      let i = 0;
 
-      await prisma.checklistUsers.upsert({
-        create: {
-          checklistId: checklist.id,
-          userId: checklist.userId,
-        },
-        update: {
-          checklistId: checklist.id,
-          userId: checklist.userId,
-        },
-        where: {
-          checklistId_userId: {
-            checklistId: checklist.id,
-            userId: checklist.userId,
-          },
-        },
-      });
+      const enqueue = async () => {
+        if (i === tasks.length) return;
+        const taskIndex = i++;
+        const p = tasks[taskIndex]()
+          .then((res) => {
+            results[taskIndex] = res;
+          })
+          .catch((err) => {
+            throw err;
+          });
+        executing.push(
+          p.then(async () => {
+            executing.splice(executing.indexOf(p), 1);
+          }),
+        );
+        if (executing.length >= limit) {
+          await Promise.race(executing);
+        }
+        await enqueue();
+      };
+
+      await enqueue();
+      await Promise.all(executing);
+      return results;
     }
+
+    // Prepare upsert tasks
+    const upsertTasks = checklists.map(
+      (checklist) => () =>
+        prisma.checklistUsers.upsert({
+          create: {
+            checklistId: checklist.id,
+            userId: checklist.userId!,
+          },
+          update: {},
+          where: {
+            checklistId_userId: {
+              checklistId: checklist.id,
+              userId: checklist.userId!,
+            },
+          },
+        }),
+    );
+
+    // Run upserts with concurrency limit (e.g., 10 at a time)
+    await runWithConcurrencyLimit(upsertTasks, 1);
 
     console.log('Checklist Users created.');
   }
