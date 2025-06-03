@@ -271,6 +271,8 @@ async function PDFService({
           status: MaintenancesPending[i].MaintenancesStatus.name,
           type: MaintenancesPending[i].Maintenance.MaintenanceType?.name ?? null,
           inProgress: MaintenancesPending[i].inProgress,
+          serviceOrderNumber: MaintenancesPending[i].serviceOrderNumber ?? null,
+          priority: MaintenancesPending[i].priority,
 
           activities:
             MaintenancesPending[i].activities.filter(
@@ -345,6 +347,8 @@ async function PDFService({
               status: MaintenancesStatus.name,
               type: Maintenance.MaintenanceType?.name ?? null,
               inProgress,
+              serviceOrderNumber: MaintenancesPending[i].serviceOrderNumber ?? null,
+              priority: MaintenancesPending[i].priority,
 
               activities:
                 MaintenancesPending[i].activities.filter(
@@ -425,6 +429,8 @@ async function PDFService({
         status: maintenance.MaintenancesStatus.name,
         type: maintenance.Maintenance.MaintenanceType?.name ?? null,
         inProgress: maintenance.inProgress,
+        serviceOrderNumber: maintenance.serviceOrderNumber ?? null,
+        priority: maintenance.priority,
 
         activities:
           maintenance.activities.filter((activity: any) => activity.type === 'comment') ?? [],
@@ -528,6 +534,8 @@ async function PDFService({
           status,
           type,
           buildingName,
+          priority,
+          serviceOrderNumber,
         } = data[j];
 
         if (j >= 1) {
@@ -633,6 +641,16 @@ async function PDFService({
           });
         }
 
+        if (priority && priority.label) {
+          tags.push({
+            text: `  ${priority.label}  `,
+            background: priority.backgroundColor,
+            color: priority.color,
+            marginRight: 12,
+            noWrap: true,
+          });
+        }
+
         contentData.push({
           columns: [
             {
@@ -653,6 +671,38 @@ async function PDFService({
             },
             {
               stack: [
+                {
+                  table: {
+                    widths: [1, '*', 'auto'],
+                    body: [
+                      [
+                        {
+                          text: '',
+                          fillColor: getStatusBackgroundColor(
+                            status === 'overdue' ? 'completed' : status,
+                          ),
+                          opacity: 1,
+                        },
+                        {
+                          text: '',
+                        },
+                        {
+                          text: `#${serviceOrderNumber}`,
+                          fontSize: 8,
+                          // background: '#808080',
+                          // color: '#FFFFFF',
+                          color: '#000000',
+                          marginRight: 12,
+                          noWrap: true,
+                          alignment: 'right',
+                        },
+                      ],
+                    ],
+                  },
+                  layout: 'noBorders',
+                  fillColor: '#E6E6E6',
+                },
+
                 {
                   table: {
                     widths: [1, '*'],
