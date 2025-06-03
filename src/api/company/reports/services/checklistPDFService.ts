@@ -19,6 +19,7 @@ import { sendErrorToServerLog } from '../../../../utils/messages/sendErrorToServ
 
 import type { IDataForPDF } from './createChecklistReportPDF';
 import type { IFilterOptions } from '../controllers/generateChecklistReportPDFController';
+import { dateTimeFormatter } from '../../../../utils/dateTime/dateTimeFormatter';
 
 interface IChecklistPDFService {
   reportId: string;
@@ -138,7 +139,7 @@ function separateByMonth(checklists: IDataForPDF['checklists']) {
   const separatedByMonth: { [key: string]: IDataForPDF['checklists'] } = {};
 
   checklists.forEach((checklist) => {
-    const monthYear = `${checklist.createdAt.getMonth() + 1}-${checklist.createdAt.getFullYear()}`;
+    const monthYear = `${checklist.date.getMonth() + 1}-${checklist.date.getFullYear()}`;
 
     if (!separatedByMonth[monthYear]) {
       separatedByMonth[monthYear] = [];
@@ -163,10 +164,18 @@ const handleChecklistColors = (status: string) => {
         bgColor: '#D5D5D5',
         color: 'black',
       };
+
     case 'inProgress':
       return {
         name: 'Em andamento',
         bgColor: '#FFB200',
+        color: 'white',
+      };
+
+    case 'approved':
+      return {
+        name: 'Conforme',
+        bgColor: '#34B53A',
         color: 'white',
       };
 
@@ -176,6 +185,14 @@ const handleChecklistColors = (status: string) => {
         bgColor: '#34B53A',
         color: 'white',
       };
+
+    case 'rejected':
+      return {
+        name: 'Não conforme',
+        bgColor: '#B21D1D',
+        color: 'white',
+      };
+
     default:
       return {
         name: 'Pendente',
@@ -287,14 +304,15 @@ export async function checklistPDFService({
 
       for (const checklist of data) {
         const {
+          building,
           name: checklistName,
           description,
           observation,
-          user,
-          images,
           status,
-          building,
-          createdAt,
+          checklistItem,
+          checklistUsers,
+          images,
+          date,
         } = checklist;
 
         const checklistStatusName = handleChecklistColors(status).name;
@@ -354,9 +372,9 @@ export async function checklistPDFService({
           columns: [
             {
               stack: [
-                String(createdAt.getDate()).padStart(2, '0'),
+                String(date.getDate()).padStart(2, '0'),
                 capitalizeFirstLetter(
-                  new Date(createdAt)
+                  new Date(date)
                     .toLocaleString('pt-br', {
                       weekday: 'long',
                     })
@@ -407,12 +425,25 @@ export async function checklistPDFService({
                           marginLeft: 8,
                         },
                         {
-                          text: [{ text: 'Responsável: ', bold: true }, { text: user?.name || '' }],
+                          text: [
+                            {
+                              text:
+                                checklistUsers.length === 0 || checklistUsers.length === 1
+                                  ? 'Responsável: '
+                                  : 'Responsáveis: ',
+                              bold: true,
+                            },
+                            {
+                              text: `${checklistUsers
+                                .map((checklistUser) => checklistUser.user.name)
+                                .join(', ')}`,
+                            },
+                          ],
                         },
                         {
                           text: [
                             { text: 'Data: ', bold: true },
-                            { text: createdAt.toLocaleDateString('pt-br') },
+                            { text: date.toLocaleDateString('pt-br') },
                           ],
                         },
                       ],
@@ -450,6 +481,60 @@ export async function checklistPDFService({
         });
 
         const lastContent = contentData.length - 1;
+
+        if (checklistItem && checklistItem.length > 0) {
+          (contentData[lastContent] as any).columns[1].stack.push({
+            table: {
+              widths: [1, '*'],
+              body: [
+                [
+                  {
+                    text: '',
+                    fillColor: checklistStatusBgColor,
+                  },
+                  {
+                    table: {
+                      widths: [90, 90, '*'],
+                      body: [
+                        [
+                          { text: 'Atualizado', bold: true },
+                          { text: 'Status', bold: true },
+                          { text: 'Item', bold: true },
+                        ],
+                        ...(checklistItem ?? []).map(
+                          ({ name, status: checklistStatus, updatedAt }) => [
+                            {
+                              text:
+                                updatedAt <= date ? 'Não alterado' : dateTimeFormatter(updatedAt),
+                            },
+                            {
+                              text: ` ${handleChecklistColors(checklistStatus).name} `,
+                              color: handleChecklistColors(checklistStatus).color,
+                              background: handleChecklistColors(checklistStatus).bgColor,
+                            },
+                            { text: name },
+                          ],
+                        ),
+                      ],
+                    },
+                    layout: 'lightHorizontalLines',
+                    marginLeft: 8,
+                    marginRight: 8,
+                  },
+                ],
+                [
+                  {
+                    text: '',
+                    fillColor: checklistStatusBgColor,
+                  },
+                  { text: '' },
+                ],
+              ],
+            },
+            layout: 'noBorders',
+            fillColor: '#E6E6E6',
+          });
+        }
 
         if (imagesForPDF && imagesForPDF.length > 0) {
           const imagesRows = Math.ceil(imagesForPDF.length / 6);
