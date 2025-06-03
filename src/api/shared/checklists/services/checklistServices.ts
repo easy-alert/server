@@ -121,7 +121,11 @@ class ChecklistServices {
           nanoId: buildingNanoId,
         },
 
-        userId,
+        checklistUsers: {
+          some: {
+            userId,
+          },
+        },
 
         date: {
           gte: setToMidnight(new Date(date)),
@@ -256,19 +260,43 @@ class ChecklistServices {
       prisma.checklist.findMany({
         select: { date: true },
         distinct: 'date',
-        where: { building: { nanoId: buildingNanoId }, userId, status: 'pending' },
+        where: {
+          building: { nanoId: buildingNanoId },
+          checklistUsers: {
+            some: {
+              userId,
+            },
+          },
+          status: 'pending',
+        },
       }),
 
       prisma.checklist.findMany({
         select: { date: true },
         distinct: 'date',
-        where: { building: { nanoId: buildingNanoId }, userId, status: 'inProgress' },
+        where: {
+          building: { nanoId: buildingNanoId },
+          checklistUsers: {
+            some: {
+              userId,
+            },
+          },
+          status: 'inProgress',
+        },
       }),
 
       prisma.checklist.findMany({
         select: { date: true },
         distinct: 'date',
-        where: { building: { nanoId: buildingNanoId }, userId, status: 'completed' },
+        where: {
+          building: { nanoId: buildingNanoId },
+          checklistUsers: {
+            some: {
+              userId,
+            },
+          },
+          status: 'completed',
+        },
       }),
     ]);
 
