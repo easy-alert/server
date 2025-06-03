@@ -251,7 +251,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
               // chama funcao
               for (const token of userTokens) {
                 await sendPushNotification({
-                  to: [token.token],
+                  to: token.token,
                   title: userBuilding?.name,
                   body: `Uma manutenção foi atribuída para você para a atividade de: ${maintenanceData.activity}`,
                 });

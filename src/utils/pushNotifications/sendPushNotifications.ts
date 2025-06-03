@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 type SendNotificationParams = {
-  to: string[];
+  to: string;
   title: string;
   body: string;
 };
