@@ -206,7 +206,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
     .forEach((checklist) => {
       const totalItems = checklist.checklistItem.length;
       const completedItems = checklist.checklistItem.filter(
-        (item) => item.status === 'completed',
+        (item) => item.status !== 'pending',
       ).length;
       const checklistProgress = `${completedItems} de ${totalItems} itens concluídos`;
 
@@ -239,7 +239,7 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
     .forEach((checklist) => {
       const totalItems = checklist.checklistItem.length;
       const completedItems = checklist.checklistItem.filter(
-        (item) => item.status === 'completed',
+        (item) => item.status !== 'pending',
       ).length;
       const checklistProgress = `${completedItems} de ${totalItems} itens concluídos`;
 

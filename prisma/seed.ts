@@ -41,6 +41,10 @@ async function main() {
   // await seedServices.upsertUserPermissionsWithCompanyId();
 
   // await seedServices.addMaintenanceServiceOrderNumber();
+
+  await seedServices.migrateChecklistUsers();
+
+  await seedServices.migrateChecklistItemStatus();
 }
 
 main()

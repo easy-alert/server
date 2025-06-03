@@ -7,7 +7,7 @@ import { handlePermittedBuildings } from '../../../../utils/permissions/handlePe
 
 export async function dashboardFiltersController(req: Request, res: Response) {
   const isAdmin = hasAdminPermission(req.Permissions);
-  const permittedBuildingsIds = handlePermittedBuildings(req.BuildingsPermissions, 'name');
+  const permittedBuildingsIds = handlePermittedBuildings(req.BuildingsPermissions, 'id');
 
   const buildingsIds = isAdmin ? undefined : permittedBuildingsIds;
 

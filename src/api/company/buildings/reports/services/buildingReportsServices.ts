@@ -167,6 +167,14 @@ export class BuildingReportsServices {
           dueDate: true,
           serviceOrderNumber: true,
 
+          priority: {
+            select: {
+              label: true,
+              color: true,
+              backgroundColor: true,
+            },
+          },
+
           activities: {
             select: {
               title: true,
@@ -307,6 +315,14 @@ export class BuildingReportsServices {
           inProgress: true,
           dueDate: true,
           serviceOrderNumber: true,
+
+          priority: {
+            select: {
+              name: true,
+              color: true,
+              backgroundColor: true,
+            },
+          },
 
           activities: {
             select: {

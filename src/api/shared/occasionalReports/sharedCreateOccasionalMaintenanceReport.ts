@@ -14,6 +14,8 @@ import { SharedBuildingNotificationConfigurationServices } from '../notification
 import { checkValues } from '../../../utils/newValidator';
 import { ticketServices } from '../tickets/services/ticketServices';
 import { getCompanyLastServiceOrder } from '../maintenanceHistory/services/getCompanyLastServiceOrder';
+import { prisma } from '../../../../prisma';
+import { sendPushNotification } from '../../../utils/pushNotifications/sendPushNotifications';
 
 // CLASS
 const validator = new Validator();
@@ -235,6 +237,26 @@ export async function sharedCreateOccasionalMaintenanceReport({
                 userId,
               },
             });
+
+            const userTokens = await prisma.pushNotification.findMany({
+              where: { userId },
+              select: {
+                token: true,
+              },
+            });
+
+            const userBuilding = await prisma.building.findFirst({ where: { id: buildingId } });
+
+            if (userTokens && userTokens.length > 0 && userBuilding) {
+              // chama funcao
+              for (const token of userTokens) {
+                await sendPushNotification({
+                  to: [token.token],
+                  title: userBuilding?.name,
+                  body: `Uma manutenção foi atribuída para você para a atividade de: ${maintenanceData.activity}`,
+                });
+              }
+            }
           }),
         );
       }

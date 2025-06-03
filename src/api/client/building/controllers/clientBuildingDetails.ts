@@ -17,9 +17,9 @@ const validator = new Validator();
 // #endregion
 
 export async function clientBuildingDetails(req: Request, res: Response) {
-  const YEARFORSUM = 5;
-
   const { buildingId } = req.params;
+
+  const YEARFORSUM = 5;
 
   // #region VALIDATION
 

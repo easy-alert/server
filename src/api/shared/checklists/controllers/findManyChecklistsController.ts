@@ -29,13 +29,21 @@ export async function findManyChecklistsController(req: Request, res: Response) 
   });
 
   const formattedChecklist = checklists.map((checklist) => {
-    const { checklistItem, ...rest } = checklist;
+    const { checklistItem, checklistUsers, ...rest } = checklist;
 
     const totalItems = checklistItem.length;
-    const completedItems = checklistItem.filter((item) => item.status === 'completed').length;
+    const completedItems = checklistItem.filter((item) => item.status !== 'pending').length;
+
+    const formattedChecklistUsers = checklistUsers.map((checklistUser) => ({
+      id: checklistUser.user.id,
+      name: checklistUser.user.name,
+      image: checklistUser.user.image,
+      email: checklistUser.user.email,
+    }));
 
     return {
       ...rest,
+      checklistUsers: formattedChecklistUsers,
       totalItems,
       completedItems,
     };

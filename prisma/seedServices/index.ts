@@ -924,4 +924,56 @@ export class SeedServices {
 
     console.log('Maintenance Service Order Number added.');
   }
+
+  async migrateChecklistUsers() {
+    console.log('\n\nstarting Checklist Users creation ...');
+
+    const checklists = await prisma.checklist.findMany();
+
+    for (const checklist of checklists) {
+      if (!checklist.userId) {
+        console.log('Checklist ', checklist.id, ' has no userId.');
+        continue;
+      }
+
+      await prisma.checklistUsers.upsert({
+        create: {
+          checklistId: checklist.id,
+          userId: checklist.userId,
+        },
+        update: {
+          checklistId: checklist.id,
+          userId: checklist.userId,
+        },
+        where: {
+          checklistId_userId: {
+            checklistId: checklist.id,
+            userId: checklist.userId,
+          },
+        },
+      });
+    }
+
+    console.log('Checklist Users created.');
+  }
+
+  async migrateChecklistItemStatus() {
+    console.log('\n\nstarting Checklist Item Status creation ...');
+
+    await prisma.checklistItem.updateMany({
+      data: {
+        status: 'approved',
+      },
+
+      where: {
+        status: 'pending',
+
+        checklist: {
+          status: 'completed',
+        },
+      },
+    });
+
+    console.log('Checklist Item Status updated.');
+  }
 }

@@ -45,6 +45,12 @@ export interface IMaintenancesData {
   dueDate: Date;
   serviceOrderNumber?: number | null;
 
+  priority?: {
+    label: string;
+    color: string;
+    backgroundColor: string;
+  };
+
   activities?: {
     title: string;
     content: string | null;

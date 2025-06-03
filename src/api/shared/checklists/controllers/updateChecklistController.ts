@@ -4,13 +4,14 @@ import type { ChecklistItem, ChecklistStatusName } from '@prisma/client';
 
 import { getChecklists } from '../services/getChecklists';
 import { saveChecklist } from '../services/saveChecklist';
-import { updateManyChecklist } from '../services/updateChecklist';
+import { updateChecklistsUsersById } from '../services/updateChecklistsUsersById';
+import { updateChecklistsUsersByGroup } from '../services/updateChecklistsUsersByGroup';
 
 import { checkValues } from '../../../../utils/newValidator';
 
 interface IBody {
   buildingId: string;
-  userId: string;
+  usersIds: string[];
   checklistItems: ChecklistItem[];
   observation: string;
   status: ChecklistStatusName;
@@ -27,13 +28,13 @@ interface IBody {
 
 export async function updateChecklistController(req: Request, res: Response) {
   const { checklistId } = req.params;
-  const { buildingId, userId, checklistItems, observation, status, images, updateMode }: IBody =
+  const { buildingId, usersIds, checklistItems, observation, status, images, updateMode }: IBody =
     req.body;
 
   checkValues([
     { label: 'ID do checklist', type: 'string', value: checklistId },
     { label: 'ID do prédio', type: 'string', value: buildingId, required: false },
-    { label: 'ID do usuário', type: 'string', value: userId, required: false },
+    { label: 'IDs dos usuários', type: 'array', value: usersIds, required: false },
     { label: 'Itens do checklist', type: 'array', value: checklistItems, required: false },
     { label: 'Descrição', type: 'string', value: observation, required: false },
     { label: 'Status', type: 'string', value: status, required: false },
@@ -51,28 +52,18 @@ export async function updateChecklistController(req: Request, res: Response) {
   if (updateMode) {
     switch (updateMode) {
       case 'thisAndFollowing':
-        await updateManyChecklist({
-          data: {
-            userId,
-          },
-
-          where: {
-            templateId: checklist[0].groupId,
-            date: { gte: checklist[0].date },
-          },
+        await updateChecklistsUsersByGroup({
+          groupId: checklist[0].groupId,
+          usersIds,
+          checklistDate: checklist[0].date,
         });
 
         break;
 
       default:
-        await updateManyChecklist({
-          data: {
-            userId,
-          },
-
-          where: {
-            id: checklistId,
-          },
+        await updateChecklistsUsersById({
+          checklistId,
+          usersIds,
         });
 
         break;

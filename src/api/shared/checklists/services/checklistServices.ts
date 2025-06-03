@@ -87,12 +87,6 @@ class ChecklistServices {
         name: true,
         status: true,
 
-        user: {
-          select: {
-            name: true,
-          },
-        },
-
         syndic: {
           select: {
             name: true,
@@ -104,6 +98,20 @@ class ChecklistServices {
             id: true,
             name: true,
             status: true,
+          },
+        },
+
+        checklistUsers: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+                email: true,
+                phoneNumber: true,
+              },
+            },
           },
         },
       },

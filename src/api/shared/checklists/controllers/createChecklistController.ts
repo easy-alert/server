@@ -21,7 +21,7 @@ interface IBody {
   checklistTemplateId?: string;
   editedChecklistTemplate?: ChecklistTemplate & { items: ChecklistTemplateItem[] };
   newChecklist?: Checklist & { items: ChecklistItem[] };
-  responsibleId: string;
+  responsibleId: string[];
   startDate: string;
   interval: string;
   status: ChecklistStatusName;
@@ -43,7 +43,7 @@ export async function createChecklistController(req: Request, res: Response) {
 
   checkValues([
     { label: 'Edificação', type: 'string', value: buildingId },
-    { label: 'Usuário', type: 'string', value: responsibleId },
+    { label: 'Usuários', type: 'array', value: responsibleId },
     { label: 'Status', type: 'string', value: status },
     { label: 'Data', type: 'date', value: startDate },
   ]);
