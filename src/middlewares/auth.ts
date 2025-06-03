@@ -48,7 +48,7 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
     req.BuildingsPermissions = user.UserBuildingsPermissions;
 
     if (isAllowedMethod) {
-      await upsertApiLogs({
+      upsertApiLogs({
         companyId,
         userId: user.id,
         apiLogId: req.apiLogId,

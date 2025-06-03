@@ -17,6 +17,7 @@
   "plugins": ["@typescript-eslint"],
   "rules": {
     "camelcase": 2,
+    "one-var": "off",
     "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
     "import/prefer-default-export": "off",
     "import/extensions": "off",
