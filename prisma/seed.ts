@@ -42,7 +42,7 @@ async function main() {
 
   // await seedServices.addMaintenanceServiceOrderNumber();
 
-  // await seedServices.migrateChecklistUsers();
+  await seedServices.migrateChecklistUsers();
 
   await seedServices.migrateChecklistItemStatus();
 }
