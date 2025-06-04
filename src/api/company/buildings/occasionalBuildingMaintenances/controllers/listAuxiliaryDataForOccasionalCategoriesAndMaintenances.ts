@@ -19,22 +19,8 @@ export async function listAuxiliaryDataForOccasionalCategoriesAndMaintenances(
     permittedBuildings: undefined,
   });
 
-  const CategoriesData = await sharedCategoryServices.listOccasionalForSelect({
+  const Categories = await sharedCategoryServices.listOccasionalForSelect({
     ownerCompanyId: req.Company.id,
-  });
-
-  const Categories: typeof CategoriesData = [];
-
-  CategoriesData.forEach((categoryData) => {
-    const categoryFound = Categories.find((category) => category.name === categoryData.name);
-
-    if (!categoryFound) {
-      Categories.push({
-        id: categoryData.id,
-        name: categoryData.name,
-        Maintenances: categoryData.Maintenances,
-      });
-    }
   });
 
   return res.status(200).json({ Categories, Buildings });
