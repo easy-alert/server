@@ -143,23 +143,8 @@ export class SharedCategoryServices {
       select: {
         id: true,
         name: true,
-
-        Maintenances: {
-          select: {
-            id: true,
-            element: true,
-            activity: true,
-            responsible: true,
-          },
-          where: {
-            NOT: {
-              MaintenanceType: {
-                name: 'occasional',
-              },
-            },
-          },
-        },
       },
+
       where: {
         OR: [
           {
