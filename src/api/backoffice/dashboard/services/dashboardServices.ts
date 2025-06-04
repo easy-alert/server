@@ -31,6 +31,106 @@ export class DashboardServices {
 
     return users;
   }
+
+  async rankingMostActiveCompanies() {
+    // Calculate first and last day of previous month
+    const now = new Date();
+    const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+
+    const companies = await prisma.company.findMany({
+      select: {
+        id: true,
+        name: true,
+
+        _count: {
+          select: {
+            MaintenancesHistory: {
+              where: {
+                MaintenancesStatus: {
+                  OR: [{ name: 'completed' }, { name: 'overdue' }],
+                },
+
+                resolutionDate: {
+                  gte: firstDayLastMonth,
+                  lte: lastDayLastMonth,
+                },
+              },
+            },
+          },
+        },
+      },
+
+      where: {
+        isBlocked: false,
+      },
+
+      // take,
+    });
+
+    return companies;
+  }
+
+  async rankingMostCompany({ companyId }: { companyId: string }) {
+    // Calculate first and last day of previous month
+    const now = new Date();
+    const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+
+    const maintenances = await prisma.maintenanceHistory.findMany({
+      where: {
+        Company: {
+          id: companyId,
+        },
+
+        resolutionDate: {
+          gte: firstDayLastMonth,
+          lte: lastDayLastMonth,
+        },
+
+        MaintenancesStatus: {
+          OR: [{ name: 'completed' }, { name: 'overdue' }],
+        },
+      },
+
+      select: {
+        id: true,
+      },
+    });
+
+    // const companies = await prisma.company.findMany({
+    //   select: {
+    //     id: true,
+    //     name: true,
+
+    //     _count: {
+    //       select: {
+    //         MaintenancesHistory: {
+    //           where: {
+    //             MaintenancesStatus: {
+    //               OR: [{ name: 'completed' }, { name: 'overdue' }],
+    //             },
+
+    //             resolutionDate: {
+    //               gte: firstDayLastMonth,
+    //               lte: lastDayLastMonth,
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+
+    //   where: {
+    //     id: companyId,
+    //     isBlocked: false,
+    //   },
+
+    //   // take,
+    // });
+
+    return maintenances;
+  }
 }
 
 export const dashboardServices = new DashboardServices();
