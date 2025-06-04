@@ -292,7 +292,7 @@ export class DashboardServices {
       prisma.maintenanceHistory.count({
         where: {
           ownerCompanyId: filter.companyId,
-          resolutionDate: filter.period,
+          inProgress: false,
 
           Building: {
             id: filter.buildings,
@@ -316,13 +316,15 @@ export class DashboardServices {
               },
             ],
           },
+
+          OR: [{ notificationDate: filter.period }, { resolutionDate: filter.period }],
         },
       }),
 
       prisma.maintenanceHistory.count({
         where: {
           ownerCompanyId: filter.companyId,
-          dueDate: filter.period,
+          inProgress: false,
 
           Building: {
             id: filter.buildings,
@@ -339,13 +341,15 @@ export class DashboardServices {
           MaintenancesStatus: {
             name: 'expired',
           },
+
+          OR: [{ notificationDate: filter.period }, { resolutionDate: filter.period }],
         },
       }),
 
       prisma.maintenanceHistory.count({
         where: {
           ownerCompanyId: filter.companyId,
-          notificationDate: filter.period,
+          inProgress: false,
 
           Building: {
             id: filter.buildings,
@@ -362,13 +366,14 @@ export class DashboardServices {
           MaintenancesStatus: {
             name: 'pending',
           },
+
+          OR: [{ notificationDate: filter.period }, { resolutionDate: filter.period }],
         },
       }),
 
       prisma.maintenanceHistory.count({
         where: {
           ownerCompanyId: filter.companyId,
-          notificationDate: filter.period,
           inProgress: true,
 
           Building: {
@@ -382,6 +387,8 @@ export class DashboardServices {
 
             MaintenanceType: { name: maintenanceType },
           },
+
+          OR: [{ notificationDate: filter.period }, { resolutionDate: filter.period }],
         },
       }),
     ]);
