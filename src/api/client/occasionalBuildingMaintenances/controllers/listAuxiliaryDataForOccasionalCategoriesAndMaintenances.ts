@@ -28,23 +28,10 @@ export async function listAuxiliaryDataForOccasionalCategoriesAndMaintenances(
 
   const building = await buildingServices.findByNanoId({ buildingNanoId });
 
-  const CategoryData = await sharedCategoryServices.listOccasionalForSelect({
+  const Categories = await sharedCategoryServices.listOccasionalForSelect({
     ownerCompanyId: building.companyId,
   });
 
-  const Categories: typeof CategoryData = [];
-
-  CategoryData.forEach((categoryData) => {
-    const categoryFound = Categories.find((category) => category.name === categoryData.name);
-
-    if (!categoryFound) {
-      Categories.push({
-        id: categoryData.id,
-        name: categoryData.name,
-        Maintenances: categoryData.Maintenances,
-      });
-    }
-  });
 
   return res.status(200).json({ Categories });
 }
