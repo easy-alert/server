@@ -32,6 +32,5 @@ export async function listAuxiliaryDataForOccasionalCategoriesAndMaintenances(
     ownerCompanyId: building.companyId,
   });
 
-
   return res.status(200).json({ Categories });
 }
