@@ -57,6 +57,7 @@ interface IDateForCreateHistory {
   dueDate: Date;
   daysInAdvance: number;
   serviceOrderNumber: number;
+  inProgress: boolean;
   MaintenanceReport?: {
     create: {
       cost: number;
@@ -71,6 +72,7 @@ export interface IMaintenancesForHistorySelected {
   resolutionDate: Date | null;
   notificationDate: Date | null;
   status: string;
+  inProgress: boolean;
 }
 
 export interface IAllBuildingCategoriesAndMaintenances {
