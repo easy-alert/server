@@ -168,8 +168,9 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         });
 
         maintenancesForHistorySelected.push({
-          status: bodyData[i].Maintenances[j].status,
           maintenanceId: bodyData[i].Maintenances[j].id,
+          status: bodyData[i].Maintenances[j].status,
+          inProgress: bodyData[i].Maintenances[j].inProgress,
           resolutionDate: bodyData[i].Maintenances[j].resolutionDate
             ? changeTime({
                 date: new Date(bodyData[i].Maintenances[j].resolutionDate),
@@ -245,6 +246,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       ...maintenance,
       notificationDate: maintenancesForCreateHistory[i].notificationDate,
       resolutionDate: maintenancesForCreateHistory[i].resolutionDate,
+      inProgress: maintenancesForCreateHistory[i].inProgress,
       status: maintenancesForCreateHistory[i].status,
     };
   }
@@ -252,6 +254,11 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
   let notificationDate = null;
 
   for (let i = 0; i < updatedsMaintenances.length; i++) {
+    console.log(
+      '🚀 ~ editBuildingCategoriesAndMaintenances ~ updatedsMaintenances[i].status:',
+      updatedsMaintenances[i],
+    );
+
     const lastServiceOrderNumber = await getCompanyLastServiceOrder({
       companyId: req.Company.id,
     });
@@ -358,6 +365,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
           date: removeDays({ date: notificationDate, days: daysToAnticipate }),
           interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
         });
+
         firstMaintenanceWasAntecipated = true;
       }
 
@@ -366,19 +374,23 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         notificationDate = updatedsMaintenances[i].notificationDate;
         // console.log('entra quando tem a notificação');
       }
+    } else if (
+      updatedsMaintenances[i].status === 'pending' ||
+      updatedsMaintenances[i].status === 'expired'
+    ) {
+      notificationDate = updatedsMaintenances[i].resolutionDate;
     } else {
       // #region Create History for maintenanceHistory
-
       const dataForCreateHistoryAndReport: ICreateMaintenanceHistoryAndReport = {
-        inProgress: false,
+        ownerCompanyId: req.Company.id,
         buildingId,
         maintenanceId: updatedsMaintenances[i].id,
-        ownerCompanyId: req.Company.id,
         maintenanceStatusId: updatedMaintenanceStatus.id,
         notificationDate: updatedsMaintenances[i].resolutionDate,
         resolutionDate: updatedsMaintenances[i].resolutionDate,
         dueDate: updatedsMaintenances[i].resolutionDate,
         serviceOrderNumber: lastServiceOrderNumber + 1,
+        inProgress: false,
 
         MaintenanceReport: {
           create: {
@@ -403,13 +415,6 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
           },
         },
       };
-
-      if (
-        updatedsMaintenances[i].status === 'expired' ||
-        updatedsMaintenances[i].status === 'pending'
-      ) {
-        dataForCreateHistoryAndReport.MaintenanceReport = undefined;
-      }
 
       const createdMaintenanceHistory = await sharedMaintenanceServices.createHistoryAndReport({
         data: dataForCreateHistoryAndReport,
@@ -536,15 +541,23 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
     });
 
+    console.log(
+      '🚀 ~ editBuildingCategoriesAndMaintenances ~ updatedsMaintenances[i]:',
+      updatedsMaintenances[i].resolutionDate,
+    );
+    console.log('🚀 ~ editBuildingCategoriesAndMaintenances ~ notificationDate:', notificationDate);
+    console.log('🚀 ~ editBuildingCategoriesAndMaintenances ~ dueDate:', dueDate);
+
     DataForCreateHistory.push({
+      ownerCompanyId: req.Company.id,
       buildingId,
       maintenanceId: updatedsMaintenances[i].id,
-      ownerCompanyId: req.Company.id,
       maintenanceStatusId: maintenanceStatus.id,
-      notificationDate,
-      dueDate,
       daysInAdvance: firstMaintenanceWasAntecipated ? daysToAnticipate : 0,
       serviceOrderNumber: lastServiceOrderNumber + 1,
+      notificationDate,
+      dueDate,
+      inProgress: updatedsMaintenances[i].inProgress,
     });
   }
 
