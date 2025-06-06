@@ -252,14 +252,12 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
   }
 
   let notificationDate = null;
+  let dueDate = null;
 
   for (let i = 0; i < updatedsMaintenances.length; i++) {
-    console.log(
-      '🚀 ~ editBuildingCategoriesAndMaintenances ~ updatedsMaintenances[i].status:',
-      updatedsMaintenances[i],
-    );
+    let lastServiceOrderNumber = 0;
 
-    const lastServiceOrderNumber = await getCompanyLastServiceOrder({
+    lastServiceOrderNumber = await getCompanyLastServiceOrder({
       companyId: req.Company.id,
     });
 
@@ -270,9 +268,11 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
     const timeIntervalDelay = await timeIntervalServices.findById({
       timeIntervalId: updatedsMaintenances[i].delayTimeIntervalId,
     });
+
     const timeIntervalPeriod = await timeIntervalServices.findById({
       timeIntervalId: updatedsMaintenances[i].periodTimeIntervalId,
     });
+
     const timeIntervalFrequency = await timeIntervalServices.findById({
       timeIntervalId: updatedsMaintenances[i].frequencyTimeIntervalId,
     });
@@ -374,12 +374,118 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         notificationDate = updatedsMaintenances[i].notificationDate;
         // console.log('entra quando tem a notificação');
       }
+    } else if (updatedsMaintenances[i].status === 'pending') {
+      const updatedNotificationDate = updatedsMaintenances[i].resolutionDate;
+
+      notificationDate = updatedNotificationDate;
+
+      dueDate = noWeekendTimeDate({
+        date: addDays({
+          date: notificationDate,
+          days:
+            updatedsMaintenances[i].period * timeIntervalPeriod.unitTime +
+            // só soma os dias se não tiver primeira data de notificação
+            (firstMaintenanceWasAntecipated ? daysToAnticipate : 0),
+        }),
+        interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
+      });
+    } else if (updatedsMaintenances[i].status === 'expired') {
+      const updatedDueDate = updatedsMaintenances[i].resolutionDate;
+
+      notificationDate = noWeekendTimeDate({
+        date: removeDays({
+          date: updatedDueDate,
+          days: updatedsMaintenances[i].period,
+        }),
+        interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
+      });
+
+      dueDate = updatedDueDate;
+
+      lastServiceOrderNumber = await getCompanyLastServiceOrder({
+        companyId: req.Company.id,
+      });
+
+      const expiredMaintenance = await sharedMaintenanceServices.createOneHistory({
+        data: {
+          ownerCompanyId: req.Company.id,
+          buildingId,
+          maintenanceId: updatedsMaintenances[i].id,
+          maintenanceStatusId: updatedMaintenanceStatus.id,
+          daysInAdvance: firstMaintenanceWasAntecipated ? daysToAnticipate : 0,
+          serviceOrderNumber: lastServiceOrderNumber + 1,
+          notificationDate,
+          dueDate,
+          inProgress: updatedsMaintenances[i].inProgress,
+        },
+      });
+
+      const nextMaintenanceHistory = await sharedMaintenanceServices.findHistoryById({
+        maintenanceHistoryId: expiredMaintenance.id,
+      });
+
+      const foundBuildingMaintenance =
+        await buildingServices.findBuildingMaintenanceDaysToAnticipate({
+          buildingId: nextMaintenanceHistory.Building.id,
+          maintenanceId: nextMaintenanceHistory.Maintenance.id,
+        });
+
+      const nextNotificationDate = noWeekendTimeDate({
+        date: addDays({
+          date:
+            // Escolhe se cria a pendente a partir da execução ou da notificação da anterior
+            nextMaintenanceHistory.Building.nextMaintenanceCreationBasis === 'executionDate'
+              ? today
+              : notificationDate,
+          days:
+            nextMaintenanceHistory.Maintenance.frequency *
+              nextMaintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime -
+            (foundBuildingMaintenance?.daysToAnticipate ?? 0),
+        }),
+        interval:
+          nextMaintenanceHistory.Maintenance.period *
+          nextMaintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
+      });
+
+      const nextDueDate = noWeekendTimeDate({
+        date: addDays({
+          date: nextNotificationDate,
+          days:
+            nextMaintenanceHistory.Maintenance.period *
+              nextMaintenanceHistory.Maintenance.PeriodTimeInterval.unitTime +
+            (foundBuildingMaintenance?.daysToAnticipate ?? 0),
+        }),
+        interval:
+          nextMaintenanceHistory.Maintenance.period *
+          nextMaintenanceHistory.Maintenance.PeriodTimeInterval.unitTime,
+      });
+
+      const pendingStatus = await sharedMaintenanceStatusServices.findByName({ name: 'pending' });
+
+      lastServiceOrderNumber = await getCompanyLastServiceOrder({
+        companyId: req.Company.id,
+      });
+
+      await sharedMaintenanceServices.createHistory({
+        data: [
+          {
+            ownerCompanyId: nextMaintenanceHistory.Company.id,
+            maintenanceId: nextMaintenanceHistory.Maintenance.id,
+            buildingId: nextMaintenanceHistory.Building.id,
+            maintenanceStatusId: pendingStatus.id,
+            notificationDate: nextNotificationDate,
+            dueDate: nextDueDate,
+            daysInAdvance: foundBuildingMaintenance?.daysToAnticipate ?? 0,
+            serviceOrderNumber: lastServiceOrderNumber + 1,
+          },
+        ],
+      });
+
+      continue;
     } else if (
-      updatedsMaintenances[i].status === 'pending' ||
-      updatedsMaintenances[i].status === 'expired'
+      updatedsMaintenances[i].status === 'completed' ||
+      updatedsMaintenances[i].status === 'overdue'
     ) {
-      notificationDate = updatedsMaintenances[i].resolutionDate;
-    } else {
       // #region Create History for maintenanceHistory
       const dataForCreateHistoryAndReport: ICreateMaintenanceHistoryAndReport = {
         ownerCompanyId: req.Company.id,
@@ -530,29 +636,15 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
     // se nao ela ia descontar o que foi antecipado
     // se não existir é zero entao ok.
 
-    const dueDate = noWeekendTimeDate({
-      date: addDays({
-        date: notificationDate,
-        days:
-          updatedsMaintenances[i].period * timeIntervalPeriod.unitTime +
-          // só soma os dias se não tiver primeira data de notificação
-          (firstMaintenanceWasAntecipated ? daysToAnticipate : 0),
-      }),
-      interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
+    lastServiceOrderNumber = await getCompanyLastServiceOrder({
+      companyId: req.Company.id,
     });
-
-    console.log(
-      '🚀 ~ editBuildingCategoriesAndMaintenances ~ updatedsMaintenances[i]:',
-      updatedsMaintenances[i].resolutionDate,
-    );
-    console.log('🚀 ~ editBuildingCategoriesAndMaintenances ~ notificationDate:', notificationDate);
-    console.log('🚀 ~ editBuildingCategoriesAndMaintenances ~ dueDate:', dueDate);
 
     DataForCreateHistory.push({
       ownerCompanyId: req.Company.id,
       buildingId,
       maintenanceId: updatedsMaintenances[i].id,
-      maintenanceStatusId: maintenanceStatus.id,
+      maintenanceStatusId: updatedMaintenanceStatus.id,
       daysInAdvance: firstMaintenanceWasAntecipated ? daysToAnticipate : 0,
       serviceOrderNumber: lastServiceOrderNumber + 1,
       notificationDate,
