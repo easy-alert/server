@@ -9,6 +9,7 @@ interface ISaveChecklist {
   checklistItems?: ChecklistItem[];
   observation?: string;
   status?: ChecklistStatusName;
+  finishedById?: string;
 
   images?:
     | {
@@ -23,6 +24,7 @@ export async function saveChecklist({
   checklistId,
   checklistItems,
   observation,
+  finishedById,
   status,
   images,
 }: ISaveChecklist) {
@@ -38,6 +40,7 @@ export async function saveChecklist({
     data: {
       observation,
       status,
+      finishedById,
 
       checklistItem: {
         updateMany: checklistItems?.length
