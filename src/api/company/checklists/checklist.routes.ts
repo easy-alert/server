@@ -1,7 +1,6 @@
 import { Router } from 'express';
 
 import { findManyChecklistsController } from '../../shared/checklists/controllers/findManyChecklistsController';
-import { completeChecklistController } from '../../shared/checklists/controllers/completeChecklistController';
 import { findChecklistDataByMonthController } from '../../shared/checklists/controllers/findChecklistDataByMonthController';
 // import { findChecklistByIdController } from '../../shared/checklists/controllers/findChecklistByIdController';
 import { updateChecklistReportController } from '../../shared/checklists/controllers/updateChecklistReportController';
@@ -36,7 +35,6 @@ checklistRouter.get('/calendar/:buildingNanoId/dates', findChecklistDataByMonthC
 checklistRouter.post('/', createChecklistController);
 
 checklistRouter.put('/:checklistId', updateChecklistController);
-checklistRouter.put('/complete', completeChecklistController);
 
 checklistRouter.delete('/:checklistId/:mode', deleteChecklistController);
 
