@@ -3,15 +3,13 @@ import { Request, Response } from 'express';
 
 import type { MaintenancePriorityName } from '@prisma/client';
 
-import { changeTime } from '../../../../utils/dateTime/changeTime';
-import { Validator } from '../../../../utils/validator/validator';
-
 import { ClientBuildingServices } from '../services/clientBuildingServices';
-
 import { SharedBuildingNotificationConfigurationServices } from '../../../shared/notificationConfiguration/services/buildingNotificationConfigurationServices';
 import { SharedCategoryServices } from '../../../shared/categories/services/sharedCategoryServices';
 import { findCompany } from '../../../shared/company/services/findCompany';
-import { getChecklistsByBuildingId } from '../../../shared/checklists/services/getChecklistsByBuildingId';
+
+import { changeTime } from '../../../../utils/dateTime/changeTime';
+import { Validator } from '../../../../utils/validator/validator';
 
 // CLASS
 const clientBuildingServices = new ClientBuildingServices();
@@ -186,41 +184,12 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   };
   // #endregion
 
-  const defaultChecklistStyle = {
-    type: 'checklist',
-  };
-
-  const checklists = await getChecklistsByBuildingId({
-    companyId: '',
-    buildingId: [buildingNotificationConfig.Building.id],
-  });
-
   const kanban = await clientBuildingServices.syndicSeparePerStatus({ data: MaintenancesHistory });
 
   // Vencida, SE ALTERAR A ORDEM DISSO, ALTERAR NO SCRIPT DE DELETAR AS EXPIRADAS
   kanban[0].maintenances.sort((a: any, b: any) => (a.date > b.date ? 1 : -1));
 
   // Pendente
-  checklists
-    .filter((checklist) => checklist.status === 'pending')
-    .forEach((checklist) => {
-      const totalItems = checklist.checklistItem.length;
-      const completedItems = checklist.checklistItem.filter(
-        (item) => item.status !== 'pending',
-      ).length;
-      const checklistProgress = `${completedItems} de ${totalItems} itens concluídos`;
-
-      kanban[1].maintenances.push({
-        ...defaultChecklistStyle,
-        id: checklist.id,
-        name: checklist.name,
-        description: checklist.description,
-        date: checklist.date,
-        status: checklist.status,
-        checklistProgress,
-      });
-    });
-
   kanban[1].maintenances.sort((a: any, b: any) => (a.dueDate > b.dueDate ? 1 : -1));
 
   if (company?.showMaintenancePriority) {
@@ -234,26 +203,6 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   }
 
   // Em execução (Vencida + Pendente)
-  checklists
-    .filter((checklist) => checklist.status === 'inProgress')
-    .forEach((checklist) => {
-      const totalItems = checklist.checklistItem.length;
-      const completedItems = checklist.checklistItem.filter(
-        (item) => item.status !== 'pending',
-      ).length;
-      const checklistProgress = `${completedItems} de ${totalItems} itens concluídos`;
-
-      kanban[2].maintenances.push({
-        ...defaultChecklistStyle,
-        id: checklist.id,
-        name: checklist.name,
-        description: checklist.description,
-        date: checklist.date,
-        status: checklist.status,
-        checklistProgress,
-      });
-    });
-
   kanban[2].maintenances.sort((a: any, b: any) => (a.date > b.date ? 1 : -1));
 
   if (company?.showMaintenancePriority) {
@@ -267,19 +216,6 @@ export async function clientSyndicBuildingDetails(req: Request, res: Response) {
   }
 
   // Concluída e Feita em atraso
-  checklists
-    .filter((checklist) => checklist.status === 'completed')
-    .forEach((checklist) =>
-      kanban[3].maintenances.push({
-        ...defaultChecklistStyle,
-        id: checklist.id,
-        name: checklist.name,
-        description: checklist.description,
-        date: checklist.date,
-        status: checklist.status,
-      }),
-    );
-
   kanban[3].maintenances.sort((a: any, b: any) => (a.date < b.date ? 1 : -1));
 
   return res.status(200).json({
