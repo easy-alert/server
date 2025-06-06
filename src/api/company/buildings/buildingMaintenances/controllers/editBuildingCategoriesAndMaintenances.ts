@@ -1,8 +1,6 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
-import { noWeekendTimeDate } from '../../../../../utils/dateTime/noWeekendTimeDate';
 
-import { Validator } from '../../../../../utils/validator/validator';
 import { SharedCategoryServices } from '../../../../shared/categories/services/sharedCategoryServices';
 import { SharedMaintenanceServices } from '../../../../shared/maintenance/services/sharedMaintenanceServices';
 import { ICreateMaintenanceHistoryAndReport } from '../../../../shared/maintenance/services/types';
@@ -11,12 +9,16 @@ import { TimeIntervalServices } from '../../../../shared/timeInterval/services/t
 import { BuildingServices } from '../../building/services/buildingServices';
 import { BuildingMaintenanceHistoryServices } from '../../buildingMaintenancesHistory/services/buildingMaintenanceHistoryServices';
 import { BuildingCategoryAndMaintenanceServices } from '../services/buildingCategoryAndMaintenanceServices';
-import { IDateForCreateHistory, IMaintenancesForHistorySelected } from './types';
-import { ServerMessage } from '../../../../../utils/messages/serverMessage';
-import { addDays, removeDays } from '../../../../../utils/dateTime';
-import { changeTime } from '../../../../../utils/dateTime/changeTime';
-import { SharedMaintenanceReportsServices } from '../../../../shared/maintenancesReports/services/SharedMaintenanceReportsServices';
 import { getCompanyLastServiceOrder } from '../../../../shared/maintenanceHistory/services/getCompanyLastServiceOrder';
+import { SharedMaintenanceReportsServices } from '../../../../shared/maintenancesReports/services/SharedMaintenanceReportsServices';
+
+import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+import { changeTime } from '../../../../../utils/dateTime/changeTime';
+import { addDays, removeDays } from '../../../../../utils/dateTime';
+import { noWeekendTimeDate } from '../../../../../utils/dateTime/noWeekendTimeDate';
+import { Validator } from '../../../../../utils/validator/validator';
+
+import type { IDateForCreateHistory, IMaintenancesForHistorySelected } from './types';
 
 // CLASS
 
@@ -26,7 +28,6 @@ const sharedCategoryServices = new SharedCategoryServices();
 const sharedMaintenanceServices = new SharedMaintenanceServices();
 const buildingServices = new BuildingServices();
 const timeIntervalServices = new TimeIntervalServices();
-const maintenancesStatusServices = new SharedMaintenanceStatusServices();
 const buildingMaintenancesHistoryServices = new BuildingMaintenanceHistoryServices();
 const sharedMaintenanceStatusServices = new SharedMaintenanceStatusServices();
 const sharedMaintenanceReportsServices = new SharedMaintenanceReportsServices();
@@ -170,7 +171,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         maintenancesForHistorySelected.push({
           maintenanceId: bodyData[i].Maintenances[j].id,
           status: bodyData[i].Maintenances[j].status,
-          inProgress: bodyData[i].Maintenances[j].inProgress,
+          inProgress: bodyData[i].Maintenances[j].inProgress || false,
           resolutionDate: bodyData[i].Maintenances[j].resolutionDate
             ? changeTime({
                 date: new Date(bodyData[i].Maintenances[j].resolutionDate),
@@ -216,7 +217,6 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
   });
 
   const buildingDeliveryDate = Building!.deliveryDate;
-  const maintenanceStatus = await maintenancesStatusServices.findByName({ name: 'pending' });
 
   const maintenanceHistory = await sharedMaintenanceServices.findManyHistory({ buildingId });
 
@@ -262,7 +262,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
     });
 
     const updatedMaintenanceStatus = await sharedMaintenanceStatusServices.findByName({
-      name: updatedsMaintenances[i].status || 'completed',
+      name: updatedsMaintenances[i].status || 'pending',
     });
 
     const timeIntervalDelay = await timeIntervalServices.findById({
@@ -374,6 +374,17 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         notificationDate = updatedsMaintenances[i].notificationDate;
         // console.log('entra quando tem a notificação');
       }
+
+      dueDate = noWeekendTimeDate({
+        date: addDays({
+          date: notificationDate,
+          days:
+            updatedsMaintenances[i].period * timeIntervalPeriod.unitTime +
+            // só soma os dias se não tiver primeira data de notificação
+            (firstMaintenanceWasAntecipated ? daysToAnticipate : 0),
+        }),
+        interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
+      });
     } else if (updatedsMaintenances[i].status === 'pending') {
       const updatedNotificationDate = updatedsMaintenances[i].resolutionDate;
 
@@ -487,6 +498,10 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       updatedsMaintenances[i].status === 'overdue'
     ) {
       // #region Create History for maintenanceHistory
+      lastServiceOrderNumber = await getCompanyLastServiceOrder({
+        companyId: req.Company.id,
+      });
+
       const dataForCreateHistoryAndReport: ICreateMaintenanceHistoryAndReport = {
         ownerCompanyId: req.Company.id,
         buildingId,
@@ -649,7 +664,7 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       serviceOrderNumber: lastServiceOrderNumber + 1,
       notificationDate,
       dueDate,
-      inProgress: updatedsMaintenances[i].inProgress,
+      inProgress: updatedsMaintenances[i].inProgress || false,
     });
   }
 
