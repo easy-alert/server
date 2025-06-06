@@ -247,7 +247,13 @@ async function PDFService({
       'https://larguei.s3.us-west-2.amazonaws.com/LOGOPDF-1716384513443.png',
       folderName,
     );
+
     const headerLogo = isDicebear ? footerLogo : await downloadFromS3(company!.image, folderName);
+
+    const showMaintenancePriority = await prisma.company.findUnique({
+      where: { id: req.companyId },
+      select: { showMaintenancePriority: true },
+    });
 
     let maintenances: IMaintenancesData[] = [];
 
@@ -641,7 +647,7 @@ async function PDFService({
           });
         }
 
-        if (priority && priority.label) {
+        if (showMaintenancePriority && priority && priority.label) {
           tags.push({
             text: `  ${priority.label}  `,
             background: priority.backgroundColor,
