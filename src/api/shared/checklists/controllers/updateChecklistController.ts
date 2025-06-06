@@ -27,6 +27,7 @@ interface IBody {
 }
 
 export async function updateChecklistController(req: Request, res: Response) {
+  const { userId } = req;
   const { checklistId } = req.params;
   const { buildingId, usersIds, checklistItems, observation, status, images, updateMode }: IBody =
     req.body;
@@ -74,6 +75,7 @@ export async function updateChecklistController(req: Request, res: Response) {
       buildingId,
       checklistItems,
       observation,
+      finishedById: userId,
       status,
       images,
     });

@@ -1,5 +1,7 @@
-import { ChecklistStatusName } from '@prisma/client';
+import type { ChecklistStatusName } from '@prisma/client';
+
 import { prisma, prismaTypes } from '../../../../../prisma';
+
 import { setToLastMinuteOfDay, setToMidnight } from '../../../../utils/dateTime';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
 import { Validator } from '../../../../utils/validator/validator';
@@ -34,6 +36,7 @@ class ChecklistServices {
       include: {
         images: true,
         detailImages: true,
+
         building: {
           select: {
             nanoId: true,
@@ -46,12 +49,7 @@ class ChecklistServices {
             },
           },
         },
-        syndic: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
+
         frequencyTimeInterval: {
           select: {
             id: true,
@@ -59,6 +57,7 @@ class ChecklistServices {
           },
         },
       },
+
       where: { id },
     });
 
@@ -86,12 +85,6 @@ class ChecklistServices {
         buildingId: true,
         name: true,
         status: true,
-
-        syndic: {
-          select: {
-            name: true,
-          },
-        },
 
         checklistItem: {
           select: {
@@ -150,11 +143,13 @@ class ChecklistServices {
         name: true,
         description: true,
         date: true,
+
         building: {
           select: {
             name: true,
           },
         },
+
         frequency: true,
         status: true,
         observation: true,
@@ -164,17 +159,14 @@ class ChecklistServices {
             url: true,
           },
         },
+
         detailImages: {
           select: {
             name: true,
             url: true,
           },
         },
-        user: {
-          select: {
-            name: true,
-          },
-        },
+
         checklistItem: {
           select: {
             id: true,
@@ -323,6 +315,32 @@ class ChecklistServices {
     validator.needExist([{ label: 'Checklist', variable: checklist }]);
 
     return checklist!;
+  }
+
+  async checkChecklistAccess({ checklistId }: { checklistId: string }): Promise<void> {
+    const checklist = await prisma.checklist.findUnique({
+      select: {
+        building: {
+          select: {
+            Company: {
+              select: {
+                canAccessChecklists: true,
+              },
+            },
+          },
+        },
+      },
+      where: { id: checklistId },
+    });
+
+    validator.needExist([{ label: 'Checklist', variable: checklist }]);
+
+    if (!checklist?.building.Company.canAccessChecklists) {
+      throw new ServerMessage({
+        statusCode: 403,
+        message: `Sua empresa não possui acesso a este módulo.`,
+      });
+    }
   }
 }
 
