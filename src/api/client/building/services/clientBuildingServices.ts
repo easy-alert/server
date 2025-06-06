@@ -283,8 +283,6 @@ export class ClientBuildingServices {
             maintenanceId: maintenance.Maintenance.id,
           });
 
-          console.log("🚀 ~ ClientBuildingServices ~ syndicSeparePerStatus ~ history:", history)
-
           const historyPeriod =
             history[0].Maintenance.period * history[0].Maintenance.PeriodTimeInterval.unitTime;
 
