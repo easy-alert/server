@@ -169,7 +169,7 @@ model Company {
   canAccessChecklists Boolean @default(false)
   canAccessTickets    Boolean @default(false)
 
-  showMaintenancePriority Boolean @default(false)
+  showMaintenancePriority Boolean @default(true)
 
   receivePreviousMonthReports Boolean @default(false)
   receiveDailyDueReports      Boolean @default(false)
