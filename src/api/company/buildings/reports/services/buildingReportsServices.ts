@@ -156,6 +156,38 @@ export class BuildingReportsServices {
     companyId,
     queryFilter,
   }: IFindBuildingMaintenancesHistory) {
+    const splittedSearch =
+      queryFilter.search
+        ?.split(',')
+        .map((s) => s.trim())
+        .filter(Boolean) || [];
+
+    const searchConditions: any[] = [];
+
+    splittedSearch.forEach((keyword) => {
+      if (keyword) {
+        const conditions = [
+          { Building: { name: { contains: keyword, mode: 'insensitive' } } },
+          { Maintenance: { element: { contains: keyword, mode: 'insensitive' } } },
+          { Maintenance: { activity: { contains: keyword, mode: 'insensitive' } } },
+          { Maintenance: { Category: { name: { contains: keyword, mode: 'insensitive' } } } },
+          { MaintenancesStatus: { singularLabel: { contains: keyword, mode: 'insensitive' } } },
+          {
+            Maintenance: {
+              instructions: { some: { name: { contains: keyword, mode: 'insensitive' } } },
+            },
+          },
+          {
+            serviceOrderNumber: {
+              equals: Number.isInteger(Number(keyword)) ? Number(keyword) : undefined,
+            },
+          },
+        ];
+
+        searchConditions.push(...conditions);
+      }
+    });
+
     // nome diabo pra reaproveitar função
     const [maintenancesHistory, MaintenancesPending, company] = await prisma.$transaction([
       prisma.maintenanceHistory.findMany({
@@ -273,36 +305,8 @@ export class BuildingReportsServices {
             },
           },
 
-          ...(queryFilter.search && {
-            OR: [
-              { Building: { name: { contains: queryFilter.search, mode: 'insensitive' } } },
-              { Maintenance: { element: { contains: queryFilter.search, mode: 'insensitive' } } },
-              { Maintenance: { activity: { contains: queryFilter.search, mode: 'insensitive' } } },
-              {
-                Maintenance: {
-                  Category: { name: { contains: queryFilter.search, mode: 'insensitive' } },
-                },
-              },
-              {
-                MaintenancesStatus: {
-                  singularLabel: { contains: queryFilter.search, mode: 'insensitive' },
-                },
-              },
-              {
-                Maintenance: {
-                  instructions: {
-                    some: { name: { contains: queryFilter.search, mode: 'insensitive' } },
-                  },
-                },
-              },
-              {
-                serviceOrderNumber: {
-                  equals: Number.isInteger(Number(queryFilter.search))
-                    ? Number(queryFilter.search)
-                    : 0,
-                },
-              },
-            ],
+          ...(searchConditions.length > 0 && {
+            OR: [...searchConditions],
           }),
         },
       }),
@@ -437,36 +441,8 @@ export class BuildingReportsServices {
             name: 'pending',
           },
 
-          ...(queryFilter.search && {
-            OR: [
-              { Building: { name: { contains: queryFilter.search, mode: 'insensitive' } } },
-              { Maintenance: { element: { contains: queryFilter.search, mode: 'insensitive' } } },
-              { Maintenance: { activity: { contains: queryFilter.search, mode: 'insensitive' } } },
-              {
-                Maintenance: {
-                  Category: { name: { contains: queryFilter.search, mode: 'insensitive' } },
-                },
-              },
-              {
-                MaintenancesStatus: {
-                  singularLabel: { contains: queryFilter.search, mode: 'insensitive' },
-                },
-              },
-              {
-                Maintenance: {
-                  instructions: {
-                    some: { name: { contains: queryFilter.search, mode: 'insensitive' } },
-                  },
-                },
-              },
-              {
-                serviceOrderNumber: {
-                  equals: Number.isInteger(Number(queryFilter.search))
-                    ? Number(queryFilter.search)
-                    : 0,
-                },
-              },
-            ],
+          ...(searchConditions.length > 0 && {
+            OR: [...searchConditions],
           }),
         },
       }),

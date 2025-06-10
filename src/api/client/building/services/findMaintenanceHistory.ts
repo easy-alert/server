@@ -28,6 +28,38 @@ export async function findMaintenanceHistory({
   priorityFilter,
   search,
 }: IFindMaintenanceHistory) {
+  const splittedSearch =
+    search
+      ?.split(',')
+      .map((s) => s.trim())
+      .filter(Boolean) || [];
+
+  const searchConditions: any[] = [];
+
+  splittedSearch.forEach((keyword) => {
+    if (keyword) {
+      const conditions = [
+        { Building: { name: { contains: keyword, mode: 'insensitive' } } },
+        { Maintenance: { element: { contains: keyword, mode: 'insensitive' } } },
+        { Maintenance: { activity: { contains: keyword, mode: 'insensitive' } } },
+        { Maintenance: { Category: { name: { contains: keyword, mode: 'insensitive' } } } },
+        { MaintenancesStatus: { singularLabel: { contains: keyword, mode: 'insensitive' } } },
+        {
+          Maintenance: {
+            instructions: { some: { name: { contains: keyword, mode: 'insensitive' } } },
+          },
+        },
+        {
+          serviceOrderNumber: {
+            equals: Number.isInteger(Number(keyword)) ? Number(keyword) : undefined,
+          },
+        },
+      ];
+
+      searchConditions.push(...conditions);
+    }
+  });
+
   const maintenancesHistory = await prisma.maintenanceHistory.findMany({
     select: {
       id: true,
@@ -150,24 +182,8 @@ export async function findMaintenanceHistory({
         { resolutionDate: { lte: endDate, gte: startDate } },
       ],
 
-      ...(search && {
-        OR: [
-          { Building: { name: { contains: search, mode: 'insensitive' } } },
-          { Maintenance: { element: { contains: search, mode: 'insensitive' } } },
-          { Maintenance: { activity: { contains: search, mode: 'insensitive' } } },
-          { Maintenance: { Category: { name: { contains: search, mode: 'insensitive' } } } },
-          { MaintenancesStatus: { singularLabel: { contains: search, mode: 'insensitive' } } },
-          {
-            Maintenance: {
-              instructions: { some: { name: { contains: search, mode: 'insensitive' } } },
-            },
-          },
-          {
-            serviceOrderNumber: {
-              equals: Number.isInteger(Number(search)) ? Number(search) : 0,
-            },
-          },
-        ],
+      ...(searchConditions.length > 1 && {
+        OR: [...searchConditions],
       }),
     },
   });
