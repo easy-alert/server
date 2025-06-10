@@ -13,14 +13,14 @@
     "start": "node dist/src/server.js",
     "build": "tsc",
     "migrate:deploy": "prisma migrate deploy",
-    "db:seed": "prisma db seed",
+    "db:seed": "node dist/prisma/seed.js",
     "lint": "eslint src/**/*.{ts,js}",
     "lint:fix": "eslint src/**/*.{ts,js} --fix",
     "format": "prettier --write src",
     "check": "npm run lint && npm run format",
     "check:fix": "npm run lint:fix && npm run format",
     "prepare": "husky install",
-    "gcp-migrate-deploy": "prisma migrate deploy && prisma db seed"
+    "gcp-migrate-deploy": "prisma migrate deploy && npm run db:seed"
   },
   "prisma": {
     "seed": "ts-node-dev prisma/seed.ts"
