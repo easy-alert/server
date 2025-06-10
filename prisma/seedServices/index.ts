@@ -29,6 +29,8 @@ const companyServices = new CompanyServices();
 
 export class SeedServices {
   async upsertPermissions() {
+    console.log('\n\nstarting permissions upsert ...');
+
     const modulePermissions: IPermissionUpsert[] = [
       // admin permissions
       ...adminPermissions,
@@ -60,13 +62,13 @@ export class SeedServices {
           name: modulePermission.name,
         },
       });
-
-      console.log('permission ', modulePermission.name, ' inserted.');
     }
+
+    console.log('permissions upserted.');
   }
 
   async createAdminBackoffice() {
-    console.log('\n\nstarting Admin creation ...');
+    console.log('\n\nstarting admin creation ...');
 
     const backofficeData = {
       name: 'Backoffice',
@@ -110,15 +112,13 @@ export class SeedServices {
           },
         },
       });
-
-      console.log('permission ', permissionData!.name, ' inserted in Admin.');
     }
 
-    console.log('Backoffice admin created.');
+    console.log('backoffice admin created.');
   }
 
   async createAdminCompany() {
-    console.log('\n\nstarting Company creation ...');
+    console.log('\n\nstarting company creation ...');
 
     const companyData = {
       name: 'Company',
@@ -183,11 +183,9 @@ export class SeedServices {
           },
         },
       });
-
-      console.log('permission ', permissionData!.name, ' inserted in Company.');
     }
 
-    console.log('Company admin created.');
+    console.log('company admin created.');
   }
 
   async createTimeIntervals() {
@@ -228,15 +226,13 @@ export class SeedServices {
           name: timeInterval.name,
         },
       });
-
-      console.log('timeIntervals ', timeInterval.name, ' inserted.');
     }
 
-    console.log('TimeIntervals upserted.');
+    console.log('time intervals upserted.');
   }
 
   async createBuildingsTypes() {
-    console.log('\n\nstarting Building Types creation ...');
+    console.log('\n\nstarting building types creation ...');
 
     const buildingsTypes = [
       { name: 'ampliações' },
@@ -255,15 +251,13 @@ export class SeedServices {
           name: buildingType.name,
         },
       });
-
-      console.log('buildingType ', buildingType.name, ' inserted.');
     }
 
-    console.log('Building Types upserted.');
+    console.log('building types upserted.');
   }
 
   async createMaintenancesStatus() {
-    console.log('\n\nstarting Maintenances Status creation ...');
+    console.log('\n\nstarting maintenances status creation ...');
 
     const maintenancesStatus = [
       {
@@ -296,15 +290,13 @@ export class SeedServices {
           name: maintenanceStatus.name,
         },
       });
-
-      console.log('maintenanceStatus ', maintenanceStatus.name, ' inserted.');
     }
 
-    console.log('Maintenances Status upserted.');
+    console.log('maintenances status upserted.');
   }
 
   async createCategoryAndMaintenanceTypes() {
-    console.log('\n\nstarting Category And Maintenance Types creation ...');
+    console.log('\n\nstarting category and maintenance types creation ...');
 
     const categoryAndMaintenanceTypes = [
       {
@@ -327,15 +319,13 @@ export class SeedServices {
           name: categoryAndMaintenanceType.name,
         },
       });
-
-      console.log('categoryAndMaintenanceType ', categoryAndMaintenanceType.name, ' inserted.');
     }
 
-    console.log('Category And Maintenance Types upserted.');
+    console.log('category and maintenance types upserted.');
   }
 
   async upsertTicketPlaces() {
-    console.log('\n\nstarting Ticket Places creation ...');
+    console.log('\n\nstarting ticket places creation ...');
 
     const ticketPlaces = [
       {
@@ -352,14 +342,14 @@ export class SeedServices {
         update: ticketPlace,
         where: ticketPlace,
       });
-
-      console.log('ticketPlace ', ticketPlace.label, ' inserted.');
     }
 
-    console.log('Ticket Places upserted.');
+    console.log('ticket places upserted.');
   }
 
   async upsertTicketServiceTypes() {
+    console.log('\n\nstarting ticket service types creation ...');
+
     const ticketServiceTypes = [
       {
         name: 'hydraulics',
@@ -435,15 +425,13 @@ export class SeedServices {
           label: ticketServiceType.label,
         },
       });
-
-      console.log('ticketServiceType ', ticketServiceType.label, ' inserted.');
     });
 
-    console.log('Ticket service types upserted.');
+    console.log('ticket service types upserted.');
   }
 
   async upsertTicketStatus() {
-    console.log('\n\nstarting Ticket Status creation ...  ');
+    console.log('\n\nstarting ticket status creation ...  ');
 
     const ticketsStatus = [
       {
@@ -480,15 +468,13 @@ export class SeedServices {
           name: ticketStatus.name,
         },
       });
-
-      console.log('ticketStatus ', ticketStatus.name, ' inserted.');
     }
 
-    console.log('Ticket Status upserted.');
+    console.log('ticket status upserted.');
   }
 
   async upsertTicketDismissReasons() {
-    console.log('\n\nstarting Ticket Reasons creation ...');
+    console.log('\n\nstarting ticket reasons creation ...');
 
     const ticketReasons = [
       {
@@ -538,15 +524,13 @@ export class SeedServices {
           name: ticketReason.name,
         },
       });
-
-      console.log('ticketReason ', ticketReason.name, ' inserted.');
     }
 
-    console.log('Ticket Reasons upserted.');
+    console.log('ticket reasons upserted.');
   }
 
   async upsertMaintenancePriorities() {
-    console.log('\n\nstarting Maintenance Priorities creation ...');
+    console.log('\n\nstarting maintenance priorities creation ...');
 
     const maintenancePriorities = [
       {
@@ -577,15 +561,13 @@ export class SeedServices {
           name: maintenancePriority.name,
         },
       });
-
-      console.log('maintenancePriority ', maintenancePriority.name, ' inserted.');
     }
 
-    console.log('Maintenance Priorities upserted.');
+    console.log('maintenance priorities upserted.');
   }
 
   async updateOwnerUsers() {
-    console.log('\n\nstarting Owner Users update ...');
+    console.log('\n\nstarting owner users update ...');
 
     const ownerUsers = await prisma.userCompanies.findMany({
       where: {
@@ -625,11 +607,9 @@ export class SeedServices {
         console.error('Error updating Owner User in Company ', company!.name);
         continue;
       }
-
-      console.log('Owner User updated in Company ', company!.name);
     }
 
-    console.log('Owner Users updated.');
+    console.log('owner users updated.');
   }
 
   async ownerBuildingPermissions() {
@@ -856,7 +836,7 @@ export class SeedServices {
   }
 
   async addMaintenanceServiceOrderNumber() {
-    console.log('\n\nstarting Maintenance Service Order Number ...');
+    console.log('\n\nstarting maintenance service order number ...');
 
     const companies = await prisma.company.findMany();
 
@@ -922,83 +902,12 @@ export class SeedServices {
       );
     }
 
-    console.log('Maintenance Service Order Number added.');
+    console.log('maintenance service order number added.');
   }
 
-  async migrateChecklistUsers() {
-    console.log('\n\nstarting Checklist Users creation ...');
-
-    const checklists = await prisma.checklist.findMany({
-      where: {
-        userId: { not: null },
-      },
-      select: {
-        id: true,
-        userId: true,
-      },
-    });
-
-    // Helper to run promises with concurrency limit
-    async function runWithConcurrencyLimit<T>(
-      tasks: (() => Promise<T>)[],
-      limit: number,
-    ): Promise<T[]> {
-      const results: T[] = [];
-      const executing: Promise<void>[] = [];
-      let i = 0;
-
-      const enqueue = async () => {
-        if (i === tasks.length) return;
-        const taskIndex = i++;
-        const p = tasks[taskIndex]()
-          .then((res) => {
-            results[taskIndex] = res;
-          })
-          .catch((err) => {
-            throw err;
-          });
-        executing.push(
-          p.then(async () => {
-            executing.splice(executing.indexOf(p), 1);
-          }),
-        );
-        if (executing.length >= limit) {
-          await Promise.race(executing);
-        }
-        await enqueue();
-      };
-
-      await enqueue();
-      await Promise.all(executing);
-      return results;
-    }
-
-    // Prepare upsert tasks
-    const upsertTasks = checklists.map(
-      (checklist) => () =>
-        prisma.checklistUsers.upsert({
-          create: {
-            checklistId: checklist.id,
-            userId: checklist.userId!,
-          },
-          update: {},
-          where: {
-            checklistId_userId: {
-              checklistId: checklist.id,
-              userId: checklist.userId!,
-            },
-          },
-        }),
-    );
-
-    // Run upserts with concurrency limit (e.g., 10 at a time)
-    await runWithConcurrencyLimit(upsertTasks, 1);
-
-    console.log('Checklist Users created.');
-  }
 
   async migrateChecklistItemStatus() {
-    console.log('\n\nstarting Checklist Item Status creation ...');
+    console.log('\n\nstarting checklist item status creation ...');
 
     await prisma.checklistItem.updateMany({
       data: {
@@ -1014,6 +923,22 @@ export class SeedServices {
       },
     });
 
-    console.log('Checklist Item Status updated.');
+    console.log('checklist item status updated.');
+  }
+
+  async updateMaintenancePriorityCompanies() {
+    console.log('\n\nstarting update maintenance priority companies ...');
+
+    await prisma.company.updateMany({
+      data: {
+        showMaintenancePriority: true,
+      },
+
+      where: {
+        showMaintenancePriority: false,
+      },
+    });
+
+    console.log('maintenance priority companies updated.');
   }
 }

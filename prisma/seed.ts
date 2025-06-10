@@ -28,23 +28,8 @@ async function main() {
   await seedServices.upsertTicketStatus();
   await seedServices.upsertTicketDismissReasons();
 
-  // await seedServices.updateOwnerUsers();
+  await seedServices.updateMaintenancePriorityCompanies();
 
-  // await seedServices.ownerBuildingPermissions();
-
-  // await seedServices.fixTicketsNumbers();
-
-  // await seedServices.fillCompanyIdToChecklistTemplate();
-
-  // await seedServices.blockBuildingsOfBlockedCompanies();
-
-  // await seedServices.upsertUserPermissionsWithCompanyId();
-
-  // await seedServices.addMaintenanceServiceOrderNumber();
-
-  // await seedServices.migrateChecklistUsers();
-
-  // await seedServices.migrateChecklistItemStatus();
 }
 
 main()

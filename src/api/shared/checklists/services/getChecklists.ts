@@ -8,9 +8,8 @@ interface IGetChecklists {
 export async function getChecklists({ companyId, checklistId }: IGetChecklists) {
   const checklist = await prisma.checklist.findMany({
     include: {
-      checklistItem: true,
-
       images: true,
+      checklistItem: true,
 
       building: {
         select: {
@@ -30,6 +29,16 @@ export async function getChecklists({ companyId, checklistId }: IGetChecklists) 
               phoneNumber: true,
             },
           },
+        },
+      },
+
+      finishedBy: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          email: true,
+          phoneNumber: true,
         },
       },
     },
