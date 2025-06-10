@@ -23,5 +23,7 @@
     "importsNotUsedAsValues": "remove",
     "downlevelIteration": true
   },
-  "include": ["src", "prisma/index.ts"]
+
+  "include": ["src/**/*.ts", "prisma/index.ts", "prisma/seed.ts"],
+  "exclude": ["node_modules"]
 }
