@@ -1,3 +1,6 @@
+-- Habilita a extensão para geração de UUIDs, se ainda não estiver habilitada
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
