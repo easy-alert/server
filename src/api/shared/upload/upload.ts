@@ -12,6 +12,7 @@ import path from 'path';
 import 'dotenv/config';
 
 import { ServerMessage } from '../../../utils/messages/serverMessage';
+import { handleMulterError } from '../../../utils/messages/handleMulterError';
 
 const s3 = new S3Client({
   region: 'us-west-2',
@@ -21,10 +22,13 @@ const s3 = new S3Client({
   },
 });
 
+const fileSizeLimit = process.env.FILE_SIZE_LIMIT;
+const fileSize = (Number(fileSizeLimit) || 10) * 1024 * 1024; // Default to 10MB if not set
+
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  limits: { fileSize }, // 10MB
 }).single('file');
 
 export async function uploadFile(req: Request, res: Response, next: NextFunction) {
@@ -33,12 +37,8 @@ export async function uploadFile(req: Request, res: Response, next: NextFunction
   upload(req, res, async (err) => {
     const duration = Date.now() - start;
 
-    if (err) {
-      console.error(`[UPLOAD ERROR] ${err} | Duration: ${duration}ms`);
-
-      return next(
-        new ServerMessage({ statusCode: 400, message: 'Erro ao efetuar upload do arquivo.' }),
-      );
+    if (err instanceof multer.MulterError) {
+      return next(handleMulterError(err, duration));
     }
 
     if (!req.file) {
