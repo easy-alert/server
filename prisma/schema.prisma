@@ -706,7 +706,6 @@ model BuildingNotificationConfiguration {
 
   Building          Building            @relation(fields: [buildingId], references: [id], onDelete: Cascade)
   MaintenanceReport MaintenanceReport[]
-  checklists        Checklist[]
   Ticket            Ticket[]
 
   @@map("buildingsNotificationsConfigurations")
@@ -918,10 +917,9 @@ model DefaultTemplateMaintenance {
 model Checklist {
   id String @id @default(uuid())
 
-  buildingId String
-  syndicId   String?
-  userId     String?
-  templateId String?
+  buildingId   String
+  templateId   String?
+  finishedById String?
 
   name                    String
   description             String?
@@ -936,11 +934,10 @@ model Checklist {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  building              Building                           @relation(fields: [buildingId], references: [id], onDelete: Cascade)
-  user                  User?                              @relation(fields: [userId], references: [id], onDelete: SetNull)
-  syndic                BuildingNotificationConfiguration? @relation(fields: [syndicId], references: [id], onDelete: SetNull)
-  frequencyTimeInterval TimeInterval?                      @relation(fields: [frequencyTimeIntervalId], references: [id])
-  template              ChecklistTemplate?                 @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  building              Building           @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  finishedBy            User?              @relation(fields: [finishedById], references: [id], onDelete: SetNull)
+  frequencyTimeInterval TimeInterval?      @relation(fields: [frequencyTimeIntervalId], references: [id])
+  template              ChecklistTemplate? @relation(fields: [templateId], references: [id], onDelete: Restrict)
 
   checklistItem  ChecklistItem[]
   images         ChecklistImage[]
@@ -957,7 +954,7 @@ model ChecklistItem {
 
   name        String
   description String?
-  status      ChecklistItemStatusName  @default(pending)
+  status      ChecklistItemStatusName @default(pending)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
