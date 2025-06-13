@@ -34,10 +34,12 @@ export const handlerMessage = async (
       errorStack: err.stack,
       extraInfo: {
         company: req.Company?.name ?? req.body.email,
+        userId: req?.userId ?? null,
         routeURL: req.originalUrl,
       },
     });
   }
+
   // eslint-disable-next-line no-console
   console.log('\n\n\n ❌ Error ❌ \n\n\n', 'Error Message: ', err.stack, '\n\n\n');
 
