@@ -35,5 +35,11 @@ COPY --from=builder /usr/src/app/dist ./dist
 # Copia a pasta PRISMA inteira, incluindo o schema E a pasta de migrações.
 COPY --from=builder /usr/src/app/prisma ./prisma
 
+# Copia a pasta 'assets', se existir.
+COPY --from=builder /usr/src/app/assets ./assets
+
+# Copia a pasta 'fonts', se existir.
+COPY --from=builder /usr/src/app/fonts ./fonts
+
 # O comando padrão para INICIAR O SERVIÇO.
 CMD ["npm", "start"]
