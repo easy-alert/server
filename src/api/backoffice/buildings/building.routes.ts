@@ -10,4 +10,3 @@ export const buildingRouter = Router();
 // BUILDING
 
 buildingRouter.get('/list', listBuildings);
-
