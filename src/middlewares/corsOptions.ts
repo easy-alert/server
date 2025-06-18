@@ -11,10 +11,9 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
   'http://localhost:3002',
-  'http://client.easyalert.com.br',
   'https://app.easyalert.com.br',
-  'https://easyalert-sandbox.herokuapp.com',
-  'https://easyalert-production.herokuapp.com',
+  'https://api.easyalert.com.br',
+  'https://sandbox.api.easyalert.com.br',
 ];
 
 const corsOptions: cors.CorsOptions = {
