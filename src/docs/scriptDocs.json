@@ -12,11 +12,11 @@
   "servers": [
     {
       "description": "Production",
-      "url": "https://easyalert-production.herokuapp.com/api/scripts/"
+      "url": "https://api.easyalert.com.br/api/scripts/"
     },
     {
       "description": "Sandbox",
-      "url": "https://easyalert-sandbox.herokuapp.com/api/scripts/"
+      "url": "https://sandbox.api.easyalert.com.br/api/scripts/"
     }
   ],
   "components": {
