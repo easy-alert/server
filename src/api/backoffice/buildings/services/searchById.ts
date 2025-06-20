@@ -1,6 +1,6 @@
 import { prisma } from '../../../../../prisma';
 
-export async function searchById(id: string) {
+export async function findBuildingById(id: string) {
   const building = await prisma.building.findUnique({
     where: { id },
     select: {
@@ -11,7 +11,6 @@ export async function searchById(id: string) {
       streetName: true,
       createdAt: true,
       isBlocked: true,
-      companyId: true,
       cep: true,
       Company: {
         select: {
