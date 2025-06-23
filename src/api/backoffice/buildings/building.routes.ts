@@ -3,7 +3,7 @@ import { Router } from 'express';
 
 // FUNCTIONS
 import { listBuildings } from './controllers/listBuildings';
-import { getBuildingDetails } from './controllers/listBuildingsDetails';
+import { getBuildingDetails } from './controllers/getBuildingDetails';
 
 // ROUTES
 export const buildingRouter = Router();

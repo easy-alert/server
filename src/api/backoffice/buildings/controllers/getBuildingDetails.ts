@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { findBuildingById } from '../services/searchById';
+import { findBuildingById } from '../services/findBuildingById';
 import { Validator } from '../../../../utils/validator/validator';
 
 const validator = new Validator();
