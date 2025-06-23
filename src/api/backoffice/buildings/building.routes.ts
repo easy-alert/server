@@ -2,11 +2,13 @@
 import { Router } from 'express';
 
 // FUNCTIONS
-import { listBuilding } from '../../company/buildings/building/controllers';
+import { listBuildings } from './controllers/listBuildings';
+import { getBuildingDetails } from './controllers/getBuildingDetails';
 
 // ROUTES
 export const buildingRouter = Router();
 
 // BUILDING
 
-buildingRouter.get('/list', listBuilding);
+buildingRouter.get('/list', listBuildings);
+buildingRouter.get('/list/details/:buildingId', getBuildingDetails);
