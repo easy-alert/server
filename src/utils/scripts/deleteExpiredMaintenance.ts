@@ -19,7 +19,7 @@ export async function deleteExpiredMaintenance(req: Request, res: Response) {
 
   const maintenanceHistory = await maintenanceServices.findHistoryById({ maintenanceHistoryId });
 
-  if (maintenanceHistory.MaintenancesStatus.name !== 'pending') {
+  if (maintenanceHistory.MaintenancesStatus.name === 'pending') {
     throw new ServerMessage({
       message: 'Você não pode excluir uma manutenção pendente.',
       statusCode: 400,
