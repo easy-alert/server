@@ -37,6 +37,7 @@ import { usersRouter } from './users/users.routes';
 import { permissionsRouter } from './permissions/permissions.routes';
 import { listForSelectRouter } from './listForSelect/list.routes';
 import { updateReportPDFController } from './reports/controllers/updateReportPDFController';
+import { homeRouter } from './home/home.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -197,3 +198,11 @@ companyRouter.use('/upload', uploadRouter);
 
 // report routes
 companyRouter.put('/report/:reportPDFId', updateReportPDFController);
+
+// home routes
+companyRouter.use(
+  '/home',
+  authMiddleware,
+  handleCompanyPermCheck([companyPermission, 'access:company']),
+  homeRouter,
+);
