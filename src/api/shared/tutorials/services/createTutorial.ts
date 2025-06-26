@@ -7,8 +7,8 @@ export async function createTutorial({
   thumbnail,
   type,
   order,
-}: prismaTypes.TutorialCreateInput) {
-  const createTutorialResponse = await prisma.tutorial.create({
+}: prismaTypes.PlatformVideoCreateInput) {
+  const createTutorialResponse = await prisma.platformVideo.create({
     data: {
       title,
       description,

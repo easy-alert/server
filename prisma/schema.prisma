@@ -174,6 +174,9 @@ model Company {
   receivePreviousMonthReports Boolean @default(false)
   receiveDailyDueReports      Boolean @default(false)
 
+  completedMaintenanceScore             Int?
+  completedMaintenanceScoreCalculatedAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -1362,26 +1365,82 @@ model MaintenanceReportPdf {
   @@map("maintenanceReportPdfs")
 }
 
-// YouTube tutorials
-model Tutorial {
+// Platform Video
+enum PlatformVideoType {
+  tutorial
+  news
+  feature
+}
+
+enum PlatformVideoStatus {
+  draft
+  published
+  archived
+}
+
+model PlatformVideo {
   id String @id @default(uuid())
 
-  title String
-  url   String
-  type  String
-  order Int
-
+  title       String
   description String?
+  url         String
+  youtubeId   String? @unique
   thumbnail   String?
+  order       Int?
+
+  type   PlatformVideoType   @default(tutorial)
+  status PlatformVideoStatus @default(draft)
+
+  tags String[] @default([])
+
+  publishedAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("tutorials")
+  @@map("platformVideos")
+}
+
+
+// FEED ITEMS
+enum FeedItemType {
+  alert
+  announcement
+  promotion
+}
+
+model FeedItem {
+  id String @id @default(uuid())
+
+  title       String
+  description String? // Optional: A more detailed body for the feed item
+
+  // Media
+  imageUrl String? // Optional: URL to an image asset for the feed item (e.g., a banner, icon)
+  videoUrl String? // Optional: If the feed item itself is a short video or links to one directly
+
+  // Call to Action (CTA)
+  ctaLink String? // Optional: A URL the user navigates to when clicking (e.g., more info page, external link)
+  ctaText String? // Optional: The text to display on the call-to-action button (e.g., "Learn More", "Go to Feature")
+
+  // Categorization & Display Control
+  type FeedItemType // Uses the enum to categorize the item (Alert, Announcement, Promotion)
+
+  isPinned Boolean @default(false) // If true, this item will always appear at the top of the feed, regardless of creation date or order.
+  order    Int? // Optional: Custom order for items that are not pinned, or to define order *within* the pinned items (lower number = higher priority)
+
+  // Visibility & Lifetime
+  startsAt  DateTime? // Optional: Date/time when the item becomes visible to users. If null, visible immediately.
+  expiresAt DateTime? // Optional: Date/time when the item stops being visible. If null, remains visible indefinitely.
+
+  // Audit Fields
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("feedItems")
 }
 
 // API LOGS
-
 model ApiLogs {
   id String @id @unique @default(uuid())
 
