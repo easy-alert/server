@@ -1,11 +1,12 @@
+import type { PlatformVideoType } from '@prisma/client';
 import { prisma } from '../../../../../prisma';
 
-interface IFindManyTutorials {
-  type?: string;
+interface IFindManyPlatformVideo {
+  type?: PlatformVideoType;
 }
 
-export async function findManyTutorials({ type }: IFindManyTutorials) {
-  const tutorials = await prisma.tutorial.findMany({
+export async function findManyTutorials({ type }: IFindManyPlatformVideo) {
+  const tutorials = await prisma.platformVideo.findMany({
     where: {
       type,
     },
