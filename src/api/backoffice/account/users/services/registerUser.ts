@@ -23,9 +23,11 @@ export async function registerUser({
     where: {
       OR: [{ email: email.toLowerCase() }, { phoneNumber: phoneNumber.toLowerCase() }],
     },
+    select: { id: true },
   });
-  if (existingUser) {
-    throw new Error('Já existe um usuário com este e-mail ou telefone.');
+
+  if (existingUser?.id) {
+    throw new Error('Email ou telefone já cadastrados.');
   }
 
   return prisma.user.create({
