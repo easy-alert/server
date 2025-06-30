@@ -23,6 +23,7 @@ import { listForSelectRouter } from './listForSelect/list.routes';
 // TYPES
 import type { TPermissionsNames } from '../../types/TPermissionsNames';
 import { dashboardRouter } from './dashboard/dashboard.routes';
+import { feedItemRouter } from './feedItems/feedItem.routes';
 
 // ROUTES
 export const backofficeRouter: Router = Router();
@@ -104,4 +105,12 @@ backofficeRouter.use(
   authMiddleware,
   handleBackofficePermCheck(backofficePermissions),
   listForSelectRouter,
+);
+
+// FEED ITEMS
+backofficeRouter.use(
+  '/feed-items',
+  authMiddleware,
+  handleBackofficePermCheck(backofficePermissions),
+  feedItemRouter,
 );
