@@ -8,8 +8,8 @@ export async function updateOneTutorial({
   thumbnail,
   type,
   order,
-}: prismaTypes.TutorialCreateInput) {
-  const updatedTutorial = await prisma.tutorial.update({
+}: prismaTypes.PlatformVideoCreateInput) {
+  const updatedTutorial = await prisma.platformVideo.update({
     where: {
       id,
     },
