@@ -645,6 +645,17 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         notificationDate = updatedsMaintenances[i].notificationDate;
         // console.log('entra aqui quando tem os dois');
       }
+
+      dueDate = noWeekendTimeDate({
+        date: addDays({
+          date: notificationDate,
+          days:
+            updatedsMaintenances[i].period * timeIntervalPeriod.unitTime +
+            // só soma os dias se não tiver primeira data de notificação
+            (firstMaintenanceWasAntecipated ? daysToAnticipate : 0),
+        }),
+        interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
+      });
     }
 
     // SOMANDO OS DIAS ANTECIPADOS NOVAMENTE NA DATA DE RESOLUÇÃO,
