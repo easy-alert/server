@@ -32,7 +32,6 @@ import { ticketHistoryActivitiesRouter } from './ticketHistoryActivities/ticketH
 import { ticketDismissReasonsRouter } from './ticketDismissReasons/ticketDismissReasons.routes';
 import { findManyServiceTypes } from '../shared/serviceTypes/controllers/findManyServiceTypes';
 import { findAllMaintenancePriority } from '../shared/maintenancePriority/controllers/findAllMaintenancePriority';
-import { tutorialsRouter } from './tutorials/tutorials.routes';
 import { usersRouter } from './users/users.routes';
 import { permissionsRouter } from './permissions/permissions.routes';
 import { listForSelectRouter } from './listForSelect/list.routes';
@@ -170,13 +169,6 @@ companyRouter.get(
   authMiddleware,
   handleCompanyPermCheck([companyPermission, 'access:company']),
   findAllMaintenancePriority,
-);
-
-companyRouter.use(
-  '/tutorials',
-  authMiddleware,
-  handleCompanyPermCheck([companyPermission, 'access:tutorials']),
-  tutorialsRouter,
 );
 
 companyRouter.use(
