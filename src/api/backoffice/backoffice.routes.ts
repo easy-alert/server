@@ -14,7 +14,7 @@ import { categoryRouter } from './categories/category/category.routes';
 import { maintenanceRouter } from './categories/maintenance/maintenance.routes';
 import { listTimeIntervals } from '../shared/timeInterval/controllers/listTimeIntervals';
 import { findAllMaintenancePriority } from '../shared/maintenancePriority/controllers/findAllMaintenancePriority';
-import { tutorialsRouter } from './tutorials/tutorials.routes';
+import { platformVideosRouter } from './platformVideos/platformVideos.routes';
 import { permissionsRouter } from './permissions/permissions.routes';
 import { buildingRouter } from './buildings/building.routes';
 import { accountRouter } from './account/account.routes';
@@ -50,6 +50,7 @@ backofficeRouter.use(
   handleBackofficePermCheck(backofficePermissions),
   categoryRouter,
 );
+
 backofficeRouter.use(
   '/maintenances',
   authMiddleware,
@@ -69,10 +70,10 @@ backofficeRouter.get('/timeinterval/list', listTimeIntervals);
 backofficeRouter.get('/maintenancePriority', findAllMaintenancePriority);
 
 backofficeRouter.use(
-  '/tutorials',
+  '/platform-videos',
   authMiddleware,
   handleBackofficePermCheck(backofficePermissions),
-  tutorialsRouter,
+  platformVideosRouter,
 );
 
 backofficeRouter.use(
