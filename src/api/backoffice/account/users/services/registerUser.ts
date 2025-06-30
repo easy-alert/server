@@ -20,10 +20,10 @@ export async function registerUser({
   password,
 }: ICreateUser) {
   const existingUser = await prisma.user.findFirst({
+    select: { id: true },
     where: {
       OR: [{ email: email.toLowerCase() }, { phoneNumber: phoneNumber.toLowerCase() }],
     },
-    select: { id: true },
   });
 
   if (existingUser?.id) {
