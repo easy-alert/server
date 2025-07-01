@@ -8,6 +8,8 @@ export const rateLimiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: {
     status: 429,
-    message: 'Too many requests, please try again later.',
+    ServerMessage: {
+      message: 'You have exceeded the number of allowed requests.',
+    }
   },
 });
