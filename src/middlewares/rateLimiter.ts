@@ -10,6 +10,6 @@ export const rateLimiter = rateLimit({
     status: 429,
     ServerMessage: {
       message: 'You have exceeded the number of allowed requests.',
-    }
+    },
   },
 });
