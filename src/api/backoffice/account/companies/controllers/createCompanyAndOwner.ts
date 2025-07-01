@@ -14,11 +14,11 @@ import { CompanyServices } from '../services/companyServices';
 import { SharedCompanyServices } from '../../../../shared/users/accounts/services/sharedCompanyServices';
 import { sendEmailConfirmation } from '../../../../shared/users/user/services/sendEmailConfirmation';
 import { sendPhoneConfirmation } from '../../../../shared/users/user/services/sendPhoneConfirmation';
+import { createUserPermissions } from '../../../../shared/users/userPermission/services/createUserPermissions';
 
 const validator = new Validator();
 const userServices = new UserServices();
 const permissionServices = new PermissionServices();
-const userPermissionServices = new UserPermissionServices();
 const companyServices = new CompanyServices();
 const sharedCompanyServices = new SharedCompanyServices();
 
@@ -82,11 +82,6 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
 
   const permission = await permissionServices.findByName({ name: 'admin:company' });
 
-  await userPermissionServices.createUserPermission({
-    userId: user.id,
-    permissionId: permission!.id,
-  });
-
   const company = await companyServices.create({
     CNPJ,
     CPF,
@@ -98,6 +93,16 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     canAccessTickets,
     receiveDailyDueReports,
     receivePreviousMonthReports,
+  });
+
+  await createUserPermissions({
+    data: {
+      data: {
+        companyId: company.id,
+        userId: user.id,
+        permissionId: permission!.id,
+      },
+    },
   });
 
   await companyServices.createUserCompany({
