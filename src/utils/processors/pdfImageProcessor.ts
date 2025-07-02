@@ -57,7 +57,11 @@ export async function processImagesForPDF({
         // Check for HTML masquerading as image (e.g., S3 error page)
         const bufferSample = buffer.slice(0, 64).toString('utf8');
         if (bufferSample.startsWith('<!DOCTYPE') || bufferSample.startsWith('<html')) {
-          skippedImages.push({ url, reason: 'Conteúdo HTML recebido em vez de imagem (possível erro de permissão, URL inválida ou objeto não encontrado)' });
+          skippedImages.push({
+            url,
+            reason:
+              'Conteúdo HTML recebido em vez de imagem (possível erro de permissão, URL inválida ou objeto não encontrado)',
+          });
           return null;
         }
         const imageType = await sharp(buffer).metadata();
@@ -79,7 +83,12 @@ export async function processImagesForPDF({
             return null;
           }
         } catch (verifyErr) {
-          skippedImages.push({ url, reason: `Erro ao validar JPEG pós-processamento: ${(verifyErr as Error).message || verifyErr}` });
+          skippedImages.push({
+            url,
+            reason: `Erro ao validar JPEG pós-processamento: ${
+              (verifyErr as Error).message || verifyErr
+            }`,
+          });
           return null;
         }
         const base64Image = `data:image/jpeg;base64,${processedBuffer.toString('base64')}`;
@@ -97,14 +106,17 @@ export async function processImagesForPDF({
         skippedImages.push({ url, reason: 'Erro de formato ou processamento' });
         return null;
       }
-    })
+    }),
   );
   // Defensive: filter out any invalid image objects before returning
   const validImagesForPDF = (allResults || []).filter(
-    img => img && typeof img.image === 'string' && img.image.startsWith('data:image/')
+    (img) => img && typeof img.image === 'string' && img.image.startsWith('data:image/'),
   );
   if (allResults.length !== validImagesForPDF.length) {
-    console.error('[processImagesForPDF] Some invalid image objects were filtered out before returning:', allResults);
+    console.error(
+      '[processImagesForPDF] Some invalid image objects were filtered out before returning:',
+      allResults,
+    );
   }
   return { imagesForPDF: validImagesForPDF, skippedImages };
 }
