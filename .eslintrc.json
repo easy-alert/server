@@ -18,14 +18,6 @@
   "rules": {
     "camelcase": 2,
     "one-var": "off",
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
-    "import/prefer-default-export": "off",
-    "import/extensions": "off",
-    "import/no-unresolved": "off",
-    "@typescript-eslint/no-unused-vars": "warn",
-    "@typescript-eslint/no-non-null-assertion": "off",
-    "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
-    "@typescript-eslint/no-explicit-any": "off",
     "no-console": "off",
     "linebreak-style": "off",
     "class-methods-use-this": "off",
@@ -35,7 +27,17 @@
     "no-await-in-loop": "off",
     "no-plusplus": "off",
     "no-continue": "off",
+    "default-param-last": "warn",
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
+    "import/prefer-default-export": "off",
+    "import/extensions": "off",
+    "import/no-unresolved": "off",
     "import/no-cycle": "warn",
-    "@typescript-eslint/ban-ts-comment": "warn"
+    "@typescript-eslint/ban-ts-comment": "warn",
+    "@typescript-eslint/default-param-last": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
+    "@typescript-eslint/no-explicit-any": "off"
   }
 }
