@@ -39,7 +39,7 @@ export async function processImagesForPDF({
   height?: number;
 }) {
   const skippedImages: { url: string; reason: string }[] = [];
-  const imagesForPDF: any[] = await Promise.all(
+  const allResults = await Promise.all(
     (images || []).map(async (img) => {
       let { url } = img || {};
       if (!isValidImageUrl(url)) {
@@ -54,6 +54,16 @@ export async function processImagesForPDF({
           skippedImages.push({ url, reason: 'Buffer vazio' });
           return null;
         }
+        // Check for HTML masquerading as image (e.g., S3 error page)
+        const bufferSample = buffer.slice(0, 64).toString('utf8');
+        if (bufferSample.startsWith('<!DOCTYPE') || bufferSample.startsWith('<html')) {
+          skippedImages.push({
+            url,
+            reason:
+              'Conteúdo HTML recebido em vez de imagem (possível erro de permissão, URL inválida ou objeto não encontrado)',
+          });
+          return null;
+        }
         const imageType = await sharp(buffer).metadata();
         if (!imageType.format || !['jpeg', 'png', 'webp'].includes(imageType.format)) {
           skippedImages.push({ url, reason: `Formato não suportado (${imageType.format})` });
@@ -65,6 +75,22 @@ export async function processImagesForPDF({
           .resize({ width: 400, height: 400, fit: 'inside' })
           .jpeg({ quality: 60 })
           .toBuffer();
+        // Validate processed JPEG buffer
+        try {
+          const verify = await sharp(processedBuffer).metadata();
+          if (!verify.format || verify.format !== 'jpeg') {
+            skippedImages.push({ url, reason: 'JPEG pós-processamento inválido' });
+            return null;
+          }
+        } catch (verifyErr) {
+          skippedImages.push({
+            url,
+            reason: `Erro ao validar JPEG pós-processamento: ${
+              (verifyErr as Error).message || verifyErr
+            }`,
+          });
+          return null;
+        }
         const base64Image = `data:image/jpeg;base64,${processedBuffer.toString('base64')}`;
         if (!base64Image.startsWith('data:image/')) {
           skippedImages.push({ url, reason: 'dataURL inválido' });
@@ -81,10 +107,16 @@ export async function processImagesForPDF({
         return null;
       }
     }),
-  ).then((arr) =>
-    arr.filter(
-      (img) => img && typeof img.image === 'string' && img.image.startsWith('data:image/'),
-    ),
   );
-  return { imagesForPDF, skippedImages };
+  // Defensive: filter out any invalid image objects before returning
+  const validImagesForPDF = (allResults || []).filter(
+    (img) => img && typeof img.image === 'string' && img.image.startsWith('data:image/'),
+  );
+  if (allResults.length !== validImagesForPDF.length) {
+    console.error(
+      '[processImagesForPDF] Some invalid image objects were filtered out before returning:',
+      allResults,
+    );
+  }
+  return { imagesForPDF: validImagesForPDF, skippedImages };
 }

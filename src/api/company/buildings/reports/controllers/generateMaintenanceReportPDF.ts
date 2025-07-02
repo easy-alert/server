@@ -21,6 +21,7 @@ import { processImagesForPDF } from '../../../../../utils/processors/pdfImagePro
 import { downloadFromS3 } from '../../../../../utils/aws/downloadFromS3';
 import { uploadPDFToS3 } from '../../../../../utils/aws/uploadPDFToS3';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
+import { ensurePdfCompatibleImage } from '../../../../../utils/sharp/imageFormatConverter';
 import { mask, simplifyNameForURL } from '../../../../../utils/dataHandler';
 import {
   dateFormatter,
@@ -144,12 +145,21 @@ async function PDFService({
 
     const isDicebear = company?.image.includes('dicebear');
 
-    const footerLogo = await downloadFromS3(
+    const footerLogoFile = await downloadFromS3(
       'https://larguei.s3.us-west-2.amazonaws.com/LOGOPDF-1716384513443.png',
       folderName,
     );
 
-    const headerLogo = isDicebear ? footerLogo : await downloadFromS3(company!.image, folderName);
+    const headerLogoFile = isDicebear
+      ? footerLogoFile
+      : await downloadFromS3(company!.image, folderName);
+
+    // Use full path for pdfmake and ensure PDF-compatible format
+    const footerLogoPathRaw = path.join(folderName, footerLogoFile);
+    const headerLogoPathRaw = path.join(folderName, headerLogoFile);
+
+    const footerLogoPath = await ensurePdfCompatibleImage(footerLogoPathRaw);
+    const headerLogoPath = await ensurePdfCompatibleImage(headerLogoPathRaw);
 
     const showMaintenancePriority = await prisma.company.findUnique({
       where: { id: req.companyId },
@@ -464,6 +474,18 @@ async function PDFService({
           width: 100,
           height: 100,
         });
+
+        // Defensive: filter out any invalid image objects before using in PDF
+        const validImagesForPDF = (imagesForPDF || []).filter(
+          (img) => img && typeof img.image === 'string' && img.image.startsWith('data:image/'),
+        );
+
+        if (imagesForPDF.length !== validImagesForPDF.length) {
+          console.error(
+            '[PDFService] Some invalid image objects were filtered out before PDF content:',
+            imagesForPDF,
+          );
+        }
 
         if (skippedImages.length > 0) {
           (contentData as any).push({
@@ -835,8 +857,9 @@ async function PDFService({
           });
         }
 
-        if (imagesForPDF && imagesForPDF.length > 0) {
-          const imagesRows = Math.ceil(imagesForPDF.length / 6);
+        // Only add image section if there are valid images
+        if (validImagesForPDF && validImagesForPDF.length > 0) {
+          const imagesRows = Math.ceil(validImagesForPDF.length / 6);
 
           (contentData[lastContent] as any).columns[1].stack.push({
             table: {
@@ -850,7 +873,7 @@ async function PDFService({
                     ),
                   },
                   {
-                    text: [{ text: `Imagens (${images.length || 0}): `, bold: true }],
+                    text: [{ text: `Imagens (${validImagesForPDF.length}): `, bold: true }],
                     marginLeft: 8,
                   },
                 ],
@@ -876,7 +899,7 @@ async function PDFService({
                       ),
                     },
                     {
-                      columns: imagesForPDF.slice(start, end),
+                      columns: validImagesForPDF.slice(start, end),
                       columnGap: 4,
                       marginLeft: 8,
                     },
@@ -896,6 +919,17 @@ async function PDFService({
               fillColor: '#E6E6E6',
             });
           }
+        } else if (images && images.length > 0) {
+          // If there were images requested but all were skipped, show a placeholder message
+          (contentData[lastContent] as any).columns[1].stack.push({
+            text: [
+              { text: 'Atenção: ', bold: true, color: 'red' },
+              'Nenhuma imagem pôde ser incluída neste PDF por problemas de acesso, formato ou processamento.',
+            ],
+            fontSize: 8,
+            margin: [0, 4, 0, 4],
+            color: 'red',
+          });
         }
       }
     }
@@ -915,17 +949,12 @@ async function PDFService({
                 body: [
                   [
                     {
-                      text: `Relatório de Manutenções `,
+                      text: 'Relatório de Manutenções ',
                       fontSize: 18,
                       bold: true,
                       absolutePosition: { x: 320, y: 10 },
                     },
-                    {
-                      image: path.join(folderName, headerLogo),
-                      width: 64,
-                      height: 20,
-                      alignment: 'right',
-                    },
+                    { image: headerLogoPath, width: 64, height: 20, alignment: 'right' },
                   ],
                 ],
               },
@@ -996,7 +1025,7 @@ async function PDFService({
                                 .split(',')
                                 .map(
                                   (value: string, i: number) =>
-                                    `${getSingularStatusNameForPdf(value)}${
+                                    `${getSingularStatusNameForPdf(value)}$${
                                       query.maintenanceStatusNames.split(',').length === i + 1
                                         ? ''
                                         : ','
@@ -1023,11 +1052,11 @@ async function PDFService({
 
       content: [contentData],
 
-      footer(currentPage, totalPages) {
+      footer(currentPage: number, totalPages: number) {
         return {
           columns: [
             {
-              image: path.join(folderName, footerLogo),
+              image: footerLogoPath,
               alignment: 'left',
               marginLeft: 30,
               width: 64,
