@@ -70,7 +70,6 @@ export class DashboardServices {
 
     return companies;
   }
-
 }
 
 export const dashboardServices = new DashboardServices();
