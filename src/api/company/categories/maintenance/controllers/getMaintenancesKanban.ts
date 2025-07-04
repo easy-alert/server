@@ -19,13 +19,14 @@ interface IQuery {
   category: string;
   user: string;
   priorityName: string;
+  type: string;
   search: string;
   startDate: string;
   endDate: string;
 }
 
 export async function getMaintenancesKanban(req: Request, res: Response) {
-  const { buildingId, status, user, category, priorityName, search, startDate, endDate } =
+  const { buildingId, status, user, category, priorityName, type, search, startDate, endDate } =
     req.query as unknown as IQuery;
   const { Company } = req;
 
@@ -43,6 +44,7 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
     !priorityName || priorityName === 'undefined'
       ? undefined
       : (String(priorityName) as MaintenancePriorityName);
+  const typeFilter = !type || type === 'undefined' ? undefined : type.split(',');
   const searchFilter = search || '';
 
   const companyIdFilter = Company?.id;
@@ -66,6 +68,7 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
     endDate: endDateFilter,
     showMaintenancePriority: company?.showMaintenancePriority,
     priorityFilter,
+    typeFilter,
     search: searchFilter,
   });
 
