@@ -19,6 +19,10 @@ interface IUpdateBuildingById {
   guestCanCompleteMaintenance?: boolean;
 }
 
+interface IChangeIsBlockedBuilding {
+  buildingId: string;
+}
+
 export async function updateBuildingById(params: IUpdateBuildingById) {
   const { id, buildingTypeId, ...rest } = params;
 
@@ -91,4 +95,42 @@ export async function updateBuildingById(params: IUpdateBuildingById) {
   });
 
   return updatedBuilding;
+}
+
+export async function changeIsBlockedBuilding({ buildingId }: IChangeIsBlockedBuilding) {
+  const building = await prisma.building.findUnique({
+    where: { id: buildingId },
+    select: { id: true, isBlocked: true },
+  });
+
+  if (!building) throw new Error('Edificação não encontrada');
+
+  return prisma.building.update({
+    where: { id: buildingId },
+    data: { isBlocked: !building.isBlocked },
+    select: {
+      id: true,
+      name: true,
+      cep: true,
+      streetName: true,
+      neighborhood: true,
+      city: true,
+      state: true,
+      isBlocked: true,
+      createdAt: true,
+      image: true,
+      BuildingType: {
+        select: {
+          name: true,
+        },
+      },
+      Company: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+        },
+      },
+    },
+  });
 }
