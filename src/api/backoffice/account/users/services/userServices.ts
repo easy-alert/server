@@ -152,6 +152,26 @@ export class UserServices {
       data: { passwordHash: password },
     });
   }
+
+  async changeIsBlocked({ userId }: { userId: string }) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new Error('Usuário não encontrado');
+    return prisma.user.update({
+      where: { id: userId },
+      data: { isBlocked: !user.isBlocked },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phoneNumber: true,
+        image: true,
+        role: true,
+        isBlocked: true,
+        createdAt: true,
+        lastAccess: true,
+      },
+    });
+  }
 }
 
 export const userServices = new UserServices();
