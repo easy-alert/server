@@ -7,6 +7,7 @@ export interface IFindBuildingMaintenancesHistory {
     dateFilter: { gte: Date; lte: Date };
     filterBy: string;
     search?: string;
+    type?: string[];
   };
 }
 
@@ -19,6 +20,7 @@ export interface IListForBuildingReportQuery {
     endDate: string | undefined;
     filterBy: string;
     search?: string;
+    type?: string;
   };
 }
 
