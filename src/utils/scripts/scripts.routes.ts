@@ -11,7 +11,7 @@ import { updateMaintenanceHistory } from './updateMaintenanceHistory';
 // ROUTES
 export const scriptRouter: Router = Router();
 
-scriptRouter.get('/migrate-building', migrateBuildingToOtherCompany);
+scriptRouter.post('/migrate-building', migrateBuildingToOtherCompany);
 
 scriptRouter.post('/templates/create', createDefaultTemplates);
 scriptRouter.get('/buildings/create-folders', createBuildingFolders);
