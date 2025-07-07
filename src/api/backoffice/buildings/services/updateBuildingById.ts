@@ -20,7 +20,7 @@ interface IUpdateBuildingById {
 }
 
 export async function updateBuildingById(params: IUpdateBuildingById) {
-  const { id, buildingTypeId, ...rest } = params;
+  const { id, ...rest } = params;
 
   const existingBuilding = await prisma.building.findUnique({
     where: { id },
@@ -31,18 +31,7 @@ export async function updateBuildingById(params: IUpdateBuildingById) {
     throw new Error('Edificação não encontrada');
   }
 
-  if (buildingTypeId) {
-    const buildingType = await prisma.buildingType.findUnique({
-      where: { id: buildingTypeId },
-      select: { id: true },
-    });
-
-    if (!buildingType) {
-      throw new Error('Tipo de edificação não encontrado');
-    }
-  }
-
-  const dataToUpdate: Record<string, any> = { buildingTypeId };
+  const dataToUpdate: Record<string, any> = {};
 
   Object.entries(rest).forEach(([key, value]) => {
     if (value !== undefined) {
