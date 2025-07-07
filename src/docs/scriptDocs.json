@@ -46,6 +46,158 @@
     }
   },
   "paths": {
+    "/migrate-building": {
+      "post": {
+        "tags": ["Migração de edificações"],
+        "summary": "Migra uma edificação e todos os seus dados relacionados para uma nova empresa.",
+        "description": "Este endpoint clona uma edificação completa de uma empresa para outra, incluindo todas as categorias, manutenções, histórico, anexos, banners, configurações de notificação e dados relacionados. Manutenções específicas da empresa são clonadas para a nova empresa.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["originBuildingId", "newCompanyId"],
+                "properties": {
+                  "originBuildingId": {
+                    "type": "string",
+                    "description": "ID da edificação de origem que será migrada"
+                  },
+                  "newCompanyId": {
+                    "type": "string",
+                    "description": "ID da nova empresa de destino"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Migração realizada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Building migration completed successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "newBuildingId": {
+                          "type": "string",
+                          "description": "ID da nova edificação criada"
+                        },
+                        "details": {
+                          "type": "object",
+                          "properties": {
+                            "buildingCloned": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "categoriesCloned": {
+                              "type": "number",
+                              "example": 2
+                            },
+                            "maintenancesCloned": {
+                              "type": "number",
+                              "example": 5
+                            },
+                            "annexesCloned": {
+                              "type": "number",
+                              "example": 3
+                            },
+                            "bannersCloned": {
+                              "type": "number",
+                              "example": 1
+                            },
+                            "maintenanceHistoryCloned": {
+                              "type": "number",
+                              "example": 10
+                            },
+                            "apartmentsCloned": {
+                              "type": "number",
+                              "example": 20
+                            },
+                            "notificationsCloned": {
+                              "type": "number",
+                              "example": 2
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação ou migração",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Origin building not found"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean",
+                          "example": false
+                        },
+                        "error": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Internal server error during building migration"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/templates/create": {
       "post": {
         "tags": ["Template de manutenções"],

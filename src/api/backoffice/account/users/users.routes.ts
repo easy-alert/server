@@ -5,11 +5,13 @@ import { Router } from 'express';
 import { listUsers } from './controllers/listUsers';
 import { listUserDetails } from './controllers/listUserDetails';
 import { editUserController } from './controllers/editUserController';
+import { createUser } from './controllers/createUser';
 
 // ROUTES
 export const usersRouter = Router();
 
 usersRouter.get('/list', listUsers);
 usersRouter.get('/details/:userId', listUserDetails);
-
+usersRouter.post('/create', createUser);
 usersRouter.put('/edit/:userId', editUserController);
+
