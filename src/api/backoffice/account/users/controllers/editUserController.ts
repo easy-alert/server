@@ -3,7 +3,6 @@ import { cannotExist, checkPassword, checkValues } from '../../../../../utils/ne
 import { userServices } from '../services/userServices';
 
 interface IBody {
-  id: string;
   image: string;
   name: string;
   role: string;
@@ -15,11 +14,12 @@ interface IBody {
 }
 
 export async function editUserController(req: Request, res: Response) {
-  const { id, image, name, role, email, phoneNumber, password, confirmPassword, isBlocked }: IBody =
+  const { userId } = req.params;
+  const { image, name, role, email, phoneNumber, password, confirmPassword, isBlocked }: IBody =
     req.body;
 
   checkValues([
-    { label: 'ID do usuário', type: 'string', value: id },
+    { label: 'ID do usuário', type: 'string', value: userId },
     { label: 'Nome', type: 'string', value: name, required: true },
     { label: 'Email', type: 'email', value: email, required: true },
     { label: 'Telefone', type: 'string', value: phoneNumber, required: true },
@@ -30,16 +30,21 @@ export async function editUserController(req: Request, res: Response) {
 
   checkPassword({ password, confirmPassword });
 
-  const user = await userServices.findEmailPhoneById({ userId: id });
+  const currentUser = await userServices.findEmailPhoneById({ userId });
 
-  if (user && (user.email !== email || user.phoneNumber !== phoneNumber)) {
-    const uniqueUser = await userServices.findUniqueUser({ email, phoneNumber });
-    cannotExist([{ label: 'Usuário', variable: uniqueUser }]);
+  if (currentUser && currentUser.email !== email) {
+    const existingUserByEmail = await userServices.findUserByEmail({ email });
+    cannotExist([{ label: 'Email', variable: existingUserByEmail }]);
+  }
+
+  if (currentUser && currentUser.phoneNumber !== phoneNumber) {
+    const existingUserByPhone = await userServices.findUserByPhoneNumber({ phoneNumber });
+    cannotExist([{ label: 'Telefone', variable: existingUserByPhone }]);
   }
 
   try {
     const updatedUser = await userServices.updateUser({
-      id,
+      id: userId,
       image,
       name,
       role,
@@ -49,7 +54,7 @@ export async function editUserController(req: Request, res: Response) {
     });
 
     if (password) {
-      await userServices.updateUserPassword({ id, password });
+      await userServices.updateUserPassword({ id: userId, password });
     }
 
     return res.status(200).json({
@@ -60,14 +65,6 @@ export async function editUserController(req: Request, res: Response) {
       },
     });
   } catch (error: any) {
-    if (error?.meta?.target?.includes('email')) {
-      return res.status(400).json({ ServerMessage: { message: 'Email já cadastrado.' } });
-    }
-
-    if (error?.meta?.target?.includes('phoneNumber')) {
-      return res.status(400).json({ ServerMessage: { message: 'Telefone já cadastrado.' } });
-    }
-
     return res.status(500).json({ ServerMessage: { message: 'Erro ao atualizar usuário.' } });
   }
 }
