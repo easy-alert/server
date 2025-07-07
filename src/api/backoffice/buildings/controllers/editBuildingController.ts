@@ -76,7 +76,6 @@ export async function editBuildingController(req: Request, res: Response): Promi
   } catch (error: any) {
     console.error('Erro ao editar edificação:', error);
 
-    // Se o erro é uma ServerMessage do checkValues, retorna o status e mensagem dela
     if (error.statusCode) {
       res.status(error.statusCode).json({
         success: false,
