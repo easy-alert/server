@@ -12,4 +12,4 @@ export const usersRouter = Router();
 usersRouter.get('/list', listUsers);
 usersRouter.get('/details/:userId', listUserDetails);
 
-usersRouter.put('/editUser', editUserController);
+usersRouter.put('/edit/:userId', editUserController);
