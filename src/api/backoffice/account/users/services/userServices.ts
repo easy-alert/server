@@ -103,6 +103,16 @@ export class UserServices {
     });
   }
 
+  async findUserByEmail({ email }: { email: string }) {
+    return prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+      },
+    });
+  }
+
   async findUniqueUser({ email, phoneNumber }: { email: string; phoneNumber: string }) {
     return prisma.user.findFirst({
       where: {
@@ -111,6 +121,16 @@ export class UserServices {
       select: {
         id: true,
         email: true,
+        phoneNumber: true,
+      },
+    });
+  }
+
+  async findUserByPhoneNumber({ phoneNumber }: { phoneNumber: string }) {
+    return prisma.user.findFirst({
+      where: { phoneNumber },
+      select: {
+        id: true,
         phoneNumber: true,
       },
     });
