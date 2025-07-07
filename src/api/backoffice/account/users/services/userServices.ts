@@ -1,3 +1,4 @@
+import { hashSync } from 'bcrypt';
 import { prisma } from '../../../../../../prisma';
 
 export class UserServices {
@@ -169,7 +170,7 @@ export class UserServices {
   async updateUserPassword({ id, password }: { id: string; password: string }) {
     return prisma.user.update({
       where: { id },
-      data: { passwordHash: password },
+      data: { passwordHash: hashSync(password, 12) },
     });
   }
 }
