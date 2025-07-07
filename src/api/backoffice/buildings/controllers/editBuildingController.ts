@@ -1,33 +1,36 @@
 import { Request, Response } from 'express';
 import { updateBuildingById } from '../services/updateBuildingById';
-
-const requiredFields = [
-  'name',
-  'buildingTypeId',
-  'cep',
-  'state',
-  'city',
-  'warrantyExpiration',
-  'nextMaintenanceCreationBasis',
-];
-
-function validateRequiredFields(body: any): string[] {
-  return requiredFields.filter((field) => !body[field]);
-}
+import { checkValues } from '../../../../utils/newValidator/checkValues';
 
 export async function editBuildingController(req: Request, res: Response): Promise<void> {
   const { buildingId } = req.params;
-  const missingFields = validateRequiredFields(req.body);
-
-  if (missingFields.length > 0) {
-    res.status(400).json({
-      success: false,
-      error: `Campos obrigatórios ausentes: ${missingFields.join(', ')}`,
-    });
-    return;
-  }
 
   try {
+    checkValues([
+      { value: req.body.name, label: 'nome', type: 'string', required: true },
+      {
+        value: req.body.buildingTypeId,
+        label: 'tipo de edificação',
+        type: 'string',
+        required: true,
+      },
+      { value: req.body.cep, label: 'CEP', type: 'CEP', required: true },
+      { value: req.body.state, label: 'estado', type: 'string', required: true },
+      { value: req.body.city, label: 'cidade', type: 'string', required: true },
+      {
+        value: req.body.warrantyExpiration,
+        label: 'data de expiração da garantia',
+        type: 'date',
+        required: true,
+      },
+      {
+        value: req.body.nextMaintenanceCreationBasis,
+        label: 'base de criação da próxima manutenção',
+        type: 'int',
+        required: true,
+      },
+    ]);
+
     const {
       name,
       buildingTypeId,
@@ -72,6 +75,15 @@ export async function editBuildingController(req: Request, res: Response): Promi
     });
   } catch (error: any) {
     console.error('Erro ao editar edificação:', error);
+
+    // Se o erro é uma ServerMessage do checkValues, retorna o status e mensagem dela
+    if (error.statusCode) {
+      res.status(error.statusCode).json({
+        success: false,
+        error: error.message,
+      });
+      return;
+    }
 
     const errorMap: Record<string, number> = {
       'Edificação não encontrada': 404,
