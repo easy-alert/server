@@ -14,4 +14,3 @@ usersRouter.get('/list', listUsers);
 usersRouter.get('/details/:userId', listUserDetails);
 usersRouter.post('/create', createUser);
 usersRouter.put('/edit/:userId', editUserController);
-

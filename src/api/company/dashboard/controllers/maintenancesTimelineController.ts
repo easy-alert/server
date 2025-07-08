@@ -33,7 +33,6 @@ export async function maintenancesTimelineController(req: Request, res: Response
   const startDateFormatted = startDate ? setToMidnight(startDate as string) : undefined;
   const endDateFormatted = endDate ? setToLastMinuteOfDay(endDate as string) : undefined;
 
-
   const dashboardFilter = handleDashboardFilter({
     companyId: req.Company.id,
     buildings: buildings as string[],
