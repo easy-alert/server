@@ -19,8 +19,8 @@ import { Request, Response } from 'express';
 
 export async function migrateBuildingToOtherCompany(req: Request, res: Response) {
   console.log('Building migration started');
-  console.log("🚀 ~ migrateBuildingToOtherCompany ~ res:", res)
-  console.log("🚀 ~ migrateBuildingToOtherCompany ~ req:", req)
+  console.log('🚀 ~ migrateBuildingToOtherCompany ~ res:', res);
+  console.log('🚀 ~ migrateBuildingToOtherCompany ~ req:', req);
 
   // try {
   //   const { originBuildingId, newCompanyId } = req.body;
