@@ -26,7 +26,7 @@ export async function editBuildingController(req: Request, res: Response): Promi
       {
         value: req.body.nextMaintenanceCreationBasis,
         label: 'base de criação da próxima manutenção',
-        type: 'int',
+        type: 'string',
         required: true,
       },
     ]);
