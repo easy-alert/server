@@ -30,7 +30,15 @@ export async function editBuildingController(req: Request, res: Response): Promi
         required: true,
       },
     ]);
+  } catch (validationError: any) {
+    res.status(400).json({
+      success: false,
+      error: validationError.message || 'Erro de validação nos campos enviados',
+    });
+    return;
+  }
 
+  try {
     const {
       name,
       buildingTypeId,
