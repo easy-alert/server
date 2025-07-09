@@ -31,13 +31,9 @@ export async function updateBuildingById(params: IUpdateBuildingById) {
     throw new Error('Edificação não encontrada');
   }
 
-  const dataToUpdate: Record<string, any> = {};
-
-  Object.entries(rest).forEach(([key, value]) => {
-    if (value !== undefined) {
-      dataToUpdate[key] = value;
-    }
-  });
+  const dataToUpdate = Object.fromEntries(
+    Object.entries(rest).filter(([, value]) => value !== undefined),
+  );
 
   const updatedBuilding = await prisma.building.update({
     where: { id },
