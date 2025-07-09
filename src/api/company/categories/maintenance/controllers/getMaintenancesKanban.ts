@@ -1,14 +1,15 @@
 // # region IMPORTS
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import type { MaintenancePriorityName } from '@prisma/client';
 
+import { ClientBuildingServices } from '../../../../client/building/services/clientBuildingServices';
+import { findCompanyById } from '../../../../shared/company/services/findCompanyById';
+import { findMaintenanceHistory } from '../../../../client/building/services/findMaintenanceHistory';
+
 import { hasAdminPermission } from '../../../../../utils/permissions/hasAdminPermission';
 import { handlePermittedBuildings } from '../../../../../utils/permissions/handlePermittedBuildings';
-import { findCompanyById } from '../../../../shared/company/services/findCompanyById';
-import { ClientBuildingServices } from '../../../../client/building/services/clientBuildingServices';
 import { changeUTCTime } from '../../../../../utils/dateTime';
-import { findMaintenanceHistory } from '../../../../client/building/services/findMaintenanceHistory';
 
 const clientBuildingServices = new ClientBuildingServices();
 
@@ -43,7 +44,7 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
   const priorityFilter =
     !priorityName || priorityName === 'undefined'
       ? undefined
-      : (String(priorityName) as MaintenancePriorityName);
+      : (priorityName.split(',') as MaintenancePriorityName[]);
   const typeFilter = !type || type === 'undefined' ? undefined : type.split(',');
   const searchFilter = search || '';
 
