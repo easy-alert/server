@@ -475,12 +475,6 @@ async function executeMigration(
 }
 
 export async function migrateBuildingToOtherCompany(req: Request, res: Response) {
-  console.log('Building migration started');
-  console.log('🚀 ~ migrateBuildingToOtherCompany ~ res:', res);
-  console.log('🚀 ~ migrateBuildingToOtherCompany ~ req:', req);
-}
-
-export async function migrateBuildingToOtherCompany(req: Request, res: Response) {
   try {
     const { originBuildingId, newCompanyId } = req.body;
 
