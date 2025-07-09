@@ -410,7 +410,7 @@ async function executeMigration(
           where: { maintenanceHistoryId: history.id },
         });
 
-        for (const activity of activities) {
+        await Promise.all(activities.map(async (activity) => {
           const newActivity = await tx.maintenanceHistoryActivity.create({
             data: {
               maintenanceHistoryId: newHistory.id,
@@ -425,16 +425,16 @@ async function executeMigration(
             where: { activityId: activity.id },
           });
 
-          for (const image of activityImages) {
-            await tx.maintenanceHistoryActivityImage.create({
+          await Promise.all(activityImages.map((image) =>
+            tx.maintenanceHistoryActivityImage.create({
               data: {
                 activityId: newActivity.id,
                 name: image.name,
                 url: image.url,
               },
-            });
-          }
-        }
+            })
+          ));
+        }));
 
         // Clone maintenance suppliers
         const suppliers = await tx.maintenanceHistorySupplier.findMany({
