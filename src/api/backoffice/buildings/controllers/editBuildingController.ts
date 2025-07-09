@@ -1,62 +1,49 @@
 import { Request, Response } from 'express';
 import { updateBuildingById } from '../services/updateBuildingById';
-import { checkValues } from '../../../../utils/newValidator/checkValues';
+import { Validator } from '../../../../utils/validator/validator';
 
-export async function editBuildingController(req: Request, res: Response): Promise<void> {
+const validator = new Validator();
+
+export async function editBuildingController(req: Request, res: Response) {
   const { buildingId } = req.params;
 
+  const {
+    name,
+    buildingTypeId,
+    cep,
+    state,
+    city,
+    neighborhood,
+    streetName,
+    image,
+    deliveryDate,
+    warrantyExpiration,
+    nextMaintenanceCreationBasis,
+    keepNotificationAfterWarrantyEnds,
+    mandatoryReportProof,
+    isActivityLogPublic,
+    guestCanCompleteMaintenance,
+  } = req.body;
+
   try {
-    checkValues([
-      { value: req.body.name, label: 'nome', type: 'string', required: true },
-      {
-        value: req.body.buildingTypeId,
-        label: 'tipo de edificação',
-        type: 'string',
-        required: true,
-      },
-      { value: req.body.cep, label: 'CEP', type: 'CEP', required: true },
-      { value: req.body.state, label: 'estado', type: 'string', required: true },
-      { value: req.body.city, label: 'cidade', type: 'string', required: true },
-      {
-        value: req.body.warrantyExpiration,
-        label: 'data de expiração da garantia',
-        type: 'date',
-        required: true,
-      },
-      {
-        value: req.body.nextMaintenanceCreationBasis,
-        label: 'base de criação da próxima manutenção',
-        type: 'string',
-        required: true,
-      },
+    validator.check([
+      { label: 'ID da edificação', type: 'string', variable: buildingId },
+      { label: 'nome', type: 'string', variable: name },
+      { label: 'tipo de edificação', type: 'string', variable: buildingTypeId },
+      { label: 'CEP', type: 'string', variable: cep },
+      { label: 'estado', type: 'string', variable: state },
+      { label: 'cidade', type: 'string', variable: city },
+      { label: 'data de expiração da garantia', type: 'string', variable: warrantyExpiration },
+      { label: 'base de criação da próxima manutenção', type: 'string', variable: nextMaintenanceCreationBasis },
     ]);
   } catch (validationError: any) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       error: validationError.message || 'Erro de validação nos campos enviados',
     });
-    return;
   }
 
   try {
-    const {
-      name,
-      buildingTypeId,
-      cep,
-      state,
-      city,
-      neighborhood,
-      streetName,
-      image,
-      deliveryDate,
-      warrantyExpiration,
-      nextMaintenanceCreationBasis,
-      keepNotificationAfterWarrantyEnds,
-      mandatoryReportProof,
-      isActivityLogPublic,
-      guestCanCompleteMaintenance,
-    } = req.body;
-
     const updatedBuilding = await updateBuildingById({
       id: buildingId,
       name,
@@ -76,20 +63,21 @@ export async function editBuildingController(req: Request, res: Response): Promi
       guestCanCompleteMaintenance,
     });
 
-    res.status(200).json({
-      success: true,
-      message: 'Edificação atualizada com sucesso',
+    return res.status(200).json({
+      ServerMessage: {
+        statusCode: 200,
+        message: 'Edificação atualizada com sucesso',
+      },
       data: updatedBuilding,
     });
   } catch (error: any) {
     console.error('Erro ao editar edificação:', error);
 
     if (error.statusCode) {
-      res.status(error.statusCode).json({
+      return res.status(error.statusCode).json({
         success: false,
         error: error.message,
       });
-      return;
     }
 
     const errorMap: Record<string, number> = {
@@ -97,7 +85,7 @@ export async function editBuildingController(req: Request, res: Response): Promi
       'Tipo de edificação não encontrado': 400,
     };
 
-    res.status(errorMap[error.message] || 500).json({
+    return res.status(errorMap[error.message] || 500).json({
       success: false,
       error: error.message || 'Erro interno do servidor ao editar edificação',
     });
