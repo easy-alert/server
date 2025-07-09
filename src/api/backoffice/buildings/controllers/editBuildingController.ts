@@ -34,7 +34,11 @@ export async function editBuildingController(req: Request, res: Response) {
       { label: 'estado', type: 'string', variable: state },
       { label: 'cidade', type: 'string', variable: city },
       { label: 'data de expiração da garantia', type: 'string', variable: warrantyExpiration },
-      { label: 'base de criação da próxima manutenção', type: 'string', variable: nextMaintenanceCreationBasis },
+      {
+        label: 'base de criação da próxima manutenção',
+        type: 'string',
+        variable: nextMaintenanceCreationBasis,
+      },
     ]);
   } catch (validationError: any) {
     return res.status(400).json({
