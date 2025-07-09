@@ -410,31 +410,35 @@ async function executeMigration(
           where: { maintenanceHistoryId: history.id },
         });
 
-        await Promise.all(activities.map(async (activity) => {
-          const newActivity = await tx.maintenanceHistoryActivity.create({
-            data: {
-              maintenanceHistoryId: newHistory.id,
-              type: activity.type,
-              title: activity.title,
-              content: activity.content,
-            },
-          });
-
-          // Clone activity images
-          const activityImages = await tx.maintenanceHistoryActivityImage.findMany({
-            where: { activityId: activity.id },
-          });
-
-          await Promise.all(activityImages.map((image) =>
-            tx.maintenanceHistoryActivityImage.create({
+        await Promise.all(
+          activities.map(async (activity) => {
+            const newActivity = await tx.maintenanceHistoryActivity.create({
               data: {
-                activityId: newActivity.id,
-                name: image.name,
-                url: image.url,
+                maintenanceHistoryId: newHistory.id,
+                type: activity.type,
+                title: activity.title,
+                content: activity.content,
               },
-            })
-          ));
-        }));
+            });
+
+            // Clone activity images
+            const activityImages = await tx.maintenanceHistoryActivityImage.findMany({
+              where: { activityId: activity.id },
+            });
+
+            await Promise.all(
+              activityImages.map((image) =>
+                tx.maintenanceHistoryActivityImage.create({
+                  data: {
+                    activityId: newActivity.id,
+                    name: image.name,
+                    url: image.url,
+                  },
+                }),
+              ),
+            );
+          }),
+        );
 
         // Clone maintenance suppliers
         const suppliers = await tx.maintenanceHistorySupplier.findMany({
