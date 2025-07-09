@@ -12,8 +12,9 @@ interface IFindMaintenanceHistory {
   startDate: Date | undefined;
   endDate: Date | undefined;
   showMaintenancePriority?: boolean | undefined;
-  priorityFilter: MaintenancePriorityName | undefined;
+  priorityFilter: MaintenancePriorityName[] | undefined;
   search?: string;
+  typeFilter?: string[] | undefined;
 }
 
 export async function findMaintenanceHistory({
@@ -27,6 +28,7 @@ export async function findMaintenanceHistory({
   categoryIdFilter,
   priorityFilter,
   search,
+  typeFilter,
 }: IFindMaintenanceHistory) {
   const splittedSearch =
     search
@@ -155,7 +157,9 @@ export async function findMaintenanceHistory({
         },
       },
 
-      priorityName: priorityFilter,
+      priorityName: {
+        in: priorityFilter,
+      },
 
       MaintenancesStatus: {
         name: {
@@ -166,6 +170,12 @@ export async function findMaintenanceHistory({
       Maintenance: {
         categoryId: {
           in: categoryIdFilter,
+        },
+
+        MaintenanceType: {
+          name: {
+            in: typeFilter,
+          },
         },
 
         MaintenanceAdditionalInformation: {
