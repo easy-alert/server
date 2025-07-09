@@ -1,5 +1,5 @@
-import { prisma } from '../../../prisma';
 import { Request, Response } from 'express';
+import { prisma } from '../../../prisma';
 
 interface MigrationResult {
   success: boolean;
@@ -17,60 +17,9 @@ interface MigrationResult {
   };
 }
 
-export async function migrateBuildingToOtherCompany(req: Request, res: Response) {
-  try {
-    const { originBuildingId, newCompanyId } = req.body;
-
-    // Input validation
-    if (!originBuildingId || !newCompanyId) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required parameters: originBuildingId and newCompanyId',
-      });
-    }
-
-    if (typeof originBuildingId !== 'string' || typeof newCompanyId !== 'string') {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid parameter types: originBuildingId and newCompanyId must be strings',
-      });
-    }
-
-    if (originBuildingId.trim() === '' || newCompanyId.trim() === '') {
-      return res.status(400).json({
-        success: false,
-        error: 'Parameters cannot be empty strings',
-      });
-    }
-
-    // Execute migration
-    const result = await executeMigration(originBuildingId, newCompanyId);
-
-    if (result.success) {
-      return res.status(200).json({
-        success: true,
-        message: 'Building migration completed successfully',
-        data: result,
-      });
-    } else {
-      return res.status(400).json({
-        success: false,
-        error: result.error,
-        data: result,
-      });
-    }
-  } catch (error) {
-    console.error('Building migration error:', error);
-    return res.status(500).json({
-      success: false,
-      error: 'Internal server error during building migration',
-    });
-  }
-}
-
 async function executeMigration(
   originBuildingId: string,
-  newCompanyId: string
+  newCompanyId: string,
 ): Promise<MigrationResult> {
   const result: MigrationResult = {
     success: false,
@@ -365,6 +314,7 @@ async function executeMigration(
 
         // If the maintenance was company-specific, we need to find the cloned version
         if (history.Maintenance.ownerCompanyId) {
+          // eslint-disable-next-line no-shadow
           const buildingCategories = await tx.buildingCategory.findMany({
             where: { buildingId: newBuilding.id },
             select: { categoryId: true },
@@ -521,6 +471,56 @@ async function executeMigration(
   } catch (error) {
     result.error = error instanceof Error ? error.message : 'Unknown error occurred';
     return result;
+  }
+}
+
+export async function migrateBuildingToOtherCompany(req: Request, res: Response) {
+  try {
+    const { originBuildingId, newCompanyId } = req.body;
+
+    // Input validation
+    if (!originBuildingId || !newCompanyId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required parameters: originBuildingId and newCompanyId',
+      });
+    }
+
+    if (typeof originBuildingId !== 'string' || typeof newCompanyId !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid parameter types: originBuildingId and newCompanyId must be strings',
+      });
+    }
+
+    if (originBuildingId.trim() === '' || newCompanyId.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        error: 'Parameters cannot be empty strings',
+      });
+    }
+
+    // Execute migration
+    const result = await executeMigration(originBuildingId, newCompanyId);
+
+    if (result.success) {
+      return res.status(200).json({
+        success: true,
+        message: 'Building migration completed successfully',
+        data: result,
+      });
+    }
+    return res.status(400).json({
+      success: false,
+      error: result.error,
+      data: result,
+    });
+  } catch (error) {
+    console.error('Building migration error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Internal server error during building migration',
+    });
   }
 }
 
