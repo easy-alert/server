@@ -48,7 +48,7 @@ export async function editBuildingController(req: Request, res: Response) {
   }
 
   try {
-    const updatedBuilding = await updateBuildingById({
+    await updateBuildingById({
       id: buildingId,
       name,
       buildingTypeId,
@@ -70,28 +70,15 @@ export async function editBuildingController(req: Request, res: Response) {
     return res.status(200).json({
       ServerMessage: {
         statusCode: 200,
-        message: 'Edificação atualizada com sucesso',
+        message: 'Edificação atualizada com sucesso.',
       },
-      data: updatedBuilding,
     });
   } catch (error: any) {
-    console.error('Erro ao editar edificação:', error);
-
-    if (error.statusCode) {
-      return res.status(error.statusCode).json({
-        success: false,
-        error: error.message,
-      });
-    }
-
-    const errorMap: Record<string, number> = {
-      'Edificação não encontrada': 404,
-      'Tipo de edificação não encontrado': 400,
-    };
-
-    return res.status(errorMap[error.message] || 500).json({
-      success: false,
-      error: error.message || 'Erro interno do servidor ao editar edificação',
+    return res.status(500).json({
+      ServerMessage: {
+        statusCode: 500,
+        message: error.message || 'Erro interno do servidor ao editar edificação.',
+      },
     });
   }
 }
