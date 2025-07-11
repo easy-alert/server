@@ -64,7 +64,7 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
   const priorityFilter =
     !priorityName || priorityName === 'undefined'
       ? undefined
-      : (String(priorityName) as MaintenancePriorityName);
+      : (priorityName.split(',') as MaintenancePriorityName[]);
 
   const startDateFilter = startDate
     ? changeUTCTime(new Date(String(startDate)), 0, 0, 0, 0)

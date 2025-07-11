@@ -1,12 +1,9 @@
+import { hashSync } from 'bcrypt';
 import { prisma } from '../../../../../../prisma';
 
-import { needExist } from '../../../../../utils/newValidator';
-
-import type { IFindUserById, IListUser } from './types';
-
 export class UserServices {
-  async findById({ userId }: IFindUserById) {
-    const user = await prisma.user.findUnique({
+  async findById({ userId }: { userId: string }) {
+    return prisma.user.findUnique({
       include: {
         Companies: {
           select: {
@@ -20,7 +17,6 @@ export class UserServices {
             },
           },
         },
-
         UserBuildingsPermissions: {
           select: {
             Building: {
@@ -33,18 +29,13 @@ export class UserServices {
           },
         },
       },
-
       where: {
         id: userId,
       },
     });
-
-    needExist([{ label: 'Usuário', variable: user }]);
-
-    return user;
   }
 
-  async list({ take = 20, page, search = '' }: IListUser) {
+  async list({ take = 20, page, search = '' }: { take?: number; page: number; search?: string }) {
     const users = await prisma.user.findMany({
       where: {
         OR: [
@@ -68,11 +59,9 @@ export class UserServices {
           },
         ],
       },
-
       orderBy: {
         name: 'asc',
       },
-
       take,
       skip: (page - 1) * take,
     });
@@ -103,6 +92,86 @@ export class UserServices {
     });
 
     return { users, usersCount };
+  }
+
+  async findEmailPhoneById({ userId }: { userId: string }) {
+    return prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        email: true,
+        phoneNumber: true,
+      },
+    });
+  }
+
+  async findUserByEmail({ email }: { email: string }) {
+    return prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+      },
+    });
+  }
+
+  async findUniqueUser({ email, phoneNumber }: { email: string; phoneNumber: string }) {
+    return prisma.user.findFirst({
+      where: {
+        OR: [{ email }, { phoneNumber }],
+      },
+      select: {
+        id: true,
+        email: true,
+        phoneNumber: true,
+      },
+    });
+  }
+
+  async findUserByPhoneNumber({ phoneNumber }: { phoneNumber: string }) {
+    return prisma.user.findFirst({
+      where: { phoneNumber },
+      select: {
+        id: true,
+        phoneNumber: true,
+      },
+    });
+  }
+
+  async updateUser({
+    id,
+    image,
+    name,
+    role,
+    email,
+    phoneNumber,
+    isBlocked,
+  }: {
+    id: string;
+    image: string;
+    name: string;
+    role: string;
+    email: string;
+    phoneNumber: string;
+    isBlocked: boolean;
+  }) {
+    return prisma.user.update({
+      where: { id },
+      data: {
+        image,
+        name,
+        role,
+        email,
+        phoneNumber,
+        isBlocked,
+      },
+    });
+  }
+
+  async updateUserPassword({ id, password }: { id: string; password: string }) {
+    return prisma.user.update({
+      where: { id },
+      data: { passwordHash: hashSync(password, 12) },
+    });
   }
 }
 
