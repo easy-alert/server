@@ -178,19 +178,38 @@ export class UserServices {
   async changeIsBlocked({ userId }: { userId: string }) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     needExist([{ label: 'Usuário', variable: user }]);
-    return prisma.user.update({
+
+    await prisma.user.update({
       where: { id: userId },
       data: { isBlocked: !user!.isBlocked },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phoneNumber: true,
-        image: true,
-        role: true,
-        isBlocked: true,
-        createdAt: true,
-        lastAccess: true,
+    });
+
+    return prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        Companies: {
+          select: {
+            Company: {
+              select: {
+                id: true,
+                name: true,
+                isBlocked: true,
+                image: true,
+              },
+            },
+          },
+        },
+        UserBuildingsPermissions: {
+          select: {
+            Building: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
+          },
+        },
       },
     });
   }
