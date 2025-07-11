@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 import { updateBuildingById } from '../services/updateBuildingById';
-import { Validator } from '../../../../utils/validator/validator';
-
-const validator = new Validator();
+import { checkValues } from '../../../../utils/newValidator/checkValues';
 
 export async function editBuildingController(req: Request, res: Response) {
   const { buildingId } = req.params;
@@ -25,30 +23,23 @@ export async function editBuildingController(req: Request, res: Response) {
     guestCanCompleteMaintenance,
   } = req.body;
 
-  try {
-    validator.check([
-      { label: 'ID da edificação', type: 'string', variable: buildingId },
-      { label: 'nome', type: 'string', variable: name },
-      { label: 'tipo de edificação', type: 'string', variable: buildingTypeId },
-      { label: 'CEP', type: 'string', variable: cep },
-      { label: 'estado', type: 'string', variable: state },
-      { label: 'cidade', type: 'string', variable: city },
-      { label: 'data de expiração da garantia', type: 'string', variable: warrantyExpiration },
-      {
-        label: 'base de criação da próxima manutenção',
-        type: 'string',
-        variable: nextMaintenanceCreationBasis,
-      },
-    ]);
-  } catch (validationError: any) {
-    return res.status(400).json({
-      success: false,
-      error: validationError.message || 'Erro de validação nos campos enviados',
-    });
-  }
+  checkValues([
+    { label: 'ID da edificação', type: 'string', value: buildingId },
+    { label: 'nome', type: 'string', value: name },
+    { label: 'tipo de edificação', type: 'string', value: buildingTypeId },
+    { label: 'CEP', type: 'string', value: cep },
+    { label: 'estado', type: 'string', value: state },
+    { label: 'cidade', type: 'string', value: city },
+    { label: 'data de expiração da garantia', type: 'string', value: warrantyExpiration },
+    {
+      label: 'base de criação da próxima manutenção',
+      type: 'string',
+      value: nextMaintenanceCreationBasis,
+    },
+  ]);
 
   try {
-    await updateBuildingById({
+    const updatedBuilding = await updateBuildingById({
       id: buildingId,
       name,
       buildingTypeId,
@@ -72,6 +63,7 @@ export async function editBuildingController(req: Request, res: Response) {
         statusCode: 200,
         message: 'Edificação atualizada com sucesso.',
       },
+      building: updatedBuilding,
     });
   } catch (error: any) {
     return res.status(500).json({
