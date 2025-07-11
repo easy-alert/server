@@ -4,24 +4,12 @@ import { Request, Response } from 'express';
 // SERVICES
 import { userServices } from '../services/userServices';
 
-// CLASS
-import { Validator } from '../../../../../utils/validator/validator';
-
-const validator = new Validator();
+import { checkValues } from '../../../../../utils/newValidator/checkValues';
 
 export async function changeIsBlockedUser(req: Request, res: Response) {
   const { userId } = req.body;
 
-  try {
-    validator.check([{ label: 'ID do usuário', type: 'string', variable: userId }]);
-  } catch (validationError: any) {
-    return res.status(400).json({
-      ServerMessage: {
-        statusCode: 400,
-        message: validationError.message || 'ID do usuário é obrigatório.',
-      },
-    });
-  }
+  checkValues([{ label: 'ID do usuário', type: 'string', value: userId }]);
 
   try {
     await userServices.changeIsBlocked({ userId });
