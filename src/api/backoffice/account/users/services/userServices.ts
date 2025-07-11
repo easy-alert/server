@@ -1,5 +1,6 @@
 import { hashSync } from 'bcrypt';
 import { prisma } from '../../../../../../prisma';
+import { needExist } from '../../../../../utils/newValidator';
 
 export class UserServices {
   async findById({ userId }: { userId: string }) {
@@ -171,6 +172,45 @@ export class UserServices {
     return prisma.user.update({
       where: { id },
       data: { passwordHash: hashSync(password, 12) },
+    });
+  }
+
+  async changeIsBlocked({ userId }: { userId: string }) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    needExist([{ label: 'Usuário', variable: user }]);
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { isBlocked: !user!.isBlocked },
+    });
+
+    return prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        Companies: {
+          select: {
+            Company: {
+              select: {
+                id: true,
+                name: true,
+                isBlocked: true,
+                image: true,
+              },
+            },
+          },
+        },
+        UserBuildingsPermissions: {
+          select: {
+            Building: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 }
