@@ -2,7 +2,7 @@
 import { createTransport } from 'nodemailer';
 import { ServerMessage } from '../messages/serverMessage';
 import { EmailTemplates } from './templates/templates';
-import {
+import type {
   INewBuildingCreated,
   INewCompanyCreated,
   ISendConfirmEmail,
@@ -20,20 +20,20 @@ const emailTemplates = new EmailTemplates();
 
 // #region CONFIG
 const transporter = createTransport({
-  host: 'smtp.mail.us-west-2.awsapps.com',
+  host: 'smtp.gmail.com',
   port: 465,
   secure: true,
-  auth: {
-    user: process.env.EMAIL_USERNAME,
-    pass: process.env.EMAIL_PASSWORD,
-  },
   tls: { rejectUnauthorized: false },
+  auth: {
+    user: process.env.GMAIL_NOREPLY_USER,
+    pass: process.env.GMAIL_NOREPLY_APP_PASS,
+  },
 });
 
 export class EmailTransporterServices {
   async sendConfirmEmail({ subject, toEmail, text, link, companyLogo }: ISendConfirmEmail) {
     const mail = {
-      from: `${subject} <${process.env.EMAIL_USERNAME}>`,
+      from: `${subject} <${process.env.GMAIL_NOREPLY_USER}>`,
       to: toEmail,
       subject: `Easy Alert - ${subject}`,
       text,
@@ -55,7 +55,7 @@ export class EmailTransporterServices {
 
   async sendRecoveryPasswordEmail({ subject, toEmail, text, link }: ISendRecoveryPassword) {
     const mail = {
-      from: `${subject} <${process.env.EMAIL_USERNAME}>`,
+      from: `${subject} <${process.env.GMAIL_NOREPLY_USER}>`,
       to: toEmail,
       subject: `Easy Alert - ${subject}`,
       text,
@@ -76,7 +76,7 @@ export class EmailTransporterServices {
 
   async sendNewCompanyCreated({ companyName, subject, toEmail }: INewCompanyCreated) {
     const mail = {
-      from: `${subject} <${process.env.EMAIL_USERNAME}>`,
+      from: `${subject} <${process.env.GMAIL_NOREPLY_USER}>`,
       to: toEmail,
       subject: `Easy Alert - ${subject}`,
       html: emailTemplates.newCompanyCreated({
@@ -100,7 +100,7 @@ export class EmailTransporterServices {
     buildingName,
   }: INewBuildingCreated) {
     const mail = {
-      from: `${subject} <${process.env.EMAIL_USERNAME}>`,
+      from: `${subject} <${process.env.GMAIL_NOREPLY_USER}>`,
       to: toEmail,
       subject: `Easy Alert - ${subject}`,
       html: emailTemplates.newBuildingCreated({
@@ -138,7 +138,7 @@ export class EmailTransporterServices {
     companyLogo,
   }: ISendProofOfReport) {
     const mail = {
-      from: `${subject} <${process.env.EMAIL_USERNAME}>`,
+      from: `${subject} <${process.env.GMAIL_NOREPLY_USER}>`,
       to: toEmail,
       subject: `Easy Alert - ${subject}`,
       html: emailTemplates.proofOfReport({
@@ -177,7 +177,7 @@ export class EmailTransporterServices {
     buildingName: string;
   }) {
     const mail = {
-      from: `Script de deletar manutenções utilizado <${process.env.EMAIL_USERNAME}>`,
+      from: `Script de deletar manutenções utilizado <${process.env.GMAIL_NOREPLY_USER}>`,
       to: toEmail,
       subject: `Easy Alert - Script de deletar manutenções utilizado`,
       html: emailTemplates.deleteMaintenanceScriptUsed({
@@ -205,9 +205,9 @@ export class EmailTransporterServices {
     link,
   }: ITicketCreated) {
     const sendEmail = {
-      from: `Chamado aberto <${process.env.EMAIL_USERNAME}>`,
+      from: `Chamado aberto <${process.env.GMAIL_NOREPLY_USER}>`,
       to: toEmail,
-      subject: `Easy Alert - Chamado aberto`,
+      subject: `Easy Alert - Chamado aberto no ${buildingName}`,
       html: emailTemplates.ticketCreated({
         buildingName,
         residentName,
@@ -229,9 +229,9 @@ export class EmailTransporterServices {
     statusName,
   }: ITicketChangedStatus) {
     const mail = {
-      from: `Chamado atualizado <${process.env.EMAIL_USERNAME}>`,
+      from: `Chamado atualizado <${process.env.GMAIL_NOREPLY_USER}>`,
       to: toEmail,
-      subject: `Easy Alert - Chamado atualizado`,
+      subject: `Easy Alert - Chamado atualizado ${ticketNumber}`,
       html: emailTemplates.ticketChangedStatus({
         residentName,
         ticketNumber,
@@ -252,9 +252,9 @@ export class EmailTransporterServices {
     dismissedBy,
   }: ITicketDismissed) {
     const mail = {
-      from: `Chamado indeferido <${process.env.EMAIL_USERNAME}>`,
+      from: `Chamado indeferido <${process.env.GMAIL_NOREPLY_USER}>`,
       to: toEmail,
-      subject: `Easy Alert - Chamado indeferido`,
+      subject: `Easy Alert - Chamado indeferido ${ticketNumber}`,
       html: emailTemplates.ticketDismissed({
         residentName,
         ticketNumber,
@@ -269,9 +269,9 @@ export class EmailTransporterServices {
 
   sendTicketFinished({ toEmail, residentName, ticketNumber }: ITicketFinished) {
     const mail = {
-      from: `Chamado finalizado <${process.env.EMAIL_USERNAME}>`,
+      from: `Chamado finalizado <${process.env.GMAIL_NOREPLY_USER}>`,
       to: toEmail,
-      subject: `Easy Alert - Chamado finalizado`,
+      subject: `Easy Alert - Chamado finalizado ${ticketNumber}`,
       html: emailTemplates.ticketFinished({
         residentName,
         ticketNumber,

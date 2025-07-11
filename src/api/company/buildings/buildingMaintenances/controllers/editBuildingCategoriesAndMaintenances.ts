@@ -265,6 +265,10 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
       name: updatedsMaintenances[i].status || 'pending',
     });
 
+    const pendingMaintenanceStatus = await sharedMaintenanceStatusServices.findByName({
+      name: 'pending',
+    });
+
     const timeIntervalDelay = await timeIntervalServices.findById({
       timeIntervalId: updatedsMaintenances[i].delayTimeIntervalId,
     });
@@ -645,6 +649,35 @@ export async function editBuildingCategoriesAndMaintenances(req: Request, res: R
         notificationDate = updatedsMaintenances[i].notificationDate;
         // console.log('entra aqui quando tem os dois');
       }
+
+      dueDate = noWeekendTimeDate({
+        date: addDays({
+          date: notificationDate,
+          days:
+            updatedsMaintenances[i].period * timeIntervalPeriod.unitTime +
+            // só soma os dias se não tiver primeira data de notificação
+            (firstMaintenanceWasAntecipated ? daysToAnticipate : 0),
+        }),
+        interval: updatedsMaintenances[i].period * timeIntervalPeriod.unitTime,
+      });
+
+      await sharedMaintenanceServices.createHistory({
+        data: [
+          {
+            ownerCompanyId: req.Company.id,
+            buildingId,
+            maintenanceId: updatedsMaintenances[i].id,
+            maintenanceStatusId: pendingMaintenanceStatus.id,
+            daysInAdvance: firstMaintenanceWasAntecipated ? daysToAnticipate : 0,
+            serviceOrderNumber: lastServiceOrderNumber + 2,
+            notificationDate,
+            dueDate,
+            inProgress: false,
+          },
+        ],
+      });
+
+      continue;
     }
 
     // SOMANDO OS DIAS ANTECIPADOS NOVAMENTE NA DATA DE RESOLUÇÃO,

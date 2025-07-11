@@ -32,11 +32,11 @@ import { ticketHistoryActivitiesRouter } from './ticketHistoryActivities/ticketH
 import { ticketDismissReasonsRouter } from './ticketDismissReasons/ticketDismissReasons.routes';
 import { findManyServiceTypes } from '../shared/serviceTypes/controllers/findManyServiceTypes';
 import { findAllMaintenancePriority } from '../shared/maintenancePriority/controllers/findAllMaintenancePriority';
-import { tutorialsRouter } from './tutorials/tutorials.routes';
 import { usersRouter } from './users/users.routes';
 import { permissionsRouter } from './permissions/permissions.routes';
 import { listForSelectRouter } from './listForSelect/list.routes';
 import { updateReportPDFController } from './reports/controllers/updateReportPDFController';
+import { homeRouter } from './home/home.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -172,13 +172,6 @@ companyRouter.get(
 );
 
 companyRouter.use(
-  '/tutorials',
-  authMiddleware,
-  handleCompanyPermCheck([companyPermission, 'access:tutorials']),
-  tutorialsRouter,
-);
-
-companyRouter.use(
   '/permissions',
   authMiddleware,
   handleCompanyPermCheck([companyPermission, 'access:company']),
@@ -197,3 +190,11 @@ companyRouter.use('/upload', uploadRouter);
 
 // report routes
 companyRouter.put('/report/:reportPDFId', updateReportPDFController);
+
+// home routes
+companyRouter.use(
+  '/home',
+  authMiddleware,
+  handleCompanyPermCheck([companyPermission, 'access:company']),
+  homeRouter,
+);

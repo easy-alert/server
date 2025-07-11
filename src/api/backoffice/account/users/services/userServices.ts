@@ -1,3 +1,4 @@
+import { hashSync } from 'bcrypt';
 import { prisma } from '../../../../../../prisma';
 import { needExist } from '../../../../../utils/newValidator';
 
@@ -104,6 +105,16 @@ export class UserServices {
     });
   }
 
+  async findUserByEmail({ email }: { email: string }) {
+    return prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+      },
+    });
+  }
+
   async findUniqueUser({ email, phoneNumber }: { email: string; phoneNumber: string }) {
     return prisma.user.findFirst({
       where: {
@@ -112,6 +123,16 @@ export class UserServices {
       select: {
         id: true,
         email: true,
+        phoneNumber: true,
+      },
+    });
+  }
+
+  async findUserByPhoneNumber({ phoneNumber }: { phoneNumber: string }) {
+    return prisma.user.findFirst({
+      where: { phoneNumber },
+      select: {
+        id: true,
         phoneNumber: true,
       },
     });
@@ -150,7 +171,7 @@ export class UserServices {
   async updateUserPassword({ id, password }: { id: string; password: string }) {
     return prisma.user.update({
       where: { id },
-      data: { passwordHash: password },
+      data: { passwordHash: hashSync(password, 12) },
     });
   }
 

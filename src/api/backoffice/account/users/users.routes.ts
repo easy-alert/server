@@ -6,6 +6,7 @@ import { listUsers } from './controllers/listUsers';
 import { listUserDetails } from './controllers/listUserDetails';
 import { editUserController } from './controllers/editUserController';
 import { changeIsBlockedUser } from './controllers/changeIsBlockedUser';
+import { createUser } from './controllers/createUser';
 
 // ROUTES
 export const usersRouter = Router();
@@ -15,3 +16,5 @@ usersRouter.get('/details/:userId', listUserDetails);
 
 usersRouter.put('/editUser', editUserController);
 usersRouter.put('/changeIsBlockedUser', changeIsBlockedUser);
+usersRouter.post('/create', createUser);
+usersRouter.put('/edit/:userId', editUserController);

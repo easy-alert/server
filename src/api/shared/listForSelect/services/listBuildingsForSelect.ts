@@ -16,6 +16,8 @@ export async function listBuildingsForSelect({ companyId, buildingsIds }: IListB
     where: {
       companyId,
 
+      isBlocked: false,
+
       AND: {
         id: {
           in: buildingsIds,

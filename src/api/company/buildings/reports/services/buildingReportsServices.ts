@@ -75,6 +75,7 @@ export class BuildingReportsServices {
       },
       filterBy: query.filterBy,
       search: query.search || '',
+      type: query.type?.split(',')[0] !== '' ? query.type?.split(',') : undefined,
     };
 
     return filter;
@@ -294,6 +295,12 @@ export class BuildingReportsServices {
           Maintenance: {
             Category: {
               name: { in: queryFilter.categoryNames },
+            },
+
+            MaintenanceType: {
+              name: {
+                in: queryFilter.type,
+              },
             },
           },
 
