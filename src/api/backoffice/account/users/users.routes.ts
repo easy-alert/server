@@ -16,5 +16,6 @@ usersRouter.get('/details/:userId', listUserDetails);
 
 usersRouter.put('/editUser', editUserController);
 usersRouter.put('/changeIsBlockedUser', changeIsBlockedUser);
-usersRouter.post('/create', createUser);
 usersRouter.put('/edit/:userId', editUserController);
+
+usersRouter.post('/create', createUser);
