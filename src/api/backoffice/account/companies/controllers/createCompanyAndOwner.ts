@@ -1,24 +1,20 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 // TYPES
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 // CLASS
 import { UserServices } from '../../../../shared/users/user/services/userServices';
-import { Validator } from '../../../../../utils/validator/validator';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 import { PermissionServices } from '../../../../shared/permissions/permission/services/permissionServices';
-import { UserPermissionServices } from '../../../../shared/users/userPermission/services/userPermissionServices';
 import { CompanyServices } from '../services/companyServices';
 import { SharedCompanyServices } from '../../../../shared/users/accounts/services/sharedCompanyServices';
 import { sendEmailConfirmation } from '../../../../shared/users/user/services/sendEmailConfirmation';
 import { sendPhoneConfirmation } from '../../../../shared/users/user/services/sendPhoneConfirmation';
+import { createUserPermissions } from '../../../../shared/users/userPermission/services/createUserPermissions';
 
-const validator = new Validator();
+import { cannotExist, checkValues } from '../../../../../utils/newValidator';
+
 const userServices = new UserServices();
 const permissionServices = new PermissionServices();
-const userPermissionServices = new UserPermissionServices();
 const companyServices = new CompanyServices();
 const sharedCompanyServices = new SharedCompanyServices();
 
@@ -39,22 +35,27 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     receiveDailyDueReports,
   } = req.body;
 
-  validator.notNull([
-    { label: 'nome de usuário', variable: name },
-    { label: 'e-mail', variable: email },
-    { label: 'nome da empresa', variable: companyName },
-    { label: 'número para contato', variable: contactNumber },
-    { label: 'imagem', variable: image },
+  checkValues([
+    { label: 'nome de usuário', value: name, type: 'string', required: true },
+    { label: 'e-mail', value: email, type: 'string', required: true },
+    { label: 'nome da empresa', value: companyName, type: 'string', required: true },
+    { label: 'número para contato', value: contactNumber, type: 'string', required: true },
+    { label: 'imagem', value: image, type: 'string' },
   ]);
 
   const emailLowerCase = email.toLowerCase() as string;
 
-  const checkUser = await userServices.findEmailForCreate({
+  const checkEmailUser = await userServices.findUniqueEmail({
     email: emailLowerCase,
+  });
+
+  cannotExist([{ label: 'e-mail', variable: checkEmailUser }]);
+
+  const checkEmailPhone = await userServices.findUniquePhone({
     phoneNumber: contactNumber,
   });
 
-  validator.cannotExists([{ label: 'e-mail', variable: checkUser }]);
+  cannotExist([{ label: 'número de contato', variable: checkEmailPhone }]);
 
   if (!CNPJ && !CPF) {
     throw new ServerMessage({
@@ -65,12 +66,12 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
 
   if (CNPJ) {
     const checkCNPJ = await sharedCompanyServices.findByCNPJ({ CNPJ });
-    validator.cannotExists([{ label: 'CNPJ', variable: checkCNPJ }]);
+    cannotExist([{ label: 'CNPJ', variable: checkCNPJ }]);
   }
 
   if (CPF) {
     const checkCPF = await sharedCompanyServices.findByCPF({ CPF });
-    validator.cannotExists([{ label: 'CPF', variable: checkCPF }]);
+    cannotExist([{ label: 'CPF', variable: checkCPF }]);
   }
 
   const user = await userServices.create({
@@ -81,11 +82,6 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
   });
 
   const permission = await permissionServices.findByName({ name: 'admin:company' });
-
-  await userPermissionServices.createUserPermission({
-    userId: user.id,
-    permissionId: permission!.id,
-  });
 
   const company = await companyServices.create({
     CNPJ,
@@ -98,6 +94,16 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     canAccessTickets,
     receiveDailyDueReports,
     receivePreviousMonthReports,
+  });
+
+  await createUserPermissions({
+    data: {
+      data: {
+        companyId: company.id,
+        userId: user.id,
+        permissionId: permission!.id,
+      },
+    },
   });
 
   await companyServices.createUserCompany({

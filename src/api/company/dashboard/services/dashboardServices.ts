@@ -317,7 +317,7 @@ export class DashboardServices {
             ],
           },
 
-          OR: [{ notificationDate: filter.period }, { resolutionDate: filter.period }],
+          OR: [{ resolutionDate: filter.period }],
         },
       }),
 

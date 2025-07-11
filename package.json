@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "version": "1.6.0",
+  "version": "1.7.2",
   "description": "",
   "main": "src/server.ts",
   "license": "MIT",
@@ -68,6 +68,7 @@
     "eslint-plugin-import": "^2.31.0",
     "husky": "^8.0.1",
     "prettier": "^2.7.1",
+    "prettier-eslint": "^16.4.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^4.7.4"
   }
