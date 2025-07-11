@@ -30,6 +30,7 @@ export async function listUserDetails(req: Request, res: Response) {
     role: user.role,
     lastAccess: user.lastAccess,
     createdAt: user.createdAt,
+    isBlocked: user.isBlocked,
 
     Companies: user.Companies.map((userCompany) => ({
       id: userCompany.Company.id,
