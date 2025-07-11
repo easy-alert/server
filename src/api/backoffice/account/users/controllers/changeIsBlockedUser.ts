@@ -11,20 +11,12 @@ export async function changeIsBlockedUser(req: Request, res: Response) {
 
   checkValues([{ label: 'ID do usuário', type: 'string', value: userId }]);
 
-  try {
-    await userServices.changeIsBlocked({ userId });
-    return res.status(200).json({
-      ServerMessage: {
-        statusCode: 200,
-        message: 'Status alterado com sucesso.',
-      },
-    });
-  } catch (error) {
-    return res.status(500).json({
-      ServerMessage: {
-        statusCode: 500,
-        message: 'Erro ao alterar status.',
-      },
-    });
-  }
+  const updatedUser = await userServices.changeIsBlocked({ userId });
+  return res.status(200).json({
+    user: updatedUser,
+    ServerMessage: {
+      statusCode: 200,
+      message: 'Status alterado com sucesso.',
+    },
+  });
 }
