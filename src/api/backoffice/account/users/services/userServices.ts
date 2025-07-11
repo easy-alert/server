@@ -1,4 +1,5 @@
 import { prisma } from '../../../../../../prisma';
+import { needExist } from '../../../../../utils/newValidator';
 
 export class UserServices {
   async findById({ userId }: { userId: string }) {
@@ -155,10 +156,10 @@ export class UserServices {
 
   async changeIsBlocked({ userId }: { userId: string }) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new Error('Usuário não encontrado');
+    needExist([{ label: 'Usuário', variable: user }]);
     return prisma.user.update({
       where: { id: userId },
-      data: { isBlocked: !user.isBlocked },
+      data: { isBlocked: !user!.isBlocked },
       select: {
         id: true,
         name: true,
