@@ -1,4 +1,5 @@
 import { prisma } from '../../../../../prisma';
+import { needExist } from '../../../../utils/newValidator';
 
 interface IUpdateBuildingById {
   id: string;
@@ -17,6 +18,10 @@ interface IUpdateBuildingById {
   mandatoryReportProof?: boolean;
   isActivityLogPublic?: boolean;
   guestCanCompleteMaintenance?: boolean;
+}
+
+interface IChangeIsBlockedBuilding {
+  buildingId: string;
 }
 
 export async function updateBuildingById(params: IUpdateBuildingById) {
@@ -76,4 +81,42 @@ export async function updateBuildingById(params: IUpdateBuildingById) {
   });
 
   return updatedBuilding;
+}
+
+export async function changeIsBlockedBuilding({ buildingId }: IChangeIsBlockedBuilding) {
+  const building = await prisma.building.findUnique({
+    where: { id: buildingId },
+    select: { id: true, isBlocked: true },
+  });
+
+  needExist([{ label: 'Edificação', variable: building }]);
+
+  return prisma.building.update({
+    where: { id: buildingId },
+    data: { isBlocked: !building!.isBlocked },
+    select: {
+      id: true,
+      name: true,
+      cep: true,
+      streetName: true,
+      neighborhood: true,
+      city: true,
+      state: true,
+      isBlocked: true,
+      createdAt: true,
+      image: true,
+      BuildingType: {
+        select: {
+          name: true,
+        },
+      },
+      Company: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+        },
+      },
+    },
+  });
 }
