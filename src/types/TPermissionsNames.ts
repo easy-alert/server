@@ -37,6 +37,7 @@ export type TPermissionsNames =
   | 'checklist:create'
   | 'checklist:update'
   | 'checklist:delete'
+  | 'checklist:livePhoto'
 
   // tickets permissions
   | 'tickets:create'
@@ -57,6 +58,7 @@ export type TPermissionsNames =
   | 'maintenances:delete'
   | 'maintenances:createOccasional'
   | 'maintenances:finish'
+  | 'maintenances:livePhoto'
 
   // management permissions
   | 'management:checklist'
