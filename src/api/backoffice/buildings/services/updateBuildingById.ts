@@ -1,4 +1,5 @@
 import { prisma } from '../../../../../prisma';
+import { needExist } from '../../../../utils/newValidator';
 
 interface IUpdateBuildingById {
   id: string;
@@ -88,11 +89,11 @@ export async function changeIsBlockedBuilding({ buildingId }: IChangeIsBlockedBu
     select: { id: true, isBlocked: true },
   });
 
-  if (!building) throw new Error('Edificação não encontrada');
+  needExist([{ label: 'Edificação', variable: building }]);
 
   return prisma.building.update({
     where: { id: buildingId },
-    data: { isBlocked: !building.isBlocked },
+    data: { isBlocked: !building!.isBlocked },
     select: {
       id: true,
       name: true,
