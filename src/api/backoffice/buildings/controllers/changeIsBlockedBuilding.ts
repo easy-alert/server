@@ -1,9 +1,11 @@
 import { Request, Response } from 'express';
 import { changeIsBlockedBuilding as changeIsBlockedBuildingService } from '../services/updateBuildingById';
+import { checkValues } from '../../../../utils/newValidator';
 
 export async function changeIsBlockedBuilding(req: Request, res: Response) {
   const { buildingId } = req.body;
-  if (!buildingId) return res.status(400).json({ message: 'ID da edificação é obrigatório.' });
+
+  checkValues([{ label: 'ID da edificação', type: 'string', value: buildingId }]);
 
   try {
     const updatedBuilding = await changeIsBlockedBuildingService({ buildingId });
@@ -16,6 +18,11 @@ export async function changeIsBlockedBuilding(req: Request, res: Response) {
       },
     });
   } catch (error) {
-    return res.status(500).json({ message: 'Erro ao alterar status da edificação.' });
+    return res.status(500).json({
+      ServerMessage: {
+        statusCode: 500,
+        message: 'Erro ao alterar status da edificação.',
+      },
+    });
   }
 }
