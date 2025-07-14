@@ -21,7 +21,7 @@ export async function listUsers(req: Request, res: Response) {
     email: user.email,
     phoneNumber: user.phoneNumber,
     lastAccess: user.lastAccess,
-    status: user.isBlocked,
+    isBlocked: user.isBlocked,
   }));
 
   return res.status(200).json({ users: formattedUsers, usersCount });
