@@ -25,6 +25,12 @@
   "prisma": {
     "seed": "ts-node-dev prisma/seed.ts"
   },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.787.0",
     "@prisma/client": "^4.15.0",
@@ -67,6 +73,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.31.0",
     "husky": "^8.0.1",
+    "lint-staged": "^16.1.2",
     "prettier": "^2.7.1",
     "prettier-eslint": "^16.4.1",
     "ts-node-dev": "^2.0.0",
