@@ -1,137 +1,30 @@
-import fs from 'fs';
 import path from 'path';
 
 import PDFPrinter from 'pdfmake';
-import sharp from 'sharp';
 
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
-
-import type { Readable } from 'stream';
 import type { Content, TDocumentDefinitions } from 'pdfmake/interfaces';
 
 import { updateTicketReportPDF } from './updateTicketReportPDF';
 
-import { simplifyNameForURL } from '../../../../utils/dataHandler';
+import { capitalizeFirstLetter, simplifyNameForURL } from '../../../../utils/dataHandler';
 import { createFolder } from '../../../../utils/fs/createFolder';
 import { deleteFolder } from '../../../../utils/fs/deleteFolder';
 import { formatMonthYear } from '../../../../utils/dateTime';
 import { sendErrorToServerLog } from '../../../../utils/messages/sendErrorToServerLog';
+import { downloadFromS3 } from '../../../../utils/aws/downloadFromS3';
+import { processImagesForPDF } from '../../../../utils/processors/pdfImageProcessor';
+import { ensurePdfCompatibleImage } from '../../../../utils/sharp/imageFormatConverter';
+import { uploadPDFToS3 } from '../../../../utils/aws/uploadPDFToS3';
 
 import type { IDataForPDF } from './createTicketReportPDF';
 import type { IFilterOptions } from '../controllers/generateTicketReportPDF';
+import { formattedDownloadFromS3 } from '../../../../utils/aws/formattedDownloadFromS3';
 
 interface ITicketPDFService {
   reportId: string;
   companyImage?: string;
   dataForPDF: IDataForPDF;
   filterOptions: IFilterOptions;
-}
-
-function capitalizeFirstLetter(string: string): string {
-  if (!string) return string;
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-async function uploadPDFToS3({ pdfBuffer, filename }: { pdfBuffer: Buffer; filename: string }) {
-  const s3bucket = new S3Client({
-    credentials: {
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    },
-    region: 'us-west-2',
-  });
-
-  try {
-    await s3bucket.send(
-      new PutObjectCommand({
-        Bucket: process.env.AWS_S3_BUCKET!,
-        Key: filename,
-        Body: pdfBuffer,
-        ACL: 'public-read',
-        ContentType: 'application/pdf',
-      }),
-    );
-  } catch (error) {
-    sendErrorToServerLog({ stack: error, extraInfo: 'Erro nas funções que o Augusto fez' });
-  }
-}
-
-async function downloadFromS3(url: string, folderName: string) {
-  const s3bucket = new S3Client({
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-    },
-    region: 'us-west-2',
-  });
-
-  const key = url.split('/').pop() ?? '';
-
-  const s3Params = {
-    Bucket: url.includes('larguei') ? process.env.AWS_S3_BUCKET! : 'easy-alert',
-    Key: key ? decodeURIComponent(key) : '',
-  };
-
-  const filePath = path.join(folderName, key);
-
-  const { Body } = (await s3bucket.send(new GetObjectCommand(s3Params))) as { Body: Readable };
-
-  await new Promise<void>((resolve, reject) => {
-    Body!
-      .pipe(fs.createWriteStream(filePath))
-      .on('error', (err: any) => reject(err))
-      .on('close', () => resolve());
-  });
-
-  return key;
-}
-
-// Função para obter um stream de imagem do S3
-async function getImageStreamFromS3(url: string): Promise<Readable> {
-  const s3bucket = new S3Client({
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-    },
-    region: 'us-west-2',
-  });
-
-  const key = url.split('/').pop() ?? '';
-
-  const s3Params = {
-    Bucket: url.includes('larguei') ? process.env.AWS_S3_BUCKET! : 'easy-alert',
-    Key: key ? decodeURIComponent(key) : '',
-  };
-
-  const { Body } = (await s3bucket.send(new GetObjectCommand(s3Params))) as { Body: Readable };
-
-  if (!Body) {
-    throw new Error('Falha ao obter a imagem do S3');
-  }
-
-  return Body;
-}
-
-// Função para converter stream em buffer
-async function streamToBuffer(stream: Readable): Promise<Buffer> {
-  const chunks: any = [];
-  return new Promise((resolve, reject) => {
-    stream.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
-    stream.on('end', () => resolve(Buffer.concat(chunks) as any));
-    stream.on('error', reject);
-  });
-}
-
-// Função para processar a imagem e convertê-la para base64
-async function processImageToBase64(stream: Readable): Promise<string> {
-  const buffer = await streamToBuffer(stream); // Converte o stream em buffer
-
-  const processedBuffer = await sharp(buffer)
-    .rotate()
-    .resize({ width: 300, height: 300, fit: 'inside' })
-    .toBuffer();
-
-  return `data:image/jpeg;base64,${processedBuffer.toString('base64')}`;
 }
 
 function separateByMonth(tickets: IDataForPDF['tickets']) {
@@ -168,12 +61,28 @@ export async function ticketPDFService({
 
     const isDicebear = companyImage?.includes('dicebear');
 
-    const footerLogo = await downloadFromS3(
+    const footerLogoFile = await downloadFromS3(
       'https://larguei.s3.us-west-2.amazonaws.com/LOGOPDF-1716384513443.png',
       folderName,
     );
 
-    const headerLogo = isDicebear ? footerLogo : await downloadFromS3(companyImage!, folderName);
+    let headerLogoPath: string;
+    let headerLogoPathRaw: string;
+
+    if (isDicebear) {
+      headerLogoPathRaw = path.join(folderName, footerLogoFile);
+      headerLogoPath = await ensurePdfCompatibleImage(headerLogoPathRaw);
+    } else {
+      headerLogoPathRaw = await formattedDownloadFromS3({
+        url: companyImage!,
+        folderName,
+        targetFormat: 'png',
+      });
+      headerLogoPath = await ensurePdfCompatibleImage(headerLogoPathRaw);
+    }
+
+    const footerLogoPathRaw = path.join(folderName, footerLogoFile);
+    const footerLogoPath = await ensurePdfCompatibleImage(footerLogoPathRaw);
 
     const ticketsForPdf = separateByMonth(dataForPDF.tickets);
 
@@ -291,31 +200,66 @@ export async function ticketPDFService({
           contentData.push({ text: ' ' });
         }
 
-        const imagesForPDF: Content = [];
+        const selectedImages: typeof images = [];
         const annexesForPDF: Content = [];
+        const selectedAnnexes: typeof images = [];
 
         await Promise.all(
-          images.map(async ({ name, url }, index) => {
-            if (!url) return;
+          images.map(async (image) => {
+            if (!image.url) return;
 
-            if (!name.includes('jpeg') && !name.includes('jpg') && !name.includes('png')) {
-              annexesForPDF.push({
-                text: `${name}${images.length === index + 1 ? '.' : ', '}`,
-                link: url,
-              });
+            const isImage =
+              image.name.includes('jpeg') ||
+              image.name.includes('jpg') ||
+              image.name.includes('png');
+
+            if (isImage) {
+              selectedImages.push(image);
             } else {
-              const imageStream = await getImageStreamFromS3(url);
-              const base64Image = await processImageToBase64(imageStream);
-
-              imagesForPDF.push({
-                image: base64Image,
-                width: 100,
-                height: 100,
-                link: url,
-              });
+              selectedAnnexes.push(image);
             }
           }),
         );
+
+        selectedAnnexes.forEach(({ name: annexName, url }, index) => {
+          annexesForPDF.push({
+            text: `${annexName}${selectedAnnexes.length === index + 1 ? '.' : ', '}`,
+            link: url,
+          });
+        });
+
+        // Process images for PDF using shared utility
+        const { imagesForPDF, skippedImages } = await processImagesForPDF({
+          images: selectedImages || [],
+          width: 100,
+          height: 100,
+        });
+
+        // Defensive: filter out any invalid image objects before using in PDF
+        const validImagesForPDF = (imagesForPDF || []).filter(
+          (img) => img && typeof img.image === 'string' && img.image.startsWith('data:image/'),
+        );
+
+        if (imagesForPDF.length !== validImagesForPDF.length) {
+          console.error(
+            '[PDFService] Some invalid image objects were filtered out before PDF content:',
+            imagesForPDF,
+          );
+        }
+
+        if (skippedImages.length > 0) {
+          (contentData as any).push({
+            text: [
+              { text: 'Atenção: ', bold: true, color: 'red' },
+              `Algumas imagens não foram incluídas no PDF por problemas de URL, formato ou processamento.`,
+              '\n',
+              ...skippedImages.map((img) => `- ${img.url} (${img.reason})\n`),
+            ],
+            fontSize: 8,
+            margin: [0, 4, 0, 4],
+            color: 'red',
+          });
+        }
 
         const tags: Content = [];
 
@@ -486,11 +430,7 @@ export async function ticketPDFService({
                     opacity: 1,
                   },
                   {
-                    columns: [
-                      {
-                        stack: annexesForPDF,
-                      },
-                    ],
+                    stack: annexesForPDF,
                     marginLeft: 8,
                   },
                 ],
@@ -509,8 +449,8 @@ export async function ticketPDFService({
           });
         }
 
-        if (imagesForPDF && imagesForPDF.length > 0) {
-          const imagesRows = Math.ceil(imagesForPDF.length / 6);
+        if (validImagesForPDF && validImagesForPDF.length > 0) {
+          const imagesRows = Math.ceil(validImagesForPDF.length / 6);
 
           (contentData[lastContent] as any).columns[1].stack.push({
             table: {
@@ -523,7 +463,7 @@ export async function ticketPDFService({
                     opacity: 1,
                   },
                   {
-                    text: [{ text: `Imagens (${imagesForPDF.length || 0}): `, bold: true }],
+                    text: [{ text: `Imagens (${validImagesForPDF.length || 0}): `, bold: true }],
                     marginLeft: 8,
                   },
                 ],
@@ -547,7 +487,7 @@ export async function ticketPDFService({
                       fillColor: status.backgroundColor,
                     },
                     {
-                      columns: imagesForPDF.slice(start, end),
+                      columns: validImagesForPDF.slice(start, end),
                       columnGap: 4,
                       marginLeft: 8,
                     },
@@ -565,6 +505,17 @@ export async function ticketPDFService({
               fillColor: '#E6E6E6',
             });
           }
+        } else if (selectedImages && selectedImages.length > 0) {
+          // If there were images requested but all were skipped, show a placeholder message
+          (contentData[lastContent] as any).columns[1].stack.push({
+            text: [
+              { text: 'Atenção: ', bold: true, color: 'red' },
+              'Nenhuma imagem pôde ser incluída neste PDF por problemas de acesso, formato ou processamento.',
+            ],
+            fontSize: 8,
+            margin: [0, 4, 0, 4],
+            color: 'red',
+          });
         }
       }
     }
@@ -589,7 +540,7 @@ export async function ticketPDFService({
             {
               columns: [
                 {
-                  image: path.join(folderName, headerLogo),
+                  image: headerLogoPath,
                   width: 64,
                   height: 64,
                   fit: [64, 64],
@@ -678,7 +629,7 @@ export async function ticketPDFService({
         return {
           columns: [
             {
-              image: path.join(folderName, footerLogo),
+              image: footerLogoPath,
               alignment: 'left',
               marginLeft: 30,
               width: 64,
@@ -704,6 +655,7 @@ export async function ticketPDFService({
     };
 
     const pdfDoc = printer.createPdfKitDocument(docDefinitions);
+
     const buffers: any = [];
 
     pdfDoc.on('data', (chunk) => {
