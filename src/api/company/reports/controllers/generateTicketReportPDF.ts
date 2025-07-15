@@ -31,7 +31,7 @@ export async function generateTicketReportPDF(req: Request, res: Response) {
   }
 
   const {
-    buildingsNanoId,
+    buildingsId,
     buildingsNames,
     placesId,
     placesNames,
@@ -48,7 +48,7 @@ export async function generateTicketReportPDF(req: Request, res: Response) {
 
   const {
     companyIdFilter,
-    buildingsNanoIdFilter,
+    buildingsIdFilter,
     placeIdFilter,
     serviceTypeIdFilter,
     statusFilter,
@@ -57,7 +57,7 @@ export async function generateTicketReportPDF(req: Request, res: Response) {
     endDateFilter,
   } = handleTicketsFilters({
     Company: req.Company,
-    buildingsNanoId,
+    buildingsId,
     placesId,
     serviceTypesId,
     status,
@@ -67,7 +67,7 @@ export async function generateTicketReportPDF(req: Request, res: Response) {
   });
 
   const dataForPDF = await findManyTicketsForReportPDF({
-    buildingNanoId: buildingsNanoIdFilter,
+    buildingId: buildingsIdFilter,
     companyId: companyIdFilter,
     statusName: statusFilter,
     placeId: placeIdFilter,
