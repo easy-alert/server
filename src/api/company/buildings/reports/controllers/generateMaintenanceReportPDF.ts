@@ -23,6 +23,7 @@ import { uploadPDFToS3 } from '../../../../../utils/aws/uploadPDFToS3';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 import { ensurePdfCompatibleImage } from '../../../../../utils/sharp/imageFormatConverter';
 import { mask, simplifyNameForURL } from '../../../../../utils/dataHandler';
+import { formattedDownloadFromS3 } from '../../../../../utils/aws/formattedDownloadFromS3';
 import {
   dateFormatter,
   setToUTCLastMinuteOfDay,
@@ -150,16 +151,23 @@ async function PDFService({
       folderName,
     );
 
-    const headerLogoFile = isDicebear
-      ? footerLogoFile
-      : await downloadFromS3(company!.image, folderName);
+    let headerLogoPath: string;
+    let headerLogoPathRaw: string;
 
-    // Use full path for pdfmake and ensure PDF-compatible format
+    if (isDicebear) {
+      headerLogoPathRaw = path.join(folderName, footerLogoFile);
+      headerLogoPath = await ensurePdfCompatibleImage(headerLogoPathRaw);
+    } else {
+      headerLogoPathRaw = await formattedDownloadFromS3({
+        url: company?.image!,
+        folderName,
+        targetFormat: 'png',
+      });
+      headerLogoPath = await ensurePdfCompatibleImage(headerLogoPathRaw);
+    }
+
     const footerLogoPathRaw = path.join(folderName, footerLogoFile);
-    const headerLogoPathRaw = path.join(folderName, headerLogoFile);
-
     const footerLogoPath = await ensurePdfCompatibleImage(footerLogoPathRaw);
-    const headerLogoPath = await ensurePdfCompatibleImage(headerLogoPathRaw);
 
     const showMaintenancePriority = await prisma.company.findUnique({
       where: { id: req.companyId },
@@ -944,107 +952,108 @@ async function PDFService({
         return {
           stack: [
             {
-              table: {
-                widths: ['*', 'auto'],
-                body: [
-                  [
-                    {
-                      text: 'Relatório de Manutenções ',
-                      fontSize: 18,
-                      bold: true,
-                      absolutePosition: { x: 320, y: 10 },
-                    },
-                    { image: headerLogoPath, width: 64, height: 20, alignment: 'right' },
-                  ],
-                ],
-              },
-              margin: [30, 5, 30, 5],
-              layout: 'noBorders',
+              text: 'Relatório de Manutenções',
+              fontSize: 20,
+              bold: true,
+              alignment: 'center',
+              marginTop: 4,
+              marginBottom: 4,
             },
             {
-              table: {
-                widths: ['*', 'auto'],
-                body: [
-                  [
-                    {
-                      text: [
-                        { text: 'Edificação: ', bold: true },
-                        { text: query.buildingNames || 'Todas' },
-                      ],
-                      fontSize: 12,
-                      marginLeft: 8,
-                    },
-                    {
-                      text: [
-                        { text: 'Emissão: ', bold: true },
-                        { text: `${new Date().toLocaleString('pt-br')}` },
-                      ],
-                      fontSize: 12,
-                      alignment: 'right',
-                      marginRight: 8,
-                    },
-                  ],
-                  [
-                    {
-                      text: [
-                        { text: 'Categoria: ', bold: true },
-                        { text: query.categoryNames || 'Todas' },
-                      ],
-                      fontSize: 12,
-                      marginLeft: 8,
-                    },
-                    {
-                      text: [
+              columns: [
+                {
+                  image: headerLogoPath,
+                  width: 64,
+                  height: 64,
+                  fit: [64, 64],
+                  absolutePosition: { x: 64, y: 46 },
+                },
+                {
+                  table: {
+                    widths: ['*', 'auto'],
+                    body: [
+                      [
                         {
-                          text: `Período de ${
-                            queryFilter.filterBy === 'notificationDate'
-                              ? 'notificação'
-                              : 'vencimento'
-                          }: `,
-                          bold: true,
+                          text: [
+                            { text: 'Edificação: ', bold: true },
+                            { text: query.buildingNames || 'Todas' },
+                          ],
+                          fontSize: 12,
+                          marginLeft: 8,
                         },
                         {
-                          text: `${dateFormatter(
-                            setToUTCMidnight(new Date(req.query.startDate as string)),
-                          )} a ${dateFormatter(
-                            setToUTCMidnight(new Date(req.query.endDate as string)),
-                          )}`,
+                          text: [
+                            { text: 'Emissão: ', bold: true },
+                            { text: `${new Date().toLocaleString('pt-br')}` },
+                          ],
+                          fontSize: 12,
+                          alignment: 'right',
+                          marginRight: 8,
                         },
                       ],
-                      fontSize: 12,
-                      marginRight: 8,
-                    },
-                  ],
-                  [
-                    {
-                      text: [
-                        { text: 'Status: ', bold: true },
+                      [
                         {
-                          text: query.maintenanceStatusNames
-                            ? query.maintenanceStatusNames
-                                .split(',')
-                                .map(
-                                  (value: string, i: number) =>
-                                    `${getSingularStatusNameForPdf(value)}$${
-                                      query.maintenanceStatusNames.split(',').length === i + 1
-                                        ? ''
-                                        : ','
-                                    }`,
-                                )
-                            : 'Todos',
+                          text: [
+                            { text: 'Categoria: ', bold: true },
+                            { text: query.categoryNames || 'Todas' },
+                          ],
+                          fontSize: 12,
+                          marginLeft: 8,
+                        },
+                        {
+                          text: [
+                            {
+                              text: `Período de ${
+                                queryFilter.filterBy === 'notificationDate'
+                                  ? 'notificação'
+                                  : 'vencimento'
+                              }: `,
+                              bold: true,
+                            },
+                            {
+                              text: `${dateFormatter(
+                                setToUTCMidnight(new Date(req.query.startDate as string)),
+                              )} a ${dateFormatter(
+                                setToUTCMidnight(new Date(req.query.endDate as string)),
+                              )}`,
+                            },
+                          ],
+                          fontSize: 12,
+                          marginRight: 8,
                         },
                       ],
-                      fontSize: 12,
-                      marginLeft: 8,
-                    },
-                    { text: '' },
-                  ],
-                ],
-              },
-              fillColor: '#B21D1D',
-              color: '#FFFFFF',
-              margin: [30, 0],
-              layout: 'noBorders',
+                      [
+                        {
+                          text: [
+                            { text: 'Status: ', bold: true },
+                            {
+                              text: query.maintenanceStatusNames
+                                ? query.maintenanceStatusNames
+                                    .split(',')
+                                    .map(
+                                      (value: string, i: number) =>
+                                        `${getSingularStatusNameForPdf(value)}$${
+                                          query.maintenanceStatusNames.split(',').length === i + 1
+                                            ? ''
+                                            : ','
+                                        }`,
+                                    )
+                                : 'Todos',
+                            },
+                          ],
+                          fontSize: 12,
+                          marginLeft: 8,
+                        },
+                        { text: '' },
+                      ],
+                    ],
+                  },
+                  fillColor: '#B21D1D',
+                  color: '#FFFFFF',
+                  margin: [70, 0, 30, 0],
+                  layout: 'noBorders',
+                },
+              ],
             },
           ],
         };

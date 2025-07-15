@@ -13,6 +13,7 @@ import 'dotenv/config';
 
 import { ServerMessage } from '../../../utils/messages/serverMessage';
 import { handleMulterError } from '../../../utils/messages/handleMulterError';
+import { simplifyNameForURL } from '../../../utils/dataHandler';
 
 const s3 = new S3Client({
   region: 'us-west-2',
@@ -49,10 +50,12 @@ export async function uploadFile(req: Request, res: Response, next: NextFunction
 
     const file = req.file as Express.Multer.File;
 
-    const fileName = `${path.basename(
-      file.originalname,
-      path.extname(file.originalname),
-    )}-${Date.now()}${path.extname(file.originalname)}`;
+    // Properly handle special characters in filename
+    const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+    const sanitizedName = simplifyNameForURL(
+      path.basename(originalName, path.extname(originalName)),
+    );
+    const fileName = `${sanitizedName}-${Date.now()}${path.extname(originalName)}`;
 
     const params = {
       Bucket: process.env.AWS_S3_BUCKET!,
@@ -61,6 +64,8 @@ export async function uploadFile(req: Request, res: Response, next: NextFunction
       ContentType: file.mimetype,
       ACL: ObjectCannedACL.public_read,
       ServerSideEncryption: ServerSideEncryption.AES256,
+      ContentDisposition: `attachment; filename="${encodeURIComponent(originalName)}"`,
+      ContentEncoding: 'utf-8',
     };
 
     try {
@@ -68,7 +73,7 @@ export async function uploadFile(req: Request, res: Response, next: NextFunction
       const fileUrl = `https://${process.env.AWS_S3_BUCKET}.s3.amazonaws.com/${fileName}`;
 
       return res.status(200).json({
-        originalname: file.originalname,
+        originalname: originalName,
         Location: fileUrl,
       });
     } catch (error) {

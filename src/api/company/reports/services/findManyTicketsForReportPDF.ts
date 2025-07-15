@@ -2,7 +2,7 @@ import type { TicketStatusName } from '@prisma/client';
 import { prisma } from '../../../../../prisma';
 
 interface IFindManyTicketsForReportPDF {
-  buildingNanoId: string[] | undefined;
+  buildingId: string[] | undefined;
   statusName?: TicketStatusName[];
   placeId?: string[];
   serviceTypeId?: string[];
@@ -15,7 +15,7 @@ interface IFindManyTicketsForReportPDF {
 }
 
 export async function findManyTicketsForReportPDF({
-  buildingNanoId,
+  buildingId,
   companyId,
   statusName,
   placeId,
@@ -59,8 +59,8 @@ export async function findManyTicketsForReportPDF({
       where: {
         building: {
           companyId,
-          nanoId: {
-            in: buildingNanoId,
+          id: {
+            in: buildingId,
           },
         },
 
@@ -103,8 +103,8 @@ export async function findManyTicketsForReportPDF({
       where: {
         building: {
           companyId,
-          nanoId: {
-            in: buildingNanoId,
+          id: {
+            in: buildingId,
           },
         },
 
@@ -141,8 +141,8 @@ export async function findManyTicketsForReportPDF({
       where: {
         building: {
           companyId,
-          nanoId: {
-            in: buildingNanoId,
+          id: {
+            in: buildingId,
           },
         },
 
@@ -179,8 +179,8 @@ export async function findManyTicketsForReportPDF({
       where: {
         building: {
           companyId,
-          nanoId: {
-            in: buildingNanoId,
+          id: {
+            in: buildingId,
           },
         },
 
@@ -217,8 +217,8 @@ export async function findManyTicketsForReportPDF({
       where: {
         building: {
           companyId,
-          nanoId: {
-            in: buildingNanoId,
+          id: {
+            in: buildingId,
           },
         },
 
