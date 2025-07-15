@@ -13,6 +13,7 @@ import 'dotenv/config';
 
 import { ServerMessage } from '../../../utils/messages/serverMessage';
 import { handleMulterError } from '../../../utils/messages/handleMulterError';
+import { simplifyNameForURL } from '../../../utils/dataHandler';
 
 const s3 = new S3Client({
   region: 'us-west-2',
@@ -57,10 +58,11 @@ export async function uploadMany(req: Request, res: Response, next: NextFunction
     try {
       const results = await Promise.all(
         files.map(async (file) => {
-          const fileName = `${path.basename(
-            file.originalname,
-            path.extname(file.originalname),
-          )}-${Date.now()}${path.extname(file.originalname)}`;
+          const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+          const sanitizedName = simplifyNameForURL(
+            path.basename(originalName, path.extname(originalName)),
+          );
+          const fileName = `${sanitizedName}-${Date.now()}${path.extname(originalName)}`;
 
           const params = {
             Bucket: process.env.AWS_S3_BUCKET!,
@@ -69,6 +71,8 @@ export async function uploadMany(req: Request, res: Response, next: NextFunction
             ContentType: file.mimetype,
             ACL: ObjectCannedACL.public_read,
             ServerSideEncryption: ServerSideEncryption.AES256,
+            ContentDisposition: `attachment; filename="${encodeURIComponent(originalName)}"`,
+            ContentEncoding: 'utf-8',
           };
 
           await s3.send(new PutObjectCommand(params));
@@ -77,7 +81,7 @@ export async function uploadMany(req: Request, res: Response, next: NextFunction
           }.amazonaws.com/${fileName}`;
 
           return {
-            originalname: file.originalname,
+            originalname: originalName,
             Location: fileUrl,
           };
         }),
