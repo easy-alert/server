@@ -4,7 +4,7 @@ import { changeUTCTime } from '../dateTime';
 
 interface ITicketsFilter {
   Company: { id: any };
-  buildingsNanoId?: any;
+  buildingsId?: any;
   placesId?: any;
   serviceTypesId?: any;
   status?: any;
@@ -15,7 +15,7 @@ interface ITicketsFilter {
 
 export function handleTicketsFilters({
   Company,
-  buildingsNanoId,
+  buildingsId,
   placesId,
   serviceTypesId,
   status,
@@ -25,8 +25,8 @@ export function handleTicketsFilters({
 }: ITicketsFilter) {
   const companyIdFilter = Company ? Company.id : undefined;
 
-  const buildingsNanoIdFilter =
-    buildingsNanoId === 'all' || !buildingsNanoId ? undefined : buildingsNanoId.split(',');
+  const buildingsIdFilter =
+    buildingsId === 'all' || !buildingsId ? undefined : buildingsId.split(',');
   const placeIdFilter =
     typeof placesId === 'string' && placesId !== '' ? placesId.split(',') : undefined;
   const serviceTypeIdFilter =
@@ -49,7 +49,7 @@ export function handleTicketsFilters({
 
   return {
     companyIdFilter,
-    buildingsNanoIdFilter,
+    buildingsIdFilter,
     placeIdFilter,
     serviceTypeIdFilter,
     statusFilter,
