@@ -179,18 +179,27 @@ export class AuthServices {
     const User = await prisma.user.findFirst({
       select: {
         id: true,
+
         name: true,
         email: true,
+        emailIsConfirmed: true,
         phoneNumber: true,
-        createdAt: true,
-        lastAccess: true,
+        phoneNumberIsConfirmed: true,
+        role: true,
+        image: true,
+        colorScheme: true,
         passwordHash: true,
-        updatedAt: true,
+
+        lastAccess: true,
         isBlocked: true,
+
+        createdAt: true,
+        updatedAt: true,
 
         PushNotification: {
           select: {
             id: true,
+
             deviceId: true,
             os: true,
             token: true,
@@ -204,15 +213,21 @@ export class AuthServices {
             Company: {
               select: {
                 id: true,
+
+                image: true,
                 name: true,
                 contactNumber: true,
                 CNPJ: true,
                 CPF: true,
-                createdAt: true,
-                image: true,
+
                 isBlocked: true,
                 ticketInfo: true,
                 ticketType: true,
+                canAccessChecklists: true,
+                canAccessTickets: true,
+                showMaintenancePriority: true,
+
+                createdAt: true,
               },
             },
           },
@@ -274,6 +289,13 @@ export class AuthServices {
       where: {
         companyId,
       },
+    });
+  }
+
+  async updateLastAccess({ userId }: { userId: string }) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { lastAccess: new Date() },
     });
   }
 }
