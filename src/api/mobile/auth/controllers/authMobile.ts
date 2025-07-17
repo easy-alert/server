@@ -59,8 +59,19 @@ export async function authMobile(req: Request, res: Response) {
     },
   });
 
+  await authServices.updateLastAccess({ userId: user.id! });
+
+  const { Companies, passwordHash: _passwordHash, ...userWithoutCompanies } = user;
+
   return res.status(200).json({
     authToken,
-    user: { ...user, isCompanyOwner, UserBuildingsPermissions: userBuildingsPermissions },
+
+    company: Companies[0].Company,
+
+    user: {
+      ...userWithoutCompanies,
+      isCompanyOwner,
+      UserBuildingsPermissions: userBuildingsPermissions,
+    },
   });
 }
