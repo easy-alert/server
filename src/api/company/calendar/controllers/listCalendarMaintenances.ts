@@ -1,8 +1,6 @@
-// # region IMPORTS
 import { Request, Response } from 'express';
 import { changeTime } from '../../../../utils/dateTime/changeTime';
 
-// CLASS
 import { SharedCalendarServices } from '../../../shared/calendar/services/SharedCalendarServices';
 import { buildingServices } from '../../buildings/building/services/buildingServices';
 import { hasAdminPermission } from '../../../../utils/permissions/hasAdminPermission';
@@ -10,31 +8,45 @@ import { handlePermittedBuildings } from '../../../../utils/permissions/handlePe
 
 const sharedCalendarServices = new SharedCalendarServices();
 
-// #endregion
-
 export async function listCalendarMaintenances(req: Request, res: Response) {
-  const { year } = req.params;
-  const filter = req.query as { buildingId: string };
+  const { year, month, buildingId } = req.query as {
+    year?: string;
+    month?: string;
+    buildingId?: string;
+  };
 
-  let buildingsArray: string[] | undefined = [];
+  let buildingsArray: string[] | undefined;
 
-  const isAdmin = hasAdminPermission(req.Permissions);
-  const permittedBuildings = handlePermittedBuildings(req.BuildingsPermissions, 'id');
-
-  if (!filter.buildingId) {
-    buildingsArray = isAdmin ? undefined : permittedBuildings;
+  if (buildingId) {
+    buildingsArray = [buildingId];
+  } else if (hasAdminPermission(req.Permissions)) {
+    buildingsArray = undefined;
   } else {
-    buildingsArray = [filter.buildingId];
+    buildingsArray = handlePermittedBuildings(req.BuildingsPermissions, 'id');
   }
 
-  const YEARFORSUM = 5;
+  const currentYear = Number(year) || new Date().getFullYear();
+  const currentMonth = month !== undefined ? Number(month) : undefined;
 
-  // #region GENERATE HISTORY MAINTENANCES
+  let startDate: Date;
+  let endDate: Date;
+
+  if (typeof currentMonth === 'number' && !Number.isNaN(currentMonth)) {
+    // Mês informado (1 a 12)
+    startDate = new Date(currentYear, currentMonth - 1, 1);
+    endDate = new Date(currentYear, currentMonth, 0);
+  } else {
+    // Intervalo de 5 anos
+    const YEARFORSUM = 5;
+    startDate = new Date(currentYear, 0, 1);
+    endDate = new Date(currentYear + YEARFORSUM, 11, 31);
+  }
+
   const { Filter, Maintenances, MaintenancesPending } =
     await sharedCalendarServices.findMaintenancesHistoryService({
       companyId: req.Company.id,
-      startDate: new Date(`01/01/${year}`),
-      endDate: new Date(`12/31/${Number(year) + YEARFORSUM}`),
+      startDate,
+      endDate,
       buildingId: buildingsArray,
     });
 
@@ -46,9 +58,6 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
       notificationDate: maintenance.resolutionDate ?? maintenance.notificationDate,
     });
   });
-  // #endregion
-
-  // #region GENERATE FUTURE MAINTENANCES
 
   for (let i = 0; i < MaintenancesPending.length; i++) {
     if (MaintenancesPending[i].Maintenance?.MaintenanceType?.name === 'occasional') {
@@ -66,7 +75,7 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
           time: { h: 0, m: 0, ms: 0, s: 0 },
         }),
         endDate: changeTime({
-          date: new Date(`12/31/${Number(year) + YEARFORSUM}`),
+          date: endDate,
           time: { h: 0, m: 0, ms: 0, s: 0 },
         }),
         interval:
@@ -87,32 +96,25 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
   const groupBy = (data: any, key: any) =>
     data.reduce((storage: any, item: any) => {
       const group = item[key];
-      // eslint-disable-next-line no-param-reassign
-      storage[group] = storage[group] || [];
-      storage[group].push(item);
-      return storage;
+      return {
+        ...storage,
+        [group]: [...(storage[group] || []), item],
+      };
     }, {});
 
-  const gp = groupBy(Dates, 'notificationDate');
+  const grouped = groupBy(Dates, 'notificationDate');
+  const groupedArray = Object.keys(grouped).map((k) => grouped[k]);
 
-  const arr = Object.keys(gp).map((k) => gp[k]);
-
-  const DatesMonths = [];
-
-  for (let i = 0; i < arr.length; i += 1) {
-    DatesMonths.push({
-      id: arr[i][0].notificationDate,
-      date: arr[i][0].notificationDate,
-      pending: arr[i].filter((e: any) => e.MaintenancesStatus.name === 'pending').length,
-      completed: arr[i].filter(
-        (e: any) =>
-          e.MaintenancesStatus.name === 'completed' || e.MaintenancesStatus.name === 'overdue',
-      ).length,
-      expired: arr[i].filter((e: any) => e.MaintenancesStatus.name === 'expired').length,
-    });
-  }
-
-  // #endregion
+  const DatesMonths = groupedArray.map((entries) => ({
+    id: entries[0].notificationDate,
+    date: entries[0].notificationDate,
+    pending: entries.filter((e: any) => e.MaintenancesStatus.name === 'pending').length,
+    completed: entries.filter(
+      (e: any) =>
+        e.MaintenancesStatus.name === 'completed' || e.MaintenancesStatus.name === 'overdue',
+    ).length,
+    expired: entries.filter((e: any) => e.MaintenancesStatus.name === 'expired').length,
+  }));
 
   return res.status(200).json({
     Filter,
