@@ -8,17 +8,26 @@ export class AuthServices {
   async canLogin({
     login,
     password,
+    companyId,
     pushNotificationToken,
     deviceId,
     os,
   }: {
     login: string;
     password: string;
+    companyId?: string;
     pushNotificationToken: string;
     deviceId: string;
     os: string;
   }) {
-    const user = await this.findByEmailOrPhone({ login });
+    const user = await this.findByEmailOrPhone({ login, companyId });
+
+    if (user.isBlocked) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Sua conta está bloqueada, entre em contato com a administração.',
+      });
+    }
 
     const isValuePassword = await compare(password, user.passwordHash);
 
@@ -29,14 +38,16 @@ export class AuthServices {
       });
     }
 
-    const companyIsBlocked = user.Companies.some(
-      (company: any) => company.Company.isBlocked === true,
-    );
+    let companyIsBlocked = false;
 
-    if (user.isBlocked || companyIsBlocked) {
+    if (user.Companies.length === 1) {
+      companyIsBlocked = user.Companies[0].Company.isBlocked;
+    }
+
+    if (companyIsBlocked) {
       throw new ServerMessage({
         statusCode: 400,
-        message: 'Sua conta está bloqueada, entre em contato com a administração.',
+        message: 'A empresa está bloqueada, entre em contato com a administração.',
       });
     }
 
@@ -175,7 +186,7 @@ export class AuthServices {
     }));
   }
 
-  async findByEmailOrPhone({ login }: { login: string }) {
+  async findByEmailOrPhone({ login, companyId }: { login: string; companyId?: string }) {
     const User = await prisma.user.findFirst({
       select: {
         id: true,
@@ -231,10 +242,22 @@ export class AuthServices {
               },
             },
           },
+
+          where: {
+            Company: {
+              id: companyId,
+            },
+          },
         },
 
         Permissions: {
           select: { Permission: { select: { name: true } } },
+
+          where: {
+            Company: {
+              id: companyId,
+            },
+          },
         },
 
         UserBuildingsPermissions: {
@@ -247,10 +270,26 @@ export class AuthServices {
               },
             },
           },
+
+          where: {
+            Building: {
+              Company: {
+                id: companyId,
+              },
+            },
+          },
         },
       },
 
       where: {
+        Companies: {
+          some: {
+            Company: {
+              id: companyId,
+            },
+          },
+        },
+
         OR: [{ email: login }, { phoneNumber: login }],
       },
     });

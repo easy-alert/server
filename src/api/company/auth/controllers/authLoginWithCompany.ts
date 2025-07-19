@@ -27,10 +27,6 @@ export const authLoginWithCompany = async (req: Request, res: Response) => {
 
   const user = await userServices.findById({ companyId: parsedCompanyId, userId });
 
-  user.Permissions.forEach((permission) =>
-    console.log('🚀 ~ authLoginWithCompany ~ permission:', permission.Permission.name),
-  );
-
   await permissionServices.checkPermission({
     UserPermissions: user.Permissions,
     permissions: ['admin:company', 'access:company'],

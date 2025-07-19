@@ -14,6 +14,13 @@ export class AuthServices {
   async canLogin({ login, password }: { login: string; password: string }) {
     const user = await this.findByEmailOrPhone({ login });
 
+    if (user.isBlocked) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Sua conta está bloqueada, entre em contato com a administração.',
+      });
+    }
+
     const isValuePassword = await compare(password, user.passwordHash);
 
     if (!isValuePassword) {
@@ -23,12 +30,16 @@ export class AuthServices {
       });
     }
 
-    const companyIsBlocked = user.Companies.some((company) => company.Company.isBlocked === true);
+    let companyIsBlocked = false;
 
-    if (user.isBlocked || companyIsBlocked) {
+    if (user.Companies.length === 1) {
+      companyIsBlocked = user.Companies[0].Company.isBlocked;
+    }
+
+    if (companyIsBlocked) {
       throw new ServerMessage({
         statusCode: 400,
-        message: 'Sua conta está bloqueada, entre em contato com a administração.',
+        message: 'A empresa está bloqueada, entre em contato com a administração.',
       });
     }
 
