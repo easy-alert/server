@@ -22,6 +22,13 @@ export class AuthServices {
   }) {
     const user = await this.findByEmailOrPhone({ login, companyId });
 
+    if (user.Companies.length === 0) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Usuário não possui nenhuma empresa.',
+      });
+    }
+
     if (user.isBlocked) {
       throw new ServerMessage({
         statusCode: 400,
@@ -38,10 +45,27 @@ export class AuthServices {
       });
     }
 
+    if (user.Companies.length > 1 && companyId) {
+      const selectedCompany = user.Companies.find((company) => company.Company.id === companyId);
+
+      if (!selectedCompany) {
+        throw new ServerMessage({
+          statusCode: 400,
+          message: 'Empresa não encontrada.',
+        });
+      }
+
+      user.Companies = user.Companies.filter((company) => company.Company.id === companyId);
+    }
+
     let companyIsBlocked = false;
 
     if (user.Companies.length === 1) {
       companyIsBlocked = user.Companies[0].Company.isBlocked;
+    } else {
+      companyIsBlocked =
+        user.Companies.find((company) => company.Company.id === companyId)?.Company.isBlocked ??
+        false;
     }
 
     if (companyIsBlocked) {
@@ -86,7 +110,7 @@ export class AuthServices {
       });
     }
 
-    return user!;
+    return user;
   }
 
   async login({
@@ -187,7 +211,7 @@ export class AuthServices {
   }
 
   async findByEmailOrPhone({ login, companyId }: { login: string; companyId?: string }) {
-    const User = await prisma.user.findFirst({
+    const user = await prisma.user.findFirst({
       select: {
         id: true,
 
@@ -242,21 +266,13 @@ export class AuthServices {
               },
             },
           },
-
-          where: {
-            Company: {
-              id: companyId,
-            },
-          },
         },
 
         Permissions: {
           select: { Permission: { select: { name: true } } },
 
           where: {
-            Company: {
-              id: companyId,
-            },
+            companyId,
           },
         },
 
@@ -270,38 +286,22 @@ export class AuthServices {
               },
             },
           },
-
-          where: {
-            Building: {
-              Company: {
-                id: companyId,
-              },
-            },
-          },
         },
       },
 
       where: {
-        Companies: {
-          some: {
-            Company: {
-              id: companyId,
-            },
-          },
-        },
-
         OR: [{ email: login }, { phoneNumber: login }],
       },
     });
 
-    if (!User) {
+    if (!user) {
       throw new ServerMessage({
         statusCode: 400,
         message: 'E-mail ou senha incorretos.',
       });
     }
 
-    return User;
+    return user;
   }
 
   async isCompanyOwner({ userId, companyId }: { userId: string; companyId: string }) {
