@@ -28,11 +28,6 @@ export async function authMobile(req: Request, res: Response) {
     os,
   });
 
-  await permissionServices.checkPermission({
-    UserPermissions: user.Permissions,
-    permissions: ['admin:company', 'access:company'],
-  });
-
   if (!companyId && user.Companies.length > 1) {
     const companies = user.Companies.map((company) => ({
       id: company.Company.id,
@@ -45,6 +40,11 @@ export async function authMobile(req: Request, res: Response) {
       companies,
     });
   }
+
+  await permissionServices.checkPermission({
+    UserPermissions: user.Permissions,
+    permissions: ['admin:company', 'access:company'],
+  });
 
   let userBuildingsPermissions = user.UserBuildingsPermissions;
 
