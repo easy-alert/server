@@ -193,6 +193,7 @@ export class CompanyServices {
                 name: true,
                 email: true,
                 lastAccess: true,
+                isBlocked: true,
               },
             },
 

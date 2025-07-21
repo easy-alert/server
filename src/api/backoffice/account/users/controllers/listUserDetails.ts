@@ -43,6 +43,7 @@ export async function listUserDetails(req: Request, res: Response) {
       id: userBuilding.Building.id,
       name: userBuilding.Building.name,
       image: userBuilding.Building.image,
+      isBlocked: userBuilding.Building.isBlocked,
     })),
   };
 
