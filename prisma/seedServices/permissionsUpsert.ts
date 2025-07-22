@@ -158,6 +158,12 @@ export const maintenancesPermissions: IPermissionUpsert[] = [
     name: 'maintenances:finish',
     label: 'Finalizar Manutenção',
   },
+  {
+    moduleName: 'maintenances',
+    moduleLabel: 'Manutenções',
+    name: 'maintenances:livePhoto',
+    label: 'Foto em tempo real',
+  },
 ];
 
 export const ticketsPermissions: IPermissionUpsert[] = [
@@ -199,6 +205,12 @@ export const checklistPermissions: IPermissionUpsert[] = [
     moduleLabel: 'Checklist',
     name: 'checklist:delete',
     label: 'Deletar Checklist',
+  },
+  {
+    moduleName: 'checklist',
+    moduleLabel: 'Checklist',
+    name: 'checklist:livePhoto',
+    label: 'Foto em tempo real',
   },
 ];
 
