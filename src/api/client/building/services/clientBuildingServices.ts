@@ -759,9 +759,6 @@ export class ClientBuildingServices {
       where: {
         buildingId,
         showContact: true,
-        User: {
-          isBlocked: false,
-        },
       },
     });
 
@@ -806,15 +803,13 @@ export class ClientBuildingServices {
             canAccessTickets: true,
             ticketInfo: true,
             ticketType: true,
+            isBlocked: true,
           },
         },
         isBlocked: true,
       },
       where: {
         id: buildingId,
-        Company: {
-          isBlocked: false,
-        },
       },
     });
 
