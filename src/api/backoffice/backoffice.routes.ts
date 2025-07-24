@@ -24,6 +24,7 @@ import { listForSelectRouter } from './listForSelect/list.routes';
 import type { TPermissionsNames } from '../../types/TPermissionsNames';
 import { dashboardRouter } from './dashboard/dashboard.routes';
 import { feedItemRouter } from './feedItems/feedItem.routes';
+import { guaranteeRouter } from './guarantee/guarantee.routes';
 
 // ROUTES
 export const backofficeRouter: Router = Router();
@@ -114,3 +115,11 @@ backofficeRouter.use(
   handleBackofficePermCheck(backofficePermissions),
   feedItemRouter,
 );
+
+// GUARANTEE
+backofficeRouter.use(
+  '/guarantee',
+  authMiddleware,
+  handleBackofficePermCheck(backofficePermissions),
+  guaranteeRouter,
+)
