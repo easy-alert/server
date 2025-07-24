@@ -40,6 +40,7 @@ export async function findBuildingById(id: string) {
               email: true,
               lastAccess: true,
               image: true,
+              isBlocked: true,
             },
           },
         },

@@ -205,6 +205,7 @@ export class CompanyServices {
           select: {
             id: true,
             name: true,
+            isBlocked: true,
           },
         },
       },
