@@ -2,7 +2,6 @@ import type { GuaranteeFailureType } from '@prisma/client';
 import type { Request, Response } from 'express';
 
 import { createGuaranteeFailureTypes } from '../services/createGuaranteeFailureTypes';
-import { createManyGuaranteeFailureTypes } from '../services/createManyGuaranteeFailureTypes';
 import { findFirstGuaranteeFailureTypes } from '../services/findFirstGuaranteeFailureTypes';
 
 interface IBody {
