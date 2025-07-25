@@ -15,11 +15,20 @@ export async function getGuaranteeFailureTypesController(req: Request, res: Resp
 
   const failureTypes = await findManyGuaranteeFailureTypes<GuaranteeFailureType>({
     data: {
+      include: {
+        _count: {
+          select: {
+            guarantees: true,
+          },
+        },
+      },
+
       where: {
         companyId: {
           in: companyIdFilter,
         },
       },
+
       orderBy: [
         {
           name: 'asc',
