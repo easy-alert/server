@@ -1379,7 +1379,7 @@ model GuaranteeSystem {
 
   company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  Guarantee Guarantee[]
+  guarantee Guarantee[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1398,6 +1398,9 @@ model GuaranteeFailureType {
   company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   guarantees GuaranteeToFailureType[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([companyId, name])
   @@map("guaranteeFailureTypes")
