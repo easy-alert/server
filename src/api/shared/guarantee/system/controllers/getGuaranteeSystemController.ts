@@ -18,7 +18,7 @@ export async function getGuaranteeSystemController(req: Request, res: Response) 
       include: {
         _count: {
           select: {
-            Guarantee: true,
+            guarantee: true,
           },
         },
       },
