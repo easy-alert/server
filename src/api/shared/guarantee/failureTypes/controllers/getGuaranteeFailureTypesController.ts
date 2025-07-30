@@ -18,7 +18,7 @@ export async function getGuaranteeFailureTypesController(req: Request, res: Resp
       include: {
         _count: {
           select: {
-            guarantees: true,
+            guaranteeToFailureTypes: true,
           },
         },
       },
