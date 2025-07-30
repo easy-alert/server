@@ -1379,7 +1379,7 @@ model GuaranteeSystem {
 
   company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  guarantee Guarantee[]
+  guarantees Guarantee[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1397,7 +1397,7 @@ model GuaranteeFailureType {
 
   company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  guarantees GuaranteeToFailureType[]
+  guaranteeToFailureTypes GuaranteeToFailureType[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1445,17 +1445,18 @@ model Guarantee {
   systemId   String
 
   description            String
+  observation            String?
   standardWarrantyPeriod Int // in months, converted into years
 
-  startDate DateTime
-  endDate   DateTime
+  startDate DateTime?
+  endDate   DateTime?
 
   company  Company?        @relation(fields: [companyId], references: [id], onDelete: Cascade)
   building Building?       @relation(fields: [buildingId], references: [id], onDelete: Cascade)
   system   GuaranteeSystem @relation(fields: [systemId], references: [id], onDelete: Cascade)
 
-  documents    GuaranteeDocument[]
-  failureTypes GuaranteeToFailureType[]
+  documents               GuaranteeDocument[]
+  guaranteeToFailureTypes GuaranteeToFailureType[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
