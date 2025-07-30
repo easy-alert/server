@@ -14,6 +14,8 @@ CREATE TABLE "guaranteeFailureTypes" (
     "id" TEXT NOT NULL,
     "companyId" TEXT,
     "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "guaranteeFailureTypes_pkey" PRIMARY KEY ("id")
 );
