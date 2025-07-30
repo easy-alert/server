@@ -2,6 +2,7 @@ import type { GuaranteeFailureType } from '@prisma/client';
 import type { Request, Response } from 'express';
 
 import { updateGuaranteeFailureTypes } from '../services/updateGuaranteeFailureTypes';
+import { findFirstGuaranteeFailureTypes } from '../services/findFirstGuaranteeFailureTypes';
 
 import { checkValues } from '../../../../../utils/newValidator';
 
@@ -22,6 +23,24 @@ export async function putGuaranteeFailureTypesController(req: Request, res: Resp
     { label: 'ID do tipo de falha', value: guaranteeFailureTypeId, type: 'string', required: true },
     { label: 'Nome do tipo de falha', value: failureTypeName, type: 'string', required: true },
   ]);
+
+  const failureTypeExists = await findFirstGuaranteeFailureTypes<GuaranteeFailureType>({
+    data: {
+      where: {
+        name: failureTypeName,
+        companyId,
+      },
+    },
+  });
+
+  if (failureTypeExists) {
+    return res.status(400).json({
+      ServerMessage: {
+        statusCode: 400,
+        message: 'Tipo de falha já cadastrado.',
+      },
+    });
+  }
 
   const failureTypesUpdated = await updateGuaranteeFailureTypes<GuaranteeFailureType>({
     data: {
