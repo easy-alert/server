@@ -93,12 +93,13 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
     }
   }
 
-  const groupBy = (data: any, key: any) =>
-    data.reduce((storage: any, item: any) => {
-      const group = item[key];
+  const groupBy = <T>(data: T[], key: keyof T): Record<string, T[]> =>
+    data.reduce((result: Record<string, T[]>, item: T) => {
+      const groupKey = String(item[key]);
+      const group = result[groupKey] || [];
       return {
-        ...storage,
-        [group]: [...(storage[group] || []), item],
+        ...result,
+        [groupKey]: [...group, item],
       };
     }, {});
 
