@@ -27,6 +27,7 @@
     "no-await-in-loop": "off",
     "no-plusplus": "off",
     "no-continue": "off",
+    "no-underscore-dangle": "warn",
     "default-param-last": "warn",
     "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
     "import/prefer-default-export": "off",
