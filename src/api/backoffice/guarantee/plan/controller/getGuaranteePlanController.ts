@@ -1,4 +1,3 @@
-import type { GuaranteeFailureType } from '@prisma/client';
 import type { Request, Response } from 'express';
 
 import { findManyGuarantees } from '../../../../shared/guarantee/plan/services/findManyGuarantees';
@@ -19,12 +18,13 @@ export async function getGuaranteePlanController(req: Request, res: Response) {
         company: true,
         building: true,
         system: true,
-        failureTypes: {
+        documents: true,
+
+        guaranteeToFailureTypes: {
           include: {
             failureType: true,
           },
         },
-        documents: true,
       },
 
       where: {

@@ -1,8 +1,9 @@
 import type { Request, Response } from 'express';
 import type { Guarantee } from '@prisma/client';
 
-import { createGuarantee } from '../../../../shared/guarantee/plan/services/createGuarantee';
+import { updateGuarantee } from '../../../../shared/guarantee/plan/services/updateGuarantee';
 import { findFirstGuarantee } from '../../../../shared/guarantee/plan/services/findFirstGuarantee';
+import { deleteManyGuaranteeToFailureTypes } from '../../../../shared/guarantee/guaranteeToFailureTypes/services/deleteManyGuaranteeToFailureTypes';
 
 interface IBody {
   companyId: string;
@@ -13,7 +14,8 @@ interface IBody {
   warrantyPeriod: number;
 }
 
-export async function postGuaranteeController(req: Request, res: Response) {
+export async function putGuaranteeController(req: Request, res: Response) {
+  const { guaranteeId } = req.params;
   const { companyId, systemId, description, observation, failureTypesIds, warrantyPeriod } =
     req.body as unknown as IBody;
 
@@ -28,7 +30,7 @@ export async function postGuaranteeController(req: Request, res: Response) {
     },
   });
 
-  if (guaranteeExists) {
+  if (guaranteeExists && guaranteeExists.id !== guaranteeId) {
     return res.status(404).json({
       ServerMessage: {
         statusCode: 404,
@@ -37,7 +39,15 @@ export async function postGuaranteeController(req: Request, res: Response) {
     });
   }
 
-  const guaranteeCreated = await createGuarantee<Guarantee>({
+  await deleteManyGuaranteeToFailureTypes({
+    data: {
+      where: {
+        guaranteeId,
+      },
+    },
+  });
+
+  const guaranteeUpdated = await updateGuarantee<Guarantee>({
     data: {
       data: {
         companyId,
@@ -48,24 +58,28 @@ export async function postGuaranteeController(req: Request, res: Response) {
         standardWarrantyPeriod: warrantyPeriod,
 
         guaranteeToFailureTypes: {
-          connectOrCreate: failureTypesIds.map((failureTypesId) => ({
-            where: { id: failureTypesId },
+          connectOrCreate: failureTypesIds.map((failureTypeId) => ({
+            where: { id: failureTypeId },
             create: {
               failureType: {
-                connect: { id: failureTypesId },
+                connect: { id: failureTypeId },
               },
             },
           })),
         },
       },
+
+      where: {
+        id: guaranteeId,
+      },
     },
   });
 
   return res.status(201).json({
-    guaranteeCreated,
+    guaranteeUpdated,
     ServerMessage: {
       statusCode: 201,
-      message: 'Garantia cadastrada com sucesso',
+      message: 'Garantia atualizada com sucesso',
     },
   });
 }
