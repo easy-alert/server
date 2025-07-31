@@ -12,7 +12,7 @@ const permissionServices = new PermissionServices();
 const tokenServices = new TokenServices();
 
 export async function authMobile(req: Request, res: Response) {
-  const { login, password, pushNotificationToken, deviceId, os } = req.body;
+  const { login, password, pushNotificationToken, deviceId, os, companyId } = req.body;
 
   needExist([
     { label: 'Login', variable: login },
@@ -22,10 +22,24 @@ export async function authMobile(req: Request, res: Response) {
   const user = await authServices.canLogin({
     login,
     password,
+    companyId,
     pushNotificationToken,
     deviceId,
     os,
   });
+
+  if (!companyId && user.Companies.length > 1) {
+    const companies = user.Companies.map((company) => ({
+      id: company.Company.id,
+      name: company.Company.name,
+      image: company.Company.image,
+      isBlocked: company.Company.isBlocked,
+    }));
+
+    return res.status(200).json({
+      companies,
+    });
+  }
 
   await permissionServices.checkPermission({
     UserPermissions: user.Permissions,
@@ -56,6 +70,7 @@ export async function authMobile(req: Request, res: Response) {
   const authToken = tokenServices.generate({
     tokenData: {
       userId: user.id,
+      companyId: user.Companies[0].Company.id,
     },
   });
 

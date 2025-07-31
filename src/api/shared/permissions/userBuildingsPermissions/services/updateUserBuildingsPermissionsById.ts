@@ -1,5 +1,5 @@
 import type { Permission } from '@prisma/client';
-import { prisma } from '../../../../../../prisma';
+import { prisma, type prismaTypes } from '../../../../../../prisma';
 
 interface IUserBuildingsPermissions {
   buildingId: string;
@@ -17,6 +17,36 @@ export async function updateUserBuildingsPermissionsById({
   userId,
   userBuildingsPermissions,
 }: IUpdateUserBuildingsPermissionsById) {
+  const newUserBuildingsPermissions: prismaTypes.UserBuildingsPermissionsCreateManyArgs['data'] =
+    [];
+
+  userBuildingsPermissions.forEach(async (userBuildingPermission) => {
+    const selectedUserBuildingPermission = await prisma.userBuildingsPermissions.findUnique({
+      where: {
+        userId_buildingId: {
+          userId,
+          buildingId: userBuildingPermission.buildingId,
+        },
+      },
+    });
+
+    if (selectedUserBuildingPermission) {
+      newUserBuildingsPermissions.push({
+        userId,
+        buildingId: selectedUserBuildingPermission.buildingId,
+        permissionId: selectedUserBuildingPermission.permissionId,
+        isMainContact: selectedUserBuildingPermission.isMainContact,
+        showContact: selectedUserBuildingPermission.showContact,
+      });
+    } else {
+      newUserBuildingsPermissions.push({
+        userId,
+        buildingId: userBuildingPermission.buildingId,
+        permissionId: userBuildingPermission.Permission?.id,
+      });
+    }
+  });
+
   await prisma.userBuildingsPermissions.deleteMany({
     where: {
       userId,
@@ -30,9 +60,6 @@ export async function updateUserBuildingsPermissionsById({
   });
 
   await prisma.userBuildingsPermissions.createMany({
-    data: userBuildingsPermissions.map((userBuildingPermission) => ({
-      userId,
-      buildingId: userBuildingPermission.buildingId,
-    })),
+    data: newUserBuildingsPermissions,
   });
 }

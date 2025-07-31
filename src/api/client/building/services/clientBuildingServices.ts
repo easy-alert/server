@@ -758,7 +758,6 @@ export class ClientBuildingServices {
 
       where: {
         buildingId,
-
         showContact: true,
       },
     });
@@ -791,7 +790,6 @@ export class ClientBuildingServices {
     const mainContact = await prisma.building.findFirst({
       select: {
         name: true,
-
         Banners: {
           select: {
             id: true,
@@ -800,21 +798,18 @@ export class ClientBuildingServices {
             url: true,
           },
         },
-
         Company: {
           select: {
             canAccessTickets: true,
             ticketInfo: true,
             ticketType: true,
+            isBlocked: true,
           },
         },
+        isBlocked: true,
       },
       where: {
         id: buildingId,
-
-        Company: {
-          isBlocked: false,
-        },
       },
     });
 

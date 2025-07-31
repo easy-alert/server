@@ -182,18 +182,21 @@ model Company {
 
   UserCompanies UserCompanies[]
 
-  Categories          Category[]
-  Maintenances        Maintenance[]
-  Buildings           Building[]
-  MaintenancesHistory MaintenanceHistory[]
-  suppliers           Supplier[]
-  reportPdfs          MaintenanceReportPdf[]
-  TicketReportPDF     TicketReportPDF[]
-  BuildingApartment   BuildingApartment[]
-  ApiLogs             ApiLogs[]
-  ChecklistReportPDF  ChecklistReportPDF[]
-  ChecklistTemplate   ChecklistTemplate[]
-  UserPermissions     UserPermissions[]
+  Categories           Category[]
+  Maintenances         Maintenance[]
+  Buildings            Building[]
+  MaintenancesHistory  MaintenanceHistory[]
+  suppliers            Supplier[]
+  reportPdfs           MaintenanceReportPdf[]
+  TicketReportPDF      TicketReportPDF[]
+  BuildingApartment    BuildingApartment[]
+  ApiLogs              ApiLogs[]
+  ChecklistReportPDF   ChecklistReportPDF[]
+  ChecklistTemplate    ChecklistTemplate[]
+  UserPermissions      UserPermissions[]
+  Guarantee            Guarantee[]
+  GuaranteeSystem      GuaranteeSystem[]
+  GuaranteeFailureType GuaranteeFailureType[]
 
   @@map("companies")
 }
@@ -665,6 +668,7 @@ model Building {
   BuildingApartments               BuildingApartment[]
   MaintenanceAdditionalInformation MaintenanceAdditionalInformation[]
   ChecklistTemplate                ChecklistTemplate[]
+  Guarantee                        Guarantee[]
 
   @@map("buildings")
 }
@@ -1365,6 +1369,102 @@ model MaintenanceReportPdf {
   @@map("maintenanceReportPdfs")
 }
 
+// GUARANTEE
+model GuaranteeSystem {
+  id String @id @default(uuid())
+
+  companyId String?
+
+  name String @unique
+
+  company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  guarantees Guarantee[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([companyId, name])
+  @@map("guaranteeSystems")
+}
+
+model GuaranteeFailureType {
+  id String @id @default(uuid())
+
+  companyId String?
+
+  name String
+
+  company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  guaranteeToFailureTypes GuaranteeToFailureType[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([companyId, name])
+  @@map("guaranteeFailureTypes")
+}
+
+model GuaranteeDocument {
+  id String @id @default(uuid())
+
+  guaranteeId String
+
+  name     String
+  category String?
+  fileUrl  String
+  fileType String
+  fileSize Int
+
+  guarantee Guarantee @relation(fields: [guaranteeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@map("guaranteeDocuments")
+}
+
+model GuaranteeToFailureType {
+  id String @id @default(uuid())
+
+  guaranteeId   String
+  failureTypeId String
+
+  guarantee   Guarantee            @relation(fields: [guaranteeId], references: [id], onDelete: Cascade)
+  failureType GuaranteeFailureType @relation(fields: [failureTypeId], references: [id])
+
+  @@unique([guaranteeId, failureTypeId])
+  @@map("guaranteeToFailureTypes")
+}
+
+model Guarantee {
+  id String @id @default(uuid())
+
+  companyId  String?
+  buildingId String?
+  systemId   String
+
+  description            String
+  observation            String?
+  standardWarrantyPeriod Int // in months, converted into years
+
+  startDate DateTime?
+  endDate   DateTime?
+
+  company  Company?        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  building Building?       @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  system   GuaranteeSystem @relation(fields: [systemId], references: [id], onDelete: Cascade)
+
+  documents               GuaranteeDocument[]
+  guaranteeToFailureTypes GuaranteeToFailureType[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([companyId, systemId, description, standardWarrantyPeriod])
+  @@map("guarantees")
+}
+
 // Platform Video
 enum PlatformVideoType {
   tutorial
@@ -1400,7 +1500,6 @@ model PlatformVideo {
 
   @@map("platformVideos")
 }
-
 
 // FEED ITEMS
 enum FeedItemType {

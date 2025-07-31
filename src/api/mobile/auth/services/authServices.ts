@@ -8,17 +8,33 @@ export class AuthServices {
   async canLogin({
     login,
     password,
+    companyId,
     pushNotificationToken,
     deviceId,
     os,
   }: {
     login: string;
     password: string;
+    companyId?: string;
     pushNotificationToken: string;
     deviceId: string;
     os: string;
   }) {
-    const user = await this.findByEmailOrPhone({ login });
+    const user = await this.findByEmailOrPhone({ login, companyId });
+
+    if (user.Companies.length === 0) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Usuário não possui nenhuma empresa.',
+      });
+    }
+
+    if (user.isBlocked) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Sua conta está bloqueada, entre em contato com a administração.',
+      });
+    }
 
     const isValuePassword = await compare(password, user.passwordHash);
 
@@ -29,14 +45,33 @@ export class AuthServices {
       });
     }
 
-    const companyIsBlocked = user.Companies.some(
-      (company: any) => company.Company.isBlocked === true,
-    );
+    if (user.Companies.length > 1 && companyId) {
+      const selectedCompany = user.Companies.find((company) => company.Company.id === companyId);
 
-    if (user.isBlocked || companyIsBlocked) {
+      if (!selectedCompany) {
+        throw new ServerMessage({
+          statusCode: 400,
+          message: 'Empresa não encontrada.',
+        });
+      }
+
+      user.Companies = user.Companies.filter((company) => company.Company.id === companyId);
+    }
+
+    let companyIsBlocked = false;
+
+    if (user.Companies.length === 1) {
+      companyIsBlocked = user.Companies[0].Company.isBlocked;
+    } else {
+      companyIsBlocked =
+        user.Companies.find((company) => company.Company.id === companyId)?.Company.isBlocked ??
+        false;
+    }
+
+    if (companyIsBlocked) {
       throw new ServerMessage({
         statusCode: 400,
-        message: 'Sua conta está bloqueada, entre em contato com a administração.',
+        message: 'A empresa está bloqueada, entre em contato com a administração.',
       });
     }
 
@@ -75,7 +110,7 @@ export class AuthServices {
       });
     }
 
-    return user!;
+    return user;
   }
 
   async login({
@@ -175,8 +210,8 @@ export class AuthServices {
     }));
   }
 
-  async findByEmailOrPhone({ login }: { login: string }) {
-    const User = await prisma.user.findFirst({
+  async findByEmailOrPhone({ login, companyId }: { login: string; companyId?: string }) {
+    const user = await prisma.user.findFirst({
       select: {
         id: true,
 
@@ -235,6 +270,10 @@ export class AuthServices {
 
         Permissions: {
           select: { Permission: { select: { name: true } } },
+
+          where: {
+            companyId,
+          },
         },
 
         UserBuildingsPermissions: {
@@ -255,14 +294,14 @@ export class AuthServices {
       },
     });
 
-    if (!User) {
+    if (!user) {
       throw new ServerMessage({
         statusCode: 400,
         message: 'E-mail ou senha incorretos.',
       });
     }
 
-    return User;
+    return user;
   }
 
   async isCompanyOwner({ userId, companyId }: { userId: string; companyId: string }) {

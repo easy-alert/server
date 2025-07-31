@@ -3,7 +3,7 @@ import fs from 'fs';
 import { Readable } from 'stream';
 import sharp from 'sharp';
 import { GetObjectCommand } from '@aws-sdk/client-s3';
-import { fileTypeFromBuffer } from 'file-type';
+import { loadEsm } from 'load-esm';
 import { getS3Client, getBucketForUrl } from './s3Config';
 
 import { sendErrorToServerLog } from '../messages/sendErrorToServerLog';
@@ -40,6 +40,7 @@ export async function formattedDownloadFromS3({
 
   try {
     const { Body } = (await s3bucket.send(new GetObjectCommand(s3Params))) as { Body: Readable };
+    const { fileTypeFromBuffer } = await loadEsm<typeof import('file-type')>('file-type');
 
     if (!Body) {
       const errMsg = `S3 Body missing for key: ${key} (url: ${url})`;
