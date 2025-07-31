@@ -122,4 +122,4 @@ backofficeRouter.use(
   authMiddleware,
   handleBackofficePermCheck(backofficePermissions),
   guaranteeRouter,
-)
+);
