@@ -15,19 +15,31 @@ export async function deleteGuaranteeFailureTypesController(req: Request, res: R
     { label: 'ID do tipo de falha', value: guaranteeFailureTypeId, type: 'string', required: true },
   ]);
 
-  const failureType = await deleteGuaranteeFailureTypes<GuaranteeFailureType>({
-    data: {
-      where: {
-        id: guaranteeFailureTypeId,
+  try {
+    const failureType = await deleteGuaranteeFailureTypes<GuaranteeFailureType>({
+      data: {
+        where: {
+          id: guaranteeFailureTypeId,
+        },
       },
-    },
-  });
+    });
 
-  return res.status(200).json({
-    failureType,
-    ServerMessage: {
-      statusCode: 200,
-      message: `Tipo de falha '${failureType?.name}' deletado com sucesso.`,
-    },
-  });
+    return res.status(200).json({
+      failureType,
+      ServerMessage: {
+        statusCode: 200,
+        message: `Tipo de falha '${failureType?.name}' deletado com sucesso.`,
+      },
+    });
+  } catch (error: any) {
+    const message =
+      error.code === 'P2003' ? 'Tipo de falha em uso' : 'Erro ao deletar tipo de falha';
+
+    return res.status(500).json({
+      ServerMessage: {
+        statusCode: 500,
+        message,
+      },
+    });
+  }
 }
