@@ -193,6 +193,7 @@ export class CompanyServices {
                 name: true,
                 email: true,
                 lastAccess: true,
+                isBlocked: true,
               },
             },
 
@@ -204,6 +205,7 @@ export class CompanyServices {
           select: {
             id: true,
             name: true,
+            isBlocked: true,
           },
         },
       },
