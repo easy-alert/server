@@ -50,12 +50,12 @@ export class SharedCalendarServices {
 
   async findMaintenancesHistoryService({
     companyId,
-    buildingId,
+    buildingIds,
     startDate,
     endDate,
   }: {
     companyId: string;
-    buildingId?: string[];
+    buildingIds?: string[];
     startDate: Date;
     endDate: Date;
   }) {
@@ -68,7 +68,7 @@ export class SharedCalendarServices {
         where: {
           companyId,
           id: {
-            in: buildingId,
+            in: buildingIds,
           },
         },
       }),
@@ -118,7 +118,7 @@ export class SharedCalendarServices {
         where: {
           ownerCompanyId: companyId,
           buildingId: {
-            in: buildingId,
+            in: buildingIds,
           },
           MaintenancesStatus: {
             NOT: {
@@ -186,7 +186,7 @@ export class SharedCalendarServices {
         where: {
           ownerCompanyId: companyId,
           buildingId: {
-            in: buildingId,
+            in: buildingIds,
           },
           MaintenancesStatus: {
             name: 'pending',
