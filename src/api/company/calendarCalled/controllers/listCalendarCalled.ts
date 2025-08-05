@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { checkValues } from '../../../../utils/newValidator/checkValues';
 import { getCalendarEvents } from '../services/getCalendarEvents';
 
-export async function listCalendarCalled(req: Request, res: Response) {
+export async function listCalendarTickets(req: Request, res: Response) {
   const companyId = req.query.companyId as string;
   const year = Number(req.params.year);
   const buildingId = req.query.buildingId as string | undefined;

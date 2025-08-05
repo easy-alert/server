@@ -2,9 +2,9 @@
 import { Router } from 'express';
 
 // FUNCTIONS
-import { listCalendarCalled } from './controllers/listCalendarCalled';
+import { listCalendarTickets } from './controllers/listCalendarCalled';
 
 // ROUTES
-export const calendarCalledRouter = Router();
+export const calendarTicketsRouter = Router();
 
-calendarCalledRouter.get('/list/:year', listCalendarCalled);
+calendarTicketsRouter.get('/list/:year', listCalendarTickets);

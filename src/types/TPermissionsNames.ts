@@ -11,7 +11,7 @@ export type TPermissionsNames =
   | 'access:buildingManager'
   | 'access:dashboard'
   | 'access:calendar-maintenances'
-  | 'access:calendar-called'
+  | 'access:calendar-tickets'
   | 'access:buildings'
   | 'access:maintenances'
   | 'access:checklist'

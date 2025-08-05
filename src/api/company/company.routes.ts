@@ -37,7 +37,7 @@ import { permissionsRouter } from './permissions/permissions.routes';
 import { listForSelectRouter } from './listForSelect/list.routes';
 import { updateReportPDFController } from './reports/controllers/updateReportPDFController';
 import { homeRouter } from './home/home.routes';
-import { calendarCalledRouter } from './calendarCalled/calendarCalled.routes';
+import { calendarTicketsRouter } from './calendarCalled/calendarCalled.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -106,10 +106,10 @@ companyRouter.use(
 );
 
 companyRouter.use(
-  '/calendar-called',
+  '/calendar-tickets',
   authMiddleware,
-  handleCompanyPermCheck([companyPermission, 'access:calendar-called']),
-  calendarCalledRouter,
+  handleCompanyPermCheck([companyPermission, 'access:calendar-tickets']),
+  calendarTicketsRouter,
 );
 companyRouter.post('/passwordrecovery/sendemail', sendEmailForRecoveryPassword);
 

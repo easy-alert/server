@@ -47,7 +47,7 @@ export const accessPermissions: IPermissionUpsert[] = [
   {
     moduleName: 'access',
     moduleLabel: 'Acessos',
-    name: 'access:calendar',
+    name: 'access:calendar-maintenances',
     label: 'Acesso Calendário',
   },
   {
