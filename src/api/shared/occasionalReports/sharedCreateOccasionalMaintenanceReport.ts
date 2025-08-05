@@ -49,6 +49,7 @@ export async function sharedCreateOccasionalMaintenanceReport({
     priorityName,
     usersId,
   }: ICreateOccasionalMaintenanceReport = body;
+  console.log('🚀 ~ usersId:', usersId);
 
   // #region VALIDATIONS
   if (!categoryData) {
@@ -184,6 +185,26 @@ export async function sharedCreateOccasionalMaintenanceReport({
               userId,
             },
           });
+
+          const userTokens = await prisma.pushNotification.findMany({
+            where: { userId },
+            select: {
+              token: true,
+            },
+          });
+
+          const userBuilding = await prisma.building.findFirst({ where: { id: buildingId } });
+
+          if (userTokens && userTokens.length > 0 && userBuilding) {
+            // chama funcao
+            for (const token of userTokens) {
+              await sendPushNotification({
+                to: [token.token],
+                title: userBuilding?.name,
+                body: `Uma manutenção foi atribuída para você para a atividade de: ${maintenanceData.activity}`,
+              });
+            }
+          }
         }),
       );
     }
@@ -348,6 +369,26 @@ export async function sharedCreateOccasionalMaintenanceReport({
                 userId,
               },
             });
+
+            const userTokens = await prisma.pushNotification.findMany({
+              where: { userId },
+              select: {
+                token: true,
+              },
+            });
+
+            const userBuilding = await prisma.building.findFirst({ where: { id: buildingId } });
+
+            if (userTokens && userTokens.length > 0 && userBuilding) {
+              // chama funcao
+              for (const token of userTokens) {
+                await sendPushNotification({
+                  to: [token.token],
+                  title: userBuilding?.name,
+                  body: `Uma manutenção foi atribuída para você para a atividade de: ${maintenanceData.activity}`,
+                });
+              }
+            }
           }),
         );
       }
