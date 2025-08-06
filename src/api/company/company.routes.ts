@@ -101,14 +101,14 @@ companyRouter.use(
 companyRouter.use(
   '/calendars',
   authMiddleware,
-  handleCompanyPermCheck([companyPermission, 'access:calendar-maintenances']),
+  handleCompanyPermCheck([companyPermission, 'access:calendarMaintenances']),
   calendarRouter,
 );
 
 companyRouter.use(
-  '/calendar-tickets',
+  '/calendarTickets',
   authMiddleware,
-  handleCompanyPermCheck([companyPermission, 'access:calendar-tickets']),
+  handleCompanyPermCheck([companyPermission, 'access:calendarTickets']),
   calendarTicketsRouter,
 );
 companyRouter.post('/passwordrecovery/sendemail', sendEmailForRecoveryPassword);
