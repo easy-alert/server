@@ -49,7 +49,6 @@ export async function sharedCreateOccasionalMaintenanceReport({
     priorityName,
     usersId,
   }: ICreateOccasionalMaintenanceReport = body;
-  console.log('🚀 ~ usersId:', usersId);
 
   // #region VALIDATIONS
   if (!categoryData) {
