@@ -1,5 +1,5 @@
 // #region IMPORTS
-import { prisma } from '../../../../../../prisma';
+import { prisma, prismaTypes } from '../../../../../../prisma';
 import { differenceInDays, setToUTCMidnight } from '../../../../../utils/dateTime';
 import { changeUTCTime } from '../../../../../utils/dateTime/changeTime';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
@@ -189,6 +189,40 @@ export class BuildingReportsServices {
       }
     });
 
+    const maintenancesHistoryFilterByWhere: prismaTypes.MaintenanceHistoryWhereInput =
+      queryFilter.filterBy === 'allActivities'
+        ? {
+            OR: [
+              { notificationDate: queryFilter.dateFilter },
+              { dueDate: queryFilter.dateFilter },
+              { resolutionDate: queryFilter.dateFilter },
+            ],
+          }
+        : { [queryFilter.filterBy]: queryFilter.dateFilter };
+
+    const MaintenancesPendingFilterByWhere: prismaTypes.MaintenanceHistoryWhereInput =
+      queryFilter.filterBy === 'allActivities'
+        ? {
+            OR: [
+              {
+                notificationDate: {
+                  lte: queryFilter.dateFilter.lte,
+                },
+              },
+              {
+                dueDate: {
+                  lte: queryFilter.dateFilter.lte,
+                },
+              },
+              {
+                resolutionDate: {
+                  lte: queryFilter.dateFilter.lte,
+                },
+              },
+            ],
+          }
+        : { [queryFilter.filterBy]: queryFilter.dateFilter.lte };
+
     // nome diabo pra reaproveitar função
     const [maintenancesHistory, MaintenancesPending, company] = await prisma.$transaction([
       prisma.maintenanceHistory.findMany({
@@ -304,7 +338,7 @@ export class BuildingReportsServices {
             },
           },
 
-          [queryFilter.filterBy]: queryFilter.dateFilter,
+          ...maintenancesHistoryFilterByWhere,
 
           MaintenancesStatus: {
             NOT: {
@@ -440,9 +474,7 @@ export class BuildingReportsServices {
             },
           },
 
-          [queryFilter.filterBy]: {
-            lte: queryFilter.dateFilter.lte,
-          },
+          ...MaintenancesPendingFilterByWhere,
 
           MaintenancesStatus: {
             name: 'pending',
