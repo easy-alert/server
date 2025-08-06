@@ -184,8 +184,56 @@ export async function sharedCreateOccasionalMaintenanceReport({
               userId,
             },
           });
+
+          const userTokens = await prisma.pushNotification.findMany({
+            select: {
+              token: true,
+            },
+
+            where: { userId },
+          });
+
+          const userBuilding = await prisma.building.findFirst({ where: { id: buildingId } });
+
+          if (userTokens && userTokens.length > 0 && userBuilding) {
+            for (const token of userTokens) {
+              await sendPushNotification({
+                to: [token.token],
+                title: userBuilding?.name,
+                body: `Uma manutenção avulsa foi atribuída para você: ${maintenanceData.activity}`,
+              });
+            }
+          }
         }),
       );
+    } else {
+      const userTokens = await prisma.pushNotification.findMany({
+        select: {
+          token: true,
+        },
+
+        where: {
+          User: {
+            UserBuildingsPermissions: {
+              some: {
+                buildingId,
+              },
+            },
+          },
+        },
+      });
+
+      const userBuilding = await prisma.building.findFirst({ where: { id: buildingId } });
+
+      if (userTokens && userTokens.length > 0 && userBuilding) {
+        for (const token of userTokens) {
+          await sendPushNotification({
+            to: [token.token],
+            title: userBuilding?.name,
+            body: `Uma manutenção avulsa foi criada: ${maintenanceData.activity}`,
+          });
+        }
+      }
     }
 
     // Repetido lá embaixo
@@ -253,12 +301,40 @@ export async function sharedCreateOccasionalMaintenanceReport({
                 await sendPushNotification({
                   to: [token.token],
                   title: userBuilding?.name,
-                  body: `Uma manutenção foi atribuída para você para a atividade de: ${maintenanceData.activity}`,
+                  body: `Uma manutenção avulsa foi atribuída para você: ${maintenanceData.activity}`,
                 });
               }
             }
           }),
         );
+      } else {
+        const userTokens = await prisma.pushNotification.findMany({
+          select: {
+            token: true,
+          },
+
+          where: {
+            User: {
+              UserBuildingsPermissions: {
+                some: {
+                  buildingId,
+                },
+              },
+            },
+          },
+        });
+
+        const userBuilding = await prisma.building.findFirst({ where: { id: buildingId } });
+
+        if (userTokens && userTokens.length > 0 && userBuilding) {
+          for (const token of userTokens) {
+            await sendPushNotification({
+              to: [token.token],
+              title: userBuilding?.name,
+              body: `Uma manutenção avulsa foi criada: ${maintenanceData.activity}`,
+            });
+          }
+        }
       }
 
       if (ticketIds && Array.isArray(ticketIds) && ticketIds?.length > 0) {
@@ -348,8 +424,56 @@ export async function sharedCreateOccasionalMaintenanceReport({
                 userId,
               },
             });
+
+            const userTokens = await prisma.pushNotification.findMany({
+              select: {
+                token: true,
+              },
+
+              where: { userId },
+            });
+
+            const userBuilding = await prisma.building.findFirst({ where: { id: buildingId } });
+
+            if (userTokens && userTokens.length > 0 && userBuilding) {
+              for (const token of userTokens) {
+                await sendPushNotification({
+                  to: [token.token],
+                  title: userBuilding?.name,
+                  body: `Uma manutenção avulsa foi atribuída para você: ${maintenanceData.activity}`,
+                });
+              }
+            }
           }),
         );
+      } else {
+        const userTokens = await prisma.pushNotification.findMany({
+          select: {
+            token: true,
+          },
+
+          where: {
+            User: {
+              UserBuildingsPermissions: {
+                some: {
+                  buildingId,
+                },
+              },
+            },
+          },
+        });
+
+        const userBuilding = await prisma.building.findFirst({ where: { id: buildingId } });
+
+        if (userTokens && userTokens.length > 0 && userBuilding) {
+          for (const token of userTokens) {
+            await sendPushNotification({
+              to: [token.token],
+              title: userBuilding?.name,
+              body: `Uma manutenção avulsa foi criada: ${maintenanceData.activity}`,
+            });
+          }
+        }
       }
 
       if (ticketIds && Array.isArray(ticketIds) && ticketIds?.length > 0) {
