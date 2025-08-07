@@ -1,15 +1,14 @@
 import type { Request, Response } from 'express';
-
 import { checkValues } from '../../../../utils/newValidator/checkValues';
 import { getCalendarEvents } from '../services/getCalendarEvents';
 
 export async function listCalendarTickets(req: Request, res: Response) {
   const companyId = req.query.companyId as string;
-  const year = Number(req.params.year);
+  const year = Number(req.query.year);
   const month = Number(req.query.month);
 
-  const buildingIds = req.query.buildingId
-    ? (req.query.buildingId as string).split(',').filter(Boolean)
+  const buildingIds = req.query.buildingIds
+    ? (req.query.buildingIds as string).split(',')
     : undefined;
 
   checkValues([
@@ -19,7 +18,12 @@ export async function listCalendarTickets(req: Request, res: Response) {
   ]);
 
   try {
-    const { buildings, Days } = await getCalendarEvents({ companyId, year, month, buildingIds });
+    const { buildings, Days } = await getCalendarEvents({
+      companyId,
+      year,
+      month,
+      buildingIds,
+    });
 
     return res.status(200).json({
       ServerMessage: {
