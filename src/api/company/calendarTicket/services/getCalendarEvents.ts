@@ -1,5 +1,5 @@
-import { Prisma, TicketStatusName } from '@prisma/client';
-import { prisma } from '../../../../../prisma';
+import { TicketStatusName } from '@prisma/client';
+import { prisma, prismaTypes } from '../../../../../prisma';
 import { needExist } from '../../../../utils/newValidator';
 
 interface IListCalendarCalled {
@@ -43,20 +43,17 @@ export async function getCalendarEvents({
   needExist([{ label: 'Empresa', variable: company }]);
 
   const startDate = new Date(Date.UTC(year, month ? month - 1 : 0, 1, 0, 0, 0));
-  console.log('🚀 ~ getCalendarEvents ~ startDate:', startDate);
   const endDate = new Date(Date.UTC(year, month || 12, 0, 23, 59, 59, 999));
-  console.log('🚀 ~ getCalendarEvents ~ endDate:', endDate);
 
-  const where: Prisma.TicketWhereInput = {
+  const where: prismaTypes.TicketWhereInput = {
+    ...(buildingIds && buildingIds.length > 0 && { buildingId: { in: buildingIds } }),
     createdAt: {
       gte: startDate,
       lte: endDate,
     },
-    ...(buildingIds && buildingIds.length > 0 && { buildingId: { in: buildingIds } }),
   };
 
   const tickets = await prisma.ticket.findMany({
-    where,
     select: {
       id: true,
       ticketNumber: true,
@@ -84,6 +81,21 @@ export async function getCalendarEvents({
             },
           },
         },
+      },
+    },
+
+    where: {
+      building: {
+        id: {
+          in: buildingIds,
+        },
+
+        companyId,
+      },
+
+      createdAt: {
+        gte: startDate,
+        lte: endDate,
       },
     },
   });
