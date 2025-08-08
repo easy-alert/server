@@ -42,17 +42,10 @@ export async function getCalendarEvents({
 
   needExist([{ label: 'Empresa', variable: company }]);
 
-  const buildings = await prisma.building.findMany({
-    where: {
-      companyId,
-      isBlocked: false,
-    },
-    select: { id: true, name: true },
-    orderBy: { name: 'asc' },
-  });
-
-  const startDate = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0));
-  const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+  const startDate = new Date(Date.UTC(year, month ? month - 1 : 0, 1, 0, 0, 0));
+  console.log('🚀 ~ getCalendarEvents ~ startDate:', startDate);
+  const endDate = new Date(Date.UTC(year, month || 12, 0, 23, 59, 59, 999));
+  console.log('🚀 ~ getCalendarEvents ~ endDate:', endDate);
 
   const where: Prisma.TicketWhereInput = {
     createdAt: {
@@ -112,5 +105,5 @@ export async function getCalendarEvents({
     tickets: ticketsArr,
   }));
 
-  return { buildings, Days };
+  return { Days };
 }

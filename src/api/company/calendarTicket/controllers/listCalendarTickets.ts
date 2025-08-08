@@ -3,26 +3,27 @@ import { checkValues } from '../../../../utils/newValidator/checkValues';
 import { getCalendarEvents } from '../services/getCalendarEvents';
 
 export async function listCalendarTickets(req: Request, res: Response) {
-  const companyId = req.query.companyId as string;
-  const year = Number(req.query.year);
-  const month = Number(req.query.month);
+  const { companyId, year, month, buildingIds } = req.query as unknown as {
+    companyId: string;
+    year: number;
+    month: number;
+    buildingIds?: string;
+  };
 
-  const buildingIds = req.query.buildingIds
-    ? (req.query.buildingIds as string).split(',')
-    : undefined;
+  const buildingsFilter =
+    !buildingIds || buildingIds === 'undefined' ? undefined : buildingIds.split(',');
 
   checkValues([
     { label: 'ID da empresa', type: 'string', value: companyId },
-    { label: 'Ano', type: 'int', value: year },
-    { label: 'Mês', type: 'int', value: month },
+    { label: 'Ano', type: 'int', value: Number(year) },
   ]);
 
   try {
-    const { buildings, Days } = await getCalendarEvents({
+    const { Days } = await getCalendarEvents({
       companyId,
       year,
       month,
-      buildingIds,
+      buildingIds: buildingsFilter,
     });
 
     return res.status(200).json({
@@ -30,7 +31,6 @@ export async function listCalendarTickets(req: Request, res: Response) {
         statusCode: 200,
         message: 'Chamados do calendário listados com sucesso.',
       },
-      buildings,
       Days,
     });
   } catch (error: any) {
