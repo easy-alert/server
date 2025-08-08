@@ -121,6 +121,19 @@ const getSingularStatusNameForPdf = (status: string) => {
   return statusName;
 };
 
+const handleFilterByName = (filterBy: string) => {
+  switch (filterBy) {
+    case 'notificationDate':
+      return 'Período de notificação';
+    case 'dueDate':
+      return 'Período de vencimento';
+    case 'allActivities':
+      return 'Todas as atividades';
+    default:
+      return 'Período de notificação';
+  }
+};
+
 async function PDFService({
   company,
   id,
@@ -1003,11 +1016,7 @@ async function PDFService({
                         {
                           text: [
                             {
-                              text: `Período de ${
-                                queryFilter.filterBy === 'notificationDate'
-                                  ? 'notificação'
-                                  : 'vencimento'
-                              }: `,
+                              text: `${handleFilterByName(queryFilter.filterBy)}: `,
                               bold: true,
                             },
                             {
@@ -1176,11 +1185,9 @@ export async function generateMaintenanceReportPDF(req: Request, res: Response) 
 
   const { id } = await prisma.maintenanceReportPdf.create({
     data: {
-      name: `Período de ${
-        queryFilter.filterBy === 'notificationDate' ? 'notificação' : 'vencimento'
-      } - ${dateFormatter(queryFilter.dateFilter.gte)} a ${dateFormatter(
-        queryFilter.dateFilter.lte,
-      )}`,
+      name: `${handleFilterByName(queryFilter.filterBy)} - ${dateFormatter(
+        queryFilter.dateFilter.gte,
+      )} a ${dateFormatter(queryFilter.dateFilter.lte)}`,
       authorId: req.userId,
       authorCompanyId: req.Company.id,
     },

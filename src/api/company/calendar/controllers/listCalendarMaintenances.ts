@@ -9,20 +9,19 @@ import { handlePermittedBuildings } from '../../../../utils/permissions/handlePe
 const sharedCalendarServices = new SharedCalendarServices();
 
 export async function listCalendarMaintenances(req: Request, res: Response) {
-  const { year, month, buildingId } = req.query as {
+  const { year, month, buildingIds } = req.query as {
     year?: string;
     month?: string;
-    buildingId?: string;
+    buildingIds?: string;
   };
 
-  let buildingsArray: string[] | undefined;
+  let filterBuildingIds =
+    !buildingIds || buildingIds === 'undefined' ? undefined : buildingIds.split(',');
 
-  if (buildingId) {
-    buildingsArray = [buildingId];
-  } else if (hasAdminPermission(req.Permissions)) {
-    buildingsArray = undefined;
-  } else {
-    buildingsArray = handlePermittedBuildings(req.BuildingsPermissions, 'id');
+  if (hasAdminPermission(req.Permissions)) {
+    filterBuildingIds = undefined;
+  } else if (!filterBuildingIds) {
+    filterBuildingIds = handlePermittedBuildings(req.BuildingsPermissions, 'id');
   }
 
   const currentYear = Number(year) || new Date().getFullYear();
@@ -47,7 +46,7 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
       companyId: req.Company.id,
       startDate,
       endDate,
-      buildingId: buildingsArray,
+      buildingIds: filterBuildingIds,
     });
 
   const Dates = [];
