@@ -1,5 +1,5 @@
 import { TicketStatusName } from '@prisma/client';
-import { prisma, prismaTypes } from '../../../../../prisma';
+import { prisma } from '../../../../../prisma';
 import { needExist } from '../../../../utils/newValidator';
 
 interface IListCalendarCalled {
@@ -44,14 +44,6 @@ export async function getCalendarEvents({
 
   const startDate = new Date(Date.UTC(year, month ? month - 1 : 0, 1, 0, 0, 0));
   const endDate = new Date(Date.UTC(year, month || 12, 0, 23, 59, 59, 999));
-
-  const where: prismaTypes.TicketWhereInput = {
-    ...(buildingIds && buildingIds.length > 0 && { buildingId: { in: buildingIds } }),
-    createdAt: {
-      gte: startDate,
-      lte: endDate,
-    },
-  };
 
   const tickets = await prisma.ticket.findMany({
     select: {
