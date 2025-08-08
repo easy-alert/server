@@ -47,8 +47,14 @@ export const accessPermissions: IPermissionUpsert[] = [
   {
     moduleName: 'access',
     moduleLabel: 'Acessos',
-    name: 'access:calendar',
-    label: 'Acesso Calendário',
+    name: 'access:calendarMaintenances',
+    label: 'Acesso Calendário de Manutenções',
+  },
+  {
+    moduleName: 'access',
+    moduleLabel: 'Acessos',
+    name: 'access:calendarTickets',
+    label: 'Acesso Calendário de Chamados',
   },
   {
     moduleName: 'access',
@@ -226,5 +232,5 @@ export const managementPermissions: IPermissionUpsert[] = [
     moduleLabel: 'Gestão',
     name: 'management:account',
     label: 'Conta',
-  }
-]
+  },
+];
