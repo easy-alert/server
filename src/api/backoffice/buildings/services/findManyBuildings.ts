@@ -1,4 +1,4 @@
-import { prisma } from '../../../../../prisma';
+import { prisma, prismaTypes } from '../../../../../prisma';
 
 interface IFindManyBuildings {
   take?: number;
@@ -7,7 +7,7 @@ interface IFindManyBuildings {
 }
 
 export async function findManyBuildings({ take = 20, page, search }: IFindManyBuildings) {
-  const where = search
+  const where: prismaTypes.BuildingWhereInput = search
     ? {
         OR: [
           { name: { contains: search, mode: 'insensitive' as const } },
