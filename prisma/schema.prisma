@@ -177,6 +177,8 @@ model Company {
   completedMaintenanceScore             Int?
   completedMaintenanceScoreCalculatedAt DateTime?
 
+  linkedExternalForPayment String[] @default([])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
