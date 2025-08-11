@@ -7,12 +7,13 @@ interface ISendErrorToServerLog {
 }
 
 export async function sendErrorToServerLog({ stack, extraInfo }: ISendErrorToServerLog) {
-  const lowerCaseEnvironment = String(process.env?.ENVIRONMENT).toLowerCase();
+  const environment = String(process.env?.ENVIRONMENT) || String(process.env?.ENV);
+  const environmentLowerCase = environment.toLowerCase();
 
-  if (lowerCaseEnvironment.includes('sandbox') || lowerCaseEnvironment.includes('production')) {
+  if (environmentLowerCase.includes('sandbox') || environmentLowerCase.includes('production')) {
     axios.post('https://ada-logs.herokuapp.com/api/easy-alert/errors/create', {
       projectName: 'Easy Alert',
-      environment: process.env.ENVIRONMENT,
+      environment,
       side: 'Server',
       errorStack: JSON.stringify(stack),
       extraInfo,
