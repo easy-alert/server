@@ -32,6 +32,7 @@ export async function sharedEditCompanyAndOwner({
     ticketInfo,
     ticketType,
     showMaintenancePriority,
+    linkedExternalForPayment,
   },
   userId,
   companyId,
@@ -67,12 +68,28 @@ export async function sharedEditCompanyAndOwner({
     userId,
   });
 
-  await userServices.edit({
-    userId,
-    name,
-    email,
-    phoneNumber: contactNumber,
-  });
+  try {
+    await userServices.edit({
+      userId,
+      name,
+      email,
+      phoneNumber: contactNumber,
+    });
+  } catch (err: any) {
+    if (err?.code === 'P2002' && err?.meta?.target?.includes('email')) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Email já cadastrado.',
+      });
+    }
+
+    if (err?.code === 'P2002' && err?.meta?.target?.includes('phoneNumber')) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'Telefone já cadastrado.',
+      });
+    }
+  }
 
   const lowerCaseTicketInfo = ticketInfo ? ticketInfo.toLowerCase() : null;
 
@@ -89,6 +106,7 @@ export async function sharedEditCompanyAndOwner({
     receiveDailyDueReports,
     receivePreviousMonthReports,
     showMaintenancePriority,
+    linkedExternalForPayment,
     ticketInfo:
       lowerCaseTicketInfo && ticketType === 'whatsapp'
         ? unmask(lowerCaseTicketInfo)
