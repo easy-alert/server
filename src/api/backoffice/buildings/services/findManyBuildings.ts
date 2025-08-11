@@ -1,4 +1,4 @@
-import { prisma } from '../../../../../prisma';
+import { prisma, prismaTypes } from '../../../../../prisma';
 
 interface IFindManyBuildings {
   take?: number;
@@ -7,6 +7,16 @@ interface IFindManyBuildings {
 }
 
 export async function findManyBuildings({ take = 20, page, search }: IFindManyBuildings) {
+  const where: prismaTypes.BuildingWhereInput =
+    search && search.trim()
+      ? {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' as const } },
+            { city: { contains: search, mode: 'insensitive' as const } },
+          ],
+        }
+      : {};
+
   const buildings = await prisma.building.findMany({
     select: {
       id: true,
@@ -17,29 +27,16 @@ export async function findManyBuildings({ take = 20, page, search }: IFindManyBu
       createdAt: true,
       isBlocked: true,
     },
-
-    where: {
-      name: {
-        contains: search,
-        mode: 'insensitive',
-      },
-    },
-
+    where,
     orderBy: {
       createdAt: 'asc',
     },
-
     take,
     skip: (page - 1) * take,
   });
 
   const totalBuildings = await prisma.building.count({
-    where: {
-      name: {
-        contains: search,
-        mode: 'insensitive',
-      },
-    },
+    where,
   });
 
   return {
