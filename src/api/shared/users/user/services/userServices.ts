@@ -208,6 +208,7 @@ export class UserServices {
                 canAccessChecklists: true,
                 canAccessTickets: true,
                 showMaintenancePriority: true,
+                linkedExternalForPayment: true,
 
                 createdAt: true,
               },

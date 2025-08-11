@@ -209,6 +209,8 @@ export class AuthServices {
                 canAccessTickets: true,
                 showMaintenancePriority: true,
 
+                linkedExternalForPayment: true,
+
                 createdAt: true,
               },
             },
@@ -286,6 +288,7 @@ export class AuthServices {
                 canAccessChecklists: true,
                 canAccessTickets: true,
                 showMaintenancePriority: true,
+                linkedExternalForPayment: true,
 
                 createdAt: true,
 
@@ -390,6 +393,7 @@ export class AuthServices {
                 canAccessChecklists: true,
                 canAccessTickets: true,
                 showMaintenancePriority: true,
+                linkedExternalForPayment: true,
 
                 createdAt: true,
 
