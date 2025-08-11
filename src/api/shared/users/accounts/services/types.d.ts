@@ -15,4 +15,5 @@ export interface IEditCompany {
   ticketInfo: string | null;
   ticketType: CompanyTicketType;
   showMaintenancePriority: boolean;
+  linkedExternalForPayment: string[];
 }
