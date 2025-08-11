@@ -7,14 +7,15 @@ interface IFindManyBuildings {
 }
 
 export async function findManyBuildings({ take = 20, page, search }: IFindManyBuildings) {
-  const where: prismaTypes.BuildingWhereInput = search
-    ? {
-        OR: [
-          { name: { contains: search, mode: 'insensitive' as const } },
-          { city: { contains: search, mode: 'insensitive' as const } },
-        ],
-      }
-    : {};
+  const where: prismaTypes.BuildingWhereInput =
+    search && search.trim()
+      ? {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' as const } },
+            { city: { contains: search, mode: 'insensitive' as const } },
+          ],
+        }
+      : {};
 
   const buildings = await prisma.building.findMany({
     select: {
