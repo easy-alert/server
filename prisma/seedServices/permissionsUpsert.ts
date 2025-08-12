@@ -104,6 +104,12 @@ export const accessPermissions: IPermissionUpsert[] = [
     name: 'access:account',
     label: 'Acesso Conta',
   },
+  {
+    moduleName: 'access',
+    moduleLabel: 'Acessos',
+    name: 'access:bills',
+    label: 'Acesso Financeiro',
+  },
 ];
 
 export const buildingsPermissions: IPermissionUpsert[] = [
