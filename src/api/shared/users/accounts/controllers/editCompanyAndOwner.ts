@@ -106,7 +106,7 @@ export async function sharedEditCompanyAndOwner({
     receiveDailyDueReports,
     receivePreviousMonthReports,
     showMaintenancePriority,
-    linkedExternalForPayment,
+    linkedExternalForPayment: linkedExternalForPayment || [],
     ticketInfo:
       lowerCaseTicketInfo && ticketType === 'whatsapp'
         ? unmask(lowerCaseTicketInfo)
