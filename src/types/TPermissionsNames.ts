@@ -20,6 +20,7 @@ export type TPermissionsNames =
   | 'access:suppliers'
   | 'access:tutorials'
   | 'access:account'
+  | 'access:bills'
 
   // backoffice permissions
   // company permissions

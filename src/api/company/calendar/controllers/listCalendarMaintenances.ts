@@ -18,10 +18,12 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
   let filterBuildingIds =
     !buildingIds || buildingIds === 'undefined' ? undefined : buildingIds.split(',');
 
-  if (hasAdminPermission(req.Permissions)) {
-    filterBuildingIds = undefined;
-  } else if (!filterBuildingIds) {
-    filterBuildingIds = handlePermittedBuildings(req.BuildingsPermissions, 'id');
+  if (!filterBuildingIds) {
+    if (hasAdminPermission(req.Permissions)) {
+      filterBuildingIds = undefined;
+    } else {
+      filterBuildingIds = handlePermittedBuildings(req.BuildingsPermissions, 'id');
+    }
   }
 
   const currentYear = Number(year) || new Date().getFullYear();
