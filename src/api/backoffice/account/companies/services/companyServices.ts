@@ -194,6 +194,7 @@ export class CompanyServices {
                 email: true,
                 lastAccess: true,
                 isBlocked: true,
+                image: true,
               },
             },
 
