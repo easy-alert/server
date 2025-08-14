@@ -39,6 +39,7 @@ export interface IListBuildings {
   search: string;
   companyId: string;
   buildingsIds?: string[];
+  filterBy?: 'mostRecent' | 'oldest' | 'mostScore' | 'leastScore' | '';
 }
 
 export interface IListMaintenances {
