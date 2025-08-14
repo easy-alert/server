@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { changeTime } from '../../../../utils/dateTime/changeTime';
-
 import { SharedCalendarServices } from '../../../shared/calendar/services/SharedCalendarServices';
 import { buildingServices } from '../../buildings/building/services/buildingServices';
 import { hasAdminPermission } from '../../../../utils/permissions/hasAdminPermission';
@@ -118,11 +117,25 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
     expired: entries.filter((e: any) => e.MaintenancesStatus.name === 'expired').length,
   }));
 
+  const FullCalendarEvents = Dates.map((item: any) => ({
+    id: String(item.id ?? item.notificationDate),
+    title: item.Maintenance?.name || item.title || 'Manutenção',
+    start: item.notificationDate,
+    allDay: true,
+    extendedProps: {
+      status: item.MaintenancesStatus?.name,
+      building: item.Building?.name,
+      maintenanceType: item.Maintenance?.MaintenanceType?.name,
+      rawData: item,
+    },
+  }));
+
   return res.status(200).json({
     Filter,
     Dates: {
       Months: DatesMonths,
       Weeks: Dates,
     },
+    Events: FullCalendarEvents,
   });
 }
