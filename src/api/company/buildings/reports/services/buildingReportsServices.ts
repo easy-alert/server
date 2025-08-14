@@ -1,6 +1,6 @@
 // #region IMPORTS
 import { prisma, prismaTypes } from '../../../../../../prisma';
-import { differenceInDays, setToUTCMidnight } from '../../../../../utils/dateTime';
+import { differenceInDays, setToUTCLastMinuteOfDay } from '../../../../../utils/dateTime';
 import { changeUTCTime } from '../../../../../utils/dateTime/changeTime';
 import { ServerMessage } from '../../../../../utils/messages/serverMessage';
 
@@ -41,7 +41,7 @@ export class BuildingReportsServices {
           ms: 0,
         },
       }),
-      endDate: setToUTCMidnight(query.endDate),
+      endDate: setToUTCLastMinuteOfDay(query.endDate),
     };
 
     if (dates.endDate < dates.startDate) {
@@ -62,20 +62,16 @@ export class BuildingReportsServices {
 
     const filter = {
       maintenanceStatusIds:
-        query.maintenanceStatusIds?.split(',')[0] !== ''
-          ? query.maintenanceStatusIds?.split(',')
-          : undefined,
-      buildingIds:
-        query.buildingIds?.split(',')[0] !== '' ? query.buildingIds?.split(',') : undefined,
-      categoryNames:
-        query.categoryNames?.split(',')[0] !== '' ? query.categoryNames?.split(',') : undefined,
+        (query?.maintenanceStatusIds?.length ?? 0) > 0 ? query.maintenanceStatusIds : undefined,
+      buildingIds: (query?.buildingIds?.length ?? 0) > 0 ? query.buildingIds : undefined,
+      categoryNames: (query?.categoryNames?.length ?? 0) > 0 ? query.categoryNames : undefined,
       dateFilter: {
         gte: dates.startDate,
         lte: dates.endDate,
       },
       filterBy: query.filterBy,
       search: query.search || '',
-      type: query.type?.split(',')[0] !== '' ? query.type?.split(',') : undefined,
+      type: (query?.type?.length ?? 0) > 0 ? query.type : undefined,
     };
 
     return filter;
@@ -200,28 +196,16 @@ export class BuildingReportsServices {
           }
         : { [queryFilter.filterBy]: queryFilter.dateFilter };
 
-    const MaintenancesPendingFilterByWhere: prismaTypes.MaintenanceHistoryWhereInput =
+    const maintenancesPendingFilterByWhere: prismaTypes.MaintenanceHistoryWhereInput =
       queryFilter.filterBy === 'allActivities'
         ? {
             OR: [
-              {
-                notificationDate: {
-                  lte: queryFilter.dateFilter.lte,
-                },
-              },
-              {
-                dueDate: {
-                  lte: queryFilter.dateFilter.lte,
-                },
-              },
-              {
-                resolutionDate: {
-                  lte: queryFilter.dateFilter.lte,
-                },
-              },
+              { notificationDate: { lte: queryFilter.dateFilter.lte } },
+              { dueDate: { lte: queryFilter.dateFilter.lte } },
+              { resolutionDate: { lte: queryFilter.dateFilter.lte } },
             ],
           }
-        : { [queryFilter.filterBy]: queryFilter.dateFilter.lte };
+        : { [queryFilter.filterBy]: { lte: queryFilter.dateFilter.lte } };
 
     // nome diabo pra reaproveitar função
     const [maintenancesHistory, MaintenancesPending, company] = await prisma.$transaction([
@@ -454,6 +438,7 @@ export class BuildingReportsServices {
               name: 'asc',
             },
           },
+
           { notificationDate: 'desc' },
         ],
 
@@ -474,7 +459,7 @@ export class BuildingReportsServices {
             },
           },
 
-          ...MaintenancesPendingFilterByWhere,
+          ...maintenancesPendingFilterByWhere,
 
           MaintenancesStatus: {
             name: 'pending',

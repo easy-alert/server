@@ -13,14 +13,15 @@ export interface IFindBuildingMaintenancesHistory {
 
 export interface IListForBuildingReportQuery {
   query: {
-    maintenanceStatusIds: string | undefined;
-    buildingIds: string | undefined;
-    categoryNames: string | undefined;
+    maintenanceStatusIds: string[] | undefined;
+    buildingIds: string[] | undefined;
+    categoryNames: string[] | undefined;
     startDate: string | undefined;
     endDate: string | undefined;
+    buildingNames: string[] | undefined;
     filterBy: string;
     search?: string;
-    type?: string;
+    type?: string[];
   };
 }
 
