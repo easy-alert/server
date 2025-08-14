@@ -246,7 +246,7 @@ export class BuildingServices {
     ]);
   }
 
-  async list({ take = 100, page, search = '', companyId, buildingsIds }: IListBuildings) {
+  async list({ take = 100, page, search = '', companyId, buildingsIds, filterBy }: IListBuildings) {
     const where: prismaTypes.BuildingWhereInput = {
       id: {
         in: buildingsIds,
@@ -280,6 +280,16 @@ export class BuildingServices {
       ],
     };
 
+    const orderBy: prismaTypes.BuildingOrderByWithRelationInput = {};
+
+    if (!filterBy) {
+      orderBy.name = 'asc';
+    } else if (filterBy === 'mostRecent') {
+      orderBy.createdAt = 'desc';
+    } else if (filterBy === 'oldest') {
+      orderBy.createdAt = 'asc';
+    }
+
     const [Buildings, buildingsCount] = await prisma.$transaction([
       prisma.building.findMany({
         select: {
@@ -288,6 +298,8 @@ export class BuildingServices {
           neighborhood: true,
           city: true,
           nanoId: true,
+
+          createdAt: true,
 
           MaintenancesHistory: {
             select: {
@@ -308,9 +320,7 @@ export class BuildingServices {
 
         where,
 
-        orderBy: {
-          name: 'asc',
-        },
+        orderBy,
 
         take,
         skip: (page - 1) * take,
