@@ -33,7 +33,6 @@ export async function checkPasswordExistenceController(req: Request, res: Respon
   }
 
   return res.status(200).json({
-    needPassword: !!building.syndicPassword,
     buildingName: building.name,
     companyIsBlocked: building.Company.isBlocked,
     buildingIsBlocked: building.isBlocked,

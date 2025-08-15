@@ -50,17 +50,6 @@ export async function updateClientPasswordController(req: Request, res: Response
     });
   }
 
-  if (type === 'responsible') {
-    await prisma.building.update({
-      data: {
-        syndicPassword: password ? hashSync(password, 12) : null,
-      },
-      where: {
-        id: buildingId,
-      },
-    });
-  }
-
   return res.status(200).json({
     ServerMessage: {
       statusCode: 200,
