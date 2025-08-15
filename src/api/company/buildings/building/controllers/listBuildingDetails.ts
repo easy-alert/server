@@ -8,6 +8,7 @@ import { CategoryServices } from '../../../categories/category/services/category
 import { BuildingServices } from '../services/buildingServices';
 import { IListBuildingCategoriesAndMaintenances } from './types';
 import { changeTime } from '../../../../../utils/dateTime/changeTime';
+import { prisma } from '../../../../../../prisma';
 
 const buildingServices = new BuildingServices();
 const categoryServices = new CategoryServices();
@@ -76,6 +77,10 @@ export async function listBuildingDetails(req: Request, res: Response) {
   // #endregion
 
   let BuildingDetails = await buildingServices.listDetails({ buildingId });
+
+  const ticketsCount = await prisma.ticket.count({
+    where: { buildingId },
+  });
 
   if (BuildingDetails?.MaintenancesHistory) {
     const MaintenancesCount = [
@@ -182,6 +187,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
       MaintenancesCount,
 
       BuildingApartments: BuildingDetails.BuildingApartments,
+      ticketsCount,
     };
   }
 
