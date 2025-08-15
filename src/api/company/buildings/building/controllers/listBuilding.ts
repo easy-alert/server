@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 // CLASS
 import { BuildingServices } from '../services/buildingServices';
 import { changeTime } from '../../../../../utils/dateTime/changeTime';
+import { prisma } from '../../../../../../prisma';
 
 const buildingServices = new BuildingServices();
 // #endregion
@@ -19,21 +20,18 @@ interface IQuery {
 interface IBuilding {
   id: string;
   nanoId: string;
-
   name: string;
   neighborhood: string | null;
   city: string | null;
-
   createdAt: Date;
-
   MaintenanceScore: number;
-
   MaintenancesCount: {
     name: string;
     singularLabel: string;
     pluralLabel: string;
     count: number;
   }[];
+  ticketsCount: number;
 }
 
 export async function listBuilding(req: Request, res: Response) {
@@ -137,6 +135,10 @@ export async function listBuilding(req: Request, res: Response) {
     const completedScore = MaintenancesCount[0].count;
     const score = completedScore / totalScore;
 
+    const ticketsCount = await prisma.ticket.count({
+      where: { buildingId: Buildings[i].id },
+    });
+
     buildings.push({
       id: Buildings[i].id,
       nanoId: Buildings[i].nanoId,
@@ -146,6 +148,7 @@ export async function listBuilding(req: Request, res: Response) {
       createdAt: Buildings[i].createdAt,
       MaintenanceScore: score,
       MaintenancesCount,
+      ticketsCount,
     });
   }
 
