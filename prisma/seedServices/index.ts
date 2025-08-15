@@ -240,6 +240,7 @@ export class SeedServices {
       { name: 'condomínio horizontal' },
       { name: 'prédio' },
       { name: 'reformas' },
+      { name: 'apartamento' },
       { name: 'outro' },
     ];
 
@@ -904,7 +905,6 @@ export class SeedServices {
 
     console.log('maintenance service order number added.');
   }
-
 
   async migrateChecklistItemStatus() {
     console.log('\n\nstarting checklist item status creation ...');
