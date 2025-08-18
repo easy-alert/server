@@ -8,8 +8,36 @@ import { changeTime } from '../../../../../utils/dateTime/changeTime';
 const buildingServices = new BuildingServices();
 // #endregion
 
+interface IQuery {
+  companyId: string;
+  search: string;
+  page: string;
+  checkPerms: string;
+  filterBy: 'mostRecent' | 'oldest' | 'mostScore' | 'leastScore' | '';
+}
+
+interface IBuilding {
+  id: string;
+  nanoId: string;
+
+  name: string;
+  neighborhood: string | null;
+  city: string | null;
+
+  createdAt: Date;
+
+  MaintenanceScore: number;
+
+  MaintenancesCount: {
+    name: string;
+    singularLabel: string;
+    pluralLabel: string;
+    count: number;
+  }[];
+}
+
 export async function listBuilding(req: Request, res: Response) {
-  const { companyId, search, page, checkPerms } = req.query;
+  const { companyId, search, page, checkPerms, filterBy } = req.query as unknown as IQuery;
 
   const isAdmin = req.Permissions.some((permission) =>
     permission.Permission.name.includes('admin'),
@@ -29,7 +57,10 @@ export async function listBuilding(req: Request, res: Response) {
     companyId: (req?.Company?.id || companyId) as string,
     buildingsIds: isAdmin ? undefined : permittedBuildings,
     page: Number(pagination),
+    filterBy,
   });
+
+  const buildings: IBuilding[] = [];
 
   for (let i = 0; i < Buildings.length; i++) {
     const MaintenancesCount = [
@@ -102,16 +133,27 @@ export async function listBuilding(req: Request, res: Response) {
       }
     });
 
-    Buildings[i] = {
+    const totalScore = MaintenancesCount.reduce((acc, maintenance) => acc + maintenance.count, 0);
+    const completedScore = MaintenancesCount[0].count;
+    const score = completedScore / totalScore;
+
+    buildings.push({
       id: Buildings[i].id,
       nanoId: Buildings[i].nanoId,
       name: Buildings[i].name,
       city: Buildings[i].city,
       neighborhood: Buildings[i].neighborhood,
-      // @ts-ignore
+      createdAt: Buildings[i].createdAt,
+      MaintenanceScore: score,
       MaintenancesCount,
-    };
+    });
   }
 
-  return res.status(200).json({ Buildings, buildingsCount });
+  if (filterBy === 'mostScore') {
+    buildings.sort((a, b) => b.MaintenanceScore - a.MaintenanceScore);
+  } else if (filterBy === 'leastScore') {
+    buildings.sort((a, b) => a.MaintenanceScore - b.MaintenanceScore);
+  }
+
+  return res.status(200).json({ buildings, buildingsCount });
 }
