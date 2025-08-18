@@ -8,7 +8,6 @@ import { CategoryServices } from '../../../categories/category/services/category
 import { BuildingServices } from '../services/buildingServices';
 import { IListBuildingCategoriesAndMaintenances } from './types';
 import { changeTime } from '../../../../../utils/dateTime/changeTime';
-import { prisma } from '../../../../../../prisma';
 
 const buildingServices = new BuildingServices();
 const categoryServices = new CategoryServices();

@@ -4,7 +4,6 @@ import { Request, Response } from 'express';
 // CLASS
 import { BuildingServices } from '../services/buildingServices';
 import { changeTime } from '../../../../../utils/dateTime/changeTime';
-import { prisma } from '../../../../../../prisma';
 
 const buildingServices = new BuildingServices();
 // #endregion
