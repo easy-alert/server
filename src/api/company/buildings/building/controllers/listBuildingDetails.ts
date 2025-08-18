@@ -78,10 +78,6 @@ export async function listBuildingDetails(req: Request, res: Response) {
 
   let BuildingDetails = await buildingServices.listDetails({ buildingId });
 
-  const ticketsCount = await prisma.ticket.count({
-    where: { buildingId },
-  });
-
   if (BuildingDetails?.MaintenancesHistory) {
     const MaintenancesCount = [
       {
@@ -187,7 +183,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
       MaintenancesCount,
 
       BuildingApartments: BuildingDetails.BuildingApartments,
-      ticketsCount,
+      ticketsCount: BuildingDetails._count.tickets,
     };
   }
 

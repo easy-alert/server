@@ -135,10 +135,6 @@ export async function listBuilding(req: Request, res: Response) {
     const completedScore = MaintenancesCount[0].count;
     const score = completedScore / totalScore;
 
-    const ticketsCount = await prisma.ticket.count({
-      where: { buildingId: Buildings[i].id },
-    });
-
     buildings.push({
       id: Buildings[i].id,
       nanoId: Buildings[i].nanoId,
@@ -148,7 +144,7 @@ export async function listBuilding(req: Request, res: Response) {
       createdAt: Buildings[i].createdAt,
       MaintenanceScore: score,
       MaintenancesCount,
-      ticketsCount,
+      ticketsCount: Buildings[i]._count.tickets,
     });
   }
 
