@@ -1,28 +1,33 @@
+interface IQuery {
+  maintenanceStatusIds: string[] | undefined;
+  maintenanceStatusNames: string[] | undefined;
+  buildingIds: string[] | undefined;
+  buildingNames: string[] | undefined;
+  categoryNames: string[] | undefined;
+  startDate: string | undefined;
+  endDate: string | undefined;
+  filterBy: string;
+  search?: string;
+  type?: string[];
+}
+
+interface IQueryFilter {
+  maintenanceStatusIds: string[] | undefined;
+  buildingIds: string[] | undefined;
+  categoryNames: string[] | undefined;
+  dateFilter: { gte: Date; lte: Date };
+  filterBy: string;
+  search?: string;
+  type?: string[];
+}
+
 export interface IFindBuildingMaintenancesHistory {
   companyId: string;
-  queryFilter: {
-    maintenanceStatusIds: string[] | undefined;
-    buildingIds: string[] | undefined;
-    categoryNames: string[] | undefined;
-    dateFilter: { gte: Date; lte: Date };
-    filterBy: string;
-    search?: string;
-    type?: string[];
-  };
+  queryFilter: IQueryFilter;
 }
 
 export interface IListForBuildingReportQuery {
-  query: {
-    maintenanceStatusIds: string[] | undefined;
-    buildingIds: string[] | undefined;
-    categoryNames: string[] | undefined;
-    startDate: string | undefined;
-    endDate: string | undefined;
-    buildingNames: string[] | undefined;
-    filterBy: string;
-    search?: string;
-    type?: string[];
-  };
+  query: IQuery;
 }
 
 export interface IMaintenancesData {

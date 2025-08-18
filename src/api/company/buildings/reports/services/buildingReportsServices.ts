@@ -63,7 +63,10 @@ export class BuildingReportsServices {
     const filter = {
       maintenanceStatusIds:
         (query?.maintenanceStatusIds?.length ?? 0) > 0 ? query.maintenanceStatusIds : undefined,
+      maintenanceStatusNames:
+        (query?.maintenanceStatusNames?.length ?? 0) > 0 ? query.maintenanceStatusNames : undefined,
       buildingIds: (query?.buildingIds?.length ?? 0) > 0 ? query.buildingIds : undefined,
+      buildingNames: (query?.buildingNames?.length ?? 0) > 0 ? query.buildingNames : undefined,
       categoryNames: (query?.categoryNames?.length ?? 0) > 0 ? query.categoryNames : undefined,
       dateFilter: {
         gte: dates.startDate,

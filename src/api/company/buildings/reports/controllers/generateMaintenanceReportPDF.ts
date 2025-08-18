@@ -31,7 +31,7 @@ import {
 } from '../../../../../utils/dateTime';
 
 import type { IInterval } from './listForBuildingReports';
-import type { IMaintenancesData } from '../services/types';
+import type { IMaintenancesData, IQuery, IQueryFilter } from '../services/types';
 
 // CLASS
 const buildingReportsServices = new BuildingReportsServices();
@@ -146,10 +146,10 @@ async function PDFService({
   req: Request;
   company: { image: string } | null;
   id: string;
-  query: any;
   maintenancesHistory: any;
   MaintenancesPending: any;
-  queryFilter: any;
+  query: IQuery;
+  queryFilter: IQueryFilter;
 }) {
   const pdfId = uuidv4().substring(0, 10);
   const folderName = `Folder-${Date.now()}`;
@@ -979,7 +979,7 @@ async function PDFService({
                   width: 64,
                   height: 64,
                   fit: [64, 64],
-                  absolutePosition: { x: 64, y: 46 },
+                  absolutePosition: { x: 64, y: 32 },
                 },
                 {
                   table: {
@@ -1036,18 +1036,17 @@ async function PDFService({
                           text: [
                             { text: 'Status: ', bold: true },
                             {
-                              text: query.maintenanceStatusNames
-                                ? query.maintenanceStatusNames
-                                    .split(',')
-                                    .map(
+                              text:
+                                (query.maintenanceStatusNames?.length || 0) > 0
+                                  ? (query.maintenanceStatusNames || []).map(
                                       (value: string, i: number) =>
                                         `${getSingularStatusNameForPdf(value)}$${
-                                          query.maintenanceStatusNames.split(',').length === i + 1
+                                          (query.maintenanceStatusNames?.length || 0) === i + 1
                                             ? ''
                                             : ','
                                         }`,
                                     )
-                                : 'Todos',
+                                  : 'Todos',
                             },
                           ],
                           fontSize: 12,
