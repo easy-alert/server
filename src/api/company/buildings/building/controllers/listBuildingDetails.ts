@@ -182,6 +182,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
       MaintenancesCount,
 
       BuildingApartments: BuildingDetails.BuildingApartments,
+      ticketsCount: BuildingDetails._count.tickets,
     };
   }
 

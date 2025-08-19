@@ -19,21 +19,18 @@ interface IQuery {
 interface IBuilding {
   id: string;
   nanoId: string;
-
   name: string;
   neighborhood: string | null;
   city: string | null;
-
   createdAt: Date;
-
   MaintenanceScore: number;
-
   MaintenancesCount: {
     name: string;
     singularLabel: string;
     pluralLabel: string;
     count: number;
   }[];
+  ticketsCount: number;
 }
 
 export async function listBuilding(req: Request, res: Response) {
@@ -146,6 +143,7 @@ export async function listBuilding(req: Request, res: Response) {
       createdAt: Buildings[i].createdAt,
       MaintenanceScore: score,
       MaintenancesCount,
+      ticketsCount: Buildings[i]._count.tickets,
     });
   }
 

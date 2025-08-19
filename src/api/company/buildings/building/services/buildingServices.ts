@@ -316,6 +316,12 @@ export class BuildingServices {
               },
             },
           },
+
+          _count: {
+            select: {
+              tickets: true,
+            },
+          },
         },
 
         where,
@@ -500,6 +506,12 @@ export class BuildingServices {
           },
           orderBy: {
             number: 'asc',
+          },
+        },
+
+        _count: {
+          select: {
+            tickets: true,
           },
         },
       },
