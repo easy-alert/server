@@ -646,7 +646,6 @@ model Building {
   isBlocked                         Boolean  @default(false)
 
   residentPassword String?
-  syndicPassword   String?
 
   nextMaintenanceCreationBasis NextMaintenanceCreationBasis @default(executionDate)
 

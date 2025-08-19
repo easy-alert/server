@@ -357,7 +357,6 @@ export class BuildingServices {
         warrantyExpiration: true,
         keepNotificationAfterWarrantyEnds: true,
         mandatoryReportProof: true,
-        syndicPassword: true,
         residentPassword: true,
         nextMaintenanceCreationBasis: true,
         isActivityLogPublic: true,
