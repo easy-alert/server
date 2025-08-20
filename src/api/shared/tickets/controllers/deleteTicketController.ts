@@ -9,5 +9,5 @@ export async function deleteTicketController(req: Request, res: Response) {
 
   await ticketServices.delete(ticketId);
 
-  return res.status(201).json({ ServerMessage: { message: 'Chamado excluído com sucesso.' } });
+  return res.status(200).json({ ServerMessage: { message: 'Chamado excluído com sucesso.' } });
 }
