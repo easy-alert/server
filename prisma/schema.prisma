@@ -59,6 +59,8 @@ model User {
   ChecklistReportPDF               ChecklistReportPDF[]
   PushNotification                 PushNotification[]
   ChecklistUsers                   ChecklistUsers[]
+  StockMovement                    StockMovement[]
+  Stock                            Stock[]
 
   @@unique([email, phoneNumber])
   @@map("users")
@@ -199,6 +201,9 @@ model Company {
   Guarantee            Guarantee[]
   GuaranteeSystem      GuaranteeSystem[]
   GuaranteeFailureType GuaranteeFailureType[]
+  StockItem            StockItem[]
+  StockMovement        StockMovement[]
+  StockItemType        StockItemType[]
 
   @@map("companies")
 }
@@ -670,6 +675,10 @@ model Building {
   MaintenanceAdditionalInformation MaintenanceAdditionalInformation[]
   ChecklistTemplate                ChecklistTemplate[]
   Guarantee                        Guarantee[]
+  Stock                            Stock[]
+  StockMovement                    StockMovement[]
+  StockItem                        StockItem[]
+  StockItemType                    StockItemType[]
 
   @@map("buildings")
 }
@@ -1465,6 +1474,132 @@ model Guarantee {
   @@unique([companyId, systemId, description, standardWarrantyPeriod])
   @@map("guarantees")
 }
+
+// region STOCK MANAGEMENT
+model StockItemType {
+  id String @id @default(uuid())
+
+  companyId  String
+  buildingId String?
+
+  name        String  @unique
+  description String?
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company  Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  building Building? @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+
+  stockItems StockItem[]
+
+  @@unique([companyId, name, buildingId])
+  @@index([companyId])
+  @@index([buildingId])
+  @@map("stockItemTypes")
+}
+
+model StockItem {
+  id String @id @default(uuid())
+
+  companyId       String
+  buildingId      String?
+  stockItemTypeId String
+
+  name        String
+  description String?
+  unit        String
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  building      Building?     @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  stockItemType StockItemType @relation(fields: [stockItemTypeId], references: [id])
+
+  stocks    Stock[]
+  movements StockMovement[]
+
+  @@unique([companyId, name, buildingId])
+  @@index([companyId])
+  @@index([buildingId])
+  @@map("stockItems")
+}
+
+model Stock {
+  id String @id @default(uuid())
+
+  buildingId  String
+  stockItemId String
+  createdById String?
+
+  quantity        Int      @default(0)
+  minimumQuantity Int      @default(0)
+  location        String?
+  notes           String?
+  lastUpdated     DateTime @default(now())
+  isActive        Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+
+  building  Building  @relation(fields: [buildingId], references: [id])
+  stockItem StockItem @relation(fields: [stockItemId], references: [id])
+  createdBy User?     @relation(fields: [createdById], references: [id])
+
+  movements StockMovement[]
+
+  @@unique([buildingId, stockItemId])
+  @@index([stockItemId])
+  @@index([buildingId])
+  @@map("stocks")
+}
+
+enum StockMovementType {
+  REGISTRATION
+  INCOMING
+  OUTGOING
+  TRANSFER_IN
+  TRANSFER_OUT
+  ADJUSTMENT
+  LOSS
+  DAMAGED
+  DELETED
+  REMOVAL
+}
+
+model StockMovement {
+  id String @id @default(uuid())
+
+  companyId       String
+  stockId         String
+  stockItemId     String
+  lastUpdatedById String?
+  transferToId    String?
+
+  quantity        Int
+  previousBalance Int
+  newBalance      Int
+  referenceNumber String?
+  notes           String?
+  movementType    StockMovementType
+  movementDate    DateTime          @default(now())
+
+  company       Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  stock         Stock     @relation(fields: [stockId], references: [id])
+  stockItem     StockItem @relation(fields: [stockItemId], references: [id])
+  lastUpdatedBy User?     @relation(fields: [lastUpdatedById], references: [id])
+  transferTo    Building? @relation(fields: [transferToId], references: [id])
+
+  @@index([stockItemId])
+  @@index([stockId])
+  @@index([lastUpdatedById])
+  @@index([movementDate])
+  @@map("stockMovements")
+}
+
+// endregion STOCK MANAGEMENT
 
 // Platform Video
 enum PlatformVideoType {
