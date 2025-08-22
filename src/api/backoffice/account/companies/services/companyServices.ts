@@ -9,6 +9,14 @@ import { Validator } from '../../../../../utils/validator/validator';
 const userServices = new UserServices();
 const sharedCompanyServices = new SharedCompanyServices();
 const validator = new Validator();
+
+export enum MaintenanceFlagColor {
+  Green = 'green',
+  Yellow = 'yellow',
+  Red = 'red',
+  Gray = 'gray',
+}
+
 export class CompanyServices {
   // #region create
 
@@ -124,7 +132,6 @@ export class CompanyServices {
     const companiesAndOwners = await prisma.company.findMany({
       take,
       skip: (page - 1) * take,
-
       select: {
         id: true,
         image: true,
@@ -147,8 +154,19 @@ export class CompanyServices {
           },
           where: { owner: true },
         },
+        MaintenancesHistory: {
+          select: {
+            resolutionDate: true,
+          },
+          where: {
+            resolutionDate: { not: null },
+          },
+          orderBy: {
+            resolutionDate: 'desc',
+          },
+          take: 1,
+        },
       },
-
       where: {
         name: {
           contains: search,
@@ -160,6 +178,24 @@ export class CompanyServices {
       },
     });
 
+    const now = new Date();
+    const companiesWithFlag = companiesAndOwners.map((company) => {
+      const lastMaintenance = company.MaintenancesHistory?.[0]?.resolutionDate;
+      let maintenanceFlag: MaintenanceFlagColor = MaintenanceFlagColor.Green;
+      if (!lastMaintenance) {
+        maintenanceFlag = MaintenanceFlagColor.Gray;
+      } else {
+        const diffMonths =
+          (now.getTime() - new Date(lastMaintenance).getTime()) / (1000 * 60 * 60 * 24 * 30);
+        if (diffMonths > 3) maintenanceFlag = MaintenanceFlagColor.Red;
+        else if (diffMonths > 1) maintenanceFlag = MaintenanceFlagColor.Yellow;
+      }
+      return {
+        ...company,
+        maintenanceFlag,
+      };
+    });
+
     const companiesCount = await prisma.company.count({
       where: {
         name: {
@@ -169,7 +205,7 @@ export class CompanyServices {
       },
     });
 
-    return { companiesAndOwners, companiesCount };
+    return { companiesAndOwners: companiesWithFlag, companiesCount };
   }
 
   async delete({ companyId }: { companyId: string }) {

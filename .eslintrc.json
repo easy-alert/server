@@ -19,6 +19,7 @@
     "camelcase": 2,
     "one-var": "off",
     "no-console": "off",
+    "no-shadow": "off",
     "linebreak-style": "off",
     "class-methods-use-this": "off",
     "no-restricted-syntax": "off",
@@ -46,6 +47,7 @@
     ],
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
-    "@typescript-eslint/no-explicit-any": "off"
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-shadow": "warn"
   }
 }
