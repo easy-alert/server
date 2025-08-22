@@ -38,6 +38,7 @@ import { listForSelectRouter } from './listForSelect/list.routes';
 import { updateReportPDFController } from './reports/controllers/updateReportPDFController';
 import { homeRouter } from './home/home.routes';
 import { calendarTicketsRouter } from './calendarTicket/calendarTicket.routes';
+import { stockRouter } from './stock/stock.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -204,4 +205,12 @@ companyRouter.use(
   authMiddleware,
   handleCompanyPermCheck([companyPermission, 'access:company']),
   homeRouter,
+);
+
+// stock routes
+companyRouter.use(
+  '/stock',
+  authMiddleware,
+  handleCompanyPermCheck([companyPermission, 'access:company']),
+  stockRouter,
 );
