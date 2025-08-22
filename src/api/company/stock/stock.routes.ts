@@ -5,7 +5,7 @@ import { Router } from 'express';
 // import { stockInventoryRouter } from './stockInventory/stockInventory.routes';
 import { stockItemsRouter } from './stockItems/stockItems.routes';
 import { stockItemTypesRouter } from './stockItemTypes/stockItemTypes.routes';
-// import { stockMovementsRouter } from './stockMovements/stockMovements.routes';
+import { stockMovementsRouter } from './stockMovements/stockMovements.routes';
 
 // ROUTES
 export const stockRouter = Router();
@@ -20,4 +20,4 @@ stockRouter.use('/items', stockItemsRouter);
 stockRouter.use('/item-types', stockItemTypesRouter);
 
 // STOCK MOVEMENTS
-// stockRouter.use('/movements', stockMovementsRouter);
+stockRouter.use('/movements', stockMovementsRouter);
