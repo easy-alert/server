@@ -2,7 +2,7 @@
 import { Router } from 'express';
 
 // CONTROLLERS
-// import { stockInventoryRouter } from './stockInventory/stockInventory.routes';
+import { stockInventoryRouter } from './stockInventory/stockInventory.routes';
 import { stockItemsRouter } from './stockItems/stockItems.routes';
 import { stockItemTypesRouter } from './stockItemTypes/stockItemTypes.routes';
 import { stockMovementsRouter } from './stockMovements/stockMovements.routes';
@@ -11,7 +11,7 @@ import { stockMovementsRouter } from './stockMovements/stockMovements.routes';
 export const stockRouter = Router();
 
 // STOCK INVENTORY
-// stockRouter.use('/inventory', stockInventoryRouter);
+stockRouter.use('/inventory', stockInventoryRouter);
 
 // STOCK ITEMS
 stockRouter.use('/items', stockItemsRouter);
