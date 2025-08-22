@@ -8,6 +8,8 @@ import { listMaintenanceStatusForSelectController } from './controllers/listMain
 import { listMaintenanceCategoriesForSelectController } from './controllers/listMaintenanceCategoriesForSelectController';
 import { listTicketPlacesForSelectController } from '../../shared/listForSelect/controllers.ts/listTicketPlacesForSelectController';
 import { listTicketServiceTypesForSelectController } from '../../shared/listForSelect/controllers.ts/listTicketServiceTypesForSelectController';
+import { listStockItemsForSelectController } from '../../shared/listForSelect/controllers.ts/listStockItemsForSelectController';
+import { listStockItemTypesForSelectController } from '../../shared/listForSelect/controllers.ts/listStockItemTypesForSelectController';
 
 // ROUTES
 export const listForSelectRouter = Router();
@@ -25,3 +27,7 @@ listForSelectRouter.get('/maintenances/categories', listMaintenanceCategoriesFor
 // TICKETS
 listForSelectRouter.get('/tickets/places', listTicketPlacesForSelectController);
 listForSelectRouter.get('/tickets/service-types', listTicketServiceTypesForSelectController);
+
+// STOCK
+listForSelectRouter.get('/stock/items', listStockItemsForSelectController);
+listForSelectRouter.get('/stock/item-types', listStockItemTypesForSelectController);
