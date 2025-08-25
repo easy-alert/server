@@ -9,6 +9,7 @@ export interface ICreateCompany {
   canAccessTickets: boolean;
   receivePreviousMonthReports: boolean;
   receiveDailyDueReports: boolean;
+  clientType: string;
 }
 
 export interface IEditCompany extends ICreateCompany {
