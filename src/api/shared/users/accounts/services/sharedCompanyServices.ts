@@ -22,6 +22,7 @@ export class SharedCompanyServices {
     ticketType,
     showMaintenancePriority,
     linkedExternalForPayment,
+    clientType,
   }: IEditCompany) {
     await this.findById({ companyId });
 
@@ -41,6 +42,7 @@ export class SharedCompanyServices {
         ticketType,
         showMaintenancePriority,
         linkedExternalForPayment,
+        clientType,
       },
       where: { id: companyId },
     });
