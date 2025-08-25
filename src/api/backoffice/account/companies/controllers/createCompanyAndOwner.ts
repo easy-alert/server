@@ -33,6 +33,7 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     canAccessTickets,
     receivePreviousMonthReports,
     receiveDailyDueReports,
+    clientType,
   } = req.body;
 
   checkValues([
@@ -94,6 +95,7 @@ export async function createCompanyAndOwner(req: Request, res: Response) {
     canAccessTickets,
     receiveDailyDueReports,
     receivePreviousMonthReports,
+    clientType,
   });
 
   await createUserPermissions({
