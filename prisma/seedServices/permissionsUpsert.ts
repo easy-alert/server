@@ -110,6 +110,12 @@ export const accessPermissions: IPermissionUpsert[] = [
     name: 'access:bills',
     label: 'Acesso Financeiro',
   },
+  {
+    moduleName: 'access',
+    moduleLabel: 'Acessos',
+    name: 'access:stock',
+    label: 'Acesso Estoque',
+  },
 ];
 
 export const buildingsPermissions: IPermissionUpsert[] = [
@@ -238,5 +244,26 @@ export const managementPermissions: IPermissionUpsert[] = [
     moduleLabel: 'Gestão',
     name: 'management:account',
     label: 'Conta',
+  },
+];
+
+export const stockPermissions: IPermissionUpsert[] = [
+  {
+    moduleName: 'stock',
+    moduleLabel: 'Estoque',
+    name: 'stock:create',
+    label: 'Criar Estoque',
+  },
+  {
+    moduleName: 'stock',
+    moduleLabel: 'Estoque',
+    name: 'stock:update',
+    label: 'Atualizar Estoque',
+  },
+  {
+    moduleName: 'stock',
+    moduleLabel: 'Estoque',
+    name: 'stock:delete',
+    label: 'Deletar Estoque',
   },
 ];
