@@ -169,7 +169,6 @@ export async function listBuildingDetails(req: Request, res: Response) {
       UserBuildingsPermissions: BuildingDetails.UserBuildingsPermissions,
       Banners: BuildingDetails.Banners,
       residentPassword: BuildingDetails.residentPassword,
-      syndicPassword: BuildingDetails.syndicPassword,
       nextMaintenanceCreationBasis: BuildingDetails.nextMaintenanceCreationBasis,
       isActivityLogPublic: BuildingDetails.isActivityLogPublic,
       guestCanCompleteMaintenance: BuildingDetails.guestCanCompleteMaintenance,

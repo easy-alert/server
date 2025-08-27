@@ -21,6 +21,7 @@ export type TPermissionsNames =
   | 'access:tutorials'
   | 'access:account'
   | 'access:bills'
+  | 'access:stock'
 
   // backoffice permissions
   // company permissions
@@ -64,4 +65,9 @@ export type TPermissionsNames =
 
   // management permissions
   | 'management:checklist'
-  | 'management:account';
+  | 'management:account'
+
+  // stock permissions
+  | 'stock:create'
+  | 'stock:update'
+  | 'stock:delete';

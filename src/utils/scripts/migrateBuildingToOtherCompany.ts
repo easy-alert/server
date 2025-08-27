@@ -84,7 +84,6 @@ async function executeMigration(
           image: originBuilding.image,
           isBlocked: originBuilding.isBlocked,
           residentPassword: originBuilding.residentPassword,
-          syndicPassword: originBuilding.syndicPassword,
           nextMaintenanceCreationBasis: originBuilding.nextMaintenanceCreationBasis,
         },
       });

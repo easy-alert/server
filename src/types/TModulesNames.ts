@@ -14,4 +14,5 @@ export type TModulesNames =
   | 'tutorials'
   | 'account'
   | 'maintenances'
-  | 'management';
+  | 'management'
+  | 'stock';

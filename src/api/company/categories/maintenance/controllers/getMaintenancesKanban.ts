@@ -78,15 +78,15 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
     new Map(
       maintenancesHistory
         .filter(
-          (maintenance) =>
-            maintenance.Maintenance.Category.categoryTypeId ===
+          (maintenance: any) =>
+            maintenance.Maintenance?.Category.categoryTypeId ===
             '36baebb3-fe3c-4edb-a479-ec78d8cacbb7',
         )
-        .map((maintenance) => [
-          maintenance.Maintenance.Category.id,
+        .map((maintenance: any) => [
+          maintenance.Maintenance?.categoryId,
           {
-            id: maintenance.Maintenance.Category.id,
-            name: maintenance.Maintenance.Category.name,
+            id: maintenance.Maintenance?.categoryId,
+            name: maintenance.Maintenance?.Category.name,
           },
         ]),
     ).values(),
