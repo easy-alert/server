@@ -75,6 +75,13 @@ export async function getStockMovementsController(req: Request, res: Response) {
             name: true,
           },
         },
+
+        transferTo: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
 
       where: {

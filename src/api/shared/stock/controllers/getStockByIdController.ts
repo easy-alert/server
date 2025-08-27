@@ -42,6 +42,11 @@ interface StockOutput {
       id: string;
       name: string;
     };
+
+    transferTo: {
+      id: string;
+      name: string;
+    };
   };
 }
 
@@ -100,9 +105,16 @@ export async function getStockByIdController(req: Request, res: Response) {
                 name: true,
               },
             },
+
+            transferTo: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
 
-          take: 1,
+          take: 5,
 
           orderBy: {
             movementDate: 'desc',
