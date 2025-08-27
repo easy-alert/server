@@ -10,6 +10,7 @@ import { listTicketPlacesForSelectController } from '../../shared/listForSelect/
 import { listTicketServiceTypesForSelectController } from '../../shared/listForSelect/controllers.ts/listTicketServiceTypesForSelectController';
 import { listStockItemsForSelectController } from '../../shared/listForSelect/controllers.ts/listStockItemsForSelectController';
 import { listStockItemTypesForSelectController } from '../../shared/listForSelect/controllers.ts/listStockItemTypesForSelectController';
+import { listStockTransfersForSelectController } from '../../shared/listForSelect/controllers.ts/listStockTransfersForSelectController';
 
 // ROUTES
 export const listForSelectRouter = Router();
@@ -31,3 +32,4 @@ listForSelectRouter.get('/tickets/service-types', listTicketServiceTypesForSelec
 // STOCK
 listForSelectRouter.get('/stock/items', listStockItemsForSelectController);
 listForSelectRouter.get('/stock/item-types', listStockItemTypesForSelectController);
+listForSelectRouter.get('/stock/transfers', listStockTransfersForSelectController);
