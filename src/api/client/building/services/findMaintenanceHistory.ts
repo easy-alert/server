@@ -1,5 +1,5 @@
 import type { MaintenancePriorityName } from '@prisma/client';
-import { prisma } from '../../../../../prisma';
+import { prisma, prismaTypes } from '../../../../../prisma';
 
 import { needExist } from '../../../../utils/newValidator';
 
@@ -62,141 +62,195 @@ export async function findMaintenanceHistory({
     }
   });
 
-  const maintenancesHistory = await prisma.maintenanceHistory.findMany({
-    select: {
-      id: true,
-      notificationDate: true,
-      resolutionDate: true,
-      dueDate: true,
-      inProgress: true,
-      daysInAdvance: true,
-      priority: showMaintenancePriority,
-      serviceOrderNumber: true,
+  const maintenanceHistorySelect: prismaTypes.MaintenanceHistorySelect = {
+    id: true,
+    notificationDate: true,
+    resolutionDate: true,
+    dueDate: true,
+    inProgress: true,
+    daysInAdvance: true,
+    priority: showMaintenancePriority,
+    serviceOrderNumber: true,
 
-      Building: {
-        select: {
-          id: true,
-          name: true,
+    Building: {
+      select: {
+        id: true,
+        name: true,
 
-          Banners: {
-            select: {
-              id: true,
-              originalName: true,
-              redirectUrl: true,
-              url: true,
-            },
+        Banners: {
+          select: {
+            id: true,
+            originalName: true,
+            redirectUrl: true,
+            url: true,
           },
-        },
-      },
-
-      Maintenance: {
-        select: {
-          id: true,
-          element: true,
-          frequency: true,
-          activity: true,
-          period: true,
-
-          Category: {
-            select: {
-              id: true,
-              name: true,
-              categoryTypeId: true,
-            },
-          },
-
-          FrequencyTimeInterval: {
-            select: {
-              unitTime: true,
-              singularLabel: true,
-              pluralLabel: true,
-            },
-          },
-
-          PeriodTimeInterval: {
-            select: {
-              unitTime: true,
-              singularLabel: true,
-              pluralLabel: true,
-            },
-          },
-
-          MaintenanceType: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-
-          MaintenanceAdditionalInformation: {
-            select: {
-              userId: true,
-              information: true,
-            },
-          },
-        },
-      },
-
-      MaintenancesStatus: {
-        select: {
-          name: true,
-          pluralLabel: true,
-          singularLabel: true,
         },
       },
     },
 
-    where: {
-      Company: {
-        id: companyId,
-      },
+    Maintenance: {
+      select: {
+        id: true,
+        element: true,
+        frequency: true,
+        activity: true,
+        period: true,
 
-      Building: {
-        id: {
-          in: buildingId,
+        Category: {
+          select: {
+            id: true,
+            name: true,
+            categoryTypeId: true,
+          },
         },
-      },
 
-      priorityName: {
-        in: priorityFilter,
-      },
-
-      MaintenancesStatus: {
-        name: {
-          in: status,
+        FrequencyTimeInterval: {
+          select: {
+            unitTime: true,
+            singularLabel: true,
+            pluralLabel: true,
+          },
         },
-      },
 
-      Maintenance: {
-        categoryId: {
-          in: categoryIdFilter,
+        PeriodTimeInterval: {
+          select: {
+            unitTime: true,
+            singularLabel: true,
+            pluralLabel: true,
+          },
         },
 
         MaintenanceType: {
-          name: {
-            in: typeFilter,
+          select: {
+            id: true,
+            name: true,
           },
         },
 
         MaintenanceAdditionalInformation: {
-          every: {
-            userId: {
-              in: userId,
-            },
+          select: {
+            userId: true,
+            information: true,
           },
         },
       },
-
-      OR: [
-        { notificationDate: { lte: endDate, gte: startDate } },
-        { resolutionDate: { lte: endDate, gte: startDate } },
-      ],
-
-      ...(searchConditions.length > 1 && {
-        OR: [...searchConditions],
-      }),
     },
-  });
+
+    MaintenancesStatus: {
+      select: {
+        name: true,
+        pluralLabel: true,
+        singularLabel: true,
+      },
+    },
+  };
+
+  const maintenanceHistoryWhere: prismaTypes.MaintenanceHistoryWhereInput = {
+    Company: {
+      id: companyId,
+    },
+
+    Building: {
+      id: {
+        in: buildingId,
+      },
+    },
+
+    priorityName: {
+      in: priorityFilter,
+    },
+
+    MaintenancesStatus: {
+      name: {
+        in: status,
+      },
+    },
+
+    Maintenance: {
+      categoryId: {
+        in: categoryIdFilter,
+      },
+
+      MaintenanceType: {
+        name: {
+          in: typeFilter,
+        },
+      },
+
+      MaintenanceAdditionalInformation: {
+        every: {
+          userId: {
+            in: userId,
+          },
+        },
+      },
+    },
+
+    ...(searchConditions.length > 1 && {
+      OR: [...searchConditions],
+    }),
+  };
+
+  const [pendingMaintenances, expiredMaintenances, completedMaintenances] =
+    await prisma.$transaction([
+      prisma.maintenanceHistory.findMany({
+        select: maintenanceHistorySelect,
+
+        where: {
+          ...maintenanceHistoryWhere,
+
+          MaintenancesStatus: {
+            name: {
+              in: status || ['pending'],
+            },
+          },
+        },
+      }),
+
+      prisma.maintenanceHistory.findMany({
+        select: maintenanceHistorySelect,
+
+        where: {
+          ...maintenanceHistoryWhere,
+
+          MaintenancesStatus: {
+            name: {
+              in: status || ['expired'],
+            },
+          },
+
+          OR: [
+            { notificationDate: { lte: endDate, gte: startDate } },
+            { resolutionDate: { lte: endDate, gte: startDate } },
+          ],
+        },
+      }),
+
+      prisma.maintenanceHistory.findMany({
+        select: maintenanceHistorySelect,
+
+        where: {
+          ...maintenanceHistoryWhere,
+
+          MaintenancesStatus: {
+            name: {
+              in: status || ['completed', 'overdue'],
+            },
+          },
+
+          OR: [
+            { notificationDate: { lte: endDate, gte: startDate } },
+            { resolutionDate: { lte: endDate, gte: startDate } },
+          ],
+        },
+      }),
+    ]);
+
+  const maintenancesHistory = [
+    ...pendingMaintenances,
+    ...expiredMaintenances,
+    ...completedMaintenances,
+  ];
 
   needExist([
     {
