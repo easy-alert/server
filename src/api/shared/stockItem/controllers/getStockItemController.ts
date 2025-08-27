@@ -16,6 +16,10 @@ interface StockItemOutput {
     id: string;
     name: string;
   };
+
+  _count: {
+    stocks: number;
+  };
 }
 
 export async function getStockItemController(req: Request, res: Response) {
@@ -43,7 +47,14 @@ export async function getStockItemController(req: Request, res: Response) {
             name: true,
           },
         },
+
+        _count: {
+          select: {
+            stocks: true,
+          },
+        },
       },
+
       where: {
         companyId,
 
