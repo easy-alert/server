@@ -172,6 +172,7 @@ export async function listBuildingDetails(req: Request, res: Response) {
       nextMaintenanceCreationBasis: BuildingDetails.nextMaintenanceCreationBasis,
       isActivityLogPublic: BuildingDetails.isActivityLogPublic,
       guestCanCompleteMaintenance: BuildingDetails.guestCanCompleteMaintenance,
+      showAllTicketsToResident: BuildingDetails.showAllTicketsToResident,
 
       // @ts-ignore
       Folders:

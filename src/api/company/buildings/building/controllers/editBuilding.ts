@@ -95,6 +95,11 @@ export async function editBuilding(req: Request, res: Response) {
       variable: data.guestCanCompleteMaintenance,
     },
     {
+      label: 'Mostrar todos os chamados ao residente',
+      type: 'boolean',
+      variable: data.showAllTicketsToResident,
+    },
+    {
       label: 'Próxima manutenção baseada em',
       type: 'string',
       variable: data.nextMaintenanceCreationBasis,
