@@ -649,6 +649,7 @@ model Building {
   guestCanCompleteMaintenance       Boolean  @default(true)
   image                             String?
   isBlocked                         Boolean  @default(false)
+  showAllTicketsToResident          Boolean  @default(false)
 
   residentPassword String?
 
