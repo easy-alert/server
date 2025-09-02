@@ -32,6 +32,7 @@ export async function putStockItemController(req: Request, res: Response) {
     name,
     description,
     unit,
+    imageUrl,
     isActive,
     stockItemTypeId,
   } = req.body as StockItem;
@@ -42,6 +43,7 @@ export async function putStockItemController(req: Request, res: Response) {
     { label: 'Nome', type: 'string', value: name, required: true },
     { label: 'Descrição', type: 'string', value: description, required: false },
     { label: 'Ativo', type: 'boolean', value: isActive, required: false },
+    { label: 'Imagem', type: 'string', value: imageUrl, required: false },
     { label: 'ID da edificação', type: 'string', value: buildingId, required: false },
     { label: 'ID do tipo de item', type: 'string', value: stockItemTypeId, required: true },
   ]);
@@ -77,6 +79,7 @@ export async function putStockItemController(req: Request, res: Response) {
         name: true,
         description: true,
         unit: true,
+        imageUrl: true,
         isActive: true,
 
         stockItemType: {
@@ -91,6 +94,7 @@ export async function putStockItemController(req: Request, res: Response) {
         name,
         description,
         unit,
+        imageUrl,
         isActive,
 
         ...(buildingId && {

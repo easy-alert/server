@@ -21,6 +21,7 @@ interface StockOutput {
     name: string;
     description: string;
     unit: string;
+    imageUrl: string;
     isActive: boolean;
 
     stockItemType: {
@@ -76,6 +77,7 @@ export async function getStockByIdController(req: Request, res: Response) {
             name: true,
             description: true,
             unit: true,
+            imageUrl: true,
             isActive: true,
 
             stockItemType: {
@@ -96,6 +98,8 @@ export async function getStockByIdController(req: Request, res: Response) {
 
         movements: {
           select: {
+            notes: true,
+
             movementType: true,
             movementDate: true,
 
