@@ -33,7 +33,7 @@ export const handlerMessage = async (
       side: 'Server',
       errorStack: err.stack,
       extraInfo: {
-        company: req.Company?.name ?? req.body.email,
+        company: req.Company?.name ?? req.body?.email ?? null,
         userId: req?.userId ?? null,
         routeURL: req.originalUrl,
       },

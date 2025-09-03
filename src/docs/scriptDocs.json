@@ -17,7 +17,12 @@
     {
       "description": "Sandbox",
       "url": "https://sandbox.api.easyalert.com.br/api/scripts/"
+    },
+    {
+      "description": "Local",
+      "url": "http://localhost:8080/api/scripts/"
     }
+
   ],
   "components": {
     "responses": {
