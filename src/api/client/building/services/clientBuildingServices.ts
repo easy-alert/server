@@ -969,7 +969,13 @@ export class ClientBuildingServices {
     return Annexes;
   }
 
-  async findShowToResidentTickets({ buildingId }: { buildingId: string }) {
+  async findShowToResidentTickets({
+    buildingId,
+    showAllTicketsToResident,
+  }: {
+    buildingId: string;
+    showAllTicketsToResident?: boolean;
+  }) {
     const showToResidentTicket = await prisma.ticket.findMany({
       include: {
         status: true,
@@ -982,7 +988,10 @@ export class ClientBuildingServices {
       },
       where: {
         buildingId,
-        showToResident: true,
+
+        ...(!showAllTicketsToResident && {
+          showToResident: true,
+        }),
       },
     });
 

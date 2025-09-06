@@ -361,6 +361,7 @@ export class BuildingServices {
         nextMaintenanceCreationBasis: true,
         isActivityLogPublic: true,
         guestCanCompleteMaintenance: true,
+        showAllTicketsToResident: true,
 
         Company: {
           select: {

@@ -51,6 +51,7 @@ export async function clientBuildingDetails(req: Request, res: Response) {
 
   const showToResidentTicket = await clientBuildingServices.findShowToResidentTickets({
     buildingId: building.id,
+    showAllTicketsToResident: building.showAllTicketsToResident,
   });
 
   // #region PROCESS DATA

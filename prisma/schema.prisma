@@ -649,6 +649,7 @@ model Building {
   guestCanCompleteMaintenance       Boolean  @default(true)
   image                             String?
   isBlocked                         Boolean  @default(false)
+  showAllTicketsToResident          Boolean  @default(false)
 
   residentPassword String?
 
@@ -1510,6 +1511,7 @@ model StockItem {
   name        String
   description String?
   unit        String
+  imageUrl    String?
   isActive    Boolean @default(true)
 
   createdAt DateTime @default(now())

@@ -47,6 +47,7 @@ export async function getStockMovementsController(req: Request, res: Response) {
         quantity: true,
         previousBalance: true,
         newBalance: true,
+        notes: true,
 
         movementType: true,
         movementDate: true,
