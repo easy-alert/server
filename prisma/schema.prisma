@@ -1120,6 +1120,9 @@ model Ticket {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  editedFields String[]  @default([])
+  lastEditedAt DateTime?
+
   building           Building                           @relation(fields: [buildingId], references: [id], onDelete: Cascade)
   status             TicketStatus                       @relation(fields: [statusName], references: [name])
   place              TicketPlace                        @relation(fields: [placeId], references: [id])
