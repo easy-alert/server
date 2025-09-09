@@ -599,18 +599,47 @@ class TicketServices {
   }
 
   async updateOneTicket({ ticketId, updatedTicket }: IUpdateOneTicketInput) {
+    const oldTicket = (await this.findById(ticketId)) as unknown as Ticket & {
+      editedFields: string[];
+      lastEditedAt?: Date;
+    };
+
+    const editableFields = [
+      'residentName',
+      'residentPhone',
+      'residentApartment',
+      'residentEmail',
+      'residentCPF',
+      'description',
+    ];
+    const editedFields: string[] = [];
+    editableFields.forEach((field) => {
+      if ((updatedTicket as any)[field] !== (oldTicket as any)[field]) {
+        editedFields.push(field);
+      }
+    });
+
+    const allEditedFields = Array.from(
+      new Set([...(oldTicket.editedFields || []), ...editedFields]),
+    );
+
+    const now = new Date();
+
     const syndicData = await prisma.buildingNotificationConfiguration.findUnique({
       where: {
         nanoId: updatedTicket.dismissedById || '',
       },
     });
 
+    const { editedFields: _remove, ...updatedTicketWithoutEditedFields } = updatedTicket as any;
+
     return prisma.ticket.update({
       data: {
-        ...updatedTicket,
+        ...updatedTicketWithoutEditedFields,
         dismissedById: syndicData?.id,
+        editedFields: { set: allEditedFields },
+        lastEditedAt: editedFields.length > 0 ? now : oldTicket.lastEditedAt,
       },
-
       where: {
         id: ticketId,
       },

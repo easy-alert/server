@@ -25,15 +25,12 @@ const handleCreateOneTicketHistoryActivity = async (
     case 'awaitingToFinish':
       activityContent = 'Chamado atualizado com status "Aguardando Finalização"';
       break;
-
     case 'finished':
       activityContent = 'Chamado atualizado com status "Concluído"';
       break;
-
     case 'dismissed':
       activityContent = 'Chamado atualizado com status "Indeferido"';
       break;
-
     default:
       break;
   }
@@ -51,7 +48,6 @@ const handleCreateOneTicketHistoryActivity = async (
 export async function updateTicketById(req: Request, res: Response) {
   const { ticketId } = req.params;
   const { updatedTicket } = req.body as IBody;
-
   const { userId } = updatedTicket;
 
   delete updatedTicket.userId;
@@ -84,7 +80,8 @@ export async function updateTicketById(req: Request, res: Response) {
     });
   }
 
-  return res
-    .status(200)
-    .json({ ticket, ServerMessage: { message: 'Ticket foi atualizado com sucesso' } });
+  return res.status(200).json({
+    ticket,
+    ServerMessage: { message: 'Ticket foi atualizado com sucesso' },
+  });
 }
