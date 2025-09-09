@@ -10,13 +10,6 @@ const userServices = new UserServices();
 const sharedCompanyServices = new SharedCompanyServices();
 const validator = new Validator();
 
-export enum MaintenanceFlagColor {
-  Green = 'green',
-  Yellow = 'yellow',
-  Red = 'red',
-  Gray = 'gray',
-}
-
 export class CompanyServices {
   // #region create
 
@@ -29,6 +22,7 @@ export class CompanyServices {
     isNotifyingOnceAWeek,
     canAccessChecklists,
     canAccessTickets,
+    clientType,
   }: ICreateCompany) {
     const companyData = {
       name,
@@ -39,6 +33,7 @@ export class CompanyServices {
       isNotifyingOnceAWeek,
       canAccessChecklists,
       canAccessTickets,
+      clientType,
     };
 
     if (CPF) {
@@ -62,16 +57,7 @@ export class CompanyServices {
     }
 
     return prisma.company.create({
-      data: {
-        name,
-        CNPJ,
-        CPF,
-        contactNumber,
-        image,
-        isNotifyingOnceAWeek,
-        canAccessChecklists,
-        canAccessTickets,
-      },
+      data: companyData,
     });
   }
 
@@ -141,6 +127,7 @@ export class CompanyServices {
         CPF: true,
         isBlocked: true,
         createdAt: true,
+        clientType: true,
         UserCompanies: {
           select: {
             User: {
@@ -220,7 +207,25 @@ export class CompanyServices {
 
   async findById({ companyId }: { companyId: string }) {
     const Company = await prisma.company.findFirst({
-      include: {
+      where: {
+        id: companyId,
+      },
+      select: {
+        id: true,
+        name: true,
+        image: true,
+        contactNumber: true,
+        CNPJ: true,
+        CPF: true,
+        isBlocked: true,
+        createdAt: true,
+        clientType: true,
+        linkedExternalForPayment: true,
+        receiveDailyDueReports: true,
+        receivePreviousMonthReports: true,
+        canAccessChecklists: true,
+        canAccessTickets: true,
+        isNotifyingOnceAWeek: true,
         UserCompanies: {
           select: {
             User: {
@@ -233,11 +238,9 @@ export class CompanyServices {
                 image: true,
               },
             },
-
             owner: true,
           },
         },
-
         Buildings: {
           select: {
             id: true,
@@ -245,10 +248,6 @@ export class CompanyServices {
             isBlocked: true,
           },
         },
-      },
-
-      where: {
-        id: companyId,
       },
     });
 
