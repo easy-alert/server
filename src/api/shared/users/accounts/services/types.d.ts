@@ -16,4 +16,5 @@ export interface IEditCompany {
   ticketType: CompanyTicketType;
   showMaintenancePriority: boolean;
   linkedExternalForPayment: string[];
+  clientType?: string;
 }
