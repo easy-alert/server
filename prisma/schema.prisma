@@ -168,6 +168,8 @@ model Company {
   ticketType           CompanyTicketType @default(platform)
   ticketInfo           String?
 
+  clientType String?
+
   canAccessChecklists Boolean @default(false)
   canAccessTickets    Boolean @default(false)
 
