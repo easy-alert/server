@@ -10,6 +10,7 @@ import { findMaintenanceHistory } from '../../../../client/building/services/fin
 import { hasAdminPermission } from '../../../../../utils/permissions/hasAdminPermission';
 import { handlePermittedBuildings } from '../../../../../utils/permissions/handlePermittedBuildings';
 import { changeUTCTime } from '../../../../../utils/dateTime';
+import { prisma } from '../../../../../../prisma';
 
 const clientBuildingServices = new ClientBuildingServices();
 
@@ -73,24 +74,16 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
     search: searchFilter,
   });
 
-  // # region filter
-  const maintenanceCategoriesForSelect = Array.from(
-    new Map(
-      maintenancesHistory
-        .filter(
-          (maintenance: any) =>
-            maintenance.Maintenance?.Category.categoryTypeId ===
-            '36baebb3-fe3c-4edb-a479-ec78d8cacbb7',
-        )
-        .map((maintenance: any) => [
-          maintenance.Maintenance?.categoryId,
-          {
-            id: maintenance.Maintenance?.categoryId,
-            name: maintenance.Maintenance?.Category.name,
-          },
-        ]),
-    ).values(),
-  ).sort((a, b) => (b.name > a.name ? 1 : -1));
+  const allCategories = await prisma.category.findMany({
+    where: {
+      categoryTypeId: '36baebb3-fe3c-4edb-a479-ec78d8cacbb7',
+    },
+    select: {
+      id: true,
+      name: true,
+    },
+    orderBy: { name: 'asc' },
+  });
   // # endregion
 
   const kanban = await clientBuildingServices.syndicSeparePerStatus({ data: maintenancesHistory });
@@ -125,5 +118,8 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
 
   kanban[3].maintenances.sort((a: any, b: any) => (a.date < b.date ? 1 : -1));
 
-  return res.status(200).json({ kanban, maintenanceCategoriesForSelect });
+  return res.status(200).json({
+    kanban,
+    maintenanceCategoriesForSelect: allCategories,
+  });
 }
