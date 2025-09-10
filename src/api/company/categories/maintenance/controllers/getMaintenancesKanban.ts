@@ -78,19 +78,22 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
           );
 
           let label = '';
+          let kanbanIndex = maintenance.inProgress ? 2 : 1; // Default: Em execução ou Pendentes
 
-          if (auxiliaryData === 0) {
+          if (auxiliaryData < 0) {
+            // Manutenção vencida
+            label = `Atrasada há ${Math.abs(auxiliaryData)} ${Math.abs(auxiliaryData) > 1 ? 'dias' : 'dia'}`;
+            kanbanIndex = maintenance.inProgress ? 2 : 0; // Vencidas (se não em progresso)
+          } else if (auxiliaryData === 0) {
             label = 'Vence hoje';
-          }
-
-          if (
+          } else if (
             auxiliaryData >= 1 &&
             maintenance.Maintenance.MaintenanceType.name !== 'occasional'
           ) {
             label = `Vence em ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`;
           }
 
-          kanban[maintenance.inProgress ? 2 : 1].maintenances.push({
+          kanban[kanbanIndex].maintenances.push({
             id: maintenance.id,
             buildingName: maintenance.Building.name,
             element: maintenance.Maintenance.element,
