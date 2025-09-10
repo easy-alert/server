@@ -33,6 +33,7 @@ export async function sharedEditCompanyAndOwner({
     ticketType,
     showMaintenancePriority,
     linkedExternalForPayment,
+    clientType,
   },
   userId,
   companyId,
@@ -112,6 +113,7 @@ export async function sharedEditCompanyAndOwner({
         ? unmask(lowerCaseTicketInfo)
         : lowerCaseTicketInfo || null,
     ticketType,
+    clientType,
   });
 
   if (password) {

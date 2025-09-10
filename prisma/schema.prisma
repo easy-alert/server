@@ -168,6 +168,8 @@ model Company {
   ticketType           CompanyTicketType @default(platform)
   ticketInfo           String?
 
+  clientType String?
+
   canAccessChecklists Boolean @default(false)
   canAccessTickets    Boolean @default(false)
 
@@ -1119,6 +1121,9 @@ model Ticket {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  editedFields String[]  @default([])
+  lastEditedAt DateTime?
 
   building           Building                           @relation(fields: [buildingId], references: [id], onDelete: Cascade)
   status             TicketStatus                       @relation(fields: [statusName], references: [name])
