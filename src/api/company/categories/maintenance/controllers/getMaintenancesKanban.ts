@@ -98,7 +98,7 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
             buildingName: maintenance.Building.name,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
-            status: maintenance.MaintenancesStatus.name,
+            status: auxiliaryData < 0 ? 'expired' : maintenance.MaintenancesStatus.name, // Alterar status para 'expired' se vencida
             priorityLabel: maintenance.priority?.label,
             priorityColor: maintenance.priority?.color,
             priorityBackgroundColor: maintenance.priority?.backgroundColor,
