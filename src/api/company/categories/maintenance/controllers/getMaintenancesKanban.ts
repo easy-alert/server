@@ -9,9 +9,8 @@ import { findMaintenanceHistory } from '../../../../client/building/services/fin
 
 import { hasAdminPermission } from '../../../../../utils/permissions/hasAdminPermission';
 import { handlePermittedBuildings } from '../../../../../utils/permissions/handlePermittedBuildings';
-import { changeUTCTime } from '../../../../../utils/dateTime';
-import { removeDays } from '../../../../../utils/dateTime';
 import { changeTime } from '../../../../../utils/dateTime/changeTime';
+import { changeUTCTime, removeDays } from '../../../../../utils/dateTime';
 
 // const clientBuildingServices = new ClientBuildingServices(); // Replaced with optimized function
 
@@ -55,7 +54,8 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
 
     switch (maintenance.MaintenancesStatus.name) {
       case 'pending': {
-        period = maintenance.Maintenance.period * maintenance.Maintenance.PeriodTimeInterval.unitTime;
+        period =
+          maintenance.Maintenance.period * maintenance.Maintenance.PeriodTimeInterval.unitTime;
 
         if (maintenance.daysInAdvance) {
           canReportDate = maintenance.notificationDate;
@@ -68,7 +68,7 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
 
         // Use pre-loaded history data instead of additional query
         const history = maintenance.Maintenance?.MaintenancesHistory?.[0];
-        
+
         if (
           (today >= canReportDate && history?.MaintenancesStatus?.name !== 'expired') ||
           today >= history?.notificationDate
@@ -82,7 +82,9 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
 
           if (auxiliaryData < 0) {
             // Manutenção vencida
-            label = `Atrasada há ${Math.abs(auxiliaryData)} ${Math.abs(auxiliaryData) > 1 ? 'dias' : 'dia'}`;
+            label = `Atrasada há ${Math.abs(auxiliaryData)} ${
+              Math.abs(auxiliaryData) > 1 ? 'dias' : 'dia'
+            }`;
             kanbanIndex = maintenance.inProgress ? 2 : 0; // Vencidas (se não em progresso)
           } else if (auxiliaryData === 0) {
             label = 'Vence hoje';
@@ -116,7 +118,9 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
       case 'expired': {
         // Use pre-loaded history data instead of additional query
         const history = maintenance.Maintenance?.MaintenancesHistory?.[0];
-        const historyPeriod = history?.Maintenance?.period * history?.Maintenance?.PeriodTimeInterval?.unitTime;
+        const period = history?.Maintenance?.period ?? 0;
+        const unitTime = history?.Maintenance?.PeriodTimeInterval?.unitTime ?? 0;
+        const historyPeriod = period * unitTime;
 
         auxiliaryData = Math.floor(
           (today.getTime() - maintenance.dueDate.getTime()) / (1000 * 60 * 60 * 24),
@@ -263,22 +267,26 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
     search: searchFilter,
   });
 
-  // # region filter - Optimized category extraction
+  // # region filter - Optimized category extraction (including avulsas)
   const categoryMap = new Map();
   const targetCategoryTypeId = '36baebb3-fe3c-4edb-a479-ec78d8cacbb7';
-  
   for (const maintenance of maintenancesHistory) {
     const category = (maintenance as any).Maintenance?.Category;
-    if (category?.categoryTypeId === targetCategoryTypeId) {
+    const maintenanceType = (maintenance as any).Maintenance?.MaintenanceType?.name;
+
+    if (
+      category?.categoryTypeId === targetCategoryTypeId ||
+      (maintenanceType === 'occasional' && category)
+    ) {
       categoryMap.set(category.id, {
         id: category.id,
         name: category.name,
       });
     }
   }
-  
-  const maintenanceCategoriesForSelect = Array.from(categoryMap.values())
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const maintenanceCategoriesForSelect = Array.from(categoryMap.values()).sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
   // # endregion
 
   // Use optimized kanban processing to avoid N+1 queries
@@ -329,8 +337,8 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
     return dateCompare;
   });
 
-  return res.status(200).json({ 
-    kanban, 
-    maintenanceCategoriesForSelect
+  return res.status(200).json({
+    kanban,
+    maintenanceCategoriesForSelect,
   });
 }
