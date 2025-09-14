@@ -643,15 +643,16 @@ model Building {
   neighborhood                      String?
   streetName                        String?
   area                              String?
+  image                             String?
   deliveryDate                      DateTime
   warrantyExpiration                DateTime
+  isBlocked                         Boolean  @default(false)
   keepNotificationAfterWarrantyEnds Boolean
   mandatoryReportProof              Boolean  @default(false)
   isActivityLogPublic               Boolean  @default(false)
   guestCanCompleteMaintenance       Boolean  @default(true)
-  image                             String?
-  isBlocked                         Boolean  @default(false)
   showAllTicketsToResident          Boolean  @default(false)
+  ticketAnnexRequired               Boolean  @default(false)
 
   residentPassword String?
 

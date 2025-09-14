@@ -112,6 +112,16 @@ export async function createBuilding(req: Request, res: Response) {
       type: 'string',
       variable: data.nextMaintenanceCreationBasis,
     },
+    {
+      label: 'Anexos de chamados obrigatórios',
+      type: 'boolean',
+      variable: data.ticketAnnexRequired,
+    },
+    {
+      label: 'Mostrar todos os chamados para residente',
+      type: 'boolean',
+      variable: data.showAllTicketsToResident,
+    },
   ]);
 
   checkEnums([

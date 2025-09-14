@@ -30,6 +30,8 @@ export interface IEditBuilding {
     warrantyExpiration: Date;
     keepNotificationAfterWarrantyEnds: boolean;
     guestCanCompleteMaintenance: boolean;
+    ticketAnnexRequired: boolean;
+    showAllTicketsToResident: boolean;
   };
 }
 

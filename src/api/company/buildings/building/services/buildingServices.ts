@@ -175,6 +175,21 @@ export class BuildingServices {
     return building!;
   }
 
+  async findByIdOrNanoId({ id }: { id: string }) {
+    return prisma.building.findFirst({
+      where: {
+        OR: [
+          {
+            id,
+          },
+          {
+            nanoId: id,
+          },
+        ],
+      },
+    });
+  }
+
   async findMaintenancesPerBuilding({ buildingId }: { buildingId: string }) {
     const buildingMaintenance = await prisma.buildingMaintenance.findFirst({
       where: {
@@ -362,6 +377,7 @@ export class BuildingServices {
         isActivityLogPublic: true,
         guestCanCompleteMaintenance: true,
         showAllTicketsToResident: true,
+        ticketAnnexRequired: true,
 
         Company: {
           select: {
