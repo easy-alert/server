@@ -39,6 +39,7 @@ import { updateReportPDFController } from './reports/controllers/updateReportPDF
 import { homeRouter } from './home/home.routes';
 import { calendarTicketsRouter } from './calendarTicket/calendarTicket.routes';
 import { stockRouter } from './stock/stock.routes';
+import { stockHistoryActivitiesRouter } from './stockHistoryActivities/stockHistoryActivities.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -213,4 +214,11 @@ companyRouter.use(
   authMiddleware,
   handleCompanyPermCheck([companyPermission, 'access:company']),
   stockRouter,
+);
+
+companyRouter.use(
+  '/stockHistoryActivities',
+  authMiddleware,
+  handleCompanyPermCheck([companyPermission, 'access:company']),
+  stockHistoryActivitiesRouter,
 );
