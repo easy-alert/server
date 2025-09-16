@@ -1,6 +1,6 @@
 import { Response, Request } from 'express';
 import { ticketServices } from '../services/ticketServices';
-import { checkValues, needExist } from '../../../../utils/newValidator';
+import { checkValues } from '../../../../utils/newValidator';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
 
 interface IBody {
@@ -37,12 +37,20 @@ export async function createTicketController(req: Request, res: Response) {
     types,
   }: IBody = req.body;
 
-  const buildingSelected = buildingId || buildingNanoId;
+  const buildingSelectedId = buildingId || buildingNanoId;
 
-  needExist([{ label: 'Edificação', variable: buildingSelected }]);
+  if (!buildingSelectedId) {
+    return res.status(400).json({ ServerMessage: { message: 'Edificação não encontrada.' } });
+  }
+
+  const building = await buildingServices.findByIdOrNanoId({ id: buildingSelectedId });
+
+  if (!building) {
+    return res.status(404).json({ ServerMessage: { message: 'Edificação não encontrada.' } });
+  }
 
   checkValues([
-    { label: 'Edificação', type: 'string', value: buildingSelected },
+    { label: 'Edificação', type: 'object', value: building },
     { label: 'Descrição', type: 'string', value: description },
     { label: 'Local da ocorrência', type: 'string', value: placeId },
     { label: 'Nome do morador', type: 'string', value: residentName },
@@ -50,7 +58,7 @@ export async function createTicketController(req: Request, res: Response) {
     { label: 'Apartamento do morador', type: 'string', value: residentApartment },
     { label: 'CPF do morador', type: 'string', value: residentCPF, required: false },
     { label: 'Telefone do morador', type: 'string', value: residentPhone, required: false },
-    { label: 'Imagens', type: 'array', value: images },
+    { label: 'Imagens', type: 'array', value: images, required: building?.ticketAnnexRequired },
     { label: 'Tipo de assistência', type: 'array', value: types },
   ]);
 
@@ -65,27 +73,15 @@ export async function createTicketController(req: Request, res: Response) {
     checkValues([{ label: 'Tipo de assistência', type: 'string', value: data.serviceTypeId }]);
   });
 
-  let building = null;
-
-  if (buildingSelected?.length === 12) {
-    building = await buildingServices.findByNanoId({
-      buildingNanoId: buildingSelected,
-    });
-  } else {
-    building = await buildingServices.findById({ buildingId: buildingSelected! });
-  }
-
-  checkValues([{ label: 'Edificação', type: 'string', value: building?.id }]);
-
-  await ticketServices.checkAccess({ buildingId: building?.id });
+  await ticketServices.checkAccess({ buildingId: building.id });
 
   const lowerCaseEmail = residentEmail ? residentEmail?.toLowerCase() : null;
 
-  const ticketNumber = await ticketServices.generateTicketNumber({ buildingId: building?.id });
+  const ticketNumber = await ticketServices.generateTicketNumber({ buildingId: building.id });
 
   const ticket = await ticketServices.create({
     data: {
-      buildingId: building?.id,
+      buildingId: building.id,
       ticketNumber,
       residentName,
       residentApartment,
@@ -111,7 +107,7 @@ export async function createTicketController(req: Request, res: Response) {
   });
 
   ticketServices.sendCreatedTicketEmails({
-    buildingId: building?.id,
+    buildingId: building.id,
     ticketIds: [ticket.id],
   });
 

@@ -643,15 +643,16 @@ model Building {
   neighborhood                      String?
   streetName                        String?
   area                              String?
+  image                             String?
   deliveryDate                      DateTime
   warrantyExpiration                DateTime
+  isBlocked                         Boolean  @default(false)
   keepNotificationAfterWarrantyEnds Boolean
   mandatoryReportProof              Boolean  @default(false)
   isActivityLogPublic               Boolean  @default(false)
   guestCanCompleteMaintenance       Boolean  @default(true)
-  image                             String?
-  isBlocked                         Boolean  @default(false)
   showAllTicketsToResident          Boolean  @default(false)
+  ticketAnnexRequired               Boolean  @default(false)
 
   residentPassword String?
 
@@ -1555,7 +1556,8 @@ model Stock {
   stockItem StockItem @relation(fields: [stockItemId], references: [id])
   createdBy User?     @relation(fields: [createdById], references: [id])
 
-  movements StockMovement[]
+  movements              StockMovement[]
+  StockHistoryActivities StockHistoryActivities[]
 
   @@unique([buildingId, stockItemId])
   @@index([stockItemId])
@@ -1604,6 +1606,48 @@ model StockMovement {
   @@index([lastUpdatedById])
   @@index([movementDate])
   @@map("stockMovements")
+}
+
+enum StockHistoryActivityType {
+  comment
+  notification
+}
+
+model StockHistoryActivities {
+  id String @id @default(uuid())
+
+  stockId String
+
+  title   String
+  content String?
+  type    StockHistoryActivityType
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+
+  images StockHistoryActivityImages[]
+
+  @@index([stockId])
+  @@map("stockHistoryActivities")
+}
+
+model StockHistoryActivityImages {
+  id String @id @default(uuid())
+
+  activityId String
+
+  name String
+  url  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  activity StockHistoryActivities @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@index([activityId])
+  @@map("stockHistoryActivityImages")
 }
 
 // endregion STOCK MANAGEMENT
