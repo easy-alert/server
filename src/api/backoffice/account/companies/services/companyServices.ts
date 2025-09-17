@@ -141,6 +141,7 @@ export class CompanyServices {
         CPF: true,
         isBlocked: true,
         createdAt: true,
+        clientType: true,
         UserCompanies: {
           select: {
             User: {
