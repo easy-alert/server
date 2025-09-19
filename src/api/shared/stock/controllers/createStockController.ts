@@ -73,7 +73,13 @@ export async function createStockController(req: Request, res: Response) {
     { label: 'ID do item', type: 'string', value: stockItemId, required: true },
     { label: 'ID do criador', type: 'string', value: userId, required: false },
     { label: 'Quantidade', type: 'int', value: quantityNumber, required: true },
-    { label: 'Quantidade mínima', type: 'int', value: minimumQuantityNumber, required: true },
+    {
+      label: 'Quantidade mínima',
+      type: 'int',
+      value: minimumQuantityNumber,
+      required: true,
+      allowZero: true,
+    },
     { label: 'Localização', type: 'string', value: location, required: false },
     { label: 'Notas', type: 'string', value: notes, required: false },
   ]);
