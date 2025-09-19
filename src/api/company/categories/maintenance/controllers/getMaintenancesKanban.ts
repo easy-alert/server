@@ -118,20 +118,26 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
       case 'expired': {
         // Use pre-loaded history data instead of additional query
         const history = maintenance.Maintenance?.MaintenancesHistory?.[0];
-        const period = history?.Maintenance?.period ?? 0;
-        const unitTime = history?.Maintenance?.PeriodTimeInterval?.unitTime ?? 0;
-        const historyPeriod = period * unitTime;
 
         auxiliaryData = Math.floor(
           (today.getTime() - maintenance.dueDate.getTime()) / (1000 * 60 * 60 * 24),
         );
 
+        // Calculate the difference in days between notification date and due date
+        const daysBetweenNotificationAndDue = Math.floor(
+          (maintenance.dueDate.getTime() - maintenance.notificationDate.getTime()) / (1000 * 60 * 60 * 24),
+        );
+
+        // Define tolerance period (e.g., 7 days after due date)
+        const tolerancePeriod = 7; // days
+        const expirationDate = new Date(maintenance.dueDate);
+        expirationDate.setDate(expirationDate.getDate() + tolerancePeriod);
+
         const canReportHistoryPending =
-          today >=
-            removeDays({
-              date: history?.notificationDate,
-              days: historyPeriod,
-            }) && history?.MaintenancesStatus?.name !== 'expired';
+          today >= expirationDate && history?.MaintenancesStatus?.name !== 'expired';
+
+        // Only consider cantReportExpired if it's truly expired beyond tolerance period
+        const cantReportExpired = canReportHistoryPending;
 
         kanban[maintenance.inProgress ? 2 : 0].maintenances.push({
           id: maintenance.id,
@@ -143,10 +149,7 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
           priorityColor: maintenance.priority?.color,
           priorityBackgroundColor: maintenance.priority?.backgroundColor,
           serviceOrderNumber: maintenance.serviceOrderNumber,
-          cantReportExpired:
-            canReportHistoryPending ||
-            history?.id !== maintenance.id ||
-            today >= history?.notificationDate,
+          cantReportExpired,
           date: maintenance.dueDate,
           dueDate: maintenance.dueDate,
           label: `Atrasada há ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
@@ -299,6 +302,11 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
 
   // Vencida, SE ALTERAR A ORDEM DISSO, ALTERAR NO SCRIPT DE DELETAR AS EXPIRADAS
   kanban[0].maintenances.sort((a: any, b: any) => {
+    // First priority: cantReportExpired = false comes first
+    const cantReportCompare = (a.cantReportExpired ? 1 : 0) - (b.cantReportExpired ? 1 : 0);
+    if (cantReportCompare !== 0) return cantReportCompare;
+    
+    // Second priority: by date (oldest first)
     const dateCompare = new Date(a.date).getTime() - new Date(b.date).getTime();
     if (company?.showMaintenancePriority) {
       const priorityCompare = getPriorityValue(b.priorityLabel) - getPriorityValue(a.priorityLabel);
