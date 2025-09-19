@@ -117,7 +117,7 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
 
       case 'expired': {
         // Use pre-loaded history data instead of additional query
-        const history = maintenance.Maintenance?.MaintenancesHistory?.[0];
+        // const history = maintenance.Maintenance?.MaintenancesHistory?.[0];
 
         auxiliaryData = Math.floor(
           (today.getTime() - maintenance.dueDate.getTime()) / (1000 * 60 * 60 * 24),
