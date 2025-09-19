@@ -123,11 +123,6 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
           (today.getTime() - maintenance.dueDate.getTime()) / (1000 * 60 * 60 * 24),
         );
 
-        // Calculate the difference in days between notification date and due date
-        const daysBetweenNotificationAndDue = Math.floor(
-          (maintenance.dueDate.getTime() - maintenance.notificationDate.getTime()) / (1000 * 60 * 60 * 24),
-        );
-
         // Define tolerance period (e.g., 7 days after due date)
         const tolerancePeriod = 7; // days
         const expirationDate = new Date(maintenance.dueDate);
