@@ -117,7 +117,7 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
 
       case 'expired': {
         // Use pre-loaded history data instead of additional query
-        const history = maintenance.Maintenance?.MaintenancesHistory?.[0];
+        // const history = maintenance.Maintenance?.MaintenancesHistory?.[0];
 
         auxiliaryData = Math.floor(
           (today.getTime() - maintenance.dueDate.getTime()) / (1000 * 60 * 60 * 24),
@@ -125,15 +125,12 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
 
         // Define tolerance period based on maintenance periodicity
         const period = maintenance.Maintenance.frequency * maintenance.Maintenance.FrequencyTimeInterval.unitTime;
-        const tolerancePeriod = period; // Use maintenance periodicity as tolerance period
-        const expirationDate = new Date(maintenance.dueDate);
+        const tolerancePeriod = period - 1; // Use maintenance periodicity as tolerance period
+        const expirationDate = new Date(maintenance.notificationDate);
         expirationDate.setDate(expirationDate.getDate() + tolerancePeriod);
 
-        const canReportHistoryPending =
-          today >= expirationDate && history?.MaintenancesStatus?.name !== 'expired';
-
-        // Only consider cantReportExpired if it's truly expired beyond tolerance period
-        const cantReportExpired = canReportHistoryPending;
+        // If today is greater than or equal to expirationDate, cantReportExpired should be true
+        const cantReportExpired = today >= expirationDate;
 
         kanban[maintenance.inProgress ? 2 : 0].maintenances.push({
           id: maintenance.id,
