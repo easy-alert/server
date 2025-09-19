@@ -123,8 +123,9 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
           (today.getTime() - maintenance.dueDate.getTime()) / (1000 * 60 * 60 * 24),
         );
 
-        // Define tolerance period (e.g., 7 days after due date)
-        const tolerancePeriod = 7; // days
+        // Define tolerance period based on maintenance periodicity
+        const period = maintenance.Maintenance.frequency * maintenance.Maintenance.FrequencyTimeInterval.unitTime;
+        const tolerancePeriod = period; // Use maintenance periodicity as tolerance period
         const expirationDate = new Date(maintenance.dueDate);
         expirationDate.setDate(expirationDate.getDate() + tolerancePeriod);
 
