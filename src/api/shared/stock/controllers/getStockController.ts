@@ -77,6 +77,7 @@ export async function getStockController(req: Request, res: Response) {
             description: true,
             unit: true,
             isActive: true,
+            imageUrl: true,
 
             stockItemType: {
               select: {
