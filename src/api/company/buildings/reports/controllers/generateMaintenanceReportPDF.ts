@@ -305,11 +305,16 @@ async function PDFService({
       }
     }
 
-    maintenances = maintenances.filter(
-      (data: any) =>
+    maintenances = maintenances.filter((data: any) => {
+      if (queryFilter.filterBy === 'allActivities') {
+        return true;
+      }
+  
+      return (
         data[queryFilter.filterBy] >= queryFilter.dateFilter.gte &&
-        data[queryFilter.filterBy] <= queryFilter.dateFilter.lte,
-    );
+        data[queryFilter.filterBy] <= queryFilter.dateFilter.lte
+      );
+    });
 
     const counts = {
       completed: 0,
