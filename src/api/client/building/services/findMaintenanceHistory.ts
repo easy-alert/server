@@ -243,7 +243,7 @@ const maintenanceHistorySelect: prismaTypes.MaintenanceHistorySelect = {
 
           MaintenancesStatus: {
             name: {
-              in: status || ['completed', 'overdue'],
+              in: status || ['completed'],
             },
           },
           notificationDate: { lte: endDate, gte: startDate },
