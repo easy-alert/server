@@ -63,7 +63,7 @@ export async function findMaintenanceHistory({
   });
 
   // Optimized select - keeping all necessary fields for frontend
-const maintenanceHistorySelect: prismaTypes.MaintenanceHistorySelect = {
+  const maintenanceHistorySelect: prismaTypes.MaintenanceHistorySelect = {
     id: true,
     notificationDate: true,
     resolutionDate: true,
@@ -195,9 +195,7 @@ const maintenanceHistorySelect: prismaTypes.MaintenanceHistorySelect = {
     await prisma.$transaction([
       prisma.maintenanceHistory.findMany({
         select: maintenanceHistorySelect,
-        orderBy: [
-          { dueDate: 'asc' }
-        ],
+        orderBy: [{ dueDate: 'asc' }],
 
         where: {
           ...maintenanceHistoryWhere,
@@ -212,9 +210,7 @@ const maintenanceHistorySelect: prismaTypes.MaintenanceHistorySelect = {
 
       prisma.maintenanceHistory.findMany({
         select: maintenanceHistorySelect,
-        orderBy: [
-          { notificationDate: 'asc' }
-        ],
+        orderBy: [{ notificationDate: 'asc' }],
 
         where: {
           ...maintenanceHistoryWhere,
@@ -234,9 +230,7 @@ const maintenanceHistorySelect: prismaTypes.MaintenanceHistorySelect = {
 
       prisma.maintenanceHistory.findMany({
         select: maintenanceHistorySelect,
-        orderBy: [
-          { resolutionDate: 'desc' }
-        ],
+        orderBy: [{ resolutionDate: 'desc' }],
 
         where: {
           ...maintenanceHistoryWhere,
