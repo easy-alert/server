@@ -48,7 +48,7 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
 
   for (let i = 0; i < data.length; i++) {
     const maintenance = data[i];
-    let auxiliaryData = null;
+    let differenceInDays = 0;
     let period = null;
     let canReportDate = null;
 
@@ -73,26 +73,26 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
           (today >= canReportDate && history?.MaintenancesStatus?.name !== 'expired') ||
           today >= history?.notificationDate
         ) {
-          auxiliaryData = Math.floor(
+          differenceInDays = Math.floor(
             (maintenance.dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
           );
 
           let label = '';
           let kanbanIndex = maintenance.inProgress ? 2 : 1; // Default: Em execução ou Pendentes
 
-          if (auxiliaryData < 0) {
+          if (differenceInDays < 0) {
             // Manutenção vencida
-            label = `Atrasada há ${Math.abs(auxiliaryData)} ${
-              Math.abs(auxiliaryData) > 1 ? 'dias' : 'dia'
+            label = `Atrasada há ${Math.abs(differenceInDays)} ${
+              Math.abs(differenceInDays) > 1 ? 'dias' : 'dia'
             }`;
             kanbanIndex = maintenance.inProgress ? 2 : 0; // Vencidas (se não em progresso)
-          } else if (auxiliaryData === 0) {
+          } else if (differenceInDays === 0) {
             label = 'Vence hoje';
           } else if (
-            auxiliaryData >= 1 &&
+            differenceInDays >= 1 &&
             maintenance.Maintenance.MaintenanceType.name !== 'occasional'
           ) {
-            label = `Vence em ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`;
+            label = `Vence em ${differenceInDays} ${differenceInDays > 1 ? 'dias' : 'dia'}`;
           }
 
           kanban[kanbanIndex].maintenances.push({
@@ -100,7 +100,7 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
             buildingName: maintenance.Building.name,
             element: maintenance.Maintenance.element,
             activity: maintenance.Maintenance.activity,
-            status: auxiliaryData < 0 ? 'expired' : maintenance.MaintenancesStatus.name, // Alterar status para 'expired' se vencida
+            status: differenceInDays < 0 ? 'expired' : maintenance.MaintenancesStatus.name, // Alterar status para 'expired' se vencida
             priorityLabel: maintenance.priority?.label,
             priorityColor: maintenance.priority?.color,
             priorityBackgroundColor: maintenance.priority?.backgroundColor,
@@ -119,12 +119,14 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
         // Use pre-loaded history data instead of additional query
         // const history = maintenance.Maintenance?.MaintenancesHistory?.[0];
 
-        auxiliaryData = Math.floor(
+        differenceInDays = Math.floor(
           (today.getTime() - maintenance.dueDate.getTime()) / (1000 * 60 * 60 * 24),
         );
 
         // Define tolerance period based on maintenance periodicity
-        const period = maintenance.Maintenance.frequency * maintenance.Maintenance.FrequencyTimeInterval.unitTime;
+        const period =
+          maintenance.Maintenance.frequency *
+          maintenance.Maintenance.FrequencyTimeInterval.unitTime;
         const tolerancePeriod = period - 1; // Use maintenance periodicity as tolerance period
         const expirationDate = new Date(maintenance.notificationDate);
         expirationDate.setDate(expirationDate.getDate() + tolerancePeriod);
@@ -145,7 +147,7 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
           cantReportExpired,
           date: maintenance.dueDate,
           dueDate: maintenance.dueDate,
-          label: `Atrasada há ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
+          label: `Atrasada há ${differenceInDays} ${differenceInDays > 1 ? 'dias' : 'dia'}`,
           type: maintenance.Maintenance.MaintenanceType.name,
           inProgress: maintenance.inProgress,
         });
@@ -172,7 +174,7 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
         break;
 
       case 'overdue':
-        auxiliaryData = Math.floor(
+        differenceInDays = Math.floor(
           (maintenance.resolutionDate.getTime() - maintenance.dueDate.getTime()) /
             (1000 * 60 * 60 * 24),
         );
@@ -189,7 +191,7 @@ async function optimizedSyndicSeparePerStatus({ data }: { data: any }) {
           serviceOrderNumber: maintenance.serviceOrderNumber,
           date: maintenance.resolutionDate,
           dueDate: maintenance.dueDate,
-          label: `Feita com atraso de ${auxiliaryData} ${auxiliaryData > 1 ? 'dias' : 'dia'}`,
+          label: `Feita com atraso de ${differenceInDays} ${differenceInDays > 1 ? 'dias' : 'dia'}`,
           type: maintenance.Maintenance.MaintenanceType.name,
           inProgress: maintenance.inProgress,
         });
@@ -298,7 +300,7 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
     // First priority: cantReportExpired = false comes first
     const cantReportCompare = (a.cantReportExpired ? 1 : 0) - (b.cantReportExpired ? 1 : 0);
     if (cantReportCompare !== 0) return cantReportCompare;
-    
+
     // Second priority: by date (oldest first)
     const dateCompare = new Date(a.date).getTime() - new Date(b.date).getTime();
     if (company?.showMaintenancePriority) {
@@ -343,3 +345,4 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
     maintenanceCategoriesForSelect,
   });
 }
+
