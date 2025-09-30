@@ -225,7 +225,7 @@ const maintenanceHistorySelect: prismaTypes.MaintenanceHistorySelect = {
             },
           },
 
-          OR: [
+          AND: [
             { notificationDate: { lte: endDate, gte: startDate } },
             { resolutionDate: { lte: endDate, gte: startDate } },
           ],
@@ -246,11 +246,8 @@ const maintenanceHistorySelect: prismaTypes.MaintenanceHistorySelect = {
               in: status || ['completed', 'overdue'],
             },
           },
-
-          OR: [
-            { notificationDate: { lte: endDate, gte: startDate } },
-            { resolutionDate: { lte: endDate, gte: startDate } },
-          ],
+          notificationDate: { lte: endDate, gte: startDate },
+          resolutionDate: { lte: endDate, gte: startDate },
         },
       }),
     ]);
