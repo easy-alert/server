@@ -78,6 +78,14 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
       continue;
     }
 
+    if (new Date(maintenance.dueDate) < new Date()) {
+      maintenance.MaintenancesStatus = {
+        name: 'expired',
+        pluralLabel: 'vencidas',
+        singularLabel: 'vencida',
+      }
+    }
+
     const foundBuildingMaintenance =
       await buildingServices.findBuildingMaintenanceDaysToAnticipate({
         buildingId: maintenance.Building.id,
