@@ -60,38 +60,41 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
     });
   });
 
-  for (let i = 0; i < MaintenancesPending.length; i++) {
-    if (MaintenancesPending[i].Maintenance?.MaintenanceType?.name === 'occasional') {
-      Dates.push({ ...MaintenancesPending[i] });
-    } else {
-      const foundBuildingMaintenance =
-        await buildingServices.findBuildingMaintenanceDaysToAnticipate({
-          buildingId: MaintenancesPending[i].Building.id,
-          maintenanceId: MaintenancesPending[i].Maintenance.id,
-        });
+  for (const maintenance of MaintenancesPending) {
+    const isOccasional = maintenance.Maintenance?.MaintenanceType?.name === 'occasional';
 
-      const intervals = sharedCalendarServices.recurringDates({
-        startDate: changeTime({
-          date: new Date(MaintenancesPending[i].notificationDate),
-          time: { h: 0, m: 0, ms: 0, s: 0 },
-        }),
-        endDate: changeTime({
-          date: endDate,
-          time: { h: 0, m: 0, ms: 0, s: 0 },
-        }),
-        interval:
-          MaintenancesPending[i].Maintenance.frequency *
-            MaintenancesPending[i].Maintenance.FrequencyTimeInterval.unitTime -
-          (foundBuildingMaintenance?.daysToAnticipate ?? 0),
-        maintenanceData: MaintenancesPending[i],
-        periodDaysInterval:
-          MaintenancesPending[i].Maintenance.period *
-            MaintenancesPending[i].Maintenance.PeriodTimeInterval.unitTime +
-          (foundBuildingMaintenance?.daysToAnticipate ?? 0),
+    if (isOccasional) {
+      Dates.push({ ...maintenance });
+      continue;
+    }
+
+    const foundBuildingMaintenance =
+      await buildingServices.findBuildingMaintenanceDaysToAnticipate({
+        buildingId: maintenance.Building.id,
+        maintenanceId: maintenance.Maintenance.id,
       });
 
-      Dates.push(...intervals);
-    }
+    const recurringMaintenances = sharedCalendarServices.recurringDates({
+      startDate: changeTime({
+        date: new Date(maintenance.notificationDate),
+        time: { h: 0, m: 0, ms: 0, s: 0 },
+      }),
+      endDate: changeTime({
+        date: endDate,
+        time: { h: 0, m: 0, ms: 0, s: 0 },
+      }),
+      interval:
+        maintenance.Maintenance.frequency *
+          maintenance.Maintenance.FrequencyTimeInterval.unitTime -
+        (foundBuildingMaintenance?.daysToAnticipate ?? 0),
+      maintenanceData: maintenance,
+      periodDaysInterval:
+        maintenance.Maintenance.period *
+          maintenance.Maintenance.PeriodTimeInterval.unitTime +
+        (foundBuildingMaintenance?.daysToAnticipate ?? 0),
+    });
+
+    Dates.push(maintenance, ...recurringMaintenances);
   }
 
   const groupBy = <T>(data: T[], key: keyof T): Record<string, T[]> =>
