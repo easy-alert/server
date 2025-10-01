@@ -221,7 +221,7 @@ export async function findMaintenanceHistory({
             },
           },
 
-          AND: [
+          OR: [
             { notificationDate: { lte: endDate, gte: startDate } },
             { resolutionDate: { lte: endDate, gte: startDate } },
           ],
@@ -237,7 +237,7 @@ export async function findMaintenanceHistory({
 
           MaintenancesStatus: {
             name: {
-              in: status || ['completed'],
+              in: status || ['completed', 'overdue'],
             },
           },
           notificationDate: { lte: endDate, gte: startDate },
