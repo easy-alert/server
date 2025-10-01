@@ -136,6 +136,7 @@ export class SharedCalendarServices {
       prisma.maintenanceHistory.findMany({
         select: {
           id: true,
+          dueDate: true,
           notificationDate: true,
           inProgress: true,
           serviceOrderNumber: true,

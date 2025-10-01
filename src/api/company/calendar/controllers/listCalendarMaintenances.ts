@@ -8,6 +8,16 @@ import { handlePermittedBuildings } from '../../../../utils/permissions/handlePe
 
 const sharedCalendarServices = new SharedCalendarServices();
 
+const groupBy = <T>(data: T[], key: keyof T): Record<string, T[]> =>
+  data.reduce((result: Record<string, T[]>, item: T) => {
+    const groupKey = String(item[key]);
+    const group = result[groupKey] || [];
+    return {
+      ...result,
+      [groupKey]: [...group, item],
+    };
+  }, {});
+
 export async function listCalendarMaintenances(req: Request, res: Response) {
   const { year, month, buildingIds } = req.query as {
     year?: string;
@@ -68,6 +78,14 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
       continue;
     }
 
+    if (new Date(maintenance.dueDate) < new Date()) {
+      maintenance.MaintenancesStatus = {
+        name: 'expired',
+        pluralLabel: 'vencidas',
+        singularLabel: 'vencida',
+      }
+    }
+
     const foundBuildingMaintenance =
       await buildingServices.findBuildingMaintenanceDaysToAnticipate({
         buildingId: maintenance.Building.id,
@@ -96,16 +114,6 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
 
     Dates.push(maintenance, ...recurringMaintenances);
   }
-
-  const groupBy = <T>(data: T[], key: keyof T): Record<string, T[]> =>
-    data.reduce((result: Record<string, T[]>, item: T) => {
-      const groupKey = String(item[key]);
-      const group = result[groupKey] || [];
-      return {
-        ...result,
-        [groupKey]: [...group, item],
-      };
-    }, {});
 
   const grouped = groupBy(Dates, 'notificationDate');
   const groupedArray = Object.keys(grouped).map((k) => grouped[k]);
