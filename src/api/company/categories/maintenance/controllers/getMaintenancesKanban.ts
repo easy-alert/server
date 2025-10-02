@@ -322,22 +322,12 @@ export async function getMaintenancesKanban(req: Request, res: Response) {
 
   // Em execução
   kanban[2].maintenances.sort((a: any, b: any) => {
-    const dateCompare = new Date(a.date).getTime() - new Date(b.date).getTime();
-    if (company?.showMaintenancePriority) {
-      const priorityCompare = getPriorityValue(b.priorityLabel) - getPriorityValue(a.priorityLabel);
-      return priorityCompare !== 0 ? priorityCompare : dateCompare;
-    }
-    return dateCompare;
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 
   // Concluídas
   kanban[3].maintenances.sort((a: any, b: any) => {
-    const dateCompare = new Date(b.date).getTime() - new Date(a.date).getTime();
-    if (company?.showMaintenancePriority) {
-      const priorityCompare = getPriorityValue(b.priorityLabel) - getPriorityValue(a.priorityLabel);
-      return priorityCompare !== 0 ? priorityCompare : dateCompare;
-    }
-    return dateCompare;
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 
   return res.status(200).json({
