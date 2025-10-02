@@ -112,7 +112,7 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
         (foundBuildingMaintenance?.daysToAnticipate ?? 0),
     });
 
-    Dates.push(maintenance, ...recurringMaintenances);
+    Dates.push(...recurringMaintenances);
   }
 
   const grouped = groupBy(Dates, 'notificationDate');
