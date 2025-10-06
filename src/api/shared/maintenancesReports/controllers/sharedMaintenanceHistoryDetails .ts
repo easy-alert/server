@@ -4,7 +4,7 @@ import { Validator } from '../../../../utils/validator/validator';
 import { SharedMaintenanceReportsServices } from '../services/SharedMaintenanceReportsServices';
 import { SharedMaintenanceServices } from '../../maintenance/services/sharedMaintenanceServices';
 import { changeTime } from '../../../../utils/dateTime/changeTime';
-import { removeDays } from '../../../../utils/dateTime';
+import { addDays, removeDays } from '../../../../utils/dateTime';
 
 const validator = new Validator();
 const sharedMaintenanceReportsServices = new SharedMaintenanceReportsServices();
@@ -44,7 +44,7 @@ export async function sharedMaintenanceHistoryDetails(req: Request, res: Respons
     },
   });
 
-  const period = history[0].Maintenance.period * history[0].Maintenance.PeriodTimeInterval.unitTime;
+  const period = maintenance.Maintenance.frequency * maintenance.Maintenance.FrequencyTimeInterval.unitTime;
 
   // se aplica só
   const canReportPending =
@@ -52,10 +52,8 @@ export async function sharedMaintenanceHistoryDetails(req: Request, res: Respons
 
   let allowReport = true;
 
-  if (maintenance.MaintenancesStatus.name === 'expired') {
-    if (history[1]?.id !== maintenance?.id || today >= history[0]?.notificationDate) {
-      allowReport = false;
-    }
+  if (today >= addDays({ date: maintenance.notificationDate, days: period })) {
+    allowReport = false;
   }
 
   // se ela foi criada com antecipação, respeitar
