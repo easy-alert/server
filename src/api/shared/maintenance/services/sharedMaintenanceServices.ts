@@ -489,7 +489,9 @@ export class SharedMaintenanceServices {
         Maintenance: {
           select: {
             period: true,
+            frequency: true,
             PeriodTimeInterval: true,
+            FrequencyTimeInterval: true,
           },
         },
 
