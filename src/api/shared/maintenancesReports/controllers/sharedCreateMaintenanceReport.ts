@@ -185,29 +185,28 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
     }
   }
 
-  // VERIFICA SE A DATA DE NOTIFICAÇÃO DA PRIMEIRA POSIÇÃO QUE DEVE SER PENDENTE
+ // VERIFICA SE A DATA DE NOTIFICAÇÃO DA PRIMEIRA POSIÇÃO QUE DEVE SER PENDENTE
   const period =
-    maintenanceHistory.Maintenance.period *
-    maintenanceHistory.Maintenance.PeriodTimeInterval.unitTime;
+  maintenanceHistory.Maintenance.frequency *
+  maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime;
 
   const canReport =
     today >= removeDays({ date: maintenanceHistory?.notificationDate, days: period });
 
-  // só verifica tudo isso se for manutenção comum
-  if (maintenanceHistory.Maintenance.MaintenanceType?.name !== 'occasional') {
-    // VERIFICA SE A MANUTENÇÃO QUE ESTÁ SENDO REPORTADA É VENCIDA
-    if (maintenanceHistory.MaintenancesStatus.name === 'expired') {
-      // JÁ EXISTE UMA PENDENTE, ENTAO EU COMPARO O ID DA ULTIMA VENCIDA, COM O ID QUE ESTOU MANDANDO
-      // PARA NÃO DEIXAR REPORTAR UMA VENCIDA ANTERIOR A OUTRA VENCIDA
-      if (history[1]?.id !== maintenanceHistory?.id || today >= history[0]?.notificationDate) {
-        throw new ServerMessage({
-          statusCode: 400,
-          message: 'O prazo para o relato desta manutenção vencida expirou.',
-        });
-      }
-    }
-  }
-
+  // // só verifica tudo isso se for manutenção comum
+  // if (maintenanceHistory.Maintenance.MaintenanceType?.name !== 'occasional') {
+  //   // VERIFICA SE A MANUTENÇÃO QUE ESTÁ SENDO REPORTADA É VENCIDA
+  //   if (maintenanceHistory.MaintenancesStatus.name === 'expired') {
+  //     // JÁ EXISTE UMA PENDENTE, ENTAO EU COMPARO O ID DA ULTIMA VENCIDA, COM O ID QUE ESTOU MANDANDO
+  //     // PARA NÃO DEIXAR REPORTAR UMA VENCIDA ANTERIOR A OUTRA VENCIDA
+  //     if (history[1]?.id !== maintenanceHistory?.id || today >= history[0]?.notificationDate) {
+  //       throw new ServerMessage({
+  //         statusCode: 400,
+  //         message: 'O prazo para o relato desta manutenção vencida expirou.',
+  //       });
+  //     }
+  //   }
+  // }
   // NAO DEIXA FAZER UMA PENDENTE ANTES DO TEMPO PARA RESPOSTA
   if (!canReport && maintenanceHistory.MaintenancesStatus.name === 'pending') {
     throw new ServerMessage({
