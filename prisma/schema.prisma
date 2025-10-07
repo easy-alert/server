@@ -206,6 +206,7 @@ model Company {
   StockItem            StockItem[]
   StockMovement        StockMovement[]
   StockItemType        StockItemType[]
+  TicketFieldsConfig   TicketFieldsConfig[] 
 
   @@map("companies")
 }
@@ -1651,6 +1652,36 @@ model StockHistoryActivityImages {
 }
 
 // endregion STOCK MANAGEMENT
+
+// TICKET FIELD CONFIG
+
+model TicketFieldsConfig {
+  id                String   @id @default(uuid())
+  companyId         String
+  residentName      TicketFieldVisibility @default(visible)
+  residentPhone     TicketFieldVisibility @default(visible)
+  residentApartment TicketFieldVisibility @default(visible)
+  residentEmail     TicketFieldVisibility @default(visible)
+  residentCPF       TicketFieldVisibility @default(visible)
+  description       TicketFieldVisibility @default(visible)
+  placeId           TicketFieldVisibility @default(visible)
+  types             TicketFieldVisibility @default(visible)
+  attachments       TicketFieldVisibility @default(visible)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  company           Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId])
+  @@index([companyId])
+  @@map("ticketFieldsConfig")
+}
+
+enum TicketFieldVisibility {
+  hidden
+  visible
+  required
+}
 
 // Platform Video
 enum PlatformVideoType {
