@@ -80,10 +80,9 @@ export async function sharedMaintenanceHistoryDetails(req: Request, res: Respons
     allowReport = false;
   }
 
-  // se for avulsa vencida, pode reportar sempre que quiser
+  // se for avulsa, pode reportar sempre que quiser
   if (
-    maintenance?.Maintenance.MaintenanceType?.name === 'occasional' &&
-    maintenance?.MaintenancesStatus?.name === 'expired'
+    maintenance?.Maintenance.MaintenanceType?.name === 'occasional' 
   ) {
     allowReport = true;
   }
