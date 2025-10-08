@@ -2,7 +2,7 @@
 // import { Validator } from '../../../../utils/validator/validator';
 // import { prisma } from '../../../../../prisma';
 import { prisma } from '../../../../../prisma';
-import { addDays } from '../../../../utils/dateTime';
+import { addDays, removeDays } from '../../../../utils/dateTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
 
 import { IRecurringDates } from './types';
@@ -22,7 +22,7 @@ export class SharedCalendarServices {
     let date = startDate;
     const dates = [];
     let isFuture = false;
-    while (date < endDate) {
+    while (date <= endDate) {
       dates.push({
         ...maintenanceData,
         notificationDate: date,
@@ -38,10 +38,12 @@ export class SharedCalendarServices {
         }),
         type: maintenanceData.Maintenance.MaintenanceType?.name || null,
       });
-      date = noWeekendTimeDate({
-        date: addDays({ date, days: interval }),
-        interval: periodDaysInterval,
-      });
+      date = addDays({ date, days: interval });
+
+      if (date.getDay() === 0) {
+        date = removeDays({ date, days: 1 });
+      }
+
       isFuture = true;
     }
 
@@ -59,6 +61,8 @@ export class SharedCalendarServices {
     startDate: Date;
     endDate: Date;
   }) {
+    console.log('startDate ', startDate);
+    console.log('endDate   ', endDate);
     const [Filter, Maintenances, MaintenancesPending] = await prisma.$transaction([
       prisma.building.findMany({
         select: { id: true, name: true },
