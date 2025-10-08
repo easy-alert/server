@@ -5,6 +5,7 @@ import { SharedCalendarServices } from '../../../shared/calendar/services/Shared
 import { buildingServices } from '../../buildings/building/services/buildingServices';
 import { hasAdminPermission } from '../../../../utils/permissions/hasAdminPermission';
 import { handlePermittedBuildings } from '../../../../utils/permissions/handlePermittedBuildings';
+import { addDays, removeDays } from '../../../../utils/dateTime';
 
 const sharedCalendarServices = new SharedCalendarServices();
 
@@ -46,6 +47,8 @@ export async function listCalendarMaintenances(req: Request, res: Response) {
     // Mês informado (1 a 12)
     startDate = new Date(currentYear, currentMonth - 1, 1);
     endDate = new Date(currentYear, currentMonth, 0);
+    endDate = addDays({ date: endDate, days: 5 });
+    startDate = removeDays({ date: startDate, days: 5 });
   } else {
     // Intervalo de 5 anos
     const YEARFORSUM = 5;
