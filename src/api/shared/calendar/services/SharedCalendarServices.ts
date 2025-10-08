@@ -61,8 +61,6 @@ export class SharedCalendarServices {
     startDate: Date;
     endDate: Date;
   }) {
-    console.log('startDate ', startDate);
-    console.log('endDate   ', endDate);
     const [Filter, Maintenances, MaintenancesPending] = await prisma.$transaction([
       prisma.building.findMany({
         select: { id: true, name: true },
