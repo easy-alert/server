@@ -1,6 +1,6 @@
 import { prisma, prismaTypes } from '../../../../../prisma';
 import type { TicketFieldVisibility } from '@prisma/client';
-import type { TicketFormConfigDto, TicketFormConfigDb } from '../dtos/ticketFieldsConfig.dto';
+import type { TicketFormConfigDto, TicketFormConfigEntity } from '../dtos/ticketFieldsConfig.dto';
 
 export class TicketFieldsServices {
   async create(data: prismaTypes.TicketFieldsConfigCreateInput) {
@@ -15,20 +15,20 @@ export class TicketFieldsServices {
     });
   }
 
-  async upsertByCompanyId(companyId: string, data: Partial<TicketFormConfigDb>) {
+  async upsertByCompanyId(companyId: string, data: Partial<TicketFormConfigEntity>) {
     return prisma.ticketFieldsConfig.upsert({
       where: { companyId },
       create: {
         companyId,
-        ...(data as any),
+        ...data,
       },
       update: {
-        ...(data as any),
+        ...data,
       },
     });
   }
 
-  mapDtoToDb(dto: Partial<TicketFormConfigDto>): TicketFormConfigDb {
+  dtoToEntity(dto: Partial<TicketFormConfigDto>): TicketFormConfigEntity {
     const map = (hidden: boolean, required: boolean): TicketFieldVisibility => {
       if (hidden) return 'hidden';
       if (required) return 'required';
@@ -48,25 +48,24 @@ export class TicketFieldsServices {
     };
   }
 
-  mapDbToDto(db: TicketFormConfigDb): TicketFormConfigDto {
+  entityToDto(entity: TicketFormConfigEntity): TicketFormConfigDto {
     const map = (v: TicketFieldVisibility) => ({
       hidden: v === 'hidden',
       required: v === 'required',
     });
 
     return {
-      residentName: map(db.residentName),
-      residentPhone: map(db.residentPhone),
-      residentApartment: map(db.residentApartment),
-      residentEmail: map(db.residentEmail),
-      residentCPF: map(db.residentCPF),
-      description: map(db.description),
-      placeId: map(db.placeId),
-      types: map(db.types),
-      attachments: map(db.attachments),
+      residentName: map(entity.residentName),
+      residentPhone: map(entity.residentPhone),
+      residentApartment: map(entity.residentApartment),
+      residentEmail: map(entity.residentEmail),
+      residentCPF: map(entity.residentCPF),
+      description: map(entity.description),
+      placeId: map(entity.placeId),
+      types: map(entity.types),
+      attachments: map(entity.attachments),
     };
   }
 }
 
 export const ticketFieldsServices = new TicketFieldsServices();
-

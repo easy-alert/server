@@ -9,10 +9,9 @@ export class TicketFormController {
 
     await ticketServices.checkAccessByCompany({ companyId });
 
-    const cfg = await ticketFieldsServices.findByCompanyId(companyId);
+    const config = await ticketFieldsServices.findByCompanyId(companyId);
 
-    if (!cfg) {
-      // When not set, return all visible/required false
+    if (!config) {
       const empty: TicketFormConfigDto = {
         residentName: { hidden: false, required: true },
         residentPhone: { hidden: false, required: true },
@@ -28,7 +27,7 @@ export class TicketFormController {
       return res.status(200).json(empty);
     }
 
-    const dto = ticketFieldsServices.mapDbToDto(cfg);
+    const dto = ticketFieldsServices.entityToDto(config);
     return res.status(200).json(dto);
   }
 
@@ -38,10 +37,10 @@ export class TicketFormController {
 
     await ticketServices.checkAccessByCompany({ companyId });
 
-    const dbData = ticketFieldsServices.mapDtoToDb(body);
+    const configEntity = ticketFieldsServices.dtoToEntity(body);
+    await ticketFieldsServices.upsertByCompanyId(companyId, configEntity)
 
-    const saved = await ticketFieldsServices.upsertByCompanyId(companyId, dbData);
-    const dto = ticketFieldsServices.mapDbToDto(saved);
-    return res.status(200).json(dto);
+    return res.status(200).json();
   }
 }
+

@@ -18,4 +18,4 @@ export type TicketFieldStateDto = {
 
 export type TicketFormConfigDto = Record<TicketFieldKey, TicketFieldStateDto>;
 
-export type TicketFormConfigDb = Record<TicketFieldKey, TicketFieldVisibility>;
+export type TicketFormConfigEntity = Record<TicketFieldKey, TicketFieldVisibility>;
