@@ -207,6 +207,8 @@ model Company {
   StockMovement        StockMovement[]
   StockItemType        StockItemType[]
   TicketFieldsConfig   TicketFieldsConfig[] 
+  TicketPlace          TicketPlace[]
+  ServiceType          ServiceType[]
 
   @@map("companies")
 }
@@ -1201,7 +1203,10 @@ model TicketImage {
 model TicketPlace {
   id    String @id @default(uuid())
   label String @unique
+  companyId String? 
 
+  company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
   ticket Ticket[]
 
   @@map("ticketPlaces")
@@ -1286,9 +1291,12 @@ model ServiceType {
   singularLabel String  @default("Serviço")
   label         String  @unique @default("Serviços")
   pluralLabel   String  @default("Serviços")
+  companyId     String?
 
   color           String @default("#000000")
   backgroundColor String @default("#FFFFFF")
+
+  company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   tickets TicketServiceType[]
 
