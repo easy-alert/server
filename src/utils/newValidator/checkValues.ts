@@ -21,7 +21,7 @@ type IType =
   | 'phone'
   | 'PIN';
 
-interface ICheckValues {
+export interface ICheckValues {
   value: any;
   label: string;
   type: IType;

@@ -15,6 +15,10 @@ import { listTicketsByCompanyId } from '../reports/controllers/listTicketsByComp
 import { findTicketApartmentsController } from '../../shared/tickets/controllers/findTicketApartmentsController';
 import { uploadTicketImageController } from '../../shared/tickets/controllers/uploadTicketImageController';
 import { deleteTicketImageController } from '../../shared/tickets/controllers/deleteTicketImageController';
+import { createTicketPlace } from '../../shared/ticketPlaces/controllers/createTicketPlace';
+import { createServiceType } from '../../shared/serviceTypes/controllers/createServiceType';
+import { deleteTicketPlace } from '../../shared/ticketPlaces/controllers/deleteTicketPlace';
+import { deleteServiceType } from '../../shared/serviceTypes/controllers/deleteServiceType';
 
 export const ticketRouter: Router = Router();
 
@@ -25,8 +29,12 @@ ticketRouter.put('/:ticketId', updateTicketById);
 ticketRouter.delete('/:ticketId', deleteTicketController);
 
 ticketRouter.get('/places/:placeId', findAllTicketPlaces);
+ticketRouter.post('/places', createTicketPlace);
+ticketRouter.delete('/places/:placeId', deleteTicketPlace);
 
 ticketRouter.get('/status/:statusId', findAllStatus);
+ticketRouter.post('/service-types', createServiceType);
+ticketRouter.delete('/service-types/:serviceTypeId', deleteServiceType);
 
 ticketRouter.get('/buildings', findManyTicketsController);
 

@@ -1,6 +1,7 @@
 import { Response, Request } from 'express';
 
 import { ticketServices } from '../services/ticketServices';
+import { ticketFieldsServices } from '../services/ticketFieldsServices';
 
 import { checkValues } from '../../../../utils/newValidator';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
@@ -30,5 +31,20 @@ export async function findTicketByIdController(req: Request, res: Response) {
     });
   }
 
-  return res.status(200).json({ ticket });
+  const cfgEntity = ticket.building?.companyId
+    ? await ticketFieldsServices.findByCompanyId(ticket.building.companyId)
+    : null;
+  const cfgDto = cfgEntity ? ticketFieldsServices.entityToDto(cfgEntity) : {
+    residentName: { hidden: false, required: true },
+    residentPhone: { hidden: false, required: true },
+    residentApartment: { hidden: false, required: true },
+    residentEmail: { hidden: false, required: true },
+    residentCPF: { hidden: false, required: true },
+    description: { hidden: false, required: true },
+    placeId: { hidden: false, required: true },
+    types: { hidden: false, required: true },
+    attachments: { hidden: false, required: false },
+  };
+
+  return res.status(200).json({ ticket, fieldsConfig: cfgDto });
 }

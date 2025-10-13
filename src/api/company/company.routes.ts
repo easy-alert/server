@@ -40,6 +40,7 @@ import { homeRouter } from './home/home.routes';
 import { calendarTicketsRouter } from './calendarTicket/calendarTicket.routes';
 import { stockRouter } from './stock/stock.routes';
 import { stockHistoryActivitiesRouter } from './stockHistoryActivities/stockHistoryActivities.routes';
+import { ticketFormConfigRoute } from './tickets/ticketFormConfig.routes';
 
 // ROUTES
 export const companyRouter: Router = Router();
@@ -136,6 +137,13 @@ companyRouter.use(
   authMiddleware,
   handleCompanyPermCheck([companyPermission, 'access:tickets']),
   ticketRouter,
+);
+
+companyRouter.use(
+  '/ticket-form-config',
+  authMiddleware,
+  handleCompanyPermCheck([companyPermission, 'access:tickets']),
+  ticketFormConfigRoute,
 );
 
 companyRouter.use(

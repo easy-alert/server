@@ -24,7 +24,7 @@ export interface IDataForPDF {
         backgroundColor: string;
       };
     }[];
-    place: TicketPlace;
+    place?: TicketPlace | null;
     activities: TicketHistoryActivities[];
     building: { name: string };
   })[];

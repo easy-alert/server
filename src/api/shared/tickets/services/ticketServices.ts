@@ -73,6 +73,7 @@ class TicketServices {
           select: {
             nanoId: true,
             id: true,
+            companyId: true,
             name: true,
             Company: {
               select: {
@@ -151,7 +152,7 @@ class TicketServices {
             },
           },
 
-          types: {
+          types: serviceTypeId ? {
             some: {
               type: {
                 id: {
@@ -159,17 +160,17 @@ class TicketServices {
                 },
               },
             },
-          },
+          } : undefined,
 
-          place: {
+          place: placeId ? {
             id: {
               in: placeId,
             },
-          },
+          } : undefined,
 
-          residentApartment: {
+          residentApartment: apartmentsNames ? {
             in: apartmentsNames,
-          },
+          } : undefined,
 
           seen,
 

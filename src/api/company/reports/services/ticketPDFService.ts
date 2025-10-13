@@ -345,7 +345,7 @@ export async function ticketPDFService({
                           fillColor: status.backgroundColor,
                         },
                         {
-                          text: [{ text: 'Local: ', bold: true }, { text: place.label }],
+                          text: [{ text: 'Local: ', bold: true }, { text: place?.label || 'Não definido.' }],
                           marginLeft: 8,
                         },
                         {

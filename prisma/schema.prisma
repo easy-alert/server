@@ -206,6 +206,9 @@ model Company {
   StockItem            StockItem[]
   StockMovement        StockMovement[]
   StockItemType        StockItemType[]
+  TicketFieldsConfig   TicketFieldsConfig[] 
+  TicketPlace          TicketPlace[]
+  ServiceType          ServiceType[]
 
   @@map("companies")
 }
@@ -1098,16 +1101,16 @@ model Ticket {
   id String @id @default(uuid())
 
   buildingId           String
-  placeId              String
+  placeId              String?
   maintenanceHistoryId String?
 
   ticketNumber      Int
-  residentName      String
+  residentName      String?
   residentPhone     String?
-  residentApartment String
+  residentApartment String?
   residentEmail     String?
   residentCPF       String?
-  description       String
+  description       String?
   statusName        TicketStatusName
   signature         String?
   collaborator      String?
@@ -1128,7 +1131,7 @@ model Ticket {
 
   building           Building                           @relation(fields: [buildingId], references: [id], onDelete: Cascade)
   status             TicketStatus                       @relation(fields: [statusName], references: [name])
-  place              TicketPlace                        @relation(fields: [placeId], references: [id])
+  place              TicketPlace?                       @relation(fields: [placeId], references: [id])
   images             TicketImage[]
   types              TicketServiceType[]
   maintenanceHistory MaintenanceHistory?                @relation(fields: [maintenanceHistoryId], references: [id], onDelete: SetNull)
@@ -1200,7 +1203,10 @@ model TicketImage {
 model TicketPlace {
   id    String @id @default(uuid())
   label String @unique
+  companyId String? 
 
+  company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
   ticket Ticket[]
 
   @@map("ticketPlaces")
@@ -1285,9 +1291,12 @@ model ServiceType {
   singularLabel String  @default("Serviço")
   label         String  @unique @default("Serviços")
   pluralLabel   String  @default("Serviços")
+  companyId     String?
 
   color           String @default("#000000")
   backgroundColor String @default("#FFFFFF")
+
+  company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   tickets TicketServiceType[]
 
@@ -1651,6 +1660,36 @@ model StockHistoryActivityImages {
 }
 
 // endregion STOCK MANAGEMENT
+
+// TICKET FIELD CONFIG
+
+model TicketFieldsConfig {
+  id                String   @id @default(uuid())
+  companyId         String
+  residentName      TicketFieldVisibility @default(visible)
+  residentPhone     TicketFieldVisibility @default(visible)
+  residentApartment TicketFieldVisibility @default(visible)
+  residentEmail     TicketFieldVisibility @default(visible)
+  residentCPF       TicketFieldVisibility @default(visible)
+  description       TicketFieldVisibility @default(visible)
+  placeId           TicketFieldVisibility @default(visible)
+  types             TicketFieldVisibility @default(visible)
+  attachments       TicketFieldVisibility @default(visible)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  company           Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId])
+  @@index([companyId])
+  @@map("ticketFieldsConfig")
+}
+
+enum TicketFieldVisibility {
+  hidden
+  visible
+  required
+}
 
 // Platform Video
 enum PlatformVideoType {
