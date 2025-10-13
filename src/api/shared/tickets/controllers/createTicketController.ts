@@ -1,7 +1,9 @@
 import { Response, Request } from 'express';
 import { ticketServices } from '../services/ticketServices';
-import { checkValues } from '../../../../utils/newValidator';
+import { ticketFieldsServices } from '../services/ticketFieldsServices';
+import { checkValues, ICheckValues } from '../../../../utils/newValidator';
 import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
 
 interface IBody {
   buildingId?: string;
@@ -49,18 +51,49 @@ export async function createTicketController(req: Request, res: Response) {
     return res.status(404).json({ ServerMessage: { message: 'Edificação não encontrada.' } });
   }
 
-  checkValues([
+  const companyId = building.companyId;
+  const configEntity = await ticketFieldsServices.findByCompanyId(companyId);
+  const cfg = configEntity ? ticketFieldsServices.entityToDto(configEntity) : {
+    residentName: { hidden: false, required: true },
+    residentPhone: { hidden: false, required: true },
+    residentApartment: { hidden: false, required: true },
+    residentEmail: { hidden: false, required: true },
+    residentCPF: { hidden: false, required: true },
+    description: { hidden: false, required: true },
+    placeId: { hidden: false, required: true },
+    types: { hidden: false, required: true },
+    attachments: { hidden: false, required: false },
+  };
+
+  const isRequired = (key: keyof typeof cfg) => !!cfg[key]?.required && !cfg[key]?.hidden;
+  const attachmentsRequired = !!building?.ticketAnnexRequired || (!!cfg.attachments?.required && !cfg.attachments?.hidden);
+
+  console.log('isRequired("residentEmail")', isRequired('residentEmail'));
+
+  const values: ICheckValues[] = [
     { label: 'Edificação', type: 'object', value: building },
-    { label: 'Descrição', type: 'string', value: description },
-    { label: 'Local da ocorrência', type: 'string', value: placeId },
-    { label: 'Nome do morador', type: 'string', value: residentName },
-    { label: 'E-mail do morador', type: 'email', value: residentEmail, required: false },
-    { label: 'Apartamento do morador', type: 'string', value: residentApartment },
-    { label: 'CPF do morador', type: 'string', value: residentCPF, required: false },
-    { label: 'Telefone do morador', type: 'string', value: residentPhone, required: false },
-    { label: 'Imagens', type: 'array', value: images, required: building?.ticketAnnexRequired },
-    { label: 'Tipo de assistência', type: 'array', value: types },
-  ]);
+    { label: 'Descrição', type: 'string', value: description, required: isRequired('description') },
+    { label: 'Local da ocorrência', type: 'string', value: placeId, required: isRequired('placeId') },
+    { label: 'Nome do morador', type: 'string', value: residentName, required: isRequired('residentName') },
+    { label: 'Apartamento do morador', type: 'string', value: residentApartment, required: isRequired('residentApartment') },
+    { label: 'CPF do morador', type: 'string', value: residentCPF, required: isRequired('residentCPF') },
+    { label: 'Telefone do morador', type: 'string', value: residentPhone, required: isRequired('residentPhone') },
+    { label: 'Imagens', type: 'array', value: images, required: attachmentsRequired },
+    { label: 'Tipo de assistência', type: 'array', value: types, required: isRequired('types') },
+  ];
+
+  if (isRequired('residentEmail')) {
+    if (!residentEmail) {
+      throw new ServerMessage({
+        statusCode: 400,
+        message: 'O e-mail do morador é obrigatório.',
+      });
+    }
+
+    values.push({ label: 'E-mail do morador', type: 'email', value: residentEmail, required: true });
+  }
+
+  checkValues(values);
 
   images?.forEach((data) => {
     checkValues([
@@ -88,7 +121,7 @@ export async function createTicketController(req: Request, res: Response) {
       residentEmail: lowerCaseEmail,
       residentCPF,
       residentPhone,
-      placeId,
+      placeId: placeId ? placeId : undefined,
       description,
       statusName: 'open',
 
