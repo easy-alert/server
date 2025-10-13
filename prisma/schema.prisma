@@ -1099,16 +1099,16 @@ model Ticket {
   id String @id @default(uuid())
 
   buildingId           String
-  placeId              String
+  placeId              String?
   maintenanceHistoryId String?
 
   ticketNumber      Int
-  residentName      String
+  residentName      String?
   residentPhone     String?
-  residentApartment String
+  residentApartment String?
   residentEmail     String?
   residentCPF       String?
-  description       String
+  description       String?
   statusName        TicketStatusName
   signature         String?
   collaborator      String?
@@ -1129,7 +1129,7 @@ model Ticket {
 
   building           Building                           @relation(fields: [buildingId], references: [id], onDelete: Cascade)
   status             TicketStatus                       @relation(fields: [statusName], references: [name])
-  place              TicketPlace                        @relation(fields: [placeId], references: [id])
+  place              TicketPlace?                       @relation(fields: [placeId], references: [id])
   images             TicketImage[]
   types              TicketServiceType[]
   maintenanceHistory MaintenanceHistory?                @relation(fields: [maintenanceHistoryId], references: [id], onDelete: SetNull)

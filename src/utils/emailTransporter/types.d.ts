@@ -52,7 +52,7 @@ export interface ISendProofOfReport {
 export interface ITicketCreated {
   toEmail?: string;
   buildingName: string;
-  residentName?: string;
+  residentName?: string | null;
   responsibleName?: string;
   ticketNumber: number;
   toWhom: 'resident' | 'responsible';
@@ -62,7 +62,7 @@ export interface ITicketCreated {
 export interface ITicketChangedStatus {
   toEmail?: string;
   ticketNumber: number;
-  residentName: string;
+  residentName?: string | null;
   buildingName: string;
   statusName: string;
 }
@@ -70,7 +70,7 @@ export interface ITicketChangedStatus {
 export interface ITicketDismissed {
   toEmail?: string;
   ticketNumber: number;
-  residentName: string;
+  residentName?: string | null;
   dismissReason: string;
   dismissObservation: string;
   dismissedBy: string;
@@ -78,6 +78,6 @@ export interface ITicketDismissed {
 
 export interface ITicketFinished {
   toEmail?: string;
-  residentName: string;
+  residentName?: string | null;
   ticketNumber: number;
 }
