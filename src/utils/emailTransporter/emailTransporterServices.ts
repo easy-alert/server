@@ -20,10 +20,10 @@ const emailTemplates = new EmailTemplates();
 
 // #region CONFIG
 const transporter = createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  tls: { rejectUnauthorized: false },
+  host: 'sandbox.smtp.mailtrap.io',
+  port: 2525,
+  // secure: true,
+  // tls: { rejectUnauthorized: false
   auth: {
     user: process.env.GMAIL_NOREPLY_USER,
     pass: process.env.GMAIL_NOREPLY_APP_PASS,

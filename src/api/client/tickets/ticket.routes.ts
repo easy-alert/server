@@ -10,6 +10,8 @@ import { updateTicketById } from '../../shared/tickets/controllers/updateTicketB
 import { findAllTicketPlaces } from '../../shared/ticketPlaces/controllers/findAllTicketPlaces';
 import { findAllStatus } from '../../shared/ticketStatus/controllers/findAllStatus';
 import { findTicketApartmentsController } from '../../shared/tickets/controllers/findTicketApartmentsController';
+import { createTicketPlace } from '../../shared/ticketPlaces/controllers/createTicketPlace';
+import { createServiceType } from '../../shared/serviceTypes/controllers/createServiceType';
 
 export const ticketRouter: Router = Router();
 
@@ -20,8 +22,10 @@ ticketRouter.put('/:ticketId', updateTicketById);
 ticketRouter.get('/buildings/:buildingsId', findManyTicketsController);
 
 ticketRouter.get('/places/:placeId', findAllTicketPlaces);
+ticketRouter.post('/places', createTicketPlace);
 
 ticketRouter.get('/status/:statusId', findAllStatus);
+ticketRouter.post('/service-types', createServiceType);
 
 ticketRouter.get('/extras/auxiliary-data', findTicketsAuxiliaryDataController);
 ticketRouter.get(
