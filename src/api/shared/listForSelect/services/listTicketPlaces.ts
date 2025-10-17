@@ -8,7 +8,6 @@ export async function listTicketPlaces({ companyId }: { companyId: string }) {
       companyId: true,
     },
     where: {
-      // registros sem companyId serão considerados de todas as empresas
       OR: [{ companyId }, { companyId: null }],
     },
     orderBy: {
