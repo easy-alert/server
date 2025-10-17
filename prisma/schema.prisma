@@ -61,6 +61,7 @@ model User {
   ChecklistUsers                   ChecklistUsers[]
   StockMovement                    StockMovement[]
   Stock                            Stock[]
+  PreRegistration                  PreRegistration?
 
   @@unique([email, phoneNumber])
   @@map("users")
@@ -206,9 +207,10 @@ model Company {
   StockItem            StockItem[]
   StockMovement        StockMovement[]
   StockItemType        StockItemType[]
-  TicketFieldsConfig   TicketFieldsConfig[] 
+  TicketFieldsConfig   TicketFieldsConfig[]
   TicketPlace          TicketPlace[]
   ServiceType          ServiceType[]
+  PreRegistration      PreRegistration?
 
   @@map("companies")
 }
@@ -219,6 +221,49 @@ enum CompanyTicketType {
   email
   link
   platform
+}
+
+model PreRegistration {
+  id String @id @unique @default(uuid())
+
+  status PreRegistrationStatus @default(pending)
+
+  clientType          clientType
+  buildingQuantity    Int
+  planType            planType
+  monthlyPrice        Float
+  implementationPrice Float
+
+  createdUserId    String? @unique
+  createdCompanyId String? @unique
+
+  createdUser    User?    @relation(fields: [createdUserId], references: [id], onDelete: SetNull)
+  createdCompany Company? @relation(fields: [createdCompanyId], references: [id], onDelete: SetNull)
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("preRegistration")
+}
+
+enum PreRegistrationStatus {
+  pending
+  completed
+  expired
+}
+
+enum clientType {
+  residentSyndic
+  professionalSyndic
+  constructionCompany
+  administrationCompany
+  others
+}
+
+enum planType {
+  annual
+  monthly
 }
 
 // CATEGORIES AND MAINTENANCES TYPES
@@ -1201,12 +1246,12 @@ model TicketImage {
 }
 
 model TicketPlace {
-  id    String @id @default(uuid())
-  label String @unique
-  companyId String? 
+  id        String  @id @default(uuid())
+  label     String  @unique
+  companyId String?
 
   company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  
+
   ticket Ticket[]
 
   @@map("ticketPlaces")
@@ -1664,7 +1709,7 @@ model StockHistoryActivityImages {
 // TICKET FIELD CONFIG
 
 model TicketFieldsConfig {
-  id                String   @id @default(uuid())
+  id                String                @id @default(uuid())
   companyId         String
   residentName      TicketFieldVisibility @default(visible)
   residentPhone     TicketFieldVisibility @default(visible)
@@ -1675,10 +1720,10 @@ model TicketFieldsConfig {
   placeId           TicketFieldVisibility @default(visible)
   types             TicketFieldVisibility @default(visible)
   attachments       TicketFieldVisibility @default(visible)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
 
-  company           Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@unique([companyId])
   @@index([companyId])
