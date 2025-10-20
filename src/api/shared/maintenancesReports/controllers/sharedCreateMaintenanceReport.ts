@@ -1,23 +1,23 @@
 // #region IMPORTS
 import { Request, Response } from 'express';
 
-import { addDays, removeDays } from '../../../../utils/dateTime';
+import { addDays } from '../../../../utils/dateTime';
 import { changeTime } from '../../../../utils/dateTime/changeTime';
 import { noWeekendTimeDate } from '../../../../utils/dateTime/noWeekendTimeDate';
 import { EmailTransporterServices } from '../../../../utils/emailTransporter/emailTransporterServices';
 import { ServerMessage } from '../../../../utils/messages/serverMessage';
+import { checkValues } from '../../../../utils/newValidator';
+import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
+import { findCompanyOwner } from '../../company/services/findCompanyOwner';
 import { SharedMaintenanceServices } from '../../maintenance/services/sharedMaintenanceServices';
+import { getCompanyLastServiceOrder } from '../../maintenanceHistory/services/getCompanyLastServiceOrder';
+import { createMaintenanceHistoryActivityCommentService } from '../../maintenanceHistoryActivities/services';
 import { SharedMaintenanceStatusServices } from '../../maintenanceStatus/services/sharedMaintenanceStatusServices';
 import { SharedBuildingNotificationConfigurationServices } from '../../notificationConfiguration/services/buildingNotificationConfigurationServices';
+import { ticketServices } from '../../tickets/services/ticketServices';
+import { findUserById } from '../../users/user/services/findUserById';
 import { SharedMaintenanceReportsServices } from '../services/SharedMaintenanceReportsServices';
 import { IAttachments, ICreateAndEditMaintenanceReportsBody } from './types';
-import { buildingServices } from '../../../company/buildings/building/services/buildingServices';
-import { ticketServices } from '../../tickets/services/ticketServices';
-import { createMaintenanceHistoryActivityCommentService } from '../../maintenanceHistoryActivities/services';
-import { checkValues } from '../../../../utils/newValidator';
-import { findUserById } from '../../users/user/services/findUserById';
-import { findCompanyOwner } from '../../company/services/findCompanyOwner';
-import { getCompanyLastServiceOrder } from '../../maintenanceHistory/services/getCompanyLastServiceOrder';
 
 // CLASS
 
@@ -183,47 +183,6 @@ export async function sharedCreateMaintenanceReport(req: Request, res: Response)
           'Você não pode reportar uma manutenção com antecipação antes do dia da notificação.',
       });
     }
-  }
-
- // VERIFICA SE A DATA DE NOTIFICAÇÃO DA PRIMEIRA POSIÇÃO QUE DEVE SER PENDENTE
-  const period =
-  maintenanceHistory.Maintenance.frequency *
-  maintenanceHistory.Maintenance.FrequencyTimeInterval.unitTime;
-
-  const canReport =
-    today >= removeDays({ date: maintenanceHistory?.notificationDate, days: period });
-
-  // // só verifica tudo isso se for manutenção comum
-  // if (maintenanceHistory.Maintenance.MaintenanceType?.name !== 'occasional') {
-  //   // VERIFICA SE A MANUTENÇÃO QUE ESTÁ SENDO REPORTADA É VENCIDA
-  //   if (maintenanceHistory.MaintenancesStatus.name === 'expired') {
-  //     // JÁ EXISTE UMA PENDENTE, ENTAO EU COMPARO O ID DA ULTIMA VENCIDA, COM O ID QUE ESTOU MANDANDO
-  //     // PARA NÃO DEIXAR REPORTAR UMA VENCIDA ANTERIOR A OUTRA VENCIDA
-  //     if (history[1]?.id !== maintenanceHistory?.id || today >= history[0]?.notificationDate) {
-  //       throw new ServerMessage({
-  //         statusCode: 400,
-  //         message: 'O prazo para o relato desta manutenção vencida expirou.',
-  //       });
-  //     }
-  //   }
-  // }
-  // NAO DEIXA FAZER UMA PENDENTE ANTES DO TEMPO PARA RESPOSTA
-  if (!canReport && maintenanceHistory.MaintenancesStatus.name === 'pending') {
-    throw new ServerMessage({
-      statusCode: 400,
-      message: 'Você não pode reportar uma manutenção antes do tempo de resposta.',
-    });
-  }
-
-  if (
-    maintenanceHistory.MaintenancesStatus.name === 'pending' &&
-    history[1]?.MaintenancesStatus?.name === 'expired' &&
-    today < history[0]?.notificationDate
-  ) {
-    throw new ServerMessage({
-      statusCode: 400,
-      message: 'Você não pode antecipar um relato com uma manutenção vencida em andamento.',
-    });
   }
 
   if (Building.mandatoryReportProof && (!Array.isArray(ReportImages) || ReportImages?.length < 1)) {
