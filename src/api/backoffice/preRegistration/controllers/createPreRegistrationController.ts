@@ -23,7 +23,7 @@ function validate(data: any, rules: any) {
   }
 }
 
-export async function createPreRegistrationController(req: Request, res: Response) {
+export async function createPreRegistration(req: Request, res: Response) {
   try {
     const data = req.body;
 
