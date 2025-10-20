@@ -240,7 +240,6 @@ export async function findMaintenanceHistory({
               in: status || ['completed', 'overdue'],
             },
           },
-          notificationDate: { lte: endDate, gte: startDate },
           resolutionDate: { lte: endDate, gte: startDate },
         },
       }),
