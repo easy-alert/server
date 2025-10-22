@@ -221,9 +221,13 @@ export async function findMaintenanceHistory({
             },
           },
 
-          OR: [
-            { notificationDate: { lte: endDate, gte: startDate } },
-            { resolutionDate: { lte: endDate, gte: startDate } },
+          AND: [
+            {
+              OR: [
+                { notificationDate: { lte: endDate, gte: startDate } },
+                { resolutionDate: { lte: endDate, gte: startDate } },
+              ],
+            },
           ],
         },
       }),
