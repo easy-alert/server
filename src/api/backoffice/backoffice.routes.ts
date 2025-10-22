@@ -118,12 +118,7 @@ backofficeRouter.use(
 );
 
 // PRE REGISTRATIONS
-backofficeRouter.use(
-  '/pre-registrations',
-  authMiddleware,
-  handleBackofficePermCheck(backofficePermissions),
-  preRegistrationRouter,
-);
+backofficeRouter.use('/pre-registrations', preRegistrationRouter);
 
 // GUARANTEE
 backofficeRouter.use(
