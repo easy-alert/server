@@ -19,6 +19,10 @@ import { createTicketPlace } from '../../shared/ticketPlaces/controllers/createT
 import { createServiceType } from '../../shared/serviceTypes/controllers/createServiceType';
 import { deleteTicketPlace } from '../../shared/ticketPlaces/controllers/deleteTicketPlace';
 import { deleteServiceType } from '../../shared/serviceTypes/controllers/deleteServiceType';
+import { ticketChecklistRouter } from '../ticketChecklist/ticketChecklist.routes';
+import { completeTicketChecklistItemController } from '../ticketChecklist/controllers/completeTicketChecklistItemController';
+import { deleteTicketChecklistItemController } from '../ticketChecklist/controllers/deleteTicketChecklistItemController';
+import { moveTicketChecklistItemController } from '../ticketChecklist/controllers/moveTicketChecklistItemController';
 
 export const ticketRouter: Router = Router();
 
@@ -53,3 +57,9 @@ ticketRouter.post('/connect-to-maintenance', connectTicketsToExistingMaintenance
 ticketRouter.post('/:ticketId/images', uploadTicketImageController);
 
 ticketRouter.delete('/:ticketId/images/:imageId', deleteTicketImageController);
+
+ticketRouter.use('/:ticketId/checklist', ticketChecklistRouter);
+
+ticketRouter.patch('/checklist/:itemId', completeTicketChecklistItemController);
+ticketRouter.delete('/checklist/:itemId', deleteTicketChecklistItemController);
+ticketRouter.patch('/checklist/:itemId/move', moveTicketChecklistItemController);

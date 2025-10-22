@@ -82,6 +82,7 @@ class TicketServices {
             },
           },
         },
+        checklistItems: true,
       },
       where: { id },
     });
