@@ -19,13 +19,7 @@ export async function preRegistrationDetailsClient(req: Request, res: Response) 
       });
     }
 
-    return res.status(200).json({
-      details,
-      ServerMessage: {
-        statusCode: 200,
-        message: 'Detalhes do pré-cadastro obtidos com sucesso.',
-      },
-    });
+    return res.status(200).json(details);
   } catch (error) {
     return res.status(500).json({
       ServerMessage: {
