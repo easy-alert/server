@@ -154,6 +154,7 @@ export async function findMaintenanceHistory({
       id: {
         in: buildingId,
       },
+      isBlocked: false,
     },
 
     priorityName: {
