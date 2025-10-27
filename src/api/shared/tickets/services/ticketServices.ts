@@ -32,7 +32,7 @@ interface IFindManyForReport {
 
 interface IUpdateOneTicketInput {
   ticketId: string;
-  updatedTicket: Ticket;
+  updatedTicket: Partial<Ticket> & { types?: { serviceTypeId: string }[] };
 }
 
 async function sleep(ms: number) {
@@ -152,25 +152,31 @@ class TicketServices {
             },
           },
 
-          types: serviceTypeId ? {
-            some: {
-              type: {
-                id: {
-                  in: serviceTypeId,
+          types: serviceTypeId
+            ? {
+                some: {
+                  type: {
+                    id: {
+                      in: serviceTypeId,
+                    },
+                  },
                 },
-              },
-            },
-          } : undefined,
+              }
+            : undefined,
 
-          place: placeId ? {
-            id: {
-              in: placeId,
-            },
-          } : undefined,
+          place: placeId
+            ? {
+                id: {
+                  in: placeId,
+                },
+              }
+            : undefined,
 
-          residentApartment: apartmentsNames ? {
-            in: apartmentsNames,
-          } : undefined,
+          residentApartment: apartmentsNames
+            ? {
+                in: apartmentsNames,
+              }
+            : undefined,
 
           seen,
 
@@ -364,7 +370,6 @@ class TicketServices {
 
     for (let index = 0; index < ticketsEmails.length; index++) {
       const { id, residentEmail, ticketNumber, residentName, building } = ticketsEmails[index];
-
       // Teoricamente o filter ali de cima já era pra validar o email, mas não quer.
       if (residentEmail) {
         emailTransporter.sendTicketCreated({
@@ -418,7 +423,6 @@ class TicketServices {
 
     for (let index = 0; index < filteredEmails.length; index++) {
       const { residentEmail, ticketNumber, residentName, status, building } = filteredEmails[index];
-
       // Teoricamente o filter ali de cima já era pra validar o email, mas não quer.
       if (residentEmail) {
         emailTransporter.sendTicketStatusChanged({
@@ -444,7 +448,6 @@ class TicketServices {
 
     for (let index = 0; index < filteredEmails.length; index++) {
       const { residentEmail, ticketNumber, residentName } = filteredEmails[index];
-
       // Teoricamente o filter ali de cima já era pra validar o email, mas não quer.
       if (residentEmail) {
         emailTransporter.sendTicketFinished({
@@ -509,7 +512,6 @@ class TicketServices {
       });
 
       userName = syndic?.name || userName;
-
       // Teoricamente o filter ali de cima já era pra validar o email, mas não quer.
       if (residentEmail) {
         emailTransporter.sendTicketDismissed({
@@ -605,6 +607,8 @@ class TicketServices {
       lastEditedAt?: Date;
     };
 
+    const { types, ...directTicketData } = updatedTicket;
+
     const editableFields = [
       'residentName',
       'residentPhone',
@@ -612,13 +616,22 @@ class TicketServices {
       'residentEmail',
       'residentCPF',
       'description',
+      'placeId',
     ];
+
     const editedFields: string[] = [];
     editableFields.forEach((field) => {
-      if ((updatedTicket as any)[field] !== (oldTicket as any)[field]) {
+      if (
+        (directTicketData as any)[field] !== undefined &&
+        (directTicketData as any)[field] !== (oldTicket as any)[field]
+      ) {
         editedFields.push(field);
       }
     });
+
+    if (types !== undefined) {
+      editedFields.push('types');
+    }
 
     const allEditedFields = Array.from(
       new Set([...(oldTicket.editedFields || []), ...editedFields]),
@@ -632,15 +645,30 @@ class TicketServices {
       },
     });
 
-    const { editedFields: _remove, ...updatedTicketWithoutEditedFields } = updatedTicket as any;
+    const { editedFields: _remove, ...updatedTicketWithoutEditedFields } = directTicketData as any;
+
+    const dataToUpdate: prismaTypes.TicketUpdateInput = {
+      ...updatedTicketWithoutEditedFields,
+      dismissedById: syndicData?.id,
+      editedFields: { set: allEditedFields },
+      lastEditedAt: editedFields.length > 0 ? now : oldTicket.lastEditedAt,
+    };
+
+    if (types && Array.isArray(types)) {
+      dataToUpdate.types = {
+        deleteMany: {},
+        create: types.map((type: { serviceTypeId: string }) => ({
+          type: {
+            connect: {
+              id: type.serviceTypeId,
+            },
+          },
+        })),
+      };
+    }
 
     return prisma.ticket.update({
-      data: {
-        ...updatedTicketWithoutEditedFields,
-        dismissedById: syndicData?.id,
-        editedFields: { set: allEditedFields },
-        lastEditedAt: editedFields.length > 0 ? now : oldTicket.lastEditedAt,
-      },
+      data: dataToUpdate,
       where: {
         id: ticketId,
       },
