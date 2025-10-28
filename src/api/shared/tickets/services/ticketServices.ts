@@ -32,7 +32,7 @@ interface IFindManyForReport {
 
 interface IUpdateOneTicketInput {
   ticketId: string;
-  updatedTicket: Partial<Ticket> & { types?: { serviceTypeId: string }[] };
+  updatedTicket: Partial<Ticket> & { types?: { type: { id: string } }[] };
 }
 
 async function sleep(ms: number) {
@@ -657,10 +657,10 @@ class TicketServices {
     if (types && Array.isArray(types)) {
       dataToUpdate.types = {
         deleteMany: {},
-        create: types.map((type: { serviceTypeId: string }) => ({
+        create: types.map((type: { type: { id: string } }) => ({
           type: {
             connect: {
-              id: type.serviceTypeId,
+              id: type.type.id,
             },
           },
         })),
