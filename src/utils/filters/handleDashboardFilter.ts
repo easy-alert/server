@@ -42,7 +42,7 @@ export function handleDashboardFilter({
   let buildingsArray: string[] | undefined = [];
 
   const isAdmin = hasAdminPermission(permissions);
-  const permittedBuildings = handlePermittedBuildings(buildingsPermissions, 'name');
+  const permittedBuildings = handlePermittedBuildings(buildingsPermissions, 'id');
 
   if (buildings && JSON.parse(String(buildings))?.length === 0) {
     buildingsArray = isAdmin ? undefined : permittedBuildings;
