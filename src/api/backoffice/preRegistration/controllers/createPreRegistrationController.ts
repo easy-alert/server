@@ -7,6 +7,9 @@ function validate(data: any, rules: any) {
       const value = data[field];
       const rule = rules[field];
 
+      if (rule.minLength && typeof value === 'string' && value.length < rule.minLength) {
+        throw new Error(`O campo '${rule.label}' deve ter no mínimo ${rule.minLength} caracteres.`);
+      }
       if (rule.required && (value === undefined || value === null || value === '')) {
         throw new Error(`O campo '${rule.label}' é obrigatório.`);
       }
@@ -19,6 +22,17 @@ function validate(data: any, rules: any) {
       if (rule.enum && value && !rule.enum.includes(value)) {
         throw new Error(`O valor para '${rule.label}' é inválido.`);
       }
+      if (rule.isFutureDate && value) {
+        const inputDate = new Date(value);
+
+        const today = new Date();
+
+        today.setUTCHours(0, 0, 0, 0);
+
+        if (inputDate.getTime() < today.getTime()) {
+          throw new Error(`O campo '${rule.label}' não pode ser uma data no passado.`);
+        }
+      }
     }
   }
 }
@@ -28,6 +42,12 @@ export async function createPreRegistration(req: Request, res: Response) {
     const data = req.body;
 
     validate(data, {
+      name: {
+        required: true,
+        type: 'string',
+        minLength: 3,
+        label: 'Nome do Cliente',
+      },
       clientType: {
         required: true,
         enum: [
@@ -52,6 +72,12 @@ export async function createPreRegistration(req: Request, res: Response) {
         type: 'number',
         min: 0.01,
         label: 'Valor de Implementação',
+      },
+      implementationDueDate: {
+        required: true,
+        type: 'string',
+        label: 'Vencimento da Implementação',
+        isFutureDate: true,
       },
     });
 
