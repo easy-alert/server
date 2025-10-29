@@ -226,13 +226,16 @@ enum CompanyTicketType {
 model PreRegistration {
   id String @id @unique @default(uuid())
 
+  name String?
+
   status PreRegistrationStatus @default(pending)
 
-  clientType          clientType
-  buildingQuantity    Int
-  planType            planType
-  monthlyPrice        Float
-  implementationPrice Float
+  clientType            clientType
+  buildingQuantity      Int
+  planType              planType
+  monthlyPrice          Float
+  implementationPrice   Float
+  implementationDueDate DateTime?
 
   createdUserId    String? @unique
   createdCompanyId String? @unique
