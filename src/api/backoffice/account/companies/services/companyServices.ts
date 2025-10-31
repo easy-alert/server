@@ -29,6 +29,7 @@ export class CompanyServices {
     isNotifyingOnceAWeek,
     canAccessChecklists,
     canAccessTickets,
+    clientType,
   }: ICreateCompany) {
     const companyData = {
       name,
@@ -39,6 +40,7 @@ export class CompanyServices {
       isNotifyingOnceAWeek,
       canAccessChecklists,
       canAccessTickets,
+      clientType,
     };
 
     if (CPF) {
@@ -71,6 +73,7 @@ export class CompanyServices {
         isNotifyingOnceAWeek,
         canAccessChecklists,
         canAccessTickets,
+        clientType,
       },
     });
   }
