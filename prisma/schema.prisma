@@ -52,6 +52,7 @@ model User {
   MaintenanceHistory               MaintenanceHistoryUsers[] // New relation field
   Ticket                           Ticket[]
   TicketReportPDF                  TicketReportPDF[]
+  TicketChecklistItem              TicketChecklistItem[]
   Checklist                        Checklist[]
   reportPdfs                       MaintenanceReportPdf[]
   MaintenanceAdditionalInformation MaintenanceAdditionalInformation[]
@@ -1182,6 +1183,7 @@ model Ticket {
   place              TicketPlace?                       @relation(fields: [placeId], references: [id])
   images             TicketImage[]
   types              TicketServiceType[]
+  checklistItems     TicketChecklistItem[]
   maintenanceHistory MaintenanceHistory?                @relation(fields: [maintenanceHistoryId], references: [id], onDelete: SetNull)
   activities         TicketHistoryActivities[]
   dismissReasons     TicketDismissReasons?              @relation(fields: [dismissReasonName], references: [name])
@@ -1306,6 +1308,35 @@ model TicketHistoryActivityImages {
   activity TicketHistoryActivities @relation(fields: [activityId], references: [id], onDelete: Cascade)
 
   @@map("ticketHistoryActivityImages")
+}
+
+model TicketChecklistItem {
+  id String @id @default(uuid())
+
+  ticketId String
+
+  title       String
+  status      TicketChecklistItemStatus @default(pending)
+
+  position    Int @default(0)
+
+  completedAt     DateTime?
+  completedById   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ticket        Ticket  @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  completedBy   User?   @relation(fields: [completedById], references: [id], onDelete: SetNull)
+
+  @@index([ticketId])
+  @@unique([ticketId, position])
+  @@map("ticketChecklistItems")
+}
+
+enum TicketChecklistItemStatus {
+  pending
+  completed
 }
 
 enum ReportPDFStatusName {

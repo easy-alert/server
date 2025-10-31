@@ -9,8 +9,8 @@ import { setToLastMinuteOfDay, setToMidnight } from '../../../../utils/dateTime'
 export async function maintenancesCountAndCostController(req: Request, res: Response) {
   const { buildings, categories, responsible, maintenanceType, startDate, endDate } = req.query;
 
-  const startDateFormatted = startDate ? setToMidnight(startDate as string) : undefined;
-  const endDateFormatted = endDate ? setToLastMinuteOfDay(endDate as string) : undefined;
+  const startDateFormatted = startDate ? setToMidnight(startDate as string) : setToMidnight(new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString().split('T')[0]);
+  const endDateFormatted = endDate ? setToLastMinuteOfDay(endDate as string) : setToLastMinuteOfDay(new Date().toISOString().split('T')[0]);
 
   const dashboardFilter = handleDashboardFilter({
     companyId: req.Company.id,

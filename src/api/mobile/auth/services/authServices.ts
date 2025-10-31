@@ -286,6 +286,11 @@ export class AuthServices {
               },
             },
           },
+          where: {
+            Building: {
+              isBlocked: false,
+            },
+          },
         },
       },
 

@@ -68,8 +68,6 @@ export async function createTicketController(req: Request, res: Response) {
   const isRequired = (key: keyof typeof cfg) => !!cfg[key]?.required && !cfg[key]?.hidden;
   const attachmentsRequired = !!building?.ticketAnnexRequired || (!!cfg.attachments?.required && !cfg.attachments?.hidden);
 
-  console.log('isRequired("residentEmail")', isRequired('residentEmail'));
-
   const values: ICheckValues[] = [
     { label: 'Edificação', type: 'object', value: building },
     { label: 'Descrição', type: 'string', value: description, required: isRequired('description') },
@@ -78,7 +76,7 @@ export async function createTicketController(req: Request, res: Response) {
     { label: 'Apartamento do morador', type: 'string', value: residentApartment, required: isRequired('residentApartment') },
     { label: 'CPF do morador', type: 'string', value: residentCPF, required: isRequired('residentCPF') },
     { label: 'Telefone do morador', type: 'string', value: residentPhone, required: isRequired('residentPhone') },
-    { label: 'Imagens', type: 'array', value: images, required: attachmentsRequired },
+    { label: 'Anexos', type: 'array', value: images, required: attachmentsRequired },
     { label: 'Tipo de assistência', type: 'array', value: types, required: isRequired('types') },
   ];
 

@@ -82,6 +82,7 @@ class TicketServices {
             },
           },
         },
+        checklistItems: true,
       },
       where: { id },
     });
@@ -615,7 +616,7 @@ class TicketServices {
     ];
     const editedFields: string[] = [];
     editableFields.forEach((field) => {
-      if ((updatedTicket as any)[field] !== (oldTicket as any)[field]) {
+      if ((updatedTicket as any)[field] && (updatedTicket as any)[field] != (oldTicket as any)[field]) {
         editedFields.push(field);
       }
     });
@@ -639,6 +640,7 @@ class TicketServices {
         ...updatedTicketWithoutEditedFields,
         dismissedById: syndicData?.id,
         editedFields: { set: allEditedFields },
+        seen: updatedTicket.seen,
         lastEditedAt: editedFields.length > 0 ? now : oldTicket.lastEditedAt,
       },
       where: {

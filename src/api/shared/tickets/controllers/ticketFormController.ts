@@ -5,7 +5,11 @@ import { ticketServices } from '../services/ticketServices';
 
 export class TicketFormController {
   async get(req: Request, res: Response) {
-    const { companyId } = req;
+    const companyId = req?.Company?.id || String(req.query.companyId);
+
+    if (!companyId) {
+      return res.status(400).json({ message: 'Empresa não encontrada!' });
+    }
 
     await ticketServices.checkAccessByCompany({ companyId });
 
@@ -32,7 +36,12 @@ export class TicketFormController {
   }
 
   async upsert(req: Request, res: Response) {
-    const { companyId } = req;
+    const companyId = req?.Company?.id || String(req.query.companyId);
+
+    if (!companyId) {
+      return res.status(400).json({ message: 'Empresa não encontrada!' });
+    }
+
     const body = req.body as TicketFormConfigDto;
 
     await ticketServices.checkAccessByCompany({ companyId });
