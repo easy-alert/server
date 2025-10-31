@@ -266,7 +266,7 @@ enum clientType {
 
 enum planType {
   annual
-  monthly
+  semester
 }
 
 // CATEGORIES AND MAINTENANCES TYPES
