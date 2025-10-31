@@ -65,7 +65,7 @@ export async function createPreRegistration(req: Request, res: Response) {
         min: 1,
         label: 'Quantidade de Condomínios',
       },
-      planType: { required: true, enum: ['monthly', 'annual'], label: 'Tipo de Plano' },
+      planType: { required: true, enum: ['semester', 'annual'], label: 'Tipo de Plano' },
       monthlyPrice: { required: true, type: 'number', min: 0.01, label: 'Valor Mensal' },
       implementationPrice: {
         required: true,
