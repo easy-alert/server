@@ -1,3 +1,4 @@
+// ...existing code...
 import { prisma } from '../../../../../prisma';
 
 import { UserServices } from '../../../shared/users/user/services/userServices';
@@ -13,7 +14,8 @@ const sharedCompanyServices = new SharedCompanyServices();
 
 interface ICompleteRegistrationData {
   clientName: string;
-  cnpj: string;
+  cnpj?: string | null;
+  cpf?: string | null;
   loginEmail: string;
   password: string;
   contactPhone: string;
@@ -37,9 +39,26 @@ export async function completePreRegistrationService(
       throw new Error('Este e-mail já está em uso.');
     }
 
-    const checkCNPJ = await sharedCompanyServices.findByCNPJ({ CNPJ: clientData.cnpj });
-    if (checkCNPJ) {
-      throw new Error('Este CNPJ já está em uso.');
+    if (clientData.cnpj) {
+      const checkCNPJ = await sharedCompanyServices.findByCNPJ({ CNPJ: clientData.cnpj });
+      if (checkCNPJ) {
+        throw new Error('Este CNPJ já está em uso.');
+      }
+    }
+
+    if (clientData.cpf) {
+      const { findByCPF }: any = sharedCompanyServices;
+      if (typeof findByCPF === 'function') {
+        const checkCPF = await findByCPF.call(sharedCompanyServices, { CPF: clientData.cpf });
+        if (checkCPF) {
+          throw new Error('Este CPF já está em uso.');
+        }
+      } else {
+        const checkCPF = await tx.company.findFirst({ where: { CPF: clientData.cpf } });
+        if (checkCPF) {
+          throw new Error('Este CPF já está em uso.');
+        }
+      }
     }
 
     const newUser = await userServices.create({
@@ -47,17 +66,17 @@ export async function completePreRegistrationService(
       email: clientData.loginEmail.toLowerCase(),
       passwordHash: clientData.password,
       phoneNumber: clientData.contactPhone,
-      role: 'owner',
+      role: '',
       image: `https://api.dicebear.com/7.x/initials/png?seed=${encodeURI(clientData.clientName)}`,
     });
 
     const newCompany = await companyServices.create({
       name: clientData.clientName,
-      CNPJ: clientData.cnpj,
+      CNPJ: clientData.cnpj ?? null,
       contactNumber: clientData.contactPhone,
       clientType: preRegistration.clientType,
       image: `https://api.dicebear.com/7.x/initials/png?seed=${encodeURI(clientData.clientName)}`,
-      CPF: null,
+      CPF: clientData.cpf ?? null,
       isNotifyingOnceAWeek: false,
       canAccessChecklists: false,
       canAccessTickets: false,

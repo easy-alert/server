@@ -32,11 +32,31 @@ export async function completePreRegistrationController(req: Request, res: Respo
 
     validate(clientData, {
       clientName: { required: true, type: 'string', label: 'Nome da Empresa' },
-      cnpj: { required: true, type: 'string', label: 'CNPJ' },
+      cnpj: { required: false, type: 'string', label: 'CNPJ' },
+      cpf: { required: false, type: 'string', label: 'CPF' },
       loginEmail: { required: true, type: 'string', label: 'E-mail' },
       password: { required: true, type: 'string', label: 'Senha' },
       contactPhone: { required: true, type: 'string', label: 'Telefone' },
     });
+
+    const normalizedCNPJ = clientData.cnpj
+      ? String(clientData.cnpj).replace(/[^\d]/g, '')
+      : undefined;
+    const normalizedCPF = clientData.cpf ? String(clientData.cpf).replace(/[^\d]/g, '') : undefined;
+
+    if (!normalizedCNPJ && !normalizedCPF) {
+      throw new Error("O campo 'CNPJ' ou 'CPF' é obrigatório.");
+    }
+
+    if (normalizedCNPJ && normalizedCNPJ.length !== 14) {
+      throw new Error('CNPJ inválido.');
+    }
+    if (normalizedCPF && normalizedCPF.length !== 11) {
+      throw new Error('CPF inválido.');
+    }
+
+    clientData.cnpj = normalizedCNPJ;
+    clientData.cpf = normalizedCPF;
 
     await completePreRegistrationService(token, clientData);
 
