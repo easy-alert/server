@@ -55,6 +55,7 @@ import { listBuildingApartmentsController } from './building/controllers/listBui
 import { listForSelectRouter } from './listForSelect/list.routes';
 import { userRouter } from './user/user.routes';
 import { findBuildingByIdController } from './building/controllers/findBuildingByIdController';
+import { ticketFormConfigRoute } from './tickets/ticketFormConfig.routes';
 
 // ROUTES
 export const clientRouter: Router = Router();
@@ -146,6 +147,11 @@ clientRouter.get('/timeinterval/list', listTimeIntervals);
 clientRouter.use('/checklists', checklistRouter);
 
 clientRouter.use('/tickets', ticketRouter);
+
+clientRouter.use(
+  '/ticket-form-config',
+  ticketFormConfigRoute,
+);
 
 clientRouter.use('/suppliers', supplierRouter);
 

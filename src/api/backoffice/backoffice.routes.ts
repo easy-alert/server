@@ -25,6 +25,7 @@ import type { TPermissionsNames } from '../../types/TPermissionsNames';
 import { dashboardRouter } from './dashboard/dashboard.routes';
 import { feedItemRouter } from './feedItems/feedItem.routes';
 import { guaranteeRouter } from './guarantee/guarantee.routes';
+import { preRegistrationRouter } from './preRegistration/preRegistration.routes';
 
 // ROUTES
 export const backofficeRouter: Router = Router();
@@ -115,6 +116,9 @@ backofficeRouter.use(
   handleBackofficePermCheck(backofficePermissions),
   feedItemRouter,
 );
+
+// PRE REGISTRATIONS
+backofficeRouter.use('/pre-registrations', preRegistrationRouter);
 
 // GUARANTEE
 backofficeRouter.use(

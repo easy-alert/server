@@ -800,6 +800,7 @@ export class ClientBuildingServices {
         },
         Company: {
           select: {
+            id: true,
             canAccessTickets: true,
             ticketInfo: true,
             ticketType: true,

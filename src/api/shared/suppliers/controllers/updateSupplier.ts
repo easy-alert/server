@@ -1,7 +1,8 @@
-import { Response, Request } from 'express';
-import { supplierServices } from '../services/supplierServices';
-import { checkValues } from '../../../../utils/newValidator';
+import { Request, Response } from 'express';
 import { createInitialsAvatar, unmask } from '../../../../utils/dataHandler';
+import { ServerMessage } from '../../../../utils/messages/serverMessage';
+import { checkValues } from '../../../../utils/newValidator';
+import { supplierServices } from '../services/supplierServices';
 
 interface IBody {
   id: string;
@@ -29,11 +30,16 @@ export async function updateSupplier(req: Request, res: Response) {
     { label: 'Site', type: 'string', value: link, required: false },
     { label: 'Estado', type: 'string', value: state },
     { label: 'Telefone/Celular', type: 'string', value: phone, required: false },
-    { label: 'Email', type: 'email', value: email, required: false },
     { label: 'CNPJ', type: 'CNPJ', value: cnpj, required: false },
-
     { label: 'Categorias', type: 'array', value: categoriesIds },
   ]);
+
+  if (!phone && !email) {
+    throw new ServerMessage({
+      statusCode: 400,
+      message: 'Informe um telefone ou email.',
+    });
+  }
 
   await supplierServices.update({
     data: {

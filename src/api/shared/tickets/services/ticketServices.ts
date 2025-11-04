@@ -82,6 +82,7 @@ class TicketServices {
             },
           },
         },
+        checklistItems: true,
       },
       where: { id },
     });
@@ -621,10 +622,7 @@ class TicketServices {
 
     const editedFields: string[] = [];
     editableFields.forEach((field) => {
-      if (
-        (directTicketData as any)[field] !== undefined &&
-        (directTicketData as any)[field] !== (oldTicket as any)[field]
-      ) {
+      if ((updatedTicket as any)[field] && (updatedTicket as any)[field] != (oldTicket as any)[field]) {
         editedFields.push(field);
       }
     });
