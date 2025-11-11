@@ -44,7 +44,7 @@ export async function sharedMaintenanceHistoryDetails(req: Request, res: Respons
     },
   });
 
-  const period = maintenance.Maintenance.frequency * maintenance.Maintenance.FrequencyTimeInterval.unitTime;
+  const period = maintenance.Maintenance.period * maintenance.Maintenance.PeriodTimeInterval.unitTime;
 
   // se aplica só
   const canReportPending =
@@ -52,7 +52,7 @@ export async function sharedMaintenanceHistoryDetails(req: Request, res: Respons
 
   let allowReport = true;
 
-  if (today >= addDays({ date: maintenance.notificationDate, days: period })) {
+  if (today > addDays({ date: maintenance.notificationDate, days: period })) {
     allowReport = false;
   }
 
